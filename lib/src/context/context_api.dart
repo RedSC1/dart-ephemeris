@@ -3,9 +3,9 @@ part of '../taiyin.dart';
 /// Mutable configuration owned by one Taiyin calculation context.
 ///
 /// Finish configuration before using the owning context concurrently. Cloned
-/// Taiyin instances receive an independent copy of this state.
-final class TaiyinContextApi {
-  TaiyinContextApi._(
+/// [TaiyinContext] instances receive an independent copy of this state.
+final class TaiyinContextConfiguration {
+  TaiyinContextConfiguration._(
     this._bindings,
     this._context,
     this._ensureOpen,

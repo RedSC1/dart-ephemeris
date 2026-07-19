@@ -15,7 +15,8 @@ typedef _ObservedStatusChecker =
 ///
 /// Native observed-position batches contain at most ten bodies. Horizontal
 /// output requires [TaiyinObservedFlag.topocentric] and a context observer
-/// location. See [TaiyinContextApi] for observer and atmosphere configuration.
+/// location. See [TaiyinContextConfiguration] for observer and atmosphere
+/// configuration.
 ///
 /// A failure for any requested body makes the native batch fail. Batch-level
 /// failures throw [TaiyinException]; partial results are not returned.

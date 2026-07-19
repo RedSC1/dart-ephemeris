@@ -28,8 +28,9 @@ void main() {
   final taiyin = Taiyin.open(
     libraryPath: '../taiyin-ephemeris/build-c-api-release/libtaiyin.dylib',
   );
+  final context = taiyin.createContext();
   try {
-    final moon = taiyin.position.atTt(
+    final moon = context.position.atTt(
       TaiyinBody.moon,
       JulianDate<TtScale>.fromDouble(2460409.0),
       flags: {
@@ -41,13 +42,44 @@ void main() {
     print(moon.value.rates);
     print(moon.diagnostic.attemptedMethodId);
   } finally {
-    taiyin.close();
+    context.close();
   }
 }
 ```
 
 `libraryPath` can be omitted when the library is available under the
 platform-standard loader name, or supplied through `TAIYIN_LIBRARY_PATH`.
+
+## Runtime and release metadata
+
+Taiyin exposes its semantic version and major-release codename independently:
+
+```dart
+print(taiyin.libraryVersion);  // 1.0.0
+print(taiyin.libraryCodename); // Singularity
+```
+
+The `Taiyin` object represents the process-wide native engine. It manages
+ephemeris sources, Earth-orientation data, the lunar-limb model, and the
+ephemeris segment cache. Finish global setup before starting concurrent
+calculations:
+
+```dart
+taiyin
+  ..addSourcePath('/path/to/ephemeris-data')
+  ..loadBuiltinEopTable()
+  ..clearEphemerisCache();
+
+print(taiyin.catalogSize);
+print(taiyin.cacheEntryCount);
+```
+
+`Taiyin.open()` hides the native runtime initialization step; ordinary callers
+only open the engine. Call it once in the application's main isolate: every
+current `open()` call reinitializes the process-wide runtime. Worker isolates
+must use `TaiyinContext.attach()` instead. `taiyin.createContext()` creates an
+independent `TaiyinContext` for one user or calculation policy. Closing a
+context does not reset process-wide runtime data.
 
 ## Time values
 
@@ -71,7 +103,7 @@ Use the context-owned time service for actual scale conversion:
 
 ```dart
 final utcCalendar = AstroDateTime(2000, 1, 1);
-final scales = taiyin.time.scalesFromUtc(utcCalendar);
+final scales = context.time.scalesFromUtc(utcCalendar);
 
 print(scales.value.utc);
 print(scales.value.ut1);
@@ -88,13 +120,13 @@ C ABI, preserving sub-microsecond separation across the FFI boundary.
 
 ## Positions and Cartesian states
 
-`taiyin.position` exposes single-target and batch calculations at TDB, TT, UT1,
+`context.position` exposes single-target and batch calculations at TDB, TT, UT1,
 explicit Delta-T, and UTC inputs. Every result includes the native ephemeris
 diagnostic. Cartesian states include position in AU, velocity in AU/day, and
 acceleration in AU/day²:
 
 ```dart
-final state = taiyin.position.stateAtTt(
+final state = context.position.stateAtTt(
   TaiyinBody.moon,
   JulianDate<TtScale>.fromDouble(2460409.0),
 );
@@ -107,14 +139,14 @@ attached. Batch calls preserve one result per requested body when individual
 targets fail; inspect each `result.diagnostic.status` before consuming its
 position.
 
-The older `taiyin.positionTt` and `taiyin.positionUt` conveniences remain
+The `context.positionTt` and `context.positionUt` conveniences remain
 available and delegate to this module.
 
 ## Context configuration
 
-`taiyin.context` owns observer, atmosphere, astronomy-model, apparent-position,
-deflection, light-time, and eclipse configuration. Configure a context before
-using it concurrently:
+`context.configuration` owns observer, atmosphere, astronomy-model,
+apparent-position, deflection, light-time, and eclipse configuration. Configure
+a context before using it concurrently:
 
 ```dart
 const beijing = TaiyinObserverLocation(
@@ -123,7 +155,7 @@ const beijing = TaiyinObserverLocation(
   heightMeters: 50,
 );
 
-taiyin.context
+context.configuration
   ..setObserverLocation(beijing)
   ..setStandardAtmosphere()
   ..setAtmospherePolicy({
@@ -149,25 +181,25 @@ taiyin.context
 
 Simple topocentric setup accepts typed UT1 and TT coordinates. Precise
 topocentric setup accepts typed UTC and TT coordinates and requires an EOP
-table in the native runtime. `taiyin.clone()` copies all context-owned
+table in the native runtime. `context.clone()` copies all context-owned
 configuration, including custom deflectors; later changes and `reset()` calls
 are independent between the two instances.
 
 ## Observed positions
 
-`taiyin.observed` calculates complete apparent and observed positions for the
+`context.observed` calculates complete apparent and observed positions for the
 Sun, Moon, and eight planets at UT1 or UTC inputs. Results include geometric
 and apparent Cartesian states, spherical longitude/latitude, light time, native
 diagnostics, and optional horizontal and refracted coordinates:
 
 ```dart
-taiyin.context
+context.configuration
   ..setObserverLocation(beijing)
   ..setAtmospherePolicy({
     TaiyinAtmospherePolicyFlag.allowStandardFallback,
   });
 
-final observedSun = taiyin.observed.atUtc(
+final observedSun = context.observed.atUtc(
   TaiyinBody.sun,
   AstroDateTime(2024, 4, 8, 18),
   flags: {
@@ -186,13 +218,27 @@ UTC calculations require Earth-orientation data covering the requested date.
 
 This package requires an ABI-1 native library that reports
 `TaiyinCapability.splitTime`. Older ABI-1 builds are rejected during
-`Taiyin.open` with a clear compatibility error instead of failing later during
-a lazy symbol lookup.
+`Taiyin.open` or `TaiyinContext.attach` with a clear compatibility error instead
+of failing later during a lazy symbol lookup.
 
-The native runtime is process-wide, so normally call `Taiyin.open` once. Finish
-runtime/catalog configuration before starting concurrent calculations. Use
-`taiyin.clone()` when you need independent contexts for parallel work; every
-instance owns and releases its own native context.
+The native engine is process-wide, so call `Taiyin.open` once. Calling it again
+currently replaces the global catalog, cache, EOP table, and lunar-limb model.
+Finish global configuration before starting concurrent calculations. Create
+separate contexts with `taiyin.createContext()` or `context.clone()`; every
+context owns and releases its native user state independently.
+
+A worker isolate must not receive a `TaiyinContext` through a `SendPort`.
+Instead, send plain Dart inputs and let the worker attach a new context to the
+already-open process runtime:
+
+```dart
+final workerContext = TaiyinContext.attach(libraryPath: libraryPath);
+try {
+  // Concurrent calculation using this isolate's own context.
+} finally {
+  workerContext.close();
+}
+```
 
 ## Regenerate bindings
 

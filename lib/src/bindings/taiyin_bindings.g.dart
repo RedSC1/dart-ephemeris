@@ -91,6 +91,17 @@ class TaiyinBindings {
   late final _taiyin_get_library_version = _taiyin_get_library_versionPtr
       .asFunction<ffi.Pointer<ffi.Char> Function()>();
 
+  ffi.Pointer<ffi.Char> taiyin_get_library_codename() {
+    return _taiyin_get_library_codename();
+  }
+
+  late final _taiyin_get_library_codenamePtr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<ffi.Char> Function()>>(
+        'taiyin_get_library_codename',
+      );
+  late final _taiyin_get_library_codename = _taiyin_get_library_codenamePtr
+      .asFunction<ffi.Pointer<ffi.Char> Function()>();
+
   int taiyin_get_capabilities() {
     return _taiyin_get_capabilities();
   }
@@ -1704,6 +1715,107 @@ class TaiyinBindings {
   late final _taiyin_runtime_initialize = _taiyin_runtime_initializePtr
       .asFunction<int Function(ffi.Pointer<taiyin_runtime_config>)>();
 
+  int taiyin_runtime_add_source_path(ffi.Pointer<ffi.Char> path) {
+    return _taiyin_runtime_add_source_path(path);
+  }
+
+  late final _taiyin_runtime_add_source_pathPtr =
+      _lookup<
+        ffi.NativeFunction<taiyin_status Function(ffi.Pointer<ffi.Char>)>
+      >('taiyin_runtime_add_source_path');
+  late final _taiyin_runtime_add_source_path =
+      _taiyin_runtime_add_source_pathPtr
+          .asFunction<int Function(ffi.Pointer<ffi.Char>)>();
+
+  int taiyin_runtime_load_eop_table(ffi.Pointer<ffi.Char> path) {
+    return _taiyin_runtime_load_eop_table(path);
+  }
+
+  late final _taiyin_runtime_load_eop_tablePtr =
+      _lookup<
+        ffi.NativeFunction<taiyin_status Function(ffi.Pointer<ffi.Char>)>
+      >('taiyin_runtime_load_eop_table');
+  late final _taiyin_runtime_load_eop_table = _taiyin_runtime_load_eop_tablePtr
+      .asFunction<int Function(ffi.Pointer<ffi.Char>)>();
+
+  int taiyin_runtime_load_builtin_eop_table() {
+    return _taiyin_runtime_load_builtin_eop_table();
+  }
+
+  late final _taiyin_runtime_load_builtin_eop_tablePtr =
+      _lookup<ffi.NativeFunction<taiyin_status Function()>>(
+        'taiyin_runtime_load_builtin_eop_table',
+      );
+  late final _taiyin_runtime_load_builtin_eop_table =
+      _taiyin_runtime_load_builtin_eop_tablePtr.asFunction<int Function()>();
+
+  void taiyin_runtime_clear_eop_table() {
+    return _taiyin_runtime_clear_eop_table();
+  }
+
+  late final _taiyin_runtime_clear_eop_tablePtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function()>>(
+        'taiyin_runtime_clear_eop_table',
+      );
+  late final _taiyin_runtime_clear_eop_table =
+      _taiyin_runtime_clear_eop_tablePtr.asFunction<void Function()>();
+
+  int taiyin_runtime_has_eop_table() {
+    return _taiyin_runtime_has_eop_table();
+  }
+
+  late final _taiyin_runtime_has_eop_tablePtr =
+      _lookup<ffi.NativeFunction<taiyin_bool Function()>>(
+        'taiyin_runtime_has_eop_table',
+      );
+  late final _taiyin_runtime_has_eop_table = _taiyin_runtime_has_eop_tablePtr
+      .asFunction<int Function()>();
+
+  int taiyin_runtime_load_lunar_limb_model(ffi.Pointer<ffi.Char> path) {
+    return _taiyin_runtime_load_lunar_limb_model(path);
+  }
+
+  late final _taiyin_runtime_load_lunar_limb_modelPtr =
+      _lookup<
+        ffi.NativeFunction<taiyin_status Function(ffi.Pointer<ffi.Char>)>
+      >('taiyin_runtime_load_lunar_limb_model');
+  late final _taiyin_runtime_load_lunar_limb_model =
+      _taiyin_runtime_load_lunar_limb_modelPtr
+          .asFunction<int Function(ffi.Pointer<ffi.Char>)>();
+
+  void taiyin_runtime_clear_lunar_limb_model() {
+    return _taiyin_runtime_clear_lunar_limb_model();
+  }
+
+  late final _taiyin_runtime_clear_lunar_limb_modelPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function()>>(
+        'taiyin_runtime_clear_lunar_limb_model',
+      );
+  late final _taiyin_runtime_clear_lunar_limb_model =
+      _taiyin_runtime_clear_lunar_limb_modelPtr.asFunction<void Function()>();
+
+  int taiyin_runtime_has_lunar_limb_model() {
+    return _taiyin_runtime_has_lunar_limb_model();
+  }
+
+  late final _taiyin_runtime_has_lunar_limb_modelPtr =
+      _lookup<ffi.NativeFunction<taiyin_bool Function()>>(
+        'taiyin_runtime_has_lunar_limb_model',
+      );
+  late final _taiyin_runtime_has_lunar_limb_model =
+      _taiyin_runtime_has_lunar_limb_modelPtr.asFunction<int Function()>();
+
+  void taiyin_runtime_clear_ephemeris_cache() {
+    return _taiyin_runtime_clear_ephemeris_cache();
+  }
+
+  late final _taiyin_runtime_clear_ephemeris_cachePtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function()>>(
+        'taiyin_runtime_clear_ephemeris_cache',
+      );
+  late final _taiyin_runtime_clear_ephemeris_cache =
+      _taiyin_runtime_clear_ephemeris_cachePtr.asFunction<void Function()>();
+
   int taiyin_runtime_catalog_size() {
     return _taiyin_runtime_catalog_size();
   }
@@ -1714,6 +1826,17 @@ class TaiyinBindings {
       );
   late final _taiyin_runtime_catalog_size = _taiyin_runtime_catalog_sizePtr
       .asFunction<int Function()>();
+
+  int taiyin_runtime_cache_entry_count() {
+    return _taiyin_runtime_cache_entry_count();
+  }
+
+  late final _taiyin_runtime_cache_entry_countPtr =
+      _lookup<ffi.NativeFunction<ffi.Size Function()>>(
+        'taiyin_runtime_cache_entry_count',
+      );
+  late final _taiyin_runtime_cache_entry_count =
+      _taiyin_runtime_cache_entry_countPtr.asFunction<int Function()>();
 
   void taiyin_precise_time_scales_init(
     ffi.Pointer<taiyin_precise_time_scales> value,

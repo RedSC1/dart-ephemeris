@@ -10,9 +10,9 @@ void main() {
   final nativeLibraryAvailable = File(libraryPath).existsSync();
 
   group(
-    'TaiyinContextApi native integration',
+    'TaiyinContextConfiguration native integration',
     () {
-      late Taiyin taiyin;
+      late TaiyinContext taiyin;
       const beijing = TaiyinObserverLocation(
         longitudeDegrees: 116.391,
         latitudeDegrees: 39.907,
@@ -29,7 +29,7 @@ void main() {
       );
 
       setUp(() {
-        taiyin = Taiyin.open(libraryPath: libraryPath);
+        taiyin = Taiyin.open(libraryPath: libraryPath).createContext();
       });
 
       tearDown(() {
@@ -37,7 +37,7 @@ void main() {
       });
 
       test('configures observer and atmosphere values', () {
-        taiyin.context
+        taiyin.configuration
           ..setObserverLocation(beijing)
           ..setAtmosphere(
             const TaiyinAtmosphere(
@@ -60,7 +60,7 @@ void main() {
       });
 
       test('configures astronomy and apparent models', () {
-        taiyin.context
+        taiyin.configuration
           ..setAstroModels(const TaiyinAstroModelConfig())
           ..setAstroModels(
             const TaiyinAstroModelConfig(
@@ -90,7 +90,7 @@ void main() {
       });
 
       test('configures observer modes and route selection', () {
-        taiyin.context
+        taiyin.configuration
           ..setRouteRule(TaiyinRouteRule.automatic)
           ..setGeocentricObserver(
             observerId: TaiyinBody.earth.id,
@@ -102,7 +102,7 @@ void main() {
       });
 
       test('configures deflection, light time, and Shapiro delay', () {
-        taiyin.context
+        taiyin.configuration
           ..useSolarDeflector()
           ..clearDeflectors()
           ..setDeflectors(const [
@@ -115,7 +115,7 @@ void main() {
       });
 
       test('clone keeps configured owned state after original reset', () {
-        taiyin.context
+        taiyin.configuration
           ..setObserverLocation(beijing)
           ..setTopocentricObserverOffset(offset)
           ..setDeflectors(const [
@@ -133,7 +133,7 @@ void main() {
 
         final clone = taiyin.clone();
         try {
-          taiyin.context.reset();
+          taiyin.configuration.reset();
           expect(
             () => taiyin.position.atTt(
               TaiyinBody.moon,
@@ -160,7 +160,7 @@ void main() {
         final survivingClone = taiyin.clone();
         taiyin.close();
         try {
-          survivingClone.context.setStandardAtmosphere();
+          survivingClone.configuration.setStandardAtmosphere();
           expect(
             survivingClone.position
                 .atTt(TaiyinBody.sun, tt)
@@ -172,14 +172,14 @@ void main() {
         } finally {
           survivingClone.close();
         }
-        expect(() => survivingClone.context.reset(), throwsStateError);
+        expect(() => survivingClone.configuration.reset(), throwsStateError);
       });
 
       test('closing a clone does not affect the original', () {
         final clone = taiyin.clone()..close();
 
-        expect(() => clone.context.reset(), throwsStateError);
-        taiyin.context.setStandardAtmosphere();
+        expect(() => clone.configuration.reset(), throwsStateError);
+        taiyin.configuration.setStandardAtmosphere();
         expect(
           taiyin.position
               .atTt(TaiyinBody.sun, tt)
@@ -192,7 +192,7 @@ void main() {
 
       test('rejects invalid Dart values before native calls', () {
         expect(
-          () => taiyin.context.setObserverLocation(
+          () => taiyin.configuration.setObserverLocation(
             const TaiyinObserverLocation(
               longitudeDegrees: 0,
               latitudeDegrees: 91,
@@ -201,28 +201,29 @@ void main() {
           throwsRangeError,
         );
         expect(
-          () => taiyin.context.setAtmosphere(
+          () => taiyin.configuration.setAtmosphere(
             const TaiyinAtmosphere(pressureMillibars: double.nan),
           ),
           throwsArgumentError,
         );
         expect(
-          () => taiyin.context.setMeteorologicalRangeKm(0.5),
+          () => taiyin.configuration.setMeteorologicalRangeKm(0.5),
           throwsRangeError,
         );
         expect(
-          () => taiyin.context.setRouteRule(const TaiyinRouteRule.raw(-1)),
+          () =>
+              taiyin.configuration.setRouteRule(const TaiyinRouteRule.raw(-1)),
           throwsA(isA<TaiyinException>()),
         );
         expect(
-          () => taiyin.context.setGeocentricObserver(
+          () => taiyin.configuration.setGeocentricObserver(
             observerId: 0x80000000,
             centerId: 0,
           ),
           throwsRangeError,
         );
         expect(
-          () => taiyin.context.setTopocentricObserverOffset(
+          () => taiyin.configuration.setTopocentricObserverOffset(
             const TaiyinCartesianState(
               positionAu: TaiyinVector3(double.nan, 0, 0),
               velocityAuPerDay: TaiyinVector3(0, 0, 0),
@@ -232,24 +233,27 @@ void main() {
           throwsArgumentError,
         );
         expect(
-          () => taiyin.context.setDeflectors(const [
+          () => taiyin.configuration.setDeflectors(const [
             TaiyinApparentDeflector(bodyId: 10, schwarzschildRadiusAu: -1),
           ]),
           throwsRangeError,
         );
         expect(
-          () => taiyin.context.setDeflectors(const [], solarDeflectorIndex: 0),
+          () => taiyin.configuration.setDeflectors(
+            const [],
+            solarDeflectorIndex: 0,
+          ),
           throwsRangeError,
         );
         expect(
-          () => taiyin.context.setLightTimeIteration(
+          () => taiyin.configuration.setLightTimeIteration(
             maxIterations: -1,
             toleranceDays: 1e-12,
           ),
           throwsRangeError,
         );
         expect(
-          () => taiyin.context.setApparentConfig(
+          () => taiyin.configuration.setApparentConfig(
             TaiyinApparentConfig(
               flags: const {TaiyinApparentFlag.shapiroDelay},
             ),
@@ -319,51 +323,57 @@ void main() {
       test('rejects context configuration after close', () {
         taiyin.close();
         final calls = <void Function()>[
-          () => taiyin.context.reset(),
-          () => taiyin.context.setObserverLocation(beijing),
-          () => taiyin.context.clearObserverLocation(),
-          () => taiyin.context.setAtmosphere(const TaiyinAtmosphere()),
-          () => taiyin.context.setAtmospherePressureTemperature(
+          () => taiyin.configuration.reset(),
+          () => taiyin.configuration.setObserverLocation(beijing),
+          () => taiyin.configuration.clearObserverLocation(),
+          () => taiyin.configuration.setAtmosphere(const TaiyinAtmosphere()),
+          () => taiyin.configuration.setAtmospherePressureTemperature(
             pressureMillibars: 1013.25,
             temperatureCelsius: 15,
           ),
-          () => taiyin.context.setStandardAtmosphere(),
-          () => taiyin.context.setAtmospherePolicy(const {}),
-          () => taiyin.context.setMeteorologicalRangeKm(25),
-          () => taiyin.context.setGeocentricObserver(
+          () => taiyin.configuration.setStandardAtmosphere(),
+          () => taiyin.configuration.setAtmospherePolicy(const {}),
+          () => taiyin.configuration.setMeteorologicalRangeKm(25),
+          () => taiyin.configuration.setGeocentricObserver(
             observerId: TaiyinBody.earth.id,
             centerId: TaiyinBody.sun.id,
           ),
-          () => taiyin.context.setTopocentricObserverOffset(offset),
-          () => taiyin.context.setSimpleTopocentricObserver(
+          () => taiyin.configuration.setTopocentricObserverOffset(offset),
+          () => taiyin.configuration.setSimpleTopocentricObserver(
             beijing,
             ut1: ut1,
             tt: tt,
           ),
-          () => taiyin.context.setPreciseTopocentricObserver(
+          () => taiyin.configuration.setPreciseTopocentricObserver(
             beijing,
             utc: utc,
             tt: tt,
           ),
-          () => taiyin.context.setRouteRule(TaiyinRouteRule.automatic),
-          () => taiyin.context.setAstroModels(const TaiyinAstroModelConfig()),
-          () => taiyin.context.setApparentConfig(TaiyinApparentConfig()),
-          () =>
-              taiyin.context.setCelestialPoleOffset(dxRadians: 0, dyRadians: 0),
-          () => taiyin.context.setRefractionModel(TaiyinRefractionModel.sofa),
-          () => taiyin.context.setHeliacalVisibilityModel(
+          () => taiyin.configuration.setRouteRule(TaiyinRouteRule.automatic),
+          () => taiyin.configuration.setAstroModels(
+            const TaiyinAstroModelConfig(),
+          ),
+          () => taiyin.configuration.setApparentConfig(TaiyinApparentConfig()),
+          () => taiyin.configuration.setCelestialPoleOffset(
+            dxRadians: 0,
+            dyRadians: 0,
+          ),
+          () => taiyin.configuration.setRefractionModel(
+            TaiyinRefractionModel.sofa,
+          ),
+          () => taiyin.configuration.setHeliacalVisibilityModel(
             TaiyinHeliacalVisibilityModel.schaefer1993,
           ),
-          () => taiyin.context.useSolarDeflector(),
-          () => taiyin.context.clearDeflectors(),
-          () => taiyin.context.setDeflectors(const []),
-          () => taiyin.context.setLightTimeIteration(
+          () => taiyin.configuration.useSolarDeflector(),
+          () => taiyin.configuration.clearDeflectors(),
+          () => taiyin.configuration.setDeflectors(const []),
+          () => taiyin.configuration.setLightTimeIteration(
             maxIterations: 6,
             toleranceDays: 1e-12,
           ),
-          () => taiyin.context.enableShapiroDelay(),
-          () => taiyin.context.disableShapiroDelay(),
-          () => taiyin.context.setEclipseModels(
+          () => taiyin.configuration.enableShapiroDelay(),
+          () => taiyin.configuration.disableShapiroDelay(),
+          () => taiyin.configuration.setEclipseModels(
             shadow: TaiyinEclipseShadowModel.nasaDanjon,
             moonRadius: TaiyinEclipseMoonRadiusModel.almanac,
           ),

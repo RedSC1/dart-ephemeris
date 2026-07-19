@@ -41,7 +41,7 @@ typedef _PositionStatusChecker =
 /// [TaiyinEphemerisDiagnostic.status] on every returned item. Failures that
 /// occur before native per-target diagnostics are available still throw.
 final class TaiyinPositionApi {
-  /// Internal constructor used by an owning Taiyin context.
+  /// Internal constructor used by an owning [TaiyinContext].
   TaiyinPositionApi.internal(
     this._bindings,
     this._context,

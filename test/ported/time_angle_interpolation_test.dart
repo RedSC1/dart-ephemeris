@@ -14,10 +14,10 @@ void main() {
   group(
     'ported: time_angle_interpolation',
     () {
-      late Taiyin taiyin;
+      late TaiyinContext taiyin;
 
       setUp(() {
-        taiyin = Taiyin.open(libraryPath: libraryPath);
+        taiyin = Taiyin.open(libraryPath: libraryPath).createContext();
       });
 
       tearDown(() {

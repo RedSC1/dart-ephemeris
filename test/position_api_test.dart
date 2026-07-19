@@ -12,14 +12,14 @@ void main() {
   group(
     'TaiyinPositionApi native integration',
     () {
-      late Taiyin taiyin;
+      late TaiyinContext taiyin;
       final tt = JulianDate<TtScale>.fromDouble(2460409.0);
       final ut1 = JulianDate<Ut1Scale>.fromDouble(2460409.0);
       final tdb = JulianDate<TdbScale>.fromDouble(2460409.0);
       final utc = AstroDateTime(2024, 4, 8, 18);
 
       setUp(() {
-        taiyin = Taiyin.open(libraryPath: libraryPath);
+        taiyin = Taiyin.open(libraryPath: libraryPath).createContext();
       });
 
       tearDown(() {

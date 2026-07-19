@@ -17,6 +17,7 @@ import 'time/time_scale.dart';
 
 part 'context/context_api.dart';
 part 'observed/observed_api.dart';
+part 'runtime/runtime_api.dart';
 
 /// A feature module reported by the loaded Taiyin native library.
 enum TaiyinCapability {
@@ -62,29 +63,6 @@ enum TaiyinStatusCategory {
   }
 }
 
-/// Configuration for Taiyin's process-wide native runtime.
-final class TaiyinRuntimeOptions {
-  const TaiyinRuntimeOptions({
-    this.dataRoot,
-    this.sourcePaths = const [],
-    this.eopPath,
-    this.lunarLimbPath,
-    this.segmentCacheMaxEntries,
-    this.loadPackagedData = true,
-    this.loadBuiltinEop = true,
-    this.strictDiscovery = false,
-  });
-
-  final String? dataRoot;
-  final List<String> sourcePaths;
-  final String? eopPath;
-  final String? lunarLimbPath;
-  final int? segmentCacheMaxEntries;
-  final bool loadPackagedData;
-  final bool loadBuiltinEop;
-  final bool strictDiscovery;
-}
-
 /// A non-success status returned by the Taiyin C ABI.
 final class TaiyinException implements Exception {
   TaiyinException(this.status, this.name, this.message, {this.diagnostic});
@@ -100,200 +78,119 @@ final class TaiyinException implements Exception {
   String toString() => 'TaiyinException($status, $name): $message';
 }
 
-/// An initialized Taiyin runtime and an owned calculation context.
+/// One user-owned Taiyin calculation context.
 ///
 /// Call [close] when finished. A native finalizer is also attached as a safety
 /// net for contexts that are not closed explicitly.
-final class Taiyin implements Finalizable {
-  Taiyin._(
+///
+/// This object does not own or reconfigure the process-wide [Taiyin] runtime.
+/// Create it through [Taiyin.createContext], or use [attach] in a Dart
+/// isolate after another isolate has initialized the runtime.
+final class TaiyinContext implements Finalizable {
+  TaiyinContext._(
     this._library,
     this._bindings,
     this._context,
     this._contextFinalizer,
   ) {
-    context = TaiyinContextApi._(
-      _bindings,
-      _context,
-      _ensureOpen,
-      (status) => _checkStatus(_bindings, status),
-    );
-    time = TaiyinTime.internal(
-      _bindings,
-      _context,
-      _ensureOpen,
-      (status) => _checkStatus(_bindings, status),
-    );
-    position = TaiyinPositionApi.internal(
-      _bindings,
-      _context,
-      _ensureOpen,
-      (status, diagnostic) =>
-          _checkStatus(_bindings, status, diagnostic: diagnostic),
-    );
-    observed = TaiyinObservedApi._(
-      _bindings,
-      _context,
-      _ensureOpen,
-      (status, diagnostic) =>
-          _checkStatus(_bindings, status, diagnostic: diagnostic),
-    );
-    _contextFinalizer.attach(this, _context.cast(), detach: this);
+    var finalizerAttached = false;
+    try {
+      _contextFinalizer.attach(this, _context.cast(), detach: this);
+      finalizerAttached = true;
+      configuration = TaiyinContextConfiguration._(
+        _bindings,
+        _context,
+        _ensureOpen,
+        (status) => _checkStatus(_bindings, status),
+      );
+      time = TaiyinTime.internal(
+        _bindings,
+        _context,
+        _ensureOpen,
+        (status) => _checkStatus(_bindings, status),
+      );
+      position = TaiyinPositionApi.internal(
+        _bindings,
+        _context,
+        _ensureOpen,
+        (status, diagnostic) =>
+            _checkStatus(_bindings, status, diagnostic: diagnostic),
+      );
+      observed = TaiyinObservedApi._(
+        _bindings,
+        _context,
+        _ensureOpen,
+        (status, diagnostic) =>
+            _checkStatus(_bindings, status, diagnostic: diagnostic),
+      );
+    } catch (_) {
+      if (finalizerAttached) {
+        _contextFinalizer.detach(this);
+      }
+      _bindings.taiyin_context_destroy(_context);
+      rethrow;
+    }
   }
 
-  /// Opens Taiyin, initializes its global runtime, and creates a context.
+  /// Opens the native library and creates a context without initializing the
+  /// process-wide runtime.
   ///
-  /// [libraryPath] takes precedence over `TAIYIN_LIBRARY_PATH`. If neither is
-  /// supplied, the platform's conventional Taiyin library name is used.
-  factory Taiyin.open({
-    String? libraryPath,
-    TaiyinRuntimeOptions options = const TaiyinRuntimeOptions(),
-  }) {
-    final resolvedPath =
-        libraryPath ?? Platform.environment['TAIYIN_LIBRARY_PATH'];
-    final library = resolvedPath == null
-        ? _openDefaultLibrary()
-        : DynamicLibrary.open(resolvedPath);
-    return Taiyin.fromDynamicLibrary(library, options: options);
+  /// [Taiyin.open] must already have configured the runtime in this process.
+  /// This constructor is intended for worker isolates that need an independent
+  /// context while sharing the existing native runtime.
+  ///
+  /// The current C ABI does not expose an initialization-state query, so this
+  /// precondition cannot be checked here. Calling [attach] first is unsupported
+  /// and may report an ephemeris error only when a calculation is attempted.
+  factory TaiyinContext.attach({String? libraryPath}) {
+    return TaiyinContext.attachToDynamicLibrary(_openLibrary(libraryPath));
   }
 
-  /// Uses an already-loaded native library.
-  ///
-  /// This is useful when an application or Flutter plugin bundles Taiyin.
-  factory Taiyin.fromDynamicLibrary(
-    DynamicLibrary library, {
-    TaiyinRuntimeOptions options = const TaiyinRuntimeOptions(),
-  }) {
-    final bindings = TaiyinBindings(library);
-    final abiVersion = bindings.taiyin_get_c_abi_version();
-    final capabilities = bindings.taiyin_get_capabilities();
-    validateTaiyinNativeCompatibility(
-      abiVersion: abiVersion,
-      capabilities: capabilities,
+  /// Attaches a context to an already-loaded native library without
+  /// reconfiguring the process-wide runtime.
+  factory TaiyinContext.attachToDynamicLibrary(DynamicLibrary library) {
+    final state = _nativeLibraryStateFor(library);
+    return TaiyinContext._create(
+      library,
+      state.bindings,
+      state.contextFinalizer,
     );
+  }
 
-    using((arena) {
-      final config = arena<taiyin_runtime_config>();
-      bindings.taiyin_runtime_config_init(config);
-
-      if (options.segmentCacheMaxEntries case final value?) {
-        if (value <= 0) {
-          throw ArgumentError.value(
-            value,
-            'segmentCacheMaxEntries',
-            'must be positive',
-          );
-        }
-        config.ref.segment_cache_max_entries = value;
-      }
-
-      config.ref
-        ..load_packaged_data = options.loadPackagedData ? 1 : 0
-        ..load_builtin_eop = options.loadBuiltinEop ? 1 : 0
-        ..strict_discovery = options.strictDiscovery ? 1 : 0;
-
-      if (options.dataRoot case final value?) {
-        config.ref.data_root = value.toNativeUtf8(allocator: arena).cast();
-      }
-      if (options.eopPath case final value?) {
-        config.ref.eop_path = value.toNativeUtf8(allocator: arena).cast();
-      }
-      if (options.lunarLimbPath case final value?) {
-        config.ref.lunar_limb_path = value
-            .toNativeUtf8(allocator: arena)
-            .cast();
-      }
-      if (options.sourcePaths.isNotEmpty) {
-        final paths = arena<Pointer<Char>>(options.sourcePaths.length);
-        for (var index = 0; index < options.sourcePaths.length; index++) {
-          paths[index] = options.sourcePaths[index]
-              .toNativeUtf8(allocator: arena)
-              .cast();
-        }
-        config.ref
-          ..source_paths = paths
-          ..source_path_count = options.sourcePaths.length;
-      }
-
-      _checkStatus(bindings, bindings.taiyin_runtime_initialize(config));
-    });
-
+  factory TaiyinContext._create(
+    DynamicLibrary library,
+    TaiyinBindings bindings,
+    NativeFinalizer contextFinalizer,
+  ) {
     final context = using((arena) {
       final output = arena<Pointer<taiyin_context>>();
       _checkStatus(bindings, bindings.taiyin_context_create(output));
       return output.value;
     });
-
-    final destroy = library
-        .lookup<NativeFunction<Void Function(Pointer<Void>)>>(
-          'taiyin_context_destroy',
-        );
-    return Taiyin._(library, bindings, context, NativeFinalizer(destroy));
+    return TaiyinContext._(library, bindings, context, contextFinalizer);
   }
 
   final DynamicLibrary _library;
   final TaiyinBindings _bindings;
   final Pointer<taiyin_context> _context;
   final NativeFinalizer _contextFinalizer;
-  late final TaiyinContextApi context;
+  late final TaiyinContextConfiguration configuration;
   late final TaiyinTime time;
   late final TaiyinPositionApi position;
   late final TaiyinObservedApi observed;
   bool _closed = false;
 
-  /// The Taiyin C ABI version.
-  int get abiVersion => _bindings.taiyin_get_c_abi_version();
-
-  /// The Taiyin native library's semantic version.
-  String get libraryVersion =>
-      _bindings.taiyin_get_library_version().cast<Utf8>().toDartString();
-
-  /// The native module capability bitset.
-  int get capabilities => _bindings.taiyin_get_capabilities();
-
-  /// Native modules available in the loaded Taiyin library.
-  Set<TaiyinCapability> get availableCapabilities {
-    final mask = capabilities;
-    return Set.unmodifiable({
-      for (final capability in TaiyinCapability.values)
-        if ((mask & capability.mask) != 0) capability,
-    });
-  }
-
-  bool hasCapability(TaiyinCapability capability) {
-    return (capabilities & capability.mask) != 0;
-  }
-
-  /// Stable symbolic name for a native status code.
-  String statusName(int status) {
-    return _readNativeString(_bindings.taiyin_status_name(status));
-  }
-
-  /// Human-readable description for a native status code.
-  String statusMessage(int status) {
-    return _readNativeString(_bindings.taiyin_status_message(status));
-  }
-
-  /// Broad category for a native status code.
-  TaiyinStatusCategory statusCategory(int status) {
-    return TaiyinStatusCategory.fromId(
-      _bindings.taiyin_status_category_of(status),
-    );
-  }
-
-  /// The number of ephemeris descriptors in the global runtime catalog.
-  int get catalogSize => _bindings.taiyin_runtime_catalog_size();
-
   /// Creates an independent native context without reinitializing the runtime.
   ///
   /// Immutable cloned contexts may be used for concurrent calculations.
-  Taiyin clone() {
+  TaiyinContext clone() {
     _ensureOpen();
     final context = using((arena) {
       final output = arena<Pointer<taiyin_context>>();
       _checkStatus(_bindings, _bindings.taiyin_context_clone(_context, output));
       return output.value;
     });
-    return Taiyin._(_library, _bindings, context, _contextFinalizer);
+    return TaiyinContext._(_library, _bindings, context, _contextFinalizer);
   }
 
   /// Calculates a position at a TT Julian date.
@@ -320,15 +217,33 @@ final class Taiyin implements Finalizable {
     _closed = true;
     _contextFinalizer.detach(this);
     _bindings.taiyin_context_destroy(_context);
-    // Keep the dynamic library strongly reachable until after destruction.
-    _library;
   }
 
   void _ensureOpen() {
     if (_closed) {
-      throw StateError('This Taiyin instance has been closed.');
+      throw StateError('This TaiyinContext has been closed.');
     }
   }
+}
+
+final class _TaiyinNativeLibraryState {
+  const _TaiyinNativeLibraryState(this.bindings, this.contextFinalizer);
+
+  final TaiyinBindings bindings;
+  final NativeFinalizer contextFinalizer;
+}
+
+// NativeFinalizer itself must stay reachable until its attachments have run.
+// Keying by the destroy symbol also reuses bindings when the same native module
+// is opened through more than one DynamicLibrary wrapper in this isolate.
+final Map<int, _TaiyinNativeLibraryState> _nativeLibraryStates = {};
+
+DynamicLibrary _openLibrary(String? libraryPath) {
+  final resolvedPath =
+      libraryPath ?? Platform.environment['TAIYIN_LIBRARY_PATH'];
+  return resolvedPath == null
+      ? _openDefaultLibrary()
+      : DynamicLibrary.open(resolvedPath);
 }
 
 DynamicLibrary _openDefaultLibrary() {
@@ -336,6 +251,20 @@ DynamicLibrary _openDefaultLibrary() {
   if (Platform.isWindows) return DynamicLibrary.open('taiyin.dll');
   if (Platform.isMacOS) return DynamicLibrary.open('libtaiyin.dylib');
   return DynamicLibrary.open('libtaiyin.so');
+}
+
+_TaiyinNativeLibraryState _nativeLibraryStateFor(DynamicLibrary library) {
+  final destroy = library.lookup<NativeFunction<Void Function(Pointer<Void>)>>(
+    'taiyin_context_destroy',
+  );
+  return _nativeLibraryStates.putIfAbsent(destroy.address, () {
+    final bindings = TaiyinBindings(library);
+    validateTaiyinNativeCompatibility(
+      abiVersion: bindings.taiyin_get_c_abi_version(),
+      capabilities: bindings.taiyin_get_capabilities(),
+    );
+    return _TaiyinNativeLibraryState(bindings, NativeFinalizer(destroy));
+  });
 }
 
 Never _throwStatus(

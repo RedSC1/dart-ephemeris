@@ -7,7 +7,7 @@ const int taiyinSplitTimeCapability = 1 << 14;
 /// be tested without loading a platform-specific dynamic library.
 ///
 /// The Dart package exposes its split-date time service as a required part of
-/// every `Taiyin` instance, so it intentionally rejects otherwise-compatible
+/// every `TaiyinContext`, so it intentionally rejects otherwise-compatible
 /// intermediate ABI-1 builds that predate the capability marker.
 void validateTaiyinNativeCompatibility({
   required int abiVersion,

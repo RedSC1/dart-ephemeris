@@ -29,7 +29,7 @@ typedef _ModeledSplitConversion =
 
 /// Time-scale conversion and Delta-T operations backed by Taiyin.
 final class TaiyinTime {
-  /// Internal constructor used by an owning Taiyin context.
+  /// Internal constructor used by an owning [TaiyinContext].
   TaiyinTime.internal(
     this._bindings,
     this._context,

@@ -1,0 +1,3 @@
+# Taiyin's native runtime is process-wide. Runtime lifecycle tests must not
+# mutate EOP, catalog, lunar-limb, or cache state alongside other test suites.
+concurrency: 1
