@@ -259,7 +259,9 @@ final observedSpica = context.stars.observedAtUt1(
 `context.stars` exposes single and batch position routes for TDB, TT, UT1, and
 explicit Delta-T. Position batches retain one diagnostic per key, including
 partial failures. Observed-star batches throw if any star fails because the
-native C ABI does not return partial observed values.
+native C ABI does not return partial observed values. Failed position-batch
+entries contain NaN coordinates and rates. Batch exceptions expose every
+available native failure through `TaiyinException.diagnostics`.
 
 This package requires an ABI-1 native library that reports
 `TaiyinCapability.splitTime` and exposes the late ABI-1 runtime and star

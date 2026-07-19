@@ -111,6 +111,11 @@ void main() {
                   (error) => error.diagnostic?.targetId,
                   'failed target',
                   TaiyinBody.mars.id,
+                )
+                .having(
+                  (error) => error.diagnostics,
+                  'all native batch diagnostics',
+                  hasLength(2),
                 ),
           ),
         );

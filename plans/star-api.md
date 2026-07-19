@@ -30,6 +30,8 @@ Codex review on PR #5.
 - [x] Cover TSF1 loading and aliases.
 - [x] Compare batch output against matching single calculations at `1e-15`.
 - [x] Cover partial position failures and all-or-nothing observed failures.
+- [x] Normalize failed batch positions to NaN and preserve all batch failure
+  diagnostics.
 - [x] Cover topocentric horizontal observed output and use after close.
 - [x] Make worker-isolate setup/calculation failures complete the test future.
 - [x] Document catalog ownership, concurrency boundaries, and public examples.

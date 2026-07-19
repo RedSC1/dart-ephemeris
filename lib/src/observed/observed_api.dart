@@ -9,7 +9,11 @@ typedef _ObservedCalculation =
       Pointer<taiyin_ephemeris_diagnostic> diagnostics,
     );
 typedef _ObservedStatusChecker =
-    void Function(int status, TaiyinEphemerisDiagnostic? diagnostic);
+    void Function(
+      int status,
+      TaiyinEphemerisDiagnostic? diagnostic,
+      List<TaiyinEphemerisDiagnostic> diagnostics,
+    );
 
 /// Apparent and observed positions for major solar-system bodies.
 ///
@@ -159,11 +163,15 @@ final class TaiyinObservedApi {
           for (var index = 0; index < bodies.length; index++)
             _readObservedDiagnostic(diagnostics[index]),
         ];
-        final diagnostic = mapped.firstWhere(
-          (value) => value.status != 0,
-          orElse: () => mapped.first,
+        final failures = [
+          for (final diagnostic in mapped)
+            if (diagnostic.status != 0) diagnostic,
+        ];
+        _checkStatus(
+          status,
+          failures.firstOrNull ?? mapped.first,
+          failures.isEmpty ? mapped : failures,
         );
-        _checkStatus(status, diagnostic);
       }
 
       return List.unmodifiable([

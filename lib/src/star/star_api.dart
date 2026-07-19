@@ -16,7 +16,11 @@ typedef _BatchStarPositionCalculation =
       Pointer<taiyin_ephemeris_diagnostic> diagnostics,
     );
 typedef _StarStatusChecker =
-    void Function(int status, TaiyinEphemerisDiagnostic? diagnostic);
+    void Function(
+      int status,
+      TaiyinEphemerisDiagnostic? diagnostic,
+      List<TaiyinEphemerisDiagnostic> diagnostics,
+    );
 
 /// Process-wide fixed-star catalog management.
 ///
@@ -80,6 +84,9 @@ final class TaiyinStarCatalog {
   int get count => _bindings.taiyin_star_catalog_count();
 
   /// Looks up a star's visual magnitude using its ID, name, or alias.
+  ///
+  /// Throws [TaiyinException] when no loaded catalog contains a finite
+  /// magnitude for [starKey].
   double magnitudeOf(String starKey) {
     _requireStarKey(starKey);
     return using((arena) {
@@ -332,7 +339,7 @@ final class TaiyinStarApi {
       final mappedDiagnostic = _observedMapper._readObservedDiagnostic(
         diagnostic.ref,
       );
-      _checkStatus(status, mappedDiagnostic);
+      _checkStatus(status, mappedDiagnostic, const []);
       return _readObservedStarPosition(output.ref, starKey, frozenFlags);
     });
   }
@@ -373,13 +380,17 @@ final class TaiyinStarApi {
           for (var index = 0; index < starKeys.length; index++)
             _observedMapper._readObservedDiagnostic(diagnostics[index]),
         ];
-        final diagnostic = mapped.firstWhere(
-          (value) => value.status != 0,
-          orElse: () => mapped.first,
+        final failures = [
+          for (final diagnostic in mapped)
+            if (diagnostic.status != 0) diagnostic,
+        ];
+        _checkStatus(
+          status,
+          failures.firstOrNull ?? mapped.first,
+          failures.isEmpty ? mapped : failures,
         );
-        _checkStatus(status, diagnostic);
       }
-      return List.unmodifiable([
+      final results = List<TaiyinObservedStarPosition>.unmodifiable([
         for (var index = 0; index < starKeys.length; index++)
           _readObservedStarPosition(
             output[index],
@@ -387,6 +398,19 @@ final class TaiyinStarApi {
             frozenFlags,
           ),
       ]);
+      final inconsistent = [
+        for (final result in results)
+          if (result.status != 0 || result.apparent.status != 0) result,
+      ];
+      if (inconsistent.isNotEmpty) {
+        final first = inconsistent.first;
+        final status = first.status != 0 ? first.status : first.apparent.status;
+        final diagnostics = [
+          for (final result in inconsistent) result.diagnostic,
+        ];
+        _checkStatus(status, first.diagnostic, diagnostics);
+      }
+      return results;
     });
   }
 
@@ -407,7 +431,7 @@ final class TaiyinStarApi {
       final mappedDiagnostic = _observedMapper._readObservedDiagnostic(
         diagnostic.ref,
       );
-      _checkStatus(status, mappedDiagnostic);
+      _checkStatus(status, mappedDiagnostic, const []);
       return TaiyinEphemerisResult(
         value: TaiyinStarPosition(
           starKey: starKey,
@@ -442,28 +466,35 @@ final class TaiyinStarApi {
         output,
         diagnostics,
       );
-      final results =
-          List<TaiyinEphemerisResult<TaiyinStarPosition>>.unmodifiable([
-            for (var starIndex = 0; starIndex < starKeys.length; starIndex++)
-              TaiyinEphemerisResult(
-                value: TaiyinStarPosition(
-                  starKey: starKeys[starIndex],
-                  values: [
-                    for (var valueIndex = 0; valueIndex < 6; valueIndex++)
-                      output[starIndex * 6 + valueIndex],
-                  ],
-                  flags: frozenFlags,
-                ),
-                diagnostic: _observedMapper._readObservedDiagnostic(
-                  diagnostics[starIndex],
-                ),
-              ),
-          ]);
+      final entries = [
+        for (var starIndex = 0; starIndex < starKeys.length; starIndex++)
+          (
+            diagnostic: _observedMapper._readObservedDiagnostic(
+              diagnostics[starIndex],
+            ),
+            starIndex: starIndex,
+          ),
+      ];
       if (status != 0 &&
-          !results.any((result) => result.diagnostic.status != 0)) {
-        _checkStatus(status, null);
+          !entries.any((entry) => entry.diagnostic.status == status)) {
+        _checkStatus(status, null, const []);
       }
-      return results;
+      return List.unmodifiable([
+        for (final entry in entries)
+          TaiyinEphemerisResult(
+            value: TaiyinStarPosition(
+              starKey: starKeys[entry.starIndex],
+              values: entry.diagnostic.status == 0
+                  ? [
+                      for (var valueIndex = 0; valueIndex < 6; valueIndex++)
+                        output[entry.starIndex * 6 + valueIndex],
+                    ]
+                  : List.filled(6, double.nan),
+              flags: frozenFlags,
+            ),
+            diagnostic: entry.diagnostic,
+          ),
+      ]);
     });
   }
 

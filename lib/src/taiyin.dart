@@ -68,7 +68,15 @@ enum TaiyinStatusCategory {
 
 /// A non-success status returned by the Taiyin C ABI.
 final class TaiyinException implements Exception {
-  TaiyinException(this.status, this.name, this.message, {this.diagnostic});
+  TaiyinException(
+    this.status,
+    this.name,
+    this.message, {
+    this.diagnostic,
+    Iterable<TaiyinEphemerisDiagnostic> diagnostics = const [],
+  }) : diagnostics = List.unmodifiable(
+         diagnostics.isEmpty && diagnostic != null ? [diagnostic] : diagnostics,
+       );
 
   final int status;
   final String name;
@@ -76,6 +84,12 @@ final class TaiyinException implements Exception {
 
   /// Native route and coverage details for a failed ephemeris calculation.
   final TaiyinEphemerisDiagnostic? diagnostic;
+
+  /// Every native diagnostic available for the failed operation.
+  ///
+  /// Single-target failures contain [diagnostic]. Batch failures may contain
+  /// several entries while [diagnostic] remains the primary first failure.
+  final List<TaiyinEphemerisDiagnostic> diagnostics;
 
   @override
   String toString() => 'TaiyinException($status, $name): $message';
@@ -123,15 +137,23 @@ final class TaiyinContext implements Finalizable {
         _bindings,
         _context,
         _ensureOpen,
-        (status, diagnostic) =>
-            _checkStatus(_bindings, status, diagnostic: diagnostic),
+        (status, diagnostic, diagnostics) => _checkStatus(
+          _bindings,
+          status,
+          diagnostic: diagnostic,
+          diagnostics: diagnostics,
+        ),
       );
       stars = TaiyinStarApi._(
         _bindings,
         _context,
         _ensureOpen,
-        (status, diagnostic) =>
-            _checkStatus(_bindings, status, diagnostic: diagnostic),
+        (status, diagnostic, diagnostics) => _checkStatus(
+          _bindings,
+          status,
+          diagnostic: diagnostic,
+          diagnostics: diagnostics,
+        ),
         observed,
       );
     } catch (_) {
@@ -284,12 +306,14 @@ Never _throwStatus(
   TaiyinBindings bindings,
   int status, {
   TaiyinEphemerisDiagnostic? diagnostic,
+  Iterable<TaiyinEphemerisDiagnostic> diagnostics = const [],
 }) {
   throw TaiyinException(
     status,
     _readNativeString(bindings.taiyin_status_name(status)),
     _readNativeString(bindings.taiyin_status_message(status)),
     diagnostic: diagnostic,
+    diagnostics: diagnostics,
   );
 }
 
@@ -297,9 +321,15 @@ void _checkStatus(
   TaiyinBindings bindings,
   int status, {
   TaiyinEphemerisDiagnostic? diagnostic,
+  Iterable<TaiyinEphemerisDiagnostic> diagnostics = const [],
 }) {
   if (status != 0) {
-    _throwStatus(bindings, status, diagnostic: diagnostic);
+    _throwStatus(
+      bindings,
+      status,
+      diagnostic: diagnostic,
+      diagnostics: diagnostics,
+    );
   }
 }
 

@@ -51,6 +51,10 @@ void main() {
         expect(runtime.starCatalog.count, 1);
         expect(runtime.starCatalog.magnitudeOf('spica').isFinite, isTrue);
         expect(runtime.starCatalog.magnitudeOf('Spica').isFinite, isTrue);
+        expect(
+          () => runtime.starCatalog.magnitudeOf('missing-star'),
+          throwsA(isA<TaiyinException>()),
+        );
 
         runtime.starCatalog.clear();
         expect(runtime.starCatalog.count, 0);
@@ -172,6 +176,7 @@ star.0.magnitude=5.5
             isTrue,
           );
           expect(batch[1].diagnostic.status, isNot(0));
+          expect(batch[1].value.values.every((value) => value.isNaN), isTrue);
         },
       );
 
@@ -220,7 +225,6 @@ star.0.magnitude=5.5
             heightMeters: 50,
           ),
         );
-
         final result = context.stars.observedAtUt1(
           'spica',
           ut1,
@@ -252,6 +256,27 @@ star.0.magnitude=5.5
               'status',
               isNot(0),
             ),
+          ),
+        );
+        expect(
+          () => context.stars.observedBatchAtUt1(const [
+            'missing-star-one',
+            'missing-star-two',
+          ], ut1),
+          throwsA(
+            isA<TaiyinException>()
+                .having(
+                  (error) => error.diagnostics,
+                  'all diagnostics',
+                  hasLength(2),
+                )
+                .having(
+                  (error) => error.diagnostics.every(
+                    (diagnostic) => diagnostic.status != 0,
+                  ),
+                  'all diagnostic statuses',
+                  isTrue,
+                ),
           ),
         );
         expect(
