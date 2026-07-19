@@ -31,6 +31,10 @@ final class TaiyinRuntimeOptions {
 /// Open this object before creating user [TaiyinContext] instances.
 /// Source-path, EOP-table, and lunar-limb mutations are setup-time operations;
 /// finish them before starting concurrent calculations.
+///
+/// Every [open] or [fromDynamicLibrary] call currently reinitializes the
+/// process-wide native runtime. Call one of them once in the application's main
+/// isolate. Worker isolates must use [TaiyinContext.attach] instead.
 final class Taiyin {
   Taiyin._(this._library, this._bindings, this._contextFinalizer);
 
@@ -54,9 +58,9 @@ final class Taiyin {
     DynamicLibrary library, {
     TaiyinRuntimeOptions options = const TaiyinRuntimeOptions(),
   }) {
-    final bindings = _validatedBindings(library);
-    _initializeRuntime(bindings, options);
-    return Taiyin._(library, bindings, _contextFinalizerFor(library));
+    final state = _nativeLibraryStateFor(library);
+    _initializeRuntime(state.bindings, options);
+    return Taiyin._(library, state.bindings, state.contextFinalizer);
   }
 
   /// Creates a new independent user calculation context.
@@ -124,6 +128,9 @@ final class Taiyin {
   }
 
   /// Loads an Earth-orientation table from [path], replacing the current one.
+  ///
+  /// This is a setup-time operation and must not overlap calculations in any
+  /// isolate.
   void loadEopTable(String path) {
     _requirePath(path, 'path');
     using((arena) {
@@ -136,11 +143,17 @@ final class Taiyin {
   }
 
   /// Installs Taiyin's built-in Earth-orientation table.
+  ///
+  /// This is a setup-time operation and must not overlap calculations in any
+  /// isolate.
   void loadBuiltinEopTable() {
     _checkStatus(_bindings, _bindings.taiyin_runtime_load_builtin_eop_table());
   }
 
   /// Removes the global Earth-orientation table.
+  ///
+  /// This is a setup-time operation and must not overlap calculations in any
+  /// isolate.
   void clearEopTable() {
     _bindings.taiyin_runtime_clear_eop_table();
   }
@@ -149,6 +162,9 @@ final class Taiyin {
   bool get hasEopTable => _bindings.taiyin_runtime_has_eop_table() != 0;
 
   /// Loads a lunar-limb model from [path], replacing the current one.
+  ///
+  /// This is a setup-time operation and must not overlap calculations in any
+  /// isolate. The native runtime releases the previous model immediately.
   void loadLunarLimbModel(String path) {
     _requirePath(path, 'path');
     using((arena) {
@@ -161,6 +177,9 @@ final class Taiyin {
   }
 
   /// Removes the global lunar-limb model.
+  ///
+  /// This is a setup-time operation and must not overlap calculations in any
+  /// isolate. The native runtime releases the current model immediately.
   void clearLunarLimbModel() {
     _bindings.taiyin_runtime_clear_lunar_limb_model();
   }

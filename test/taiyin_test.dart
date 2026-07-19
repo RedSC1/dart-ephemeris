@@ -9,31 +9,34 @@ import 'package:test/test.dart';
 
 Future<List<double>> _calculateInWorker(
   String libraryPath,
-  int dayOffset,
+  int workerIndex,
 ) async {
   final receivePort = ReceivePort();
   await Isolate.spawn(_workerMain, (
     receivePort.sendPort,
     libraryPath,
-    dayOffset,
+    workerIndex,
   ));
   return await receivePort.first as List<double>;
 }
 
 void _workerMain((SendPort, String, int) message) {
-  final (sendPort, libraryPath, dayOffset) = message;
+  final (sendPort, libraryPath, workerIndex) = message;
   final context = TaiyinContext.attach(libraryPath: libraryPath);
   try {
-    context.configuration.setRouteRule(TaiyinRouteRule.moshier);
-    sendPort.send(
-      context
-          .positionTt(
-            TaiyinBody.moon,
-            JulianDate<TtScale>.fromDouble(2460409.0 + dayOffset),
-            flags: {TaiyinPositionFlag.xyz, TaiyinPositionFlag.speed},
-          )
-          .values,
+    context.configuration.setRouteRule(
+      workerIndex.isEven ? TaiyinRouteRule.moshier : TaiyinRouteRule.opm2,
     );
+    final result = context.position.atTt(
+      TaiyinBody.mercury,
+      JulianDate<TtScale>.fromDouble(2460409.0),
+      flags: {
+        TaiyinPositionFlag.xyz,
+        TaiyinPositionFlag.speed,
+        TaiyinPositionFlag.truePosition,
+      },
+    );
+    sendPort.send(result.value.values);
   } finally {
     context.close();
   }
@@ -44,6 +47,7 @@ void main() {
       Platform.environment['TAIYIN_TEST_LIBRARY'] ??
       '../taiyin-ephemeris/build-c-api-release/libtaiyin.dylib';
   final nativeLibraryAvailable = File(libraryPath).existsSync();
+  final nativeDataPath = '../taiyin-ephemeris/data';
 
   group(
     'Taiyin native integration',
@@ -158,6 +162,7 @@ void main() {
       });
 
       test('worker isolates create independent contexts', () async {
+        runtime.addSourcePath(nativeDataPath);
         final results = await Future.wait([
           for (var worker = 0; worker < 4; worker++)
             _calculateInWorker(libraryPath, worker),
@@ -167,6 +172,28 @@ void main() {
         for (final values in results) {
           expect(values, hasLength(6));
           expect(values.every((value) => value.isFinite), isTrue);
+        }
+        expect(results[0], results[2]);
+        expect(results[1], results[3]);
+        expect(results[0], isNot(results[1]));
+      });
+
+      test('attaches through a preloaded dynamic library', () {
+        final attached = TaiyinContext.attachToDynamicLibrary(
+          DynamicLibrary.open(libraryPath),
+        );
+        try {
+          expect(
+            attached
+                .positionTt(
+                  TaiyinBody.moon,
+                  JulianDate<TtScale>.fromDouble(2460409.0),
+                )
+                .values,
+            everyElement(isA<double>()),
+          );
+        } finally {
+          attached.close();
         }
       });
 

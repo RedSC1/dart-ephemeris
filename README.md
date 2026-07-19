@@ -75,9 +75,11 @@ print(taiyin.cacheEntryCount);
 ```
 
 `Taiyin.open()` hides the native runtime initialization step; ordinary callers
-only open the engine. `taiyin.createContext()` creates an independent
-`TaiyinContext` for one user or calculation policy. Closing a context does not
-reset process-wide runtime data.
+only open the engine. Call it once in the application's main isolate: every
+current `open()` call reinitializes the process-wide runtime. Worker isolates
+must use `TaiyinContext.attach()` instead. `taiyin.createContext()` creates an
+independent `TaiyinContext` for one user or calculation policy. Closing a
+context does not reset process-wide runtime data.
 
 ## Time values
 
@@ -219,10 +221,11 @@ This package requires an ABI-1 native library that reports
 `Taiyin.open` or `TaiyinContext.attach` with a clear compatibility error instead
 of failing later during a lazy symbol lookup.
 
-The native engine is process-wide, so normally call `Taiyin.open` once. Finish
-global configuration before starting concurrent calculations. Create separate
-contexts with `taiyin.createContext()` or `context.clone()`; every context owns
-and releases its native user state independently.
+The native engine is process-wide, so call `Taiyin.open` once. Calling it again
+currently replaces the global catalog, cache, EOP table, and lunar-limb model.
+Finish global configuration before starting concurrent calculations. Create
+separate contexts with `taiyin.createContext()` or `context.clone()`; every
+context owns and releases its native user state independently.
 
 A worker isolate must not receive a `TaiyinContext` through a `SendPort`.
 Instead, send plain Dart inputs and let the worker attach a new context to the
