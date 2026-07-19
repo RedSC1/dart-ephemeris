@@ -73,9 +73,39 @@ functions:
     - taiyin_context_create
     - taiyin_context_clone
     - taiyin_context_destroy
+    - taiyin_observer_location_init
+    - taiyin_atmosphere_init
+    - taiyin_astro_model_config_init
+    - taiyin_apparent_config_init
+    - taiyin_apparent_deflector_init
+    - taiyin_context_reset
+    - taiyin_context_set_observer_location
+    - taiyin_context_clear_observer_location
+    - taiyin_context_set_atmosphere
+    - taiyin_context_set_atmosphere_pressure_temperature
+    - taiyin_context_set_standard_atmosphere
+    - taiyin_context_set_atmosphere_policy
+    - taiyin_context_set_meteorological_range_km
+    - taiyin_context_set_geocentric_observer
+    - taiyin_context_set_topocentric_observer_offset
+    - taiyin_context_set_simple_topocentric_observer
+    - taiyin_context_set_precise_topocentric_observer
+    - taiyin_context_set_route_rule
     - taiyin_context_set_time_scale_policy
     - taiyin_context_set_delta_t_model
     - taiyin_context_set_tdb_model
+    - taiyin_context_set_astro_models
+    - taiyin_context_set_apparent_config
+    - taiyin_context_set_celestial_pole_offset
+    - taiyin_context_set_refraction_model
+    - taiyin_context_set_heliacal_visibility_model
+    - taiyin_context_use_solar_deflector
+    - taiyin_context_clear_deflectors
+    - taiyin_context_set_deflectors
+    - taiyin_context_set_light_time_iteration
+    - taiyin_context_enable_shapiro_delay
+    - taiyin_context_disable_shapiro_delay
+    - taiyin_context_set_eclipse_models
     - taiyin_calc_position_tt
     - taiyin_calc_position_ut
     - taiyin_calc_position_tdb
@@ -104,6 +134,11 @@ structs:
     - taiyin_estimated_time_scales
     - taiyin_split_estimated_time_scales
     - taiyin_runtime_config
+    - taiyin_observer_location
+    - taiyin_atmosphere
+    - taiyin_astro_model_config
+    - taiyin_apparent_config
+    - taiyin_apparent_deflector
 enums:
   as-int:
     include:

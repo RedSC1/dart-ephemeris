@@ -14,11 +14,18 @@ Dart equivalent.
 - `c_api_cpp`: ABI version, exact library version, typed capabilities, and
   initialized calendar behavior are covered by `test/taiyin_test.dart`.
 - `c_api` and `c_api_static`: metadata, runtime/context lifetime, calendar,
-  time-scale, and position portions are covered. `position_api_test.dart`
-  exercises single, batch, and Cartesian-state entry points across TDB, TT,
-  UT1, explicit Delta-T, and UTC routes. The remaining public modules move over
-  as their wrappers are added. Static-vs-shared linkage is a native build
-  concern and shares the same Dart behavior tests.
+  time-scale, context configuration, and position portions are covered.
+  `context_api_test.dart` exercises observer, atmosphere, astronomy/apparent
+  models, topocentric modes, deflectors, clone/reset ownership, and invalid
+  inputs. `position_api_test.dart` exercises single, batch, and
+  Cartesian-state entry points across TDB, TT, UT1, explicit Delta-T, and UTC
+  routes. The remaining public modules move over as their wrappers are added.
+  Static-vs-shared linkage is a native build concern and shares the same Dart
+  behavior tests.
+- `native_apparent_runtime` and `apparent_position`: public context
+  configuration, model selection, observer-offset validation, and owned
+  deflector behavior are covered. Calculation-specific apparent-position
+  oracles remain pending until the observed-position wrapper is added.
 - `time_angle_interpolation`: all time behavior reachable through the C ABI is
   covered by `time_angle_interpolation_test.dart`, including the original
   Delta-T oracle table. Angle and interpolation helpers are C++ APIs and are
@@ -34,8 +41,7 @@ These suites map to current or planned C ABI modules:
   `pure_functions_full`
 - `star_file`, `tsc1_catalog_discovery`, `celestial_body_registry`,
   `body_registry`, `dispatch_models`
-- `native_apparent_runtime`, `apparent_position`,
-  `apparent_position_oracles`, `apparent_self_skip`
+- `apparent_position_oracles`, `apparent_self_skip`
 - `event_search`, `orbital_events`, `solar_time`, `phenomena`
 - `visibility_search`, `solar_visibility_public`, `moon_visibility_public`,
   `star_visibility_public`, `heliacal_visibility`, `occultation_search`,

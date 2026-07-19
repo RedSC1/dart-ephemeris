@@ -135,6 +135,77 @@ class TaiyinBindings {
   late final _taiyin_status_category_of = _taiyin_status_category_ofPtr
       .asFunction<int Function(int)>();
 
+  void taiyin_observer_location_init(
+    ffi.Pointer<taiyin_observer_location> location,
+  ) {
+    return _taiyin_observer_location_init(location);
+  }
+
+  late final _taiyin_observer_location_initPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<taiyin_observer_location>)
+        >
+      >('taiyin_observer_location_init');
+  late final _taiyin_observer_location_init = _taiyin_observer_location_initPtr
+      .asFunction<void Function(ffi.Pointer<taiyin_observer_location>)>();
+
+  void taiyin_atmosphere_init(ffi.Pointer<taiyin_atmosphere> atmosphere) {
+    return _taiyin_atmosphere_init(atmosphere);
+  }
+
+  late final _taiyin_atmosphere_initPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Void Function(ffi.Pointer<taiyin_atmosphere>)>
+      >('taiyin_atmosphere_init');
+  late final _taiyin_atmosphere_init = _taiyin_atmosphere_initPtr
+      .asFunction<void Function(ffi.Pointer<taiyin_atmosphere>)>();
+
+  void taiyin_astro_model_config_init(
+    ffi.Pointer<taiyin_astro_model_config> config,
+  ) {
+    return _taiyin_astro_model_config_init(config);
+  }
+
+  late final _taiyin_astro_model_config_initPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<taiyin_astro_model_config>)
+        >
+      >('taiyin_astro_model_config_init');
+  late final _taiyin_astro_model_config_init =
+      _taiyin_astro_model_config_initPtr
+          .asFunction<void Function(ffi.Pointer<taiyin_astro_model_config>)>();
+
+  void taiyin_apparent_config_init(ffi.Pointer<taiyin_apparent_config> config) {
+    return _taiyin_apparent_config_init(config);
+  }
+
+  late final _taiyin_apparent_config_initPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<taiyin_apparent_config>)
+        >
+      >('taiyin_apparent_config_init');
+  late final _taiyin_apparent_config_init = _taiyin_apparent_config_initPtr
+      .asFunction<void Function(ffi.Pointer<taiyin_apparent_config>)>();
+
+  void taiyin_apparent_deflector_init(
+    ffi.Pointer<taiyin_apparent_deflector> deflector,
+  ) {
+    return _taiyin_apparent_deflector_init(deflector);
+  }
+
+  late final _taiyin_apparent_deflector_initPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<taiyin_apparent_deflector>)
+        >
+      >('taiyin_apparent_deflector_init');
+  late final _taiyin_apparent_deflector_init =
+      _taiyin_apparent_deflector_initPtr
+          .asFunction<void Function(ffi.Pointer<taiyin_apparent_deflector>)>();
+
   int taiyin_context_create(
     ffi.Pointer<ffi.Pointer<taiyin_context>> out_context,
   ) {
@@ -184,6 +255,298 @@ class TaiyinBindings {
       >('taiyin_context_destroy');
   late final _taiyin_context_destroy = _taiyin_context_destroyPtr
       .asFunction<void Function(ffi.Pointer<taiyin_context>)>();
+
+  int taiyin_context_reset(ffi.Pointer<taiyin_context> context) {
+    return _taiyin_context_reset(context);
+  }
+
+  late final _taiyin_context_resetPtr =
+      _lookup<
+        ffi.NativeFunction<taiyin_status Function(ffi.Pointer<taiyin_context>)>
+      >('taiyin_context_reset');
+  late final _taiyin_context_reset = _taiyin_context_resetPtr
+      .asFunction<int Function(ffi.Pointer<taiyin_context>)>();
+
+  int taiyin_context_set_observer_location(
+    ffi.Pointer<taiyin_context> context,
+    ffi.Pointer<taiyin_observer_location> location,
+  ) {
+    return _taiyin_context_set_observer_location(context, location);
+  }
+
+  late final _taiyin_context_set_observer_locationPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Pointer<taiyin_observer_location>,
+          )
+        >
+      >('taiyin_context_set_observer_location');
+  late final _taiyin_context_set_observer_location =
+      _taiyin_context_set_observer_locationPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              ffi.Pointer<taiyin_observer_location>,
+            )
+          >();
+
+  int taiyin_context_clear_observer_location(
+    ffi.Pointer<taiyin_context> context,
+  ) {
+    return _taiyin_context_clear_observer_location(context);
+  }
+
+  late final _taiyin_context_clear_observer_locationPtr =
+      _lookup<
+        ffi.NativeFunction<taiyin_status Function(ffi.Pointer<taiyin_context>)>
+      >('taiyin_context_clear_observer_location');
+  late final _taiyin_context_clear_observer_location =
+      _taiyin_context_clear_observer_locationPtr
+          .asFunction<int Function(ffi.Pointer<taiyin_context>)>();
+
+  int taiyin_context_set_atmosphere(
+    ffi.Pointer<taiyin_context> context,
+    ffi.Pointer<taiyin_atmosphere> atmosphere,
+  ) {
+    return _taiyin_context_set_atmosphere(context, atmosphere);
+  }
+
+  late final _taiyin_context_set_atmospherePtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Pointer<taiyin_atmosphere>,
+          )
+        >
+      >('taiyin_context_set_atmosphere');
+  late final _taiyin_context_set_atmosphere = _taiyin_context_set_atmospherePtr
+      .asFunction<
+        int Function(
+          ffi.Pointer<taiyin_context>,
+          ffi.Pointer<taiyin_atmosphere>,
+        )
+      >();
+
+  int taiyin_context_set_atmosphere_pressure_temperature(
+    ffi.Pointer<taiyin_context> context,
+    double pressure_mbar,
+    double temperature_celsius,
+  ) {
+    return _taiyin_context_set_atmosphere_pressure_temperature(
+      context,
+      pressure_mbar,
+      temperature_celsius,
+    );
+  }
+
+  late final _taiyin_context_set_atmosphere_pressure_temperaturePtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Double,
+            ffi.Double,
+          )
+        >
+      >('taiyin_context_set_atmosphere_pressure_temperature');
+  late final _taiyin_context_set_atmosphere_pressure_temperature =
+      _taiyin_context_set_atmosphere_pressure_temperaturePtr
+          .asFunction<
+            int Function(ffi.Pointer<taiyin_context>, double, double)
+          >();
+
+  int taiyin_context_set_standard_atmosphere(
+    ffi.Pointer<taiyin_context> context,
+  ) {
+    return _taiyin_context_set_standard_atmosphere(context);
+  }
+
+  late final _taiyin_context_set_standard_atmospherePtr =
+      _lookup<
+        ffi.NativeFunction<taiyin_status Function(ffi.Pointer<taiyin_context>)>
+      >('taiyin_context_set_standard_atmosphere');
+  late final _taiyin_context_set_standard_atmosphere =
+      _taiyin_context_set_standard_atmospherePtr
+          .asFunction<int Function(ffi.Pointer<taiyin_context>)>();
+
+  int taiyin_context_set_atmosphere_policy(
+    ffi.Pointer<taiyin_context> context,
+    int flags,
+  ) {
+    return _taiyin_context_set_atmosphere_policy(context, flags);
+  }
+
+  late final _taiyin_context_set_atmosphere_policyPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(ffi.Pointer<taiyin_context>, ffi.Uint32)
+        >
+      >('taiyin_context_set_atmosphere_policy');
+  late final _taiyin_context_set_atmosphere_policy =
+      _taiyin_context_set_atmosphere_policyPtr
+          .asFunction<int Function(ffi.Pointer<taiyin_context>, int)>();
+
+  int taiyin_context_set_meteorological_range_km(
+    ffi.Pointer<taiyin_context> context,
+    double range_km,
+  ) {
+    return _taiyin_context_set_meteorological_range_km(context, range_km);
+  }
+
+  late final _taiyin_context_set_meteorological_range_kmPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(ffi.Pointer<taiyin_context>, ffi.Double)
+        >
+      >('taiyin_context_set_meteorological_range_km');
+  late final _taiyin_context_set_meteorological_range_km =
+      _taiyin_context_set_meteorological_range_kmPtr
+          .asFunction<int Function(ffi.Pointer<taiyin_context>, double)>();
+
+  int taiyin_context_set_geocentric_observer(
+    ffi.Pointer<taiyin_context> context,
+    int observer_id,
+    int center_id,
+  ) {
+    return _taiyin_context_set_geocentric_observer(
+      context,
+      observer_id,
+      center_id,
+    );
+  }
+
+  late final _taiyin_context_set_geocentric_observerPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Int32,
+            ffi.Int32,
+          )
+        >
+      >('taiyin_context_set_geocentric_observer');
+  late final _taiyin_context_set_geocentric_observer =
+      _taiyin_context_set_geocentric_observerPtr
+          .asFunction<int Function(ffi.Pointer<taiyin_context>, int, int)>();
+
+  int taiyin_context_set_topocentric_observer_offset(
+    ffi.Pointer<taiyin_context> context,
+    ffi.Pointer<taiyin_cartesian_state> observer_offset,
+  ) {
+    return _taiyin_context_set_topocentric_observer_offset(
+      context,
+      observer_offset,
+    );
+  }
+
+  late final _taiyin_context_set_topocentric_observer_offsetPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Pointer<taiyin_cartesian_state>,
+          )
+        >
+      >('taiyin_context_set_topocentric_observer_offset');
+  late final _taiyin_context_set_topocentric_observer_offset =
+      _taiyin_context_set_topocentric_observer_offsetPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              ffi.Pointer<taiyin_cartesian_state>,
+            )
+          >();
+
+  int taiyin_context_set_simple_topocentric_observer(
+    ffi.Pointer<taiyin_context> context,
+    ffi.Pointer<taiyin_observer_location> location,
+    double jd_ut1,
+    double jd_tt,
+  ) {
+    return _taiyin_context_set_simple_topocentric_observer(
+      context,
+      location,
+      jd_ut1,
+      jd_tt,
+    );
+  }
+
+  late final _taiyin_context_set_simple_topocentric_observerPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Pointer<taiyin_observer_location>,
+            ffi.Double,
+            ffi.Double,
+          )
+        >
+      >('taiyin_context_set_simple_topocentric_observer');
+  late final _taiyin_context_set_simple_topocentric_observer =
+      _taiyin_context_set_simple_topocentric_observerPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              ffi.Pointer<taiyin_observer_location>,
+              double,
+              double,
+            )
+          >();
+
+  int taiyin_context_set_precise_topocentric_observer(
+    ffi.Pointer<taiyin_context> context,
+    ffi.Pointer<taiyin_observer_location> location,
+    double jd_utc,
+    double jd_tt,
+  ) {
+    return _taiyin_context_set_precise_topocentric_observer(
+      context,
+      location,
+      jd_utc,
+      jd_tt,
+    );
+  }
+
+  late final _taiyin_context_set_precise_topocentric_observerPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Pointer<taiyin_observer_location>,
+            ffi.Double,
+            ffi.Double,
+          )
+        >
+      >('taiyin_context_set_precise_topocentric_observer');
+  late final _taiyin_context_set_precise_topocentric_observer =
+      _taiyin_context_set_precise_topocentric_observerPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              ffi.Pointer<taiyin_observer_location>,
+              double,
+              double,
+            )
+          >();
+
+  int taiyin_context_set_route_rule(
+    ffi.Pointer<taiyin_context> context,
+    int route_rule_id,
+  ) {
+    return _taiyin_context_set_route_rule(context, route_rule_id);
+  }
+
+  late final _taiyin_context_set_route_rulePtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(ffi.Pointer<taiyin_context>, ffi.Uint64)
+        >
+      >('taiyin_context_set_route_rule');
+  late final _taiyin_context_set_route_rule = _taiyin_context_set_route_rulePtr
+      .asFunction<int Function(ffi.Pointer<taiyin_context>, int)>();
 
   int taiyin_context_set_time_scale_policy(
     ffi.Pointer<taiyin_context> context,
@@ -243,6 +606,275 @@ class TaiyinBindings {
       >('taiyin_context_set_tdb_model');
   late final _taiyin_context_set_tdb_model = _taiyin_context_set_tdb_modelPtr
       .asFunction<int Function(ffi.Pointer<taiyin_context>, int)>();
+
+  int taiyin_context_set_astro_models(
+    ffi.Pointer<taiyin_context> context,
+    ffi.Pointer<taiyin_astro_model_config> config,
+  ) {
+    return _taiyin_context_set_astro_models(context, config);
+  }
+
+  late final _taiyin_context_set_astro_modelsPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Pointer<taiyin_astro_model_config>,
+          )
+        >
+      >('taiyin_context_set_astro_models');
+  late final _taiyin_context_set_astro_models =
+      _taiyin_context_set_astro_modelsPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              ffi.Pointer<taiyin_astro_model_config>,
+            )
+          >();
+
+  int taiyin_context_set_apparent_config(
+    ffi.Pointer<taiyin_context> context,
+    ffi.Pointer<taiyin_apparent_config> config,
+  ) {
+    return _taiyin_context_set_apparent_config(context, config);
+  }
+
+  late final _taiyin_context_set_apparent_configPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Pointer<taiyin_apparent_config>,
+          )
+        >
+      >('taiyin_context_set_apparent_config');
+  late final _taiyin_context_set_apparent_config =
+      _taiyin_context_set_apparent_configPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              ffi.Pointer<taiyin_apparent_config>,
+            )
+          >();
+
+  int taiyin_context_set_celestial_pole_offset(
+    ffi.Pointer<taiyin_context> context,
+    double dx_rad,
+    double dy_rad,
+    double dx_rate_rad_per_day,
+    double dy_rate_rad_per_day,
+  ) {
+    return _taiyin_context_set_celestial_pole_offset(
+      context,
+      dx_rad,
+      dy_rad,
+      dx_rate_rad_per_day,
+      dy_rate_rad_per_day,
+    );
+  }
+
+  late final _taiyin_context_set_celestial_pole_offsetPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Double,
+            ffi.Double,
+            ffi.Double,
+            ffi.Double,
+          )
+        >
+      >('taiyin_context_set_celestial_pole_offset');
+  late final _taiyin_context_set_celestial_pole_offset =
+      _taiyin_context_set_celestial_pole_offsetPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              double,
+              double,
+              double,
+              double,
+            )
+          >();
+
+  int taiyin_context_set_refraction_model(
+    ffi.Pointer<taiyin_context> context,
+    int refraction_model_id,
+  ) {
+    return _taiyin_context_set_refraction_model(context, refraction_model_id);
+  }
+
+  late final _taiyin_context_set_refraction_modelPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(ffi.Pointer<taiyin_context>, ffi.Int32)
+        >
+      >('taiyin_context_set_refraction_model');
+  late final _taiyin_context_set_refraction_model =
+      _taiyin_context_set_refraction_modelPtr
+          .asFunction<int Function(ffi.Pointer<taiyin_context>, int)>();
+
+  int taiyin_context_set_heliacal_visibility_model(
+    ffi.Pointer<taiyin_context> context,
+    int model_id,
+  ) {
+    return _taiyin_context_set_heliacal_visibility_model(context, model_id);
+  }
+
+  late final _taiyin_context_set_heliacal_visibility_modelPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(ffi.Pointer<taiyin_context>, ffi.Int32)
+        >
+      >('taiyin_context_set_heliacal_visibility_model');
+  late final _taiyin_context_set_heliacal_visibility_model =
+      _taiyin_context_set_heliacal_visibility_modelPtr
+          .asFunction<int Function(ffi.Pointer<taiyin_context>, int)>();
+
+  int taiyin_context_use_solar_deflector(ffi.Pointer<taiyin_context> context) {
+    return _taiyin_context_use_solar_deflector(context);
+  }
+
+  late final _taiyin_context_use_solar_deflectorPtr =
+      _lookup<
+        ffi.NativeFunction<taiyin_status Function(ffi.Pointer<taiyin_context>)>
+      >('taiyin_context_use_solar_deflector');
+  late final _taiyin_context_use_solar_deflector =
+      _taiyin_context_use_solar_deflectorPtr
+          .asFunction<int Function(ffi.Pointer<taiyin_context>)>();
+
+  int taiyin_context_clear_deflectors(ffi.Pointer<taiyin_context> context) {
+    return _taiyin_context_clear_deflectors(context);
+  }
+
+  late final _taiyin_context_clear_deflectorsPtr =
+      _lookup<
+        ffi.NativeFunction<taiyin_status Function(ffi.Pointer<taiyin_context>)>
+      >('taiyin_context_clear_deflectors');
+  late final _taiyin_context_clear_deflectors =
+      _taiyin_context_clear_deflectorsPtr
+          .asFunction<int Function(ffi.Pointer<taiyin_context>)>();
+
+  int taiyin_context_set_deflectors(
+    ffi.Pointer<taiyin_context> context,
+    ffi.Pointer<taiyin_apparent_deflector> deflectors,
+    int deflector_count,
+    int solar_deflector_index,
+  ) {
+    return _taiyin_context_set_deflectors(
+      context,
+      deflectors,
+      deflector_count,
+      solar_deflector_index,
+    );
+  }
+
+  late final _taiyin_context_set_deflectorsPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Pointer<taiyin_apparent_deflector>,
+            ffi.Size,
+            ffi.Int32,
+          )
+        >
+      >('taiyin_context_set_deflectors');
+  late final _taiyin_context_set_deflectors = _taiyin_context_set_deflectorsPtr
+      .asFunction<
+        int Function(
+          ffi.Pointer<taiyin_context>,
+          ffi.Pointer<taiyin_apparent_deflector>,
+          int,
+          int,
+        )
+      >();
+
+  int taiyin_context_set_light_time_iteration(
+    ffi.Pointer<taiyin_context> context,
+    int max_iterations,
+    double tolerance_days,
+  ) {
+    return _taiyin_context_set_light_time_iteration(
+      context,
+      max_iterations,
+      tolerance_days,
+    );
+  }
+
+  late final _taiyin_context_set_light_time_iterationPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Int32,
+            ffi.Double,
+          )
+        >
+      >('taiyin_context_set_light_time_iteration');
+  late final _taiyin_context_set_light_time_iteration =
+      _taiyin_context_set_light_time_iterationPtr
+          .asFunction<int Function(ffi.Pointer<taiyin_context>, int, double)>();
+
+  int taiyin_context_enable_shapiro_delay(
+    ffi.Pointer<taiyin_context> context,
+    int shapiro_delay_model_id,
+  ) {
+    return _taiyin_context_enable_shapiro_delay(
+      context,
+      shapiro_delay_model_id,
+    );
+  }
+
+  late final _taiyin_context_enable_shapiro_delayPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(ffi.Pointer<taiyin_context>, ffi.Int32)
+        >
+      >('taiyin_context_enable_shapiro_delay');
+  late final _taiyin_context_enable_shapiro_delay =
+      _taiyin_context_enable_shapiro_delayPtr
+          .asFunction<int Function(ffi.Pointer<taiyin_context>, int)>();
+
+  int taiyin_context_disable_shapiro_delay(
+    ffi.Pointer<taiyin_context> context,
+  ) {
+    return _taiyin_context_disable_shapiro_delay(context);
+  }
+
+  late final _taiyin_context_disable_shapiro_delayPtr =
+      _lookup<
+        ffi.NativeFunction<taiyin_status Function(ffi.Pointer<taiyin_context>)>
+      >('taiyin_context_disable_shapiro_delay');
+  late final _taiyin_context_disable_shapiro_delay =
+      _taiyin_context_disable_shapiro_delayPtr
+          .asFunction<int Function(ffi.Pointer<taiyin_context>)>();
+
+  int taiyin_context_set_eclipse_models(
+    ffi.Pointer<taiyin_context> context,
+    int shadow_model_id,
+    int moon_radius_model_id,
+  ) {
+    return _taiyin_context_set_eclipse_models(
+      context,
+      shadow_model_id,
+      moon_radius_model_id,
+    );
+  }
+
+  late final _taiyin_context_set_eclipse_modelsPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Int32,
+            ffi.Int32,
+          )
+        >
+      >('taiyin_context_set_eclipse_models');
+  late final _taiyin_context_set_eclipse_models =
+      _taiyin_context_set_eclipse_modelsPtr
+          .asFunction<int Function(ffi.Pointer<taiyin_context>, int, int)>();
 
   int taiyin_calc_position_tdb(
     ffi.Pointer<taiyin_context> context,
@@ -2390,6 +3022,103 @@ sealed class taiyin_eclipse_shadow_model_id {
 sealed class taiyin_eclipse_moon_radius_model_id {
   static const TAIYIN_ECLIPSE_MOON_ALMANAC = 0;
   static const TAIYIN_ECLIPSE_MOON_MEAN = 1;
+}
+
+final class taiyin_observer_location extends ffi.Struct {
+  @ffi.Uint32()
+  external int struct_size;
+
+  @ffi.Double()
+  external double longitude_deg;
+
+  @ffi.Double()
+  external double latitude_deg;
+
+  @ffi.Double()
+  external double height_m;
+}
+
+final class taiyin_atmosphere extends ffi.Struct {
+  @ffi.Uint32()
+  external int struct_size;
+
+  @ffi.Double()
+  external double pressure_mbar;
+
+  @ffi.Double()
+  external double temperature_celsius;
+
+  @ffi.Double()
+  external double relative_humidity_percent;
+
+  @ffi.Double()
+  external double wavelength_micrometer;
+}
+
+final class taiyin_astro_model_config extends ffi.Struct {
+  @ffi.Uint32()
+  external int struct_size;
+
+  @ffi.Int32()
+  external int tdb_model_id;
+
+  @ffi.Int32()
+  external int precession_model_id;
+
+  @ffi.Int32()
+  external int nutation_model_id;
+
+  @ffi.Int32()
+  external int obliquity_model_id;
+
+  @ffi.Int32()
+  external int frame_route_id;
+}
+
+final class taiyin_apparent_config extends ffi.Struct {
+  @ffi.Uint32()
+  external int struct_size;
+
+  @ffi.Uint32()
+  external int flags;
+
+  @ffi.Int32()
+  external int output_frame_id;
+
+  @ffi.Int32()
+  external int light_time_method_id;
+
+  @ffi.Int32()
+  external int shapiro_delay_model_id;
+
+  @ffi.Int32()
+  external int aberration_model_id;
+
+  @ffi.Int32()
+  external int deflection_model_id;
+
+  @ffi.Int32()
+  external int max_light_time_iterations;
+
+  @ffi.Double()
+  external double light_time_tolerance_days;
+
+  @ffi.Double()
+  external double matrix_derivative_step_days;
+}
+
+final class taiyin_apparent_deflector extends ffi.Struct {
+  @ffi.Uint32()
+  external int struct_size;
+
+  @ffi.Int32()
+  external int body_id;
+
+  @ffi.Double()
+  external double schwarzschild_radius_au;
+
+  @ffi.Double()
+  external double limit;
 }
 
 sealed class taiyin_body_id {
