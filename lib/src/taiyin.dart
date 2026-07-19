@@ -1,5 +1,6 @@
 import 'dart:ffi';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:ffi/ffi.dart';
 
@@ -9,6 +10,7 @@ import 'interop/calendar.dart';
 import 'native_compatibility.dart';
 import 'observed/observed_models.dart';
 import 'position/position_api.dart';
+import 'star/star_models.dart';
 import 'time/astro_date_time.dart';
 import 'time/julian_date.dart';
 import 'time/time_api.dart';
@@ -18,6 +20,7 @@ import 'time/time_scale.dart';
 part 'context/context_api.dart';
 part 'observed/observed_api.dart';
 part 'runtime/runtime_api.dart';
+part 'star/star_api.dart';
 
 /// A feature module reported by the loaded Taiyin native library.
 enum TaiyinCapability {
@@ -65,7 +68,15 @@ enum TaiyinStatusCategory {
 
 /// A non-success status returned by the Taiyin C ABI.
 final class TaiyinException implements Exception {
-  TaiyinException(this.status, this.name, this.message, {this.diagnostic});
+  TaiyinException(
+    this.status,
+    this.name,
+    this.message, {
+    this.diagnostic,
+    Iterable<TaiyinEphemerisDiagnostic> diagnostics = const [],
+  }) : diagnostics = List.unmodifiable(
+         diagnostics.isEmpty && diagnostic != null ? [diagnostic] : diagnostics,
+       );
 
   final int status;
   final String name;
@@ -73,6 +84,12 @@ final class TaiyinException implements Exception {
 
   /// Native route and coverage details for a failed ephemeris calculation.
   final TaiyinEphemerisDiagnostic? diagnostic;
+
+  /// Every native diagnostic available for the failed operation.
+  ///
+  /// Single-target failures contain [diagnostic]. Batch failures may contain
+  /// several entries while [diagnostic] remains the primary first failure.
+  final List<TaiyinEphemerisDiagnostic> diagnostics;
 
   @override
   String toString() => 'TaiyinException($status, $name): $message';
@@ -120,8 +137,24 @@ final class TaiyinContext implements Finalizable {
         _bindings,
         _context,
         _ensureOpen,
-        (status, diagnostic) =>
-            _checkStatus(_bindings, status, diagnostic: diagnostic),
+        (status, diagnostic, diagnostics) => _checkStatus(
+          _bindings,
+          status,
+          diagnostic: diagnostic,
+          diagnostics: diagnostics,
+        ),
+      );
+      stars = TaiyinStarApi._(
+        _bindings,
+        _context,
+        _ensureOpen,
+        (status, diagnostic, diagnostics) => _checkStatus(
+          _bindings,
+          status,
+          diagnostic: diagnostic,
+          diagnostics: diagnostics,
+        ),
+        observed,
       );
     } catch (_) {
       if (finalizerAttached) {
@@ -178,6 +211,7 @@ final class TaiyinContext implements Finalizable {
   late final TaiyinTime time;
   late final TaiyinPositionApi position;
   late final TaiyinObservedApi observed;
+  late final TaiyinStarApi stars;
   bool _closed = false;
 
   /// Creates an independent native context without reinitializing the runtime.
@@ -263,6 +297,7 @@ _TaiyinNativeLibraryState _nativeLibraryStateFor(DynamicLibrary library) {
       abiVersion: bindings.taiyin_get_c_abi_version(),
       capabilities: bindings.taiyin_get_capabilities(),
     );
+    validateTaiyinRequiredSymbols(providesSymbol: library.providesSymbol);
     return _TaiyinNativeLibraryState(bindings, NativeFinalizer(destroy));
   });
 }
@@ -271,12 +306,14 @@ Never _throwStatus(
   TaiyinBindings bindings,
   int status, {
   TaiyinEphemerisDiagnostic? diagnostic,
+  Iterable<TaiyinEphemerisDiagnostic> diagnostics = const [],
 }) {
   throw TaiyinException(
     status,
     _readNativeString(bindings.taiyin_status_name(status)),
     _readNativeString(bindings.taiyin_status_message(status)),
     diagnostic: diagnostic,
+    diagnostics: diagnostics,
   );
 }
 
@@ -284,9 +321,15 @@ void _checkStatus(
   TaiyinBindings bindings,
   int status, {
   TaiyinEphemerisDiagnostic? diagnostic,
+  Iterable<TaiyinEphemerisDiagnostic> diagnostics = const [],
 }) {
   if (status != 0) {
-    _throwStatus(bindings, status, diagnostic: diagnostic);
+    _throwStatus(
+      bindings,
+      status,
+      diagnostic: diagnostic,
+      diagnostics: diagnostics,
+    );
   }
 }
 

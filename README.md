@@ -216,10 +216,58 @@ observer location. Refraction additionally requires complete atmosphere data
 or standard-atmosphere fallback. Add `strictMeteorology` to forbid fallback.
 UTC calculations require Earth-orientation data covering the requested date.
 
+## Fixed stars
+
+Fixed-star catalogs are process-wide resources. Load TSC1 catalogs from a file
+or bytes, or load editable TSF1 catalogs during application setup:
+
+```dart
+taiyin.starCatalog.addTsc1(
+  '/path/to/stars-fixed-traditional.tsc1',
+);
+
+print(taiyin.starCatalog.count);
+print(taiyin.starCatalog.magnitudeOf('spica'));
+```
+
+The native runtime copies data passed to `addTsc1Bytes`, so the caller may
+discard or modify its `Uint8List` after the method returns. Do not add or clear
+catalogs while calculations are running in any isolate.
+
+Star calculations use the user-owned context:
+
+```dart
+final spica = context.stars.atTt(
+  'spica',
+  JulianDate<TtScale>.fromDouble(2460409.0),
+  flags: {
+    TaiyinPositionFlag.xyz,
+    TaiyinPositionFlag.speed,
+  },
+);
+
+final observedSpica = context.stars.observedAtUt1(
+  'spica',
+  JulianDate<Ut1Scale>.fromDouble(2460409.0),
+  flags: {
+    TaiyinObservedFlag.topocentric,
+    TaiyinObservedFlag.horizontal,
+  },
+);
+```
+
+`context.stars` exposes single and batch position routes for TDB, TT, UT1, and
+explicit Delta-T. Position batches retain one diagnostic per key, including
+partial failures. Observed-star batches throw if any star fails because the
+native C ABI does not return partial observed values. Failed position-batch
+entries contain NaN coordinates and rates. Batch exceptions expose every
+available native failure through `TaiyinException.diagnostics`.
+
 This package requires an ABI-1 native library that reports
-`TaiyinCapability.splitTime`. Older ABI-1 builds are rejected during
-`Taiyin.open` or `TaiyinContext.attach` with a clear compatibility error instead
-of failing later during a lazy symbol lookup.
+`TaiyinCapability.splitTime` and exposes the late ABI-1 runtime and star
+symbols. Intermediate ABI-1 builds are rejected during `Taiyin.open` or
+`TaiyinContext.attach` with a clear compatibility error instead of failing
+later during a lazy symbol lookup.
 
 The native engine is process-wide, so call `Taiyin.open` once. Calling it again
 currently replaces the global catalog, cache, EOP table, and lunar-limb model.

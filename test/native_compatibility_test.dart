@@ -44,5 +44,32 @@ void main() {
         ),
       );
     });
+
+    test('accepts a library that exposes every required ABI-1 symbol', () {
+      expect(
+        () => validateTaiyinRequiredSymbols(
+          providesSymbol: taiyinRequiredAbi1Symbols.contains,
+        ),
+        returnsNormally,
+      );
+    });
+
+    test('reports missing late ABI-1 symbols before lazy lookup', () {
+      expect(
+        () => validateTaiyinRequiredSymbols(
+          providesSymbol: (symbol) => symbol != 'taiyin_get_library_codename',
+        ),
+        throwsA(
+          isA<StateError>().having(
+            (error) => error.message,
+            'message',
+            allOf(
+              contains('missing symbols'),
+              contains('taiyin_get_library_codename'),
+            ),
+          ),
+        ),
+      );
+    });
   });
 }
