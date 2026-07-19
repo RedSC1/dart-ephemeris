@@ -12,6 +12,7 @@ functions:
   include:
     - taiyin_get_c_abi_version
     - taiyin_get_library_version
+    - taiyin_get_library_codename
     - taiyin_get_capabilities
     - taiyin_status_name
     - taiyin_status_message
@@ -69,7 +70,17 @@ functions:
     - taiyin_make_split_estimated_time_scales_from_ut
     - taiyin_runtime_config_init
     - taiyin_runtime_initialize
+    - taiyin_runtime_add_source_path
+    - taiyin_runtime_load_eop_table
+    - taiyin_runtime_load_builtin_eop_table
+    - taiyin_runtime_clear_eop_table
+    - taiyin_runtime_has_eop_table
+    - taiyin_runtime_load_lunar_limb_model
+    - taiyin_runtime_clear_lunar_limb_model
+    - taiyin_runtime_has_lunar_limb_model
+    - taiyin_runtime_clear_ephemeris_cache
     - taiyin_runtime_catalog_size
+    - taiyin_runtime_cache_entry_count
     - taiyin_context_create
     - taiyin_context_clone
     - taiyin_context_destroy

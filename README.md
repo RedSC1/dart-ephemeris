@@ -49,6 +49,32 @@ void main() {
 `libraryPath` can be omitted when the library is available under the
 platform-standard loader name, or supplied through `TAIYIN_LIBRARY_PATH`.
 
+## Runtime and release metadata
+
+Taiyin exposes its semantic version and major-release codename independently:
+
+```dart
+print(taiyin.libraryVersion);  // 1.0.0
+print(taiyin.libraryCodename); // Singularity
+```
+
+`taiyin.runtime` manages process-wide ephemeris sources, Earth-orientation
+data, the lunar-limb model, and the ephemeris segment cache. Finish source,
+EOP, and lunar-limb setup before starting concurrent calculations:
+
+```dart
+taiyin.runtime
+  ..addSourcePath('/path/to/ephemeris-data')
+  ..loadBuiltinEopTable()
+  ..clearEphemerisCache();
+
+print(taiyin.runtime.catalogSize);
+print(taiyin.runtime.cacheEntryCount);
+```
+
+All `Taiyin` instances loaded from the same native library share this runtime
+state. Closing one context does not reset global runtime data.
+
 ## Time values
 
 Calendar values preserve astronomical year numbering and integer nanoseconds:

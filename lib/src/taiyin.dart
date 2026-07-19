@@ -17,6 +17,7 @@ import 'time/time_scale.dart';
 
 part 'context/context_api.dart';
 part 'observed/observed_api.dart';
+part 'runtime/runtime_api.dart';
 
 /// A feature module reported by the loaded Taiyin native library.
 enum TaiyinCapability {
@@ -137,6 +138,11 @@ final class Taiyin implements Finalizable {
       (status, diagnostic) =>
           _checkStatus(_bindings, status, diagnostic: diagnostic),
     );
+    runtime = TaiyinRuntimeApi._(
+      _bindings,
+      _ensureOpen,
+      (status) => _checkStatus(_bindings, status),
+    );
     _contextFinalizer.attach(this, _context.cast(), detach: this);
   }
 
@@ -238,6 +244,7 @@ final class Taiyin implements Finalizable {
   late final TaiyinTime time;
   late final TaiyinPositionApi position;
   late final TaiyinObservedApi observed;
+  late final TaiyinRuntimeApi runtime;
   bool _closed = false;
 
   /// The Taiyin C ABI version.
@@ -246,6 +253,10 @@ final class Taiyin implements Finalizable {
   /// The Taiyin native library's semantic version.
   String get libraryVersion =>
       _bindings.taiyin_get_library_version().cast<Utf8>().toDartString();
+
+  /// The codename shared by this semantic-version major release.
+  String get libraryCodename =>
+      _bindings.taiyin_get_library_codename().cast<Utf8>().toDartString();
 
   /// The native module capability bitset.
   int get capabilities => _bindings.taiyin_get_capabilities();
@@ -281,7 +292,7 @@ final class Taiyin implements Finalizable {
   }
 
   /// The number of ephemeris descriptors in the global runtime catalog.
-  int get catalogSize => _bindings.taiyin_runtime_catalog_size();
+  int get catalogSize => runtime.catalogSize;
 
   /// Creates an independent native context without reinitializing the runtime.
   ///
