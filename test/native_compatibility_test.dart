@@ -102,5 +102,21 @@ void main() {
         ),
       );
     });
+
+    test('reports missing orbital symbols before use', () {
+      expect(
+        () => validateTaiyinRequiredSymbols(
+          providesSymbol: (symbol) =>
+              symbol != 'taiyin_search_next_body_plane_node_ut',
+        ),
+        throwsA(
+          isA<StateError>().having(
+            (error) => error.message,
+            'message',
+            contains('taiyin_search_next_body_plane_node_ut'),
+          ),
+        ),
+      );
+    });
   });
 }

@@ -135,6 +135,18 @@ functions:
     - taiyin_observed_position_init
     - taiyin_calc_observed_bodies_ut
     - taiyin_calc_observed_bodies_utc
+    - taiyin_body_osculating_orbit_init
+    - taiyin_body_orbit_reference_points_init
+    - taiyin_body_apsis_search_result_init
+    - taiyin_body_node_search_result_init
+    - taiyin_calc_body_osculating_orbit_tt
+    - taiyin_calc_body_osculating_orbit_ut
+    - taiyin_calc_body_orbit_reference_points_tt
+    - taiyin_calc_body_orbit_reference_points_ut
+    - taiyin_search_next_body_apsis_tt
+    - taiyin_search_next_body_apsis_ut
+    - taiyin_search_next_body_plane_node_tt
+    - taiyin_search_next_body_plane_node_ut
     - taiyin_body_phenomena_init
     - taiyin_calc_body_phenomena_tt
     - taiyin_calc_body_phenomena_ut
@@ -186,6 +198,11 @@ structs:
     - taiyin_horizontal_rates
     - taiyin_apparent_position
     - taiyin_observed_position
+    - taiyin_body_orbit_reference_point
+    - taiyin_body_orbit_reference_points
+    - taiyin_body_osculating_orbit
+    - taiyin_body_apsis_search_result
+    - taiyin_body_node_search_result
     - taiyin_body_phenomena
     - taiyin_equation_of_time_result
     - taiyin_split_equation_of_time_result
