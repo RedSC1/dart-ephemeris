@@ -4,12 +4,14 @@ import 'dart:io';
 import 'package:ffi/ffi.dart';
 
 import 'bindings/taiyin_bindings.g.dart';
-import 'context/context_api.dart';
+import 'context/context_models.dart';
 import 'native_compatibility.dart';
 import 'position/position_api.dart';
 import 'time/julian_date.dart';
 import 'time/time_api.dart';
 import 'time/time_scale.dart';
+
+part 'context/context_api.dart';
 
 /// A feature module reported by the loaded Taiyin native library.
 enum TaiyinCapability {
@@ -104,7 +106,7 @@ final class Taiyin implements Finalizable {
     this._context,
     this._contextFinalizer,
   ) {
-    context = TaiyinContextApi.internal(
+    context = TaiyinContextApi._(
       _bindings,
       _context,
       _ensureOpen,

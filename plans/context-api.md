@@ -23,6 +23,7 @@ concurrent calculation.
 - [x] Add typed enums and flags for:
   - [x] atmosphere policy
   - [x] precession, nutation, TDB, and frame-route models
+  - [x] ephemeris route rules
   - [x] refraction and heliacal-visibility models
   - [x] apparent corrections and output frames
   - [x] aberration, deflection, and eclipse models

@@ -53,6 +53,21 @@ enum TaiyinFrameRoute {
   final int id;
 }
 
+/// A native ephemeris route-rule table identifier.
+///
+/// [raw] accepts the signed 64-bit bit pattern passed to the C ABI's
+/// `uint64_t`. Unknown identifiers are rejected by the native library.
+final class TaiyinRouteRule {
+  const TaiyinRouteRule.raw(this.id);
+
+  static const automatic = TaiyinRouteRule.raw(0);
+  static const opm2 = TaiyinRouteRule.raw(1);
+  static const spk = TaiyinRouteRule.raw(2);
+  static const moshier = TaiyinRouteRule.raw(3);
+
+  final int id;
+}
+
 /// Atmospheric-refraction implementation.
 enum TaiyinRefractionModel {
   bennett(0),

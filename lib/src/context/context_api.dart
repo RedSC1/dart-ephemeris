@@ -1,20 +1,11 @@
-import 'dart:ffi';
-
-import 'package:ffi/ffi.dart';
-
-import '../bindings/taiyin_bindings.g.dart';
-import '../position/position_api.dart';
-import '../time/julian_date.dart';
-import '../time/time_scale.dart';
-import 'context_models.dart';
+part of '../taiyin.dart';
 
 /// Mutable configuration owned by one Taiyin calculation context.
 ///
 /// Finish configuration before using the owning context concurrently. Cloned
 /// Taiyin instances receive an independent copy of this state.
 final class TaiyinContextApi {
-  /// Internal constructor used by an owning Taiyin instance.
-  TaiyinContextApi.internal(
+  TaiyinContextApi._(
     this._bindings,
     this._context,
     this._ensureOpen,
@@ -89,7 +80,9 @@ final class TaiyinContextApi {
     _checkStatus(_bindings.taiyin_context_set_standard_atmosphere(_context));
   }
 
-  /// Sets fallback behavior for missing atmospheric values.
+  /// Replaces fallback behavior for missing atmospheric values.
+  ///
+  /// Passing an empty set clears all atmosphere-policy flags.
   void setAtmospherePolicy(Set<TaiyinAtmospherePolicyFlag> flags) {
     _ensureOpen();
     final mask = flags.fold(0, (value, flag) => value | flag.mask);
@@ -99,6 +92,8 @@ final class TaiyinContextApi {
   }
 
   /// Sets meteorological visibility range in kilometres.
+  ///
+  /// [rangeKm] must be at least 1 km.
   void setMeteorologicalRangeKm(double rangeKm) {
     _ensureOpen();
     _requireFinite(rangeKm, 'rangeKm');
@@ -111,6 +106,9 @@ final class TaiyinContextApi {
   }
 
   /// Configures a geocentric observer and its ephemeris center.
+  ///
+  /// The arguments are native body IDs rather than [TaiyinBody] values so
+  /// custom registered targets remain usable.
   void setGeocentricObserver({required int observerId, required int centerId}) {
     _ensureOpen();
     _requireInt32(observerId, 'observerId');
@@ -189,13 +187,10 @@ final class TaiyinContextApi {
   }
 
   /// Selects a native ephemeris route-rule table.
-  void setRouteRule(int routeRuleId) {
+  void setRouteRule(TaiyinRouteRule routeRule) {
     _ensureOpen();
-    if (routeRuleId < 0 || routeRuleId > 0x7fffffffffffffff) {
-      throw RangeError.range(routeRuleId, 0, 0x7fffffffffffffff, 'routeRuleId');
-    }
     _checkStatus(
-      _bindings.taiyin_context_set_route_rule(_context, routeRuleId),
+      _bindings.taiyin_context_set_route_rule(_context, routeRule.id),
     );
   }
 
