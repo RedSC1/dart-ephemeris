@@ -40,6 +40,10 @@ void main() {
           closeTo(equation.equationSeconds, 2e-5),
         );
         expect(
+          equation.ut1.coordinateSecondsDifference(ut1),
+          closeTo(0, 5e-12),
+        );
+        expect(
           [
             equation.apparentSunRightAscensionRadians,
             equation.greenwichApparentSiderealTimeRadians,
@@ -53,47 +57,82 @@ void main() {
       test('round-trips local mean and apparent solar time', () {
         final longitudeRadians = 116.3833 * math.pi / 180.0;
         final equation = context.solarTime.equationOfTimeAtUt1(ut1).value;
-        final localMean = JulianDate<LocalMeanSolarTimeScale>.fromDouble(
-          ut1.toDouble() + longitudeRadians / (2.0 * math.pi),
+        final localMean = LocalMeanSolarTime.fromUt1(
+          ut1,
+          longitudeRadians: longitudeRadians,
         );
 
-        final apparent = context.solarTime.meanToApparent(
-          localMean,
-          longitudeRadians,
-        );
-        final roundTrip = context.solarTime.apparentToMean(
-          apparent.value,
-          longitudeRadians,
-        );
+        final apparent = context.solarTime.meanToApparent(localMean);
+        final roundTrip = context.solarTime.apparentToMean(apparent.value);
 
         expect(
-          apparent.value.coordinateSecondsDifference(localMean),
+          apparent.value.coordinate.coordinateSecondsDifference(
+            localMean.coordinate,
+          ),
           closeTo(equation.equationSeconds, 1e-4),
         );
         expect(
-          roundTrip.value.coordinateSecondsDifference(localMean),
+          roundTrip.value.coordinate.coordinateSecondsDifference(
+            localMean.coordinate,
+          ),
           closeTo(0.0, 1e-4),
         );
+        expect(roundTrip.value.longitudeRadians, longitudeRadians);
         expect(apparent.diagnostic.status, 0);
         expect(roundTrip.diagnostic.status, 0);
       });
 
-      test('rejects invalid longitude and use after close', () {
-        final localMean = JulianDate<LocalMeanSolarTimeScale>.fromDouble(
-          2460311.0,
+      test('preserves nanosecond-separated split local coordinates', () {
+        final preciseUt1 = JulianDate<Ut1Scale>.fromParts(
+          2460311,
+          0.123456789012345,
+        );
+        const longitudeRadians = -1.23456789012345;
+
+        final localMean = LocalMeanSolarTime.fromUt1(
+          preciseUt1,
+          longitudeRadians: longitudeRadians,
+        );
+        final shiftedLocalMean = LocalMeanSolarTime.fromCoordinate(
+          localMean.coordinate.addNanoseconds(1),
+          longitudeRadians: longitudeRadians,
+        );
+        final apparent = context.solarTime.meanToApparent(localMean);
+        final shiftedApparent = context.solarTime.meanToApparent(
+          shiftedLocalMean,
+        );
+
+        expect(
+          localMean.toUt1().coordinateSecondsDifference(preciseUt1),
+          closeTo(0, 5e-12),
         );
         expect(
-          () => context.solarTime.meanToApparent(localMean, double.nan),
+          shiftedApparent.value.coordinate.coordinateSecondsDifference(
+            apparent.value.coordinate,
+          ),
+          closeTo(1e-9, 5e-12),
+        );
+      });
+
+      test('rejects invalid longitude and use after close', () {
+        final localMean = LocalMeanSolarTime.fromUt1(ut1, longitudeRadians: 0);
+        expect(
+          () => LocalMeanSolarTime.fromUt1(ut1, longitudeRadians: double.nan),
           throwsArgumentError,
         );
         expect(
-          () => context.solarTime.meanToApparent(localMean, math.pi + 0.01),
+          () =>
+              LocalMeanSolarTime.fromUt1(ut1, longitudeRadians: math.pi + 0.01),
           throwsArgumentError,
         );
 
         context.close();
         expect(
           () => context.solarTime.equationOfTimeAtUt1(ut1),
+          throwsStateError,
+        );
+        expect(
+          () => context.solarTime.meanToApparent(localMean),
           throwsStateError,
         );
       });

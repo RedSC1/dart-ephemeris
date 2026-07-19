@@ -18,14 +18,21 @@ final class TaiyinPhenomenaApi {
   final _PhenomenaStatusChecker _checkStatus;
 
   /// Calculates body phenomena at a TT coordinate.
+  ///
+  /// [origin] makes the observer semantics explicit. A topocentric calculation
+  /// uses the context's configured observer for observer-dependent values;
+  /// lunar [TaiyinBodyPhenomena.geocentricHorizontalParallaxRadians] remains
+  /// geocentric.
   TaiyinEphemerisResult<TaiyinBodyPhenomena> atTt(
     TaiyinBody body,
     JulianDate<TtScale> tt, {
+    TaiyinPhenomenaOrigin origin = TaiyinPhenomenaOrigin.geocentric,
     Set<TaiyinPositionFlag> flags = const {},
   }) {
     _ensureOpen();
     return _calculate(
       body,
+      origin,
       flags,
       (mask, output, diagnostic) => _bindings.taiyin_calc_body_phenomena_tt(
         _context,
@@ -39,14 +46,21 @@ final class TaiyinPhenomenaApi {
   }
 
   /// Calculates body phenomena at a UT1 coordinate.
+  ///
+  /// [origin] makes the observer semantics explicit. A topocentric calculation
+  /// uses the context's configured observer for observer-dependent values;
+  /// lunar [TaiyinBodyPhenomena.geocentricHorizontalParallaxRadians] remains
+  /// geocentric.
   TaiyinEphemerisResult<TaiyinBodyPhenomena> atUt1(
     TaiyinBody body,
     JulianDate<Ut1Scale> ut1, {
+    TaiyinPhenomenaOrigin origin = TaiyinPhenomenaOrigin.geocentric,
     Set<TaiyinPositionFlag> flags = const {},
   }) {
     _ensureOpen();
     return _calculate(
       body,
+      origin,
       flags,
       (mask, output, diagnostic) => _bindings.taiyin_calc_body_phenomena_ut(
         _context,
@@ -61,6 +75,7 @@ final class TaiyinPhenomenaApi {
 
   TaiyinEphemerisResult<TaiyinBodyPhenomena> _calculate(
     TaiyinBody body,
+    TaiyinPhenomenaOrigin origin,
     Set<TaiyinPositionFlag> flags,
     int Function(
       int,
@@ -70,8 +85,18 @@ final class TaiyinPhenomenaApi {
     calculate,
   ) {
     _requireSupportedBody(body);
+    if (flags.contains(TaiyinPositionFlag.topocentric)) {
+      throw ArgumentError.value(
+        flags,
+        'flags',
+        'use the origin parameter for topocentric phenomena',
+      );
+    }
     final frozenFlags = Set<TaiyinPositionFlag>.unmodifiable(flags);
-    final mask = frozenFlags.fold(0, (value, flag) => value | flag.mask);
+    var mask = frozenFlags.fold(0, (value, flag) => value | flag.mask);
+    if (origin == TaiyinPhenomenaOrigin.topocentric) {
+      mask |= TaiyinPositionFlag.topocentric.mask;
+    }
     return using((arena) {
       final output = arena<taiyin_body_phenomena>();
       final diagnostic = arena<taiyin_ephemeris_diagnostic>();
@@ -90,9 +115,11 @@ final class TaiyinPhenomenaApi {
           solarElongationRadians: value.solar_elongation_rad,
           apparentDiameterRadians: value.apparent_diameter_rad,
           apparentMagnitude: value.apparent_magnitude,
-          horizontalParallaxRadians: value.horizontal_parallax_rad.isFinite
+          geocentricHorizontalParallaxRadians:
+              value.horizontal_parallax_rad.isFinite
               ? value.horizontal_parallax_rad
               : null,
+          origin: origin,
           flags: frozenFlags,
         ),
         diagnostic: mappedDiagnostic,

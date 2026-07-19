@@ -67,13 +67,14 @@ void main() {
         );
         expect(value.apparentMagnitude, closeTo(-10.048877989411316, 0.09));
         expect(
-          value.horizontalParallaxRadians,
+          value.geocentricHorizontalParallaxRadians,
           closeTo(
             0.923829244641875 * degreesToRadians,
             1e-6 * degreesToRadians,
           ),
         );
         expect(value.body, TaiyinBody.moon);
+        expect(value.origin, TaiyinPhenomenaOrigin.geocentric);
         expect(result.diagnostic.status, 0);
         expect(result.diagnostic.targetId, TaiyinBody.moon.id);
       });
@@ -90,10 +91,50 @@ void main() {
         expect(result.value.solarElongationRadians, 0.0);
         expect(result.value.apparentDiameterRadians.isFinite, isTrue);
         expect(result.value.apparentMagnitude.isFinite, isTrue);
-        expect(result.value.horizontalParallaxRadians, isNull);
+        expect(result.value.geocentricHorizontalParallaxRadians, isNull);
+        expect(result.value.origin, TaiyinPhenomenaOrigin.geocentric);
         expect(result.value.flags, contains(TaiyinPositionFlag.truePosition));
         expect(result.diagnostic.status, 0);
       });
+
+      test(
+        'makes topocentric origin explicit while parallax stays geocentric',
+        () {
+          final ut1 = JulianDate<Ut1Scale>.fromDouble(2460409.25);
+          final tt = context.solarTime.equationOfTimeAtUt1(ut1).value.tt;
+          final geocentric = context.phenomena.atUt1(TaiyinBody.moon, ut1);
+
+          context.configuration.setSimpleTopocentricObserver(
+            const TaiyinObserverLocation(
+              longitudeDegrees: -104.9903,
+              latitudeDegrees: 39.7392,
+              heightMeters: 1609.3,
+            ),
+            ut1: ut1,
+            tt: tt,
+          );
+          final topocentric = context.phenomena.atUt1(
+            TaiyinBody.moon,
+            ut1,
+            origin: TaiyinPhenomenaOrigin.topocentric,
+          );
+
+          expect(topocentric.value.origin, TaiyinPhenomenaOrigin.topocentric);
+          expect(
+            topocentric.value.geocentricHorizontalParallaxRadians,
+            closeTo(
+              geocentric.value.geocentricHorizontalParallaxRadians!,
+              1e-15,
+            ),
+          );
+          expect(
+            (topocentric.value.apparentDiameterRadians -
+                    geocentric.value.apparentDiameterRadians)
+                .abs(),
+            greaterThan(1e-12),
+          );
+        },
+      );
 
       test('rejects unsupported bodies and use after close', () {
         final ut1 = JulianDate<Ut1Scale>.fromDouble(2460409.25);
@@ -103,6 +144,14 @@ void main() {
         );
         expect(
           () => context.phenomena.atUt1(TaiyinBody.jupiterBarycenter, ut1),
+          throwsArgumentError,
+        );
+        expect(
+          () => context.phenomena.atUt1(
+            TaiyinBody.moon,
+            ut1,
+            flags: {TaiyinPositionFlag.topocentric},
+          ),
           throwsArgumentError,
         );
 

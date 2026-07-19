@@ -219,24 +219,23 @@ UTC calculations require Earth-orientation data covering the requested date.
 ## Solar time and body phenomena
 
 `context.solarTime` calculates the equation of time from UT1 or TT and converts
-between local mean and apparent solar time. The two local solar coordinates use
-distinct `JulianDate` scale markers, so they cannot be passed to the inverse
-conversion in the wrong order:
+between local mean and apparent solar time through the native split-Julian-date
+ABI. `LocalMeanSolarTime` and `LocalApparentSolarTime` carry both a typed split
+coordinate and its longitude, so conversions cannot use the wrong coordinate
+kind or a mismatched meridian:
 
 ```dart
 final ut1 = JulianDate<Ut1Scale>.fromDouble(2460311.0);
 final equation = context.solarTime.equationOfTimeAtUt1(ut1);
 
 final longitudeRadians = 116.3833 * 3.141592653589793 / 180;
-final localMean = JulianDate<LocalMeanSolarTimeScale>.fromDouble(
-  ut1.toDouble() + longitudeRadians / (2 * 3.141592653589793),
+final localMean = LocalMeanSolarTime.fromUt1(
+  ut1,
+  longitudeRadians: longitudeRadians,
 );
-final localApparent = context.solarTime.meanToApparent(
-  localMean,
-  longitudeRadians,
-);
+final localApparent = context.solarTime.meanToApparent(localMean);
 print(equation.value.equationSeconds);
-print(localApparent.value);
+print(localApparent.value.coordinate);
 ```
 
 `context.phenomena` calculates phase angle, illuminated fraction, solar
@@ -251,8 +250,13 @@ final moonPhenomena = context.phenomena.atUt1(
 );
 print(moonPhenomena.value.illuminatedFraction);
 print(moonPhenomena.value.apparentMagnitude);
-print(moonPhenomena.value.horizontalParallaxRadians);
+print(moonPhenomena.value.geocentricHorizontalParallaxRadians);
 ```
+
+Set `origin: TaiyinPhenomenaOrigin.topocentric` to make observer-dependent
+phenomena reflect the observer configured on the context. Lunar horizontal
+parallax is explicitly exposed as `geocentricHorizontalParallaxRadians` and
+remains geocentric in either mode.
 
 Both modules attach the native ephemeris diagnostic to every successful result
 and throw `TaiyinException` with that diagnostic on native failure.

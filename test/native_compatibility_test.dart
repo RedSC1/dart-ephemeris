@@ -86,5 +86,21 @@ void main() {
         ),
       );
     });
+
+    test('reports missing split solar-time symbols before use', () {
+      expect(
+        () => validateTaiyinRequiredSymbols(
+          providesSymbol: (symbol) =>
+              symbol != 'taiyin_calc_equation_of_time_ut_split',
+        ),
+        throwsA(
+          isA<StateError>().having(
+            (error) => error.message,
+            'message',
+            contains('taiyin_calc_equation_of_time_ut_split'),
+          ),
+        ),
+      );
+    });
   });
 }
