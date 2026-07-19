@@ -110,6 +110,49 @@ position.
 The older `taiyin.positionTt` and `taiyin.positionUt` conveniences remain
 available and delegate to this module.
 
+## Context configuration
+
+`taiyin.context` owns observer, atmosphere, astronomy-model, apparent-position,
+deflection, light-time, and eclipse configuration. Configure a context before
+using it concurrently:
+
+```dart
+const beijing = TaiyinObserverLocation(
+  longitudeDegrees: 116.391,
+  latitudeDegrees: 39.907,
+  heightMeters: 50,
+);
+
+taiyin.context
+  ..setObserverLocation(beijing)
+  ..setStandardAtmosphere()
+  ..setAtmospherePolicy({
+    TaiyinAtmospherePolicyFlag.allowStandardFallback,
+  })
+  ..setAstroModels(
+    const TaiyinAstroModelConfig(
+      precessionModel: TaiyinPrecessionModel.iau2006,
+      nutationModel: TaiyinNutationModel.iau2000A,
+    ),
+  )
+  ..setApparentConfig(
+    TaiyinApparentConfig(
+      flags: const {
+        TaiyinApparentFlag.lightTime,
+        TaiyinApparentFlag.spherical,
+        TaiyinApparentFlag.aberration,
+      },
+      outputFrame: TaiyinApparentFrame.trueEquatorOfDate,
+    ),
+  );
+```
+
+Simple topocentric setup accepts typed UT1 and TT coordinates. Precise
+topocentric setup accepts typed UTC and TT coordinates and requires an EOP
+table in the native runtime. `taiyin.clone()` copies all context-owned
+configuration, including custom deflectors; later changes and `reset()` calls
+are independent between the two instances.
+
 This package requires an ABI-1 native library that reports
 `TaiyinCapability.splitTime`. Older ABI-1 builds are rejected during
 `Taiyin.open` with a clear compatibility error instead of failing later during

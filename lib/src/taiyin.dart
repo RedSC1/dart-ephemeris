@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:ffi/ffi.dart';
 
 import 'bindings/taiyin_bindings.g.dart';
+import 'context/context_api.dart';
 import 'native_compatibility.dart';
 import 'position/position_api.dart';
 import 'time/julian_date.dart';
@@ -103,6 +104,12 @@ final class Taiyin implements Finalizable {
     this._context,
     this._contextFinalizer,
   ) {
+    context = TaiyinContextApi.internal(
+      _bindings,
+      _context,
+      _ensureOpen,
+      (status) => _checkStatus(_bindings, status),
+    );
     time = TaiyinTime.internal(
       _bindings,
       _context,
@@ -213,6 +220,7 @@ final class Taiyin implements Finalizable {
   final TaiyinBindings _bindings;
   final Pointer<taiyin_context> _context;
   final NativeFinalizer _contextFinalizer;
+  late final TaiyinContextApi context;
   late final TaiyinTime time;
   late final TaiyinPositionApi position;
   bool _closed = false;
