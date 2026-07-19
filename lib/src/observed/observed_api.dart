@@ -16,6 +16,14 @@ typedef _ObservedStatusChecker =
 /// Native observed-position batches contain at most ten bodies. Horizontal
 /// output requires [TaiyinObservedFlag.topocentric] and a context observer
 /// location. See [TaiyinContextApi] for observer and atmosphere configuration.
+///
+/// A failure for any requested body makes the native batch fail. Batch-level
+/// failures throw [TaiyinException]; partial results are not returned.
+///
+/// The native observed API does not currently propagate its internal
+/// time-scale diagnostic into the returned ephemeris diagnostic. Consequently,
+/// time-scale fields such as [TaiyinEphemerisDiagnostic.timeScaleRoute] retain
+/// their default values for both UT1 and UTC observed calculations.
 final class TaiyinObservedApi {
   TaiyinObservedApi._(
     this._bindings,
@@ -30,6 +38,11 @@ final class TaiyinObservedApi {
   final _ObservedStatusChecker _checkStatus;
 
   /// Calculates one observed position at a UT1 Julian date.
+  ///
+  /// This native route estimates the remaining scales from the configured
+  /// Delta-T model. It does not apply EOP-backed celestial-pole offsets. Prefer
+  /// [atUtc] when EOP data is available and maximum topocentric precision is
+  /// required.
   TaiyinObservedPosition atUt1(
     TaiyinBody body,
     JulianDate<Ut1Scale> julianDate, {
@@ -39,6 +52,8 @@ final class TaiyinObservedApi {
   }
 
   /// Calculates observed positions at a UT1 Julian date.
+  ///
+  /// This has the same model-based precision behavior as [atUt1].
   List<TaiyinObservedPosition> batchAtUt1(
     List<TaiyinBody> bodies,
     JulianDate<Ut1Scale> julianDate, {
@@ -63,7 +78,8 @@ final class TaiyinObservedApi {
 
   /// Calculates one observed position from a UTC calendar value.
   ///
-  /// The native runtime must have Earth-orientation data covering [utc].
+  /// The native runtime must have Earth-orientation data covering [utc]. This
+  /// route uses EOP-backed time scales and celestial-pole offsets.
   TaiyinObservedPosition atUtc(
     TaiyinBody body,
     AstroDateTime utc, {
@@ -74,7 +90,8 @@ final class TaiyinObservedApi {
 
   /// Calculates observed positions from a UTC calendar value.
   ///
-  /// The native runtime must have Earth-orientation data covering [utc].
+  /// The native runtime must have Earth-orientation data covering [utc]. This
+  /// route uses EOP-backed time scales and celestial-pole offsets.
   List<TaiyinObservedPosition> batchAtUtc(
     List<TaiyinBody> bodies,
     AstroDateTime utc, {

@@ -54,6 +54,14 @@ void main() {
           ),
           isTrue,
         );
+        expect(
+          result.apparent.geometricState.accelerationAuPerDay2.values,
+          everyElement(0),
+        );
+        expect(
+          result.apparent.apparentState.accelerationAuPerDay2.values,
+          everyElement(0),
+        );
         expect(result.horizontal, isNull);
         expect(result.horizontalRates, isNull);
         expect(result.refractedHorizontal, isNull);
@@ -89,6 +97,25 @@ void main() {
         }
       });
 
+      test('throws with the failed target when any batch body fails', () {
+        expect(
+          () => taiyin.observed.batchAtUt1(
+            const [TaiyinBody.sun, TaiyinBody.mars],
+            ut1,
+            flags: {TaiyinObservedFlag.truePosition},
+          ),
+          throwsA(
+            isA<TaiyinException>()
+                .having((error) => error.status, 'status', isNot(0))
+                .having(
+                  (error) => error.diagnostic?.targetId,
+                  'failed target',
+                  TaiyinBody.mars.id,
+                ),
+          ),
+        );
+      });
+
       test('covers UTC single and batch routes with precise time data', () {
         const flags = {TaiyinObservedFlag.truePosition};
         final single = taiyin.observed.atUtc(TaiyinBody.sun, utc, flags: flags);
@@ -100,6 +127,8 @@ void main() {
 
         expect(single.status, 0);
         expect(single.diagnostic.julianDateTdb.isFinite, isTrue);
+        expect(single.diagnostic.timeScaleRoute, TimeScaleRoute.none);
+        expect(single.diagnostic.timeScaleFlags, isEmpty);
         expect(batch, hasLength(2));
         expect(batch.every((result) => result.status == 0), isTrue);
         expect(

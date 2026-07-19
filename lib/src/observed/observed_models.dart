@@ -87,7 +87,17 @@ final class TaiyinApparentPosition {
   final int bodyMaskBit;
   final int status;
   final TaiyinEphemerisDiagnostic diagnostic;
+
+  /// Geometric position and velocity.
+  ///
+  /// The observed-position native path disables acceleration, so
+  /// [TaiyinCartesianState.accelerationAuPerDay2] is always zero here.
   final TaiyinCartesianState geometricState;
+
+  /// Apparent position and velocity after the requested corrections.
+  ///
+  /// The observed-position native path disables acceleration, so
+  /// [TaiyinCartesianState.accelerationAuPerDay2] is always zero here.
   final TaiyinCartesianState apparentState;
   final double longitudeRadians;
   final double latitudeRadians;
