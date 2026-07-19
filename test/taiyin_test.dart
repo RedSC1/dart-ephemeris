@@ -34,12 +34,14 @@ void main() {
           containsAll({
             TaiyinCapability.runtime,
             TaiyinCapability.time,
+            TaiyinCapability.splitTime,
             TaiyinCapability.position,
             TaiyinCapability.eclipse,
             TaiyinCapability.astrology,
           }),
         );
         expect(taiyin.hasCapability(TaiyinCapability.runtime), isTrue);
+        expect(taiyin.hasCapability(TaiyinCapability.splitTime), isTrue);
         expect(taiyin.hasCapability(TaiyinCapability.position), isTrue);
       });
 

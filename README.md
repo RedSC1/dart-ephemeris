@@ -29,7 +29,7 @@ void main() {
     libraryPath: '../taiyin-ephemeris/build-c-api-release/libtaiyin.dylib',
   );
   try {
-    final moon = taiyin.positionTt(
+    final moon = taiyin.position.atTt(
       TaiyinBody.moon,
       JulianDate<TtScale>.fromDouble(2460409.0),
       flags: {
@@ -37,8 +37,9 @@ void main() {
         TaiyinPositionFlag.speed,
       },
     );
-    print(moon.coordinates);
-    print(moon.rates);
+    print(moon.value.coordinates);
+    print(moon.value.rates);
+    print(moon.diagnostic.attemptedMethodId);
   } finally {
     taiyin.close();
   }
@@ -62,8 +63,9 @@ final tt = calendar.toJulianDate<TtScale>();
 `JulianDate<S>` stores an integer day and a normalized fractional day. Its time
 scale is part of the Dart type, so a `JulianDate<Ut1Scale>` cannot be passed to
 `positionTt`. `toJulianDate<S>()` interprets the calendar fields in that scale;
-it does not perform UTC/TAI/TT conversion. The two JD parts are merged only when
-calling the current C ABI.
+it does not perform UTC/TAI/TT conversion. Time conversion uses the split-date
+C ABI. Position and state entry points currently accept a scalar Julian date
+upstream, so those calls merge the two parts at the final FFI boundary.
 
 Use the context-owned time service for actual scale conversion:
 
@@ -83,6 +85,35 @@ estimation, precise conversions with caller-supplied TAI−UTC and DUT1, and
 context policy/model configuration. Calendar conversion, UTC/TAI/TT/UT1/TDB
 conversion, and aggregate time-scale results all use Taiyin's split-Julian-Date
 C ABI, preserving sub-microsecond separation across the FFI boundary.
+
+## Positions and Cartesian states
+
+`taiyin.position` exposes single-target and batch calculations at TDB, TT, UT1,
+explicit Delta-T, and UTC inputs. Every result includes the native ephemeris
+diagnostic. Cartesian states include position in AU, velocity in AU/day, and
+acceleration in AU/day²:
+
+```dart
+final state = taiyin.position.stateAtTt(
+  TaiyinBody.moon,
+  JulianDate<TtScale>.fromDouble(2460409.0),
+);
+print(state.value.positionAu);
+print(state.diagnostic.frame);
+```
+
+Single-target failures throw `TaiyinException` with its native `diagnostic`
+attached. Batch calls preserve one result per requested body when individual
+targets fail; inspect each `result.diagnostic.status` before consuming its
+position.
+
+The older `taiyin.positionTt` and `taiyin.positionUt` conveniences remain
+available and delegate to this module.
+
+This package requires an ABI-1 native library that reports
+`TaiyinCapability.splitTime`. Older ABI-1 builds are rejected during
+`Taiyin.open` with a clear compatibility error instead of failing later during
+a lazy symbol lookup.
 
 The native runtime is process-wide, so normally call `Taiyin.open` once. Finish
 runtime/catalog configuration before starting concurrent calculations. Use

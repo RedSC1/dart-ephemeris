@@ -4,11 +4,11 @@ import 'dart:io';
 import 'package:ffi/ffi.dart';
 
 import 'bindings/taiyin_bindings.g.dart';
+import 'native_compatibility.dart';
+import 'position/position_api.dart';
 import 'time/julian_date.dart';
 import 'time/time_api.dart';
 import 'time/time_scale.dart';
-
-const int _supportedAbiVersion = 1;
 
 /// A feature module reported by the loaded Taiyin native library.
 enum TaiyinCapability {
@@ -25,7 +25,8 @@ enum TaiyinCapability {
   astrology(1 << 10),
   customTargets(1 << 11),
   customAyanamsha(1 << 12),
-  customHouses(1 << 13);
+  customHouses(1 << 13),
+  splitTime(taiyinSplitTimeCapability);
 
   const TaiyinCapability(this.mask);
 
@@ -53,56 +54,6 @@ enum TaiyinStatusCategory {
   }
 }
 
-/// A solar-system body understood by Taiyin.
-enum TaiyinBody {
-  solarSystemBarycenter(0),
-  mercuryBarycenter(1),
-  venusBarycenter(2),
-  earthMoonBarycenter(3),
-  marsBarycenter(4),
-  jupiterBarycenter(5),
-  saturnBarycenter(6),
-  uranusBarycenter(7),
-  neptuneBarycenter(8),
-  plutoBarycenter(9),
-  sun(10),
-  mercury(199),
-  venus(299),
-  moon(301),
-  earth(399),
-  mars(499),
-  jupiter(599),
-  saturn(699),
-  uranus(799),
-  neptune(899),
-  pluto(999);
-
-  const TaiyinBody(this.id);
-
-  /// The stable body ID from the Taiyin C ABI.
-  final int id;
-}
-
-/// Modifiers for a position calculation.
-enum TaiyinPositionFlag {
-  speed(1 << 0),
-  xyz(1 << 1),
-  equatorial(1 << 2),
-  radians(1 << 3),
-  truePosition(1 << 4),
-  noAberration(1 << 5),
-  noGravitationalDeflection(1 << 6),
-  astrometric(1 << 7),
-  noNutation(1 << 8),
-  topocentric(1 << 9),
-  allowBarycenterApproximation(1 << 10);
-
-  const TaiyinPositionFlag(this.mask);
-
-  /// The bit used by the Taiyin C ABI.
-  final int mask;
-}
-
 /// Configuration for Taiyin's process-wide native runtime.
 final class TaiyinRuntimeOptions {
   const TaiyinRuntimeOptions({
@@ -126,35 +77,16 @@ final class TaiyinRuntimeOptions {
   final bool strictDiscovery;
 }
 
-/// The six values returned by a Taiyin position calculation.
-///
-/// Values 0–2 are the primary coordinates. Values 3–5 are their rates when
-/// [TaiyinPositionFlag.speed] is requested. Their coordinate system and units
-/// are described by [flags].
-final class TaiyinPosition {
-  TaiyinPosition._(List<double> values, this.flags)
-    : values = List.unmodifiable(values);
-
-  final List<double> values;
-  final Set<TaiyinPositionFlag> flags;
-
-  List<double> get coordinates => values.sublist(0, 3);
-  List<double> get rates => values.sublist(3, 6);
-  bool get isCartesian => flags.contains(TaiyinPositionFlag.xyz);
-  bool get isEquatorial => flags.contains(TaiyinPositionFlag.equatorial);
-  bool get isRadians => flags.contains(TaiyinPositionFlag.radians);
-
-  @override
-  String toString() => 'TaiyinPosition($values)';
-}
-
 /// A non-success status returned by the Taiyin C ABI.
 final class TaiyinException implements Exception {
-  const TaiyinException(this.status, this.name, this.message);
+  TaiyinException(this.status, this.name, this.message, {this.diagnostic});
 
   final int status;
   final String name;
   final String message;
+
+  /// Native route and coverage details for a failed ephemeris calculation.
+  final TaiyinEphemerisDiagnostic? diagnostic;
 
   @override
   String toString() => 'TaiyinException($status, $name): $message';
@@ -176,6 +108,13 @@ final class Taiyin implements Finalizable {
       _context,
       _ensureOpen,
       (status) => _checkStatus(_bindings, status),
+    );
+    position = TaiyinPositionApi.internal(
+      _bindings,
+      _context,
+      _ensureOpen,
+      (status, diagnostic) =>
+          _checkStatus(_bindings, status, diagnostic: diagnostic),
     );
     _contextFinalizer.attach(this, _context.cast(), detach: this);
   }
@@ -205,12 +144,11 @@ final class Taiyin implements Finalizable {
   }) {
     final bindings = TaiyinBindings(library);
     final abiVersion = bindings.taiyin_get_c_abi_version();
-    if (abiVersion != _supportedAbiVersion) {
-      throw StateError(
-        'Unsupported Taiyin C ABI $abiVersion; '
-        'this package supports ABI $_supportedAbiVersion.',
-      );
-    }
+    final capabilities = bindings.taiyin_get_capabilities();
+    validateTaiyinNativeCompatibility(
+      abiVersion: abiVersion,
+      capabilities: capabilities,
+    );
 
     using((arena) {
       final config = arena<taiyin_runtime_config>();
@@ -276,6 +214,7 @@ final class Taiyin implements Finalizable {
   final Pointer<taiyin_context> _context;
   final NativeFinalizer _contextFinalizer;
   late final TaiyinTime time;
+  late final TaiyinPositionApi position;
   bool _closed = false;
 
   /// The Taiyin C ABI version.
@@ -293,12 +232,12 @@ final class Taiyin implements Finalizable {
     final mask = capabilities;
     return Set.unmodifiable({
       for (final capability in TaiyinCapability.values)
-        if (mask & capability.mask != 0) capability,
+        if ((mask & capability.mask) != 0) capability,
     });
   }
 
   bool hasCapability(TaiyinCapability capability) {
-    return capabilities & capability.mask != 0;
+    return (capabilities & capability.mask) != 0;
   }
 
   /// Stable symbolic name for a native status code.
@@ -340,17 +279,7 @@ final class Taiyin implements Finalizable {
     JulianDate<TtScale> julianDate, {
     Set<TaiyinPositionFlag> flags = const {},
   }) {
-    return _position(
-      flags,
-      (mask, output) => _bindings.taiyin_calc_position_tt(
-        _context,
-        body.id,
-        julianDate.toDouble(),
-        mask,
-        output,
-        nullptr,
-      ),
-    );
+    return position.atTt(body, julianDate, flags: flags).value;
   }
 
   /// Calculates a position at a UT Julian date.
@@ -359,33 +288,7 @@ final class Taiyin implements Finalizable {
     JulianDate<Ut1Scale> julianDate, {
     Set<TaiyinPositionFlag> flags = const {},
   }) {
-    return _position(
-      flags,
-      (mask, output) => _bindings.taiyin_calc_position_ut(
-        _context,
-        body.id,
-        julianDate.toDouble(),
-        mask,
-        output,
-        nullptr,
-      ),
-    );
-  }
-
-  TaiyinPosition _position(
-    Set<TaiyinPositionFlag> flags,
-    int Function(int mask, Pointer<Double> output) calculate,
-  ) {
-    _ensureOpen();
-    final frozenFlags = Set<TaiyinPositionFlag>.unmodifiable(flags);
-    final mask = frozenFlags.fold(0, (value, flag) => value | flag.mask);
-    return using((arena) {
-      final output = arena<Double>(6);
-      _checkStatus(_bindings, calculate(mask, output));
-      return TaiyinPosition._([
-        for (var index = 0; index < 6; index++) output[index],
-      ], frozenFlags);
-    });
+    return position.atUt1(body, julianDate, flags: flags).value;
   }
 
   /// Releases the owned native context. Calling this more than once is safe.
@@ -412,16 +315,27 @@ DynamicLibrary _openDefaultLibrary() {
   return DynamicLibrary.open('libtaiyin.so');
 }
 
-Never _throwStatus(TaiyinBindings bindings, int status) {
+Never _throwStatus(
+  TaiyinBindings bindings,
+  int status, {
+  TaiyinEphemerisDiagnostic? diagnostic,
+}) {
   throw TaiyinException(
     status,
     _readNativeString(bindings.taiyin_status_name(status)),
     _readNativeString(bindings.taiyin_status_message(status)),
+    diagnostic: diagnostic,
   );
 }
 
-void _checkStatus(TaiyinBindings bindings, int status) {
-  if (status != 0) _throwStatus(bindings, status);
+void _checkStatus(
+  TaiyinBindings bindings,
+  int status, {
+  TaiyinEphemerisDiagnostic? diagnostic,
+}) {
+  if (status != 0) {
+    _throwStatus(bindings, status, diagnostic: diagnostic);
+  }
 }
 
 String _readNativeString(Pointer<Char> value) {
