@@ -23,6 +23,48 @@ final class TaiyinTime {
   final void Function() _ensureOpen;
   final void Function(int status) _checkStatus;
 
+  /// Converts a calendar value to a Julian date through Taiyin's native
+  /// calendar implementation.
+  ///
+  /// The type parameter labels the scale in which [value] is interpreted; no
+  /// time-scale conversion is performed.
+  JulianDate<S> julianDay<S extends TimeScale>(AstroDateTime value) {
+    _ensureOpen();
+    return using((arena) {
+      final calendar = _writeCalendar(arena, value);
+      final output = arena<Double>();
+      _checkStatus(_bindings.taiyin_julian_day(calendar, output));
+      return JulianDate<S>.fromDouble(output.value);
+    });
+  }
+
+  /// Converts a Julian date to a calendar value through Taiyin's native
+  /// calendar implementation.
+  ///
+  /// Taiyin's C ABI returns the seconds component as a `double`. It is rounded
+  /// to the nearest nanosecond when constructing [AstroDateTime].
+  AstroDateTime reverseJulianDay<S extends TimeScale>(JulianDate<S> value) {
+    _ensureOpen();
+    return using((arena) {
+      final output = arena<taiyin_calendar_datetime>();
+      _bindings.taiyin_calendar_datetime_init(output);
+      _checkStatus(
+        _bindings.taiyin_reverse_julian_day(value.toDouble(), output),
+      );
+      final calendar = output.ref;
+      final minute = AstroDateTime(
+        calendar.year,
+        calendar.month,
+        calendar.day,
+        calendar.hour,
+        calendar.minute,
+      );
+      return minute.addNanoseconds(
+        (calendar.second * Duration.microsecondsPerSecond * 1000).round(),
+      );
+    });
+  }
+
   /// Selects how UTC conversions obtain UT1 and Delta-T.
   ///
   /// Context configuration must finish before concurrent calculations begin.

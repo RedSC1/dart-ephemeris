@@ -100,9 +100,19 @@ dart analyze
 dart test
 ```
 
-The initial wrapper intentionally covers metadata, runtime initialization,
-context lifetime, and TT/UT positions. Add modules to the public API in small
-groups while extending the function allowlist in `ffigen.yaml`.
+Native integration tests use
+`../taiyin-ephemeris/build-c-api-release/libtaiyin.dylib` by default. Override
+it when necessary:
+
+```sh
+TAIYIN_TEST_LIBRARY=/path/to/libtaiyin.dylib dart test
+```
+
+The upstream C++ project currently registers 74 CTest suites. Their public
+behavior and numerical oracles are being ported as black-box Dart tests; see
+[`test/ported/README.md`](test/ported/README.md) for the coverage map. Tests of
+C++-only implementation details are not copied literally, but their observable
+oracles are reused when a corresponding C ABI operation exists.
 
 ## Native distribution
 
