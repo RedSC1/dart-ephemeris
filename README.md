@@ -153,6 +153,37 @@ table in the native runtime. `taiyin.clone()` copies all context-owned
 configuration, including custom deflectors; later changes and `reset()` calls
 are independent between the two instances.
 
+## Observed positions
+
+`taiyin.observed` calculates complete apparent and observed positions for the
+Sun, Moon, and eight planets at UT1 or UTC inputs. Results include geometric
+and apparent Cartesian states, spherical longitude/latitude, light time, native
+diagnostics, and optional horizontal and refracted coordinates:
+
+```dart
+taiyin.context
+  ..setObserverLocation(beijing)
+  ..setAtmospherePolicy({
+    TaiyinAtmospherePolicyFlag.allowStandardFallback,
+  });
+
+final observedSun = taiyin.observed.atUtc(
+  TaiyinBody.sun,
+  AstroDateTime(2024, 4, 8, 18),
+  flags: {
+    TaiyinObservedFlag.speed,
+    TaiyinObservedFlag.topocentric,
+    TaiyinObservedFlag.refraction,
+  },
+);
+print(observedSun.refractedHorizontal?.altitudeRadians);
+```
+
+Horizontal and refracted output require the topocentric flag and a configured
+observer location. Refraction additionally requires complete atmosphere data
+or standard-atmosphere fallback. Add `strictMeteorology` to forbid fallback.
+UTC calculations require Earth-orientation data covering the requested date.
+
 This package requires an ABI-1 native library that reports
 `TaiyinCapability.splitTime`. Older ABI-1 builds are rejected during
 `Taiyin.open` with a clear compatibility error instead of failing later during

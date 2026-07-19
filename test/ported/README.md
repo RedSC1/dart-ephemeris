@@ -19,13 +19,18 @@ Dart equivalent.
   models, topocentric modes, deflectors, clone/reset ownership, and invalid
   inputs. `position_api_test.dart` exercises single, batch, and
   Cartesian-state entry points across TDB, TT, UT1, explicit Delta-T, and UTC
-  routes. The remaining public modules move over as their wrappers are added.
+  routes. `observed_api_test.dart` exercises single and batch UT1/UTC observed
+  positions, nested apparent states and diagnostics, topocentric horizontal
+  rates, atmospheric refraction policy, and invalid inputs. The remaining
+  public modules move over as their wrappers are added.
   Static-vs-shared linkage is a native build concern and shares the same Dart
   behavior tests.
 - `native_apparent_runtime` and `apparent_position`: public context
   configuration, model selection, observer-offset validation, and owned
-  deflector behavior are covered. Calculation-specific apparent-position
-  oracles remain pending until the observed-position wrapper is added.
+  deflector behavior are covered. The observed-position wrapper covers UTC and
+  UT1 scale routing, apparent self-deflector skipping, topocentric horizontal
+  output, and strict-meteorology behavior. DE441-dependent flat apparent
+  numerical oracles remain conditional on the corresponding native data.
 - `time_angle_interpolation`: all time behavior reachable through the C ABI is
   covered by `time_angle_interpolation_test.dart`, including the original
   Delta-T oracle table. Angle and interpolation helpers are C++ APIs and are
