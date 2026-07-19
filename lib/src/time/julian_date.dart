@@ -138,3 +138,5 @@ typedef TaiJulianDate = JulianDate<TaiScale>;
 typedef TtJulianDate = JulianDate<TtScale>;
 typedef Ut1JulianDate = JulianDate<Ut1Scale>;
 typedef TdbJulianDate = JulianDate<TdbScale>;
+typedef LocalMeanSolarJulianDate = JulianDate<LocalMeanSolarTimeScale>;
+typedef LocalApparentSolarJulianDate = JulianDate<LocalApparentSolarTimeScale>;

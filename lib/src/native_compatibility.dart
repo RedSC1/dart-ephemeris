@@ -1,8 +1,8 @@
 const int taiyinSupportedAbiVersion = 1;
 const int taiyinSplitTimeCapability = 1 << 14;
 
-/// Symbols added while ABI 1 was still in development and required by this
-/// package's runtime and fixed-star APIs.
+/// Symbols added while ABI 1 was still in development and required by the
+/// high-level APIs exposed by this package.
 const Set<String> taiyinRequiredAbi1Symbols = {
   'taiyin_get_library_codename',
   'taiyin_runtime_add_source_path',
@@ -15,6 +15,19 @@ const Set<String> taiyinRequiredAbi1Symbols = {
   'taiyin_runtime_has_lunar_limb_model',
   'taiyin_runtime_clear_ephemeris_cache',
   'taiyin_runtime_cache_entry_count',
+  'taiyin_body_phenomena_init',
+  'taiyin_calc_body_phenomena_tt',
+  'taiyin_calc_body_phenomena_ut',
+  'taiyin_equation_of_time_result_init',
+  'taiyin_split_equation_of_time_result_init',
+  'taiyin_calc_equation_of_time_ut',
+  'taiyin_calc_equation_of_time_tt',
+  'taiyin_calc_equation_of_time_ut_split',
+  'taiyin_calc_equation_of_time_tt_split',
+  'taiyin_local_mean_to_apparent_solar_time',
+  'taiyin_local_apparent_to_mean_solar_time',
+  'taiyin_local_mean_to_apparent_solar_time_split',
+  'taiyin_local_apparent_to_mean_solar_time_split',
   'taiyin_star_catalog_add_tsc1',
   'taiyin_star_catalog_add_tsc1_memory',
   'taiyin_star_catalog_add_tsf1',

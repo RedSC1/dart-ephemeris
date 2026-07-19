@@ -384,11 +384,7 @@ final class TaiyinStarApi {
           for (final diagnostic in mapped)
             if (diagnostic.status != 0) diagnostic,
         ];
-        _checkStatus(
-          status,
-          failures.firstOrNull ?? mapped.first,
-          failures.isEmpty ? mapped : failures,
-        );
+        _checkStatus(status, failures.firstOrNull ?? mapped.first, mapped);
       }
       final results = List<TaiyinObservedStarPosition>.unmodifiable([
         for (var index = 0; index < starKeys.length; index++)
