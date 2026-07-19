@@ -121,6 +121,9 @@ functions:
     - taiyin_calc_state_ut
     - taiyin_calc_state_ut_delta_t
     - taiyin_calc_state_utc
+    - taiyin_observed_position_init
+    - taiyin_calc_observed_bodies_ut
+    - taiyin_calc_observed_bodies_utc
 structs:
   include:
     - taiyin_calendar_datetime
@@ -139,6 +142,10 @@ structs:
     - taiyin_astro_model_config
     - taiyin_apparent_config
     - taiyin_apparent_deflector
+    - taiyin_horizontal_coordinates
+    - taiyin_horizontal_rates
+    - taiyin_apparent_position
+    - taiyin_observed_position
 enums:
   as-int:
     include:

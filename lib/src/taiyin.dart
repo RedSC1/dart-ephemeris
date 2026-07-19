@@ -5,13 +5,18 @@ import 'package:ffi/ffi.dart';
 
 import 'bindings/taiyin_bindings.g.dart';
 import 'context/context_models.dart';
+import 'interop/calendar.dart';
 import 'native_compatibility.dart';
+import 'observed/observed_models.dart';
 import 'position/position_api.dart';
+import 'time/astro_date_time.dart';
 import 'time/julian_date.dart';
 import 'time/time_api.dart';
+import 'time/time_models.dart';
 import 'time/time_scale.dart';
 
 part 'context/context_api.dart';
+part 'observed/observed_api.dart';
 
 /// A feature module reported by the loaded Taiyin native library.
 enum TaiyinCapability {
@@ -125,6 +130,13 @@ final class Taiyin implements Finalizable {
       (status, diagnostic) =>
           _checkStatus(_bindings, status, diagnostic: diagnostic),
     );
+    observed = TaiyinObservedApi._(
+      _bindings,
+      _context,
+      _ensureOpen,
+      (status, diagnostic) =>
+          _checkStatus(_bindings, status, diagnostic: diagnostic),
+    );
     _contextFinalizer.attach(this, _context.cast(), detach: this);
   }
 
@@ -225,6 +237,7 @@ final class Taiyin implements Finalizable {
   late final TaiyinContextApi context;
   late final TaiyinTime time;
   late final TaiyinPositionApi position;
+  late final TaiyinObservedApi observed;
   bool _closed = false;
 
   /// The Taiyin C ABI version.

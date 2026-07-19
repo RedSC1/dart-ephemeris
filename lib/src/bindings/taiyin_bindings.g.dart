@@ -876,6 +876,117 @@ class TaiyinBindings {
       _taiyin_context_set_eclipse_modelsPtr
           .asFunction<int Function(ffi.Pointer<taiyin_context>, int, int)>();
 
+  void taiyin_observed_position_init(
+    ffi.Pointer<taiyin_observed_position> value,
+  ) {
+    return _taiyin_observed_position_init(value);
+  }
+
+  late final _taiyin_observed_position_initPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<taiyin_observed_position>)
+        >
+      >('taiyin_observed_position_init');
+  late final _taiyin_observed_position_init = _taiyin_observed_position_initPtr
+      .asFunction<void Function(ffi.Pointer<taiyin_observed_position>)>();
+
+  int taiyin_calc_observed_bodies_ut(
+    ffi.Pointer<taiyin_context> context,
+    double jd_ut,
+    ffi.Pointer<ffi.Int32> body_ids,
+    int body_count,
+    int flags,
+    ffi.Pointer<taiyin_observed_position> out_positions,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostics,
+  ) {
+    return _taiyin_calc_observed_bodies_ut(
+      context,
+      jd_ut,
+      body_ids,
+      body_count,
+      flags,
+      out_positions,
+      diagnostics,
+    );
+  }
+
+  late final _taiyin_calc_observed_bodies_utPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Double,
+            ffi.Pointer<ffi.Int32>,
+            ffi.Size,
+            ffi.Uint64,
+            ffi.Pointer<taiyin_observed_position>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_calc_observed_bodies_ut');
+  late final _taiyin_calc_observed_bodies_ut =
+      _taiyin_calc_observed_bodies_utPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              double,
+              ffi.Pointer<ffi.Int32>,
+              int,
+              int,
+              ffi.Pointer<taiyin_observed_position>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_calc_observed_bodies_utc(
+    ffi.Pointer<taiyin_context> context,
+    ffi.Pointer<taiyin_calendar_datetime> datetime_utc,
+    ffi.Pointer<ffi.Int32> body_ids,
+    int body_count,
+    int flags,
+    ffi.Pointer<taiyin_observed_position> out_positions,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostics,
+  ) {
+    return _taiyin_calc_observed_bodies_utc(
+      context,
+      datetime_utc,
+      body_ids,
+      body_count,
+      flags,
+      out_positions,
+      diagnostics,
+    );
+  }
+
+  late final _taiyin_calc_observed_bodies_utcPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Pointer<taiyin_calendar_datetime>,
+            ffi.Pointer<ffi.Int32>,
+            ffi.Size,
+            ffi.Uint64,
+            ffi.Pointer<taiyin_observed_position>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_calc_observed_bodies_utc');
+  late final _taiyin_calc_observed_bodies_utc =
+      _taiyin_calc_observed_bodies_utcPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              ffi.Pointer<taiyin_calendar_datetime>,
+              ffi.Pointer<ffi.Int32>,
+              int,
+              int,
+              ffi.Pointer<taiyin_observed_position>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
   int taiyin_calc_position_tdb(
     ffi.Pointer<taiyin_context> context,
     int target_id,
@@ -3119,6 +3230,97 @@ final class taiyin_apparent_deflector extends ffi.Struct {
 
   @ffi.Double()
   external double limit;
+}
+
+sealed class taiyin_observed_flags {
+  static const TAIYIN_OBSERVED_SPEED = 1;
+  static const TAIYIN_OBSERVED_TOPOCENTRIC = 2;
+  static const TAIYIN_OBSERVED_HORIZONTAL = 4;
+  static const TAIYIN_OBSERVED_REFRACTION = 8;
+  static const TAIYIN_OBSERVED_TRUEPOS = 16;
+  static const TAIYIN_OBSERVED_ASTROMETRIC = 32;
+  static const TAIYIN_OBSERVED_NO_ABERR = 64;
+  static const TAIYIN_OBSERVED_NO_GDEFL = 128;
+}
+
+final class taiyin_horizontal_coordinates extends ffi.Struct {
+  @ffi.Double()
+  external double azimuth_rad;
+
+  @ffi.Double()
+  external double altitude_rad;
+
+  @ffi.Double()
+  external double distance_au;
+}
+
+final class taiyin_horizontal_rates extends ffi.Struct {
+  @ffi.Double()
+  external double azimuth_rate_rad_per_day;
+
+  @ffi.Double()
+  external double altitude_rate_rad_per_day;
+
+  @ffi.Double()
+  external double distance_rate_au_per_day;
+}
+
+final class taiyin_apparent_position extends ffi.Struct {
+  @ffi.Int32()
+  external int body_id;
+
+  @ffi.Uint32()
+  external int body_mask_bit;
+
+  @taiyin_status()
+  external int status;
+
+  external taiyin_ephemeris_diagnostic diagnostic;
+
+  external taiyin_cartesian_state geometric_state;
+
+  external taiyin_cartesian_state apparent_state;
+
+  @ffi.Double()
+  external double longitude_rad;
+
+  @ffi.Double()
+  external double latitude_rad;
+
+  @ffi.Double()
+  external double distance_au;
+
+  @ffi.Double()
+  external double light_time_days;
+
+  @taiyin_bool()
+  external int cache_hit;
+
+  @ffi.Array.multi([7])
+  external ffi.Array<ffi.Uint8> reserved;
+}
+
+final class taiyin_observed_position extends ffi.Struct {
+  @ffi.Uint32()
+  external int struct_size;
+
+  @ffi.Int32()
+  external int body_id;
+
+  @taiyin_status()
+  external int status;
+
+  external taiyin_ephemeris_diagnostic diagnostic;
+
+  external taiyin_apparent_position apparent;
+
+  external taiyin_horizontal_coordinates horizontal;
+
+  external taiyin_horizontal_rates horizontal_rates;
+
+  external taiyin_horizontal_coordinates refracted_horizontal;
+
+  external taiyin_horizontal_rates refracted_horizontal_rates;
 }
 
 sealed class taiyin_body_id {
