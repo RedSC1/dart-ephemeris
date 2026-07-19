@@ -11,8 +11,8 @@ Dart equivalent.
 
 ## Ported or in progress
 
-- `c_api_cpp`: ABI version, library version, capabilities, and initialized
-  calendar behavior are covered by `test/taiyin_test.dart`.
+- `c_api_cpp`: ABI version, exact library version, typed capabilities, and
+  initialized calendar behavior are covered by `test/taiyin_test.dart`.
 - `c_api` and `c_api_static`: metadata, runtime/context lifetime, calendar,
   time-scale, and position portions are covered. The remaining public modules
   move over as their wrappers are added. Static-vs-shared linkage is a native

@@ -7,12 +7,15 @@ headers:
 compiler-opts:
   - -I../taiyin-ephemeris/include
 functions:
+  rename:
+    taiyin_status_category: taiyin_status_category_of
   include:
     - taiyin_get_c_abi_version
     - taiyin_get_library_version
     - taiyin_get_capabilities
     - taiyin_status_name
     - taiyin_status_message
+    - taiyin_status_category
     - taiyin_calendar_datetime_init
     - taiyin_julian_day
     - taiyin_reverse_julian_day

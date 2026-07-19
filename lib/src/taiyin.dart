@@ -10,6 +10,49 @@ import 'time/time_scale.dart';
 
 const int _supportedAbiVersion = 1;
 
+/// A feature module reported by the loaded Taiyin native library.
+enum TaiyinCapability {
+  runtime(1 << 0),
+  time(1 << 1),
+  position(1 << 2),
+  star(1 << 3),
+  visibility(1 << 4),
+  phenomena(1 << 5),
+  events(1 << 6),
+  eclipse(1 << 7),
+  occultation(1 << 8),
+  heliacal(1 << 9),
+  astrology(1 << 10),
+  customTargets(1 << 11),
+  customAyanamsha(1 << 12),
+  customHouses(1 << 13);
+
+  const TaiyinCapability(this.mask);
+
+  final int mask;
+}
+
+/// Broad category assigned to a Taiyin status code.
+enum TaiyinStatusCategory {
+  ok(0),
+  generic(1),
+  ephemeris(10),
+  file(20),
+  time(30),
+  observer(40),
+  event(50),
+  runtime(60),
+  unknown(999);
+
+  const TaiyinStatusCategory(this.id);
+
+  final int id;
+
+  static TaiyinStatusCategory fromId(int id) {
+    return values.firstWhere((value) => value.id == id, orElse: () => unknown);
+  }
+}
+
 /// A solar-system body understood by Taiyin.
 enum TaiyinBody {
   solarSystemBarycenter(0),
@@ -245,6 +288,36 @@ final class Taiyin implements Finalizable {
   /// The native module capability bitset.
   int get capabilities => _bindings.taiyin_get_capabilities();
 
+  /// Native modules available in the loaded Taiyin library.
+  Set<TaiyinCapability> get availableCapabilities {
+    final mask = capabilities;
+    return Set.unmodifiable({
+      for (final capability in TaiyinCapability.values)
+        if (mask & capability.mask != 0) capability,
+    });
+  }
+
+  bool hasCapability(TaiyinCapability capability) {
+    return capabilities & capability.mask != 0;
+  }
+
+  /// Stable symbolic name for a native status code.
+  String statusName(int status) {
+    return _readNativeString(_bindings.taiyin_status_name(status));
+  }
+
+  /// Human-readable description for a native status code.
+  String statusMessage(int status) {
+    return _readNativeString(_bindings.taiyin_status_message(status));
+  }
+
+  /// Broad category for a native status code.
+  TaiyinStatusCategory statusCategory(int status) {
+    return TaiyinStatusCategory.fromId(
+      _bindings.taiyin_status_category_of(status),
+    );
+  }
+
   /// The number of ephemeris descriptors in the global runtime catalog.
   int get catalogSize => _bindings.taiyin_runtime_catalog_size();
 
@@ -340,18 +413,18 @@ DynamicLibrary _openDefaultLibrary() {
 }
 
 Never _throwStatus(TaiyinBindings bindings, int status) {
-  String read(Pointer<Char> value) {
-    if (value == nullptr) return 'Unknown';
-    return value.cast<Utf8>().toDartString();
-  }
-
   throw TaiyinException(
     status,
-    read(bindings.taiyin_status_name(status)),
-    read(bindings.taiyin_status_message(status)),
+    _readNativeString(bindings.taiyin_status_name(status)),
+    _readNativeString(bindings.taiyin_status_message(status)),
   );
 }
 
 void _checkStatus(TaiyinBindings bindings, int status) {
   if (status != 0) _throwStatus(bindings, status);
+}
+
+String _readNativeString(Pointer<Char> value) {
+  if (value == nullptr) return 'Unknown';
+  return value.cast<Utf8>().toDartString();
 }

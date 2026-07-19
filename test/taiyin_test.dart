@@ -27,8 +27,37 @@ void main() {
 
       test('validates metadata and initializes the catalog', () {
         expect(taiyin.abiVersion, 1);
-        expect(taiyin.libraryVersion, isNotEmpty);
+        expect(taiyin.libraryVersion, '1.0.0');
         expect(taiyin.catalogSize, greaterThan(0));
+        expect(
+          taiyin.availableCapabilities,
+          containsAll({
+            TaiyinCapability.runtime,
+            TaiyinCapability.time,
+            TaiyinCapability.position,
+            TaiyinCapability.eclipse,
+            TaiyinCapability.astrology,
+          }),
+        );
+        expect(taiyin.hasCapability(TaiyinCapability.runtime), isTrue);
+        expect(taiyin.hasCapability(TaiyinCapability.position), isTrue);
+      });
+
+      test('maps native status metadata', () {
+        const invalidArgument = -1;
+
+        expect(
+          taiyin.statusName(invalidArgument),
+          'TAIYIN_ERROR_INVALID_ARGUMENT',
+        );
+        expect(taiyin.statusMessage(invalidArgument), isNotEmpty);
+        expect(
+          taiyin.statusCategory(invalidArgument),
+          TaiyinStatusCategory.generic,
+        );
+        expect(taiyin.statusCategory(-1001), TaiyinStatusCategory.ephemeris);
+        expect(taiyin.statusCategory(-3001), TaiyinStatusCategory.time);
+        expect(taiyin.statusCategory(-6001), TaiyinStatusCategory.runtime);
       });
 
       test('calculates a finite Moon state vector', () {

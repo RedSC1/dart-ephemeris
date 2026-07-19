@@ -93,6 +93,17 @@ class TaiyinBindings {
   late final _taiyin_status_message = _taiyin_status_messagePtr
       .asFunction<ffi.Pointer<ffi.Char> Function(int)>();
 
+  int taiyin_status_category_of(int status) {
+    return _taiyin_status_category_of(status);
+  }
+
+  late final _taiyin_status_category_ofPtr =
+      _lookup<ffi.NativeFunction<ffi.Int32 Function(taiyin_status)>>(
+        'taiyin_status_category',
+      );
+  late final _taiyin_status_category_of = _taiyin_status_category_ofPtr
+      .asFunction<int Function(int)>();
+
   int taiyin_context_create(
     ffi.Pointer<ffi.Pointer<taiyin_context>> out_context,
   ) {
