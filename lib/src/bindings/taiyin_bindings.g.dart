@@ -1838,6 +1838,554 @@ class TaiyinBindings {
   late final _taiyin_runtime_cache_entry_count =
       _taiyin_runtime_cache_entry_countPtr.asFunction<int Function()>();
 
+  int taiyin_star_catalog_add_tsc1(ffi.Pointer<ffi.Char> path) {
+    return _taiyin_star_catalog_add_tsc1(path);
+  }
+
+  late final _taiyin_star_catalog_add_tsc1Ptr =
+      _lookup<
+        ffi.NativeFunction<taiyin_status Function(ffi.Pointer<ffi.Char>)>
+      >('taiyin_star_catalog_add_tsc1');
+  late final _taiyin_star_catalog_add_tsc1 = _taiyin_star_catalog_add_tsc1Ptr
+      .asFunction<int Function(ffi.Pointer<ffi.Char>)>();
+
+  int taiyin_star_catalog_add_tsc1_memory(
+    ffi.Pointer<ffi.Uint8> data,
+    int size,
+  ) {
+    return _taiyin_star_catalog_add_tsc1_memory(data, size);
+  }
+
+  late final _taiyin_star_catalog_add_tsc1_memoryPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(ffi.Pointer<ffi.Uint8>, ffi.Size)
+        >
+      >('taiyin_star_catalog_add_tsc1_memory');
+  late final _taiyin_star_catalog_add_tsc1_memory =
+      _taiyin_star_catalog_add_tsc1_memoryPtr
+          .asFunction<int Function(ffi.Pointer<ffi.Uint8>, int)>();
+
+  int taiyin_star_catalog_add_tsf1(ffi.Pointer<ffi.Char> path) {
+    return _taiyin_star_catalog_add_tsf1(path);
+  }
+
+  late final _taiyin_star_catalog_add_tsf1Ptr =
+      _lookup<
+        ffi.NativeFunction<taiyin_status Function(ffi.Pointer<ffi.Char>)>
+      >('taiyin_star_catalog_add_tsf1');
+  late final _taiyin_star_catalog_add_tsf1 = _taiyin_star_catalog_add_tsf1Ptr
+      .asFunction<int Function(ffi.Pointer<ffi.Char>)>();
+
+  void taiyin_star_catalog_clear() {
+    return _taiyin_star_catalog_clear();
+  }
+
+  late final _taiyin_star_catalog_clearPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function()>>(
+        'taiyin_star_catalog_clear',
+      );
+  late final _taiyin_star_catalog_clear = _taiyin_star_catalog_clearPtr
+      .asFunction<void Function()>();
+
+  int taiyin_star_catalog_count() {
+    return _taiyin_star_catalog_count();
+  }
+
+  late final _taiyin_star_catalog_countPtr =
+      _lookup<ffi.NativeFunction<ffi.Size Function()>>(
+        'taiyin_star_catalog_count',
+      );
+  late final _taiyin_star_catalog_count = _taiyin_star_catalog_countPtr
+      .asFunction<int Function()>();
+
+  int taiyin_star_find_magnitude(
+    ffi.Pointer<ffi.Char> star_key,
+    ffi.Pointer<ffi.Double> out_magnitude,
+  ) {
+    return _taiyin_star_find_magnitude(star_key, out_magnitude);
+  }
+
+  late final _taiyin_star_find_magnitudePtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Double>)
+        >
+      >('taiyin_star_find_magnitude');
+  late final _taiyin_star_find_magnitude = _taiyin_star_find_magnitudePtr
+      .asFunction<
+        int Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Double>)
+      >();
+
+  int taiyin_calc_star_position_tdb(
+    ffi.Pointer<taiyin_context> context,
+    ffi.Pointer<ffi.Char> star_key,
+    double jd_tdb,
+    double jd_tt,
+    int flags,
+    ffi.Pointer<ffi.Double> out_position,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_calc_star_position_tdb(
+      context,
+      star_key,
+      jd_tdb,
+      jd_tt,
+      flags,
+      out_position,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_calc_star_position_tdbPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Double,
+            ffi.Double,
+            ffi.Uint64,
+            ffi.Pointer<ffi.Double>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_calc_star_position_tdb');
+  late final _taiyin_calc_star_position_tdb = _taiyin_calc_star_position_tdbPtr
+      .asFunction<
+        int Function(
+          ffi.Pointer<taiyin_context>,
+          ffi.Pointer<ffi.Char>,
+          double,
+          double,
+          int,
+          ffi.Pointer<ffi.Double>,
+          ffi.Pointer<taiyin_ephemeris_diagnostic>,
+        )
+      >();
+
+  int taiyin_calc_star_position_tt(
+    ffi.Pointer<taiyin_context> context,
+    ffi.Pointer<ffi.Char> star_key,
+    double jd_tt,
+    int flags,
+    ffi.Pointer<ffi.Double> out_position,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_calc_star_position_tt(
+      context,
+      star_key,
+      jd_tt,
+      flags,
+      out_position,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_calc_star_position_ttPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Double,
+            ffi.Uint64,
+            ffi.Pointer<ffi.Double>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_calc_star_position_tt');
+  late final _taiyin_calc_star_position_tt = _taiyin_calc_star_position_ttPtr
+      .asFunction<
+        int Function(
+          ffi.Pointer<taiyin_context>,
+          ffi.Pointer<ffi.Char>,
+          double,
+          int,
+          ffi.Pointer<ffi.Double>,
+          ffi.Pointer<taiyin_ephemeris_diagnostic>,
+        )
+      >();
+
+  int taiyin_calc_star_position_ut(
+    ffi.Pointer<taiyin_context> context,
+    ffi.Pointer<ffi.Char> star_key,
+    double jd_ut,
+    int flags,
+    ffi.Pointer<ffi.Double> out_position,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_calc_star_position_ut(
+      context,
+      star_key,
+      jd_ut,
+      flags,
+      out_position,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_calc_star_position_utPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Double,
+            ffi.Uint64,
+            ffi.Pointer<ffi.Double>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_calc_star_position_ut');
+  late final _taiyin_calc_star_position_ut = _taiyin_calc_star_position_utPtr
+      .asFunction<
+        int Function(
+          ffi.Pointer<taiyin_context>,
+          ffi.Pointer<ffi.Char>,
+          double,
+          int,
+          ffi.Pointer<ffi.Double>,
+          ffi.Pointer<taiyin_ephemeris_diagnostic>,
+        )
+      >();
+
+  int taiyin_calc_star_position_ut_delta_t(
+    ffi.Pointer<taiyin_context> context,
+    ffi.Pointer<ffi.Char> star_key,
+    double jd_ut1,
+    double delta_t_seconds,
+    int flags,
+    ffi.Pointer<ffi.Double> out_position,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_calc_star_position_ut_delta_t(
+      context,
+      star_key,
+      jd_ut1,
+      delta_t_seconds,
+      flags,
+      out_position,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_calc_star_position_ut_delta_tPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Double,
+            ffi.Double,
+            ffi.Uint64,
+            ffi.Pointer<ffi.Double>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_calc_star_position_ut_delta_t');
+  late final _taiyin_calc_star_position_ut_delta_t =
+      _taiyin_calc_star_position_ut_delta_tPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              ffi.Pointer<ffi.Char>,
+              double,
+              double,
+              int,
+              ffi.Pointer<ffi.Double>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_calc_star_positions_tdb(
+    ffi.Pointer<taiyin_context> context,
+    ffi.Pointer<ffi.Pointer<ffi.Char>> star_keys,
+    int star_count,
+    double jd_tdb,
+    double jd_tt,
+    int flags,
+    ffi.Pointer<ffi.Double> out_positions,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostics,
+  ) {
+    return _taiyin_calc_star_positions_tdb(
+      context,
+      star_keys,
+      star_count,
+      jd_tdb,
+      jd_tt,
+      flags,
+      out_positions,
+      diagnostics,
+    );
+  }
+
+  late final _taiyin_calc_star_positions_tdbPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Pointer<ffi.Pointer<ffi.Char>>,
+            ffi.Size,
+            ffi.Double,
+            ffi.Double,
+            ffi.Uint64,
+            ffi.Pointer<ffi.Double>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_calc_star_positions_tdb');
+  late final _taiyin_calc_star_positions_tdb =
+      _taiyin_calc_star_positions_tdbPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              ffi.Pointer<ffi.Pointer<ffi.Char>>,
+              int,
+              double,
+              double,
+              int,
+              ffi.Pointer<ffi.Double>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_calc_star_positions_tt(
+    ffi.Pointer<taiyin_context> context,
+    ffi.Pointer<ffi.Pointer<ffi.Char>> star_keys,
+    int star_count,
+    double jd_tt,
+    int flags,
+    ffi.Pointer<ffi.Double> out_positions,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostics,
+  ) {
+    return _taiyin_calc_star_positions_tt(
+      context,
+      star_keys,
+      star_count,
+      jd_tt,
+      flags,
+      out_positions,
+      diagnostics,
+    );
+  }
+
+  late final _taiyin_calc_star_positions_ttPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Pointer<ffi.Pointer<ffi.Char>>,
+            ffi.Size,
+            ffi.Double,
+            ffi.Uint64,
+            ffi.Pointer<ffi.Double>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_calc_star_positions_tt');
+  late final _taiyin_calc_star_positions_tt = _taiyin_calc_star_positions_ttPtr
+      .asFunction<
+        int Function(
+          ffi.Pointer<taiyin_context>,
+          ffi.Pointer<ffi.Pointer<ffi.Char>>,
+          int,
+          double,
+          int,
+          ffi.Pointer<ffi.Double>,
+          ffi.Pointer<taiyin_ephemeris_diagnostic>,
+        )
+      >();
+
+  int taiyin_calc_star_positions_ut(
+    ffi.Pointer<taiyin_context> context,
+    ffi.Pointer<ffi.Pointer<ffi.Char>> star_keys,
+    int star_count,
+    double jd_ut,
+    int flags,
+    ffi.Pointer<ffi.Double> out_positions,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostics,
+  ) {
+    return _taiyin_calc_star_positions_ut(
+      context,
+      star_keys,
+      star_count,
+      jd_ut,
+      flags,
+      out_positions,
+      diagnostics,
+    );
+  }
+
+  late final _taiyin_calc_star_positions_utPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Pointer<ffi.Pointer<ffi.Char>>,
+            ffi.Size,
+            ffi.Double,
+            ffi.Uint64,
+            ffi.Pointer<ffi.Double>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_calc_star_positions_ut');
+  late final _taiyin_calc_star_positions_ut = _taiyin_calc_star_positions_utPtr
+      .asFunction<
+        int Function(
+          ffi.Pointer<taiyin_context>,
+          ffi.Pointer<ffi.Pointer<ffi.Char>>,
+          int,
+          double,
+          int,
+          ffi.Pointer<ffi.Double>,
+          ffi.Pointer<taiyin_ephemeris_diagnostic>,
+        )
+      >();
+
+  int taiyin_calc_star_positions_ut_delta_t(
+    ffi.Pointer<taiyin_context> context,
+    ffi.Pointer<ffi.Pointer<ffi.Char>> star_keys,
+    int star_count,
+    double jd_ut1,
+    double delta_t_seconds,
+    int flags,
+    ffi.Pointer<ffi.Double> out_positions,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostics,
+  ) {
+    return _taiyin_calc_star_positions_ut_delta_t(
+      context,
+      star_keys,
+      star_count,
+      jd_ut1,
+      delta_t_seconds,
+      flags,
+      out_positions,
+      diagnostics,
+    );
+  }
+
+  late final _taiyin_calc_star_positions_ut_delta_tPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Pointer<ffi.Pointer<ffi.Char>>,
+            ffi.Size,
+            ffi.Double,
+            ffi.Double,
+            ffi.Uint64,
+            ffi.Pointer<ffi.Double>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_calc_star_positions_ut_delta_t');
+  late final _taiyin_calc_star_positions_ut_delta_t =
+      _taiyin_calc_star_positions_ut_delta_tPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              ffi.Pointer<ffi.Pointer<ffi.Char>>,
+              int,
+              double,
+              double,
+              int,
+              ffi.Pointer<ffi.Double>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_calc_observed_star_ut(
+    ffi.Pointer<taiyin_context> context,
+    ffi.Pointer<ffi.Char> star_key,
+    double jd_ut,
+    int flags,
+    ffi.Pointer<taiyin_observed_position> out_position,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_calc_observed_star_ut(
+      context,
+      star_key,
+      jd_ut,
+      flags,
+      out_position,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_calc_observed_star_utPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Double,
+            ffi.Uint64,
+            ffi.Pointer<taiyin_observed_position>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_calc_observed_star_ut');
+  late final _taiyin_calc_observed_star_ut = _taiyin_calc_observed_star_utPtr
+      .asFunction<
+        int Function(
+          ffi.Pointer<taiyin_context>,
+          ffi.Pointer<ffi.Char>,
+          double,
+          int,
+          ffi.Pointer<taiyin_observed_position>,
+          ffi.Pointer<taiyin_ephemeris_diagnostic>,
+        )
+      >();
+
+  int taiyin_calc_observed_stars_ut(
+    ffi.Pointer<taiyin_context> context,
+    ffi.Pointer<ffi.Pointer<ffi.Char>> star_keys,
+    int star_count,
+    double jd_ut,
+    int flags,
+    ffi.Pointer<taiyin_observed_position> out_positions,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostics,
+  ) {
+    return _taiyin_calc_observed_stars_ut(
+      context,
+      star_keys,
+      star_count,
+      jd_ut,
+      flags,
+      out_positions,
+      diagnostics,
+    );
+  }
+
+  late final _taiyin_calc_observed_stars_utPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Pointer<ffi.Pointer<ffi.Char>>,
+            ffi.Size,
+            ffi.Double,
+            ffi.Uint64,
+            ffi.Pointer<taiyin_observed_position>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_calc_observed_stars_ut');
+  late final _taiyin_calc_observed_stars_ut = _taiyin_calc_observed_stars_utPtr
+      .asFunction<
+        int Function(
+          ffi.Pointer<taiyin_context>,
+          ffi.Pointer<ffi.Pointer<ffi.Char>>,
+          int,
+          double,
+          int,
+          ffi.Pointer<taiyin_observed_position>,
+          ffi.Pointer<taiyin_ephemeris_diagnostic>,
+        )
+      >();
+
   void taiyin_precise_time_scales_init(
     ffi.Pointer<taiyin_precise_time_scales> value,
   ) {

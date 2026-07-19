@@ -25,10 +25,17 @@ Dart equivalent.
   Cartesian-state entry points across TDB, TT, UT1, explicit Delta-T, and UTC
   routes. `observed_api_test.dart` exercises single and batch UT1/UTC observed
   positions, nested apparent states and diagnostics, topocentric horizontal
-  rates, atmospheric refraction policy, and invalid inputs. The remaining
-  public modules move over as their wrappers are added.
+  rates, atmospheric refraction policy, and invalid inputs.
+  `star_api_test.dart` exercises TSC1 file/memory ownership, TSF1 loading,
+  magnitude aliases, all four single and batch star-position time routes,
+  partial diagnostics, observed stars, horizontal output, and invalid inputs.
+  The remaining public modules move over as their wrappers are added.
   Static-vs-shared linkage is a native build concern and shares the same Dart
   behavior tests.
+- `star_file` and `tsc1_catalog_discovery`: the public catalog loading,
+  caller-owned memory retention, alias resolution, magnitude lookup, and TSF1
+  behavior reachable through `taiyin/c/star.h` are covered. Parser, mapping,
+  provider-cache, and discovery-descriptor internals remain native-only.
 - `native_apparent_runtime` and `apparent_position`: public context
   configuration, model selection, observer-offset validation, and owned
   deflector behavior are covered. The observed-position wrapper covers UTC and
@@ -48,8 +55,7 @@ These suites map to current or planned C ABI modules:
   `discovery_descriptors`, `spk_opm2_jplephem_oracles`
 - `sidereal_astrology`, `houses_astrology`, `lunar_points_astrology`,
   `pure_functions_full`
-- `star_file`, `tsc1_catalog_discovery`, `celestial_body_registry`,
-  `body_registry`, `dispatch_models`
+- `celestial_body_registry`, `body_registry`, `dispatch_models`
 - `apparent_position_oracles`, `apparent_self_skip`
 - `event_search`, `orbital_events`, `solar_time`, `phenomena`
 - `visibility_search`, `solar_visibility_public`, `moon_visibility_public`,

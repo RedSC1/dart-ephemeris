@@ -36,11 +36,14 @@ final class TaiyinRuntimeOptions {
 /// process-wide native runtime. Call one of them once in the application's main
 /// isolate. Worker isolates must use [TaiyinContext.attach] instead.
 final class Taiyin {
-  Taiyin._(this._library, this._bindings, this._contextFinalizer);
+  Taiyin._(this._library, this._bindings, this._contextFinalizer) {
+    starCatalog = TaiyinStarCatalog._(_bindings);
+  }
 
   final DynamicLibrary _library;
   final TaiyinBindings _bindings;
   final NativeFinalizer _contextFinalizer;
+  late final TaiyinStarCatalog starCatalog;
 
   /// Opens Taiyin and performs process-wide native runtime setup.
   factory Taiyin.open({

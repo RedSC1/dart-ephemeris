@@ -1,5 +1,6 @@
 import 'dart:ffi';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:ffi/ffi.dart';
 
@@ -9,6 +10,7 @@ import 'interop/calendar.dart';
 import 'native_compatibility.dart';
 import 'observed/observed_models.dart';
 import 'position/position_api.dart';
+import 'star/star_models.dart';
 import 'time/astro_date_time.dart';
 import 'time/julian_date.dart';
 import 'time/time_api.dart';
@@ -18,6 +20,7 @@ import 'time/time_scale.dart';
 part 'context/context_api.dart';
 part 'observed/observed_api.dart';
 part 'runtime/runtime_api.dart';
+part 'star/star_api.dart';
 
 /// A feature module reported by the loaded Taiyin native library.
 enum TaiyinCapability {
@@ -123,6 +126,14 @@ final class TaiyinContext implements Finalizable {
         (status, diagnostic) =>
             _checkStatus(_bindings, status, diagnostic: diagnostic),
       );
+      stars = TaiyinStarApi._(
+        _bindings,
+        _context,
+        _ensureOpen,
+        (status, diagnostic) =>
+            _checkStatus(_bindings, status, diagnostic: diagnostic),
+        observed,
+      );
     } catch (_) {
       if (finalizerAttached) {
         _contextFinalizer.detach(this);
@@ -178,6 +189,7 @@ final class TaiyinContext implements Finalizable {
   late final TaiyinTime time;
   late final TaiyinPositionApi position;
   late final TaiyinObservedApi observed;
+  late final TaiyinStarApi stars;
   bool _closed = false;
 
   /// Creates an independent native context without reinitializing the runtime.
@@ -263,6 +275,7 @@ _TaiyinNativeLibraryState _nativeLibraryStateFor(DynamicLibrary library) {
       abiVersion: bindings.taiyin_get_c_abi_version(),
       capabilities: bindings.taiyin_get_capabilities(),
     );
+    validateTaiyinRequiredSymbols(providesSymbol: library.providesSymbol);
     return _TaiyinNativeLibraryState(bindings, NativeFinalizer(destroy));
   });
 }

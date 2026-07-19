@@ -135,6 +135,22 @@ functions:
     - taiyin_observed_position_init
     - taiyin_calc_observed_bodies_ut
     - taiyin_calc_observed_bodies_utc
+    - taiyin_star_catalog_add_tsc1
+    - taiyin_star_catalog_add_tsc1_memory
+    - taiyin_star_catalog_add_tsf1
+    - taiyin_star_catalog_clear
+    - taiyin_star_catalog_count
+    - taiyin_star_find_magnitude
+    - taiyin_calc_star_position_tdb
+    - taiyin_calc_star_position_tt
+    - taiyin_calc_star_position_ut
+    - taiyin_calc_star_position_ut_delta_t
+    - taiyin_calc_star_positions_tdb
+    - taiyin_calc_star_positions_tt
+    - taiyin_calc_star_positions_ut
+    - taiyin_calc_star_positions_ut_delta_t
+    - taiyin_calc_observed_star_ut
+    - taiyin_calc_observed_stars_ut
 structs:
   include:
     - taiyin_calendar_datetime

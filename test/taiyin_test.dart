@@ -12,18 +12,37 @@ Future<List<double>> _calculateInWorker(
   int workerIndex,
 ) async {
   final receivePort = ReceivePort();
-  await Isolate.spawn(_workerMain, (
-    receivePort.sendPort,
-    libraryPath,
-    workerIndex,
-  ));
-  return await receivePort.first as List<double>;
+  await Isolate.spawn(
+    _workerMain,
+    (receivePort.sendPort, libraryPath, workerIndex),
+    onError: receivePort.sendPort,
+    onExit: receivePort.sendPort,
+  );
+  try {
+    final message = await receivePort.first;
+    if (message case ['result', ...final List<Object?> values]) {
+      return values.cast<double>();
+    }
+    if (message case ['error', final Object error, final Object stackTrace]) {
+      throw StateError('Worker failed: $error\n$stackTrace');
+    }
+    if (message == null) {
+      throw StateError('Worker exited before returning a result.');
+    }
+    if (message case [final Object error, final Object stackTrace]) {
+      throw StateError('Worker isolate error: $error\n$stackTrace');
+    }
+    throw StateError('Worker returned an unexpected message: $message');
+  } finally {
+    receivePort.close();
+  }
 }
 
 void _workerMain((SendPort, String, int) message) {
   final (sendPort, libraryPath, workerIndex) = message;
-  final context = TaiyinContext.attach(libraryPath: libraryPath);
+  TaiyinContext? context;
   try {
+    context = TaiyinContext.attach(libraryPath: libraryPath);
     context.configuration.setRouteRule(
       workerIndex.isEven ? TaiyinRouteRule.moshier : TaiyinRouteRule.opm2,
     );
@@ -36,9 +55,11 @@ void _workerMain((SendPort, String, int) message) {
         TaiyinPositionFlag.truePosition,
       },
     );
-    sendPort.send(result.value.values);
+    sendPort.send(['result', ...result.value.values]);
+  } catch (error, stackTrace) {
+    sendPort.send(['error', '$error', '$stackTrace']);
   } finally {
-    context.close();
+    context?.close();
   }
 }
 
@@ -176,6 +197,22 @@ void main() {
         expect(results[0], results[2]);
         expect(results[1], results[3]);
         expect(results[0], isNot(results[1]));
+      });
+
+      test('worker isolate setup failures complete with an error', () async {
+        await expectLater(
+          _calculateInWorker(
+            '${Directory.systemTemp.path}/missing-taiyin-library.dylib',
+            0,
+          ).timeout(const Duration(seconds: 5)),
+          throwsA(
+            isA<StateError>().having(
+              (error) => error.message,
+              'message',
+              contains('Worker failed'),
+            ),
+          ),
+        );
       });
 
       test('attaches through a preloaded dynamic library', () {
