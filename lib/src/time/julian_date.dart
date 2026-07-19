@@ -25,8 +25,13 @@ final class JulianDate<S extends TimeScale>
       throw ArgumentError.value(dayFraction, 'dayFraction', 'must be finite');
     }
     final carry = dayFraction.floor();
-    final fraction = dayFraction - carry;
-    return JulianDate._(dayNumber + carry, fraction == -0.0 ? 0.0 : fraction);
+    var normalizedDay = dayNumber + carry;
+    var fraction = dayFraction - carry;
+    if (fraction == 1.0) {
+      normalizedDay += 1;
+      fraction = 0.0;
+    }
+    return JulianDate._(normalizedDay, fraction == -0.0 ? 0.0 : fraction);
   }
 
   static const int microsecondsPerDay = 86400000000;

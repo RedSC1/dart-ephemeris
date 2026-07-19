@@ -87,6 +87,14 @@ void main() {
       expect(positive.dayFraction, 0.25);
     });
 
+    test('carries a fraction rounded to one at the negative boundary', () {
+      final value = JulianDate<TtScale>.fromParts(2451545, -5e-17);
+
+      expect(value.dayNumber, 2451545);
+      expect(value.dayFraction, 0);
+      expect(value, JulianDate<TtScale>.fromParts(2451545, 0));
+    });
+
     test('preserves nanosecond differences before the ABI merge', () {
       final start = JulianDate<TtScale>.fromParts(2451545, 0);
       final end = start.addNanoseconds(1);

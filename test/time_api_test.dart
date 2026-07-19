@@ -172,7 +172,7 @@ void main() {
         expect(explicit.deltaTSeconds, 64);
         expect(
           explicit.tt.coordinateSecondsDifference(explicit.ut1),
-          closeTo(64, 0.00005),
+          closeTo(64, 1e-11),
         );
         expect(modeled.deltaTSeconds.isFinite, isTrue);
         expect(modeled.tt.toDouble().isFinite, isTrue);
