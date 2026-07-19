@@ -13,6 +13,9 @@ functions:
     - taiyin_get_capabilities
     - taiyin_status_name
     - taiyin_status_message
+    - taiyin_calendar_datetime_init
+    - taiyin_julian_day
+    - taiyin_reverse_julian_day
     - taiyin_runtime_config_init
     - taiyin_runtime_initialize
     - taiyin_runtime_catalog_size
@@ -23,6 +26,7 @@ functions:
     - taiyin_calc_position_ut
 structs:
   include:
+    - taiyin_calendar_datetime
     - taiyin_runtime_config
 enums:
   as-int:

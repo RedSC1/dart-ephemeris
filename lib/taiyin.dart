@@ -2,3 +2,6 @@
 library;
 
 export 'src/taiyin.dart';
+export 'src/time/astro_date_time.dart';
+export 'src/time/julian_date.dart';
+export 'src/time/time_scale.dart';

@@ -6,7 +6,7 @@ void main(List<String> arguments) {
   try {
     final moon = taiyin.positionTt(
       TaiyinBody.moon,
-      2460409.0,
+      JulianDate<TtScale>.fromDouble(2460409.0),
       flags: {TaiyinPositionFlag.xyz, TaiyinPositionFlag.speed},
     );
 

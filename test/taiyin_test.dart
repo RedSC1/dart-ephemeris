@@ -1,5 +1,8 @@
+import 'dart:ffi';
 import 'dart:io';
 
+import 'package:ffi/ffi.dart';
+import 'package:taiyin/src/bindings/taiyin_bindings.g.dart';
 import 'package:taiyin/taiyin.dart';
 import 'package:test/test.dart';
 
@@ -31,7 +34,7 @@ void main() {
       test('calculates a finite Moon state vector', () {
         final position = taiyin.positionTt(
           TaiyinBody.moon,
-          2460409.0,
+          JulianDate<TtScale>.fromDouble(2460409.0),
           flags: {TaiyinPositionFlag.xyz, TaiyinPositionFlag.speed},
         );
 
@@ -41,11 +44,47 @@ void main() {
         expect(position.isCartesian, isTrue);
       });
 
+      test('matches native fractional calendar conversion', () {
+        final bindings = TaiyinBindings(DynamicLibrary.open(libraryPath));
+        final value = AstroDateTime(2026, 7, 19, 12, 34, 56, 123456789);
+
+        using((arena) {
+          final nativeCalendar = arena<taiyin_calendar_datetime>();
+          final nativeJulianDate = arena<Double>();
+          bindings.taiyin_calendar_datetime_init(nativeCalendar);
+          nativeCalendar.ref
+            ..year = value.year
+            ..month = value.month
+            ..day = value.day
+            ..hour = value.hour
+            ..minute = value.minute
+            ..second = value.fractionalSecond;
+
+          expect(
+            bindings.taiyin_julian_day(nativeCalendar, nativeJulianDate),
+            0,
+          );
+          expect(nativeJulianDate.value, value.toJulianDay());
+
+          final reversed = arena<taiyin_calendar_datetime>();
+          bindings.taiyin_calendar_datetime_init(reversed);
+          expect(
+            bindings.taiyin_reverse_julian_day(
+              nativeJulianDate.value,
+              reversed,
+            ),
+            0,
+          );
+          expect(reversed.ref.second, closeTo(value.fractionalSecond, 0.00005));
+        });
+      });
+
       test('clones a context without reinitializing the runtime', () {
         final clone = taiyin.clone();
         try {
-          final original = taiyin.positionTt(TaiyinBody.sun, 2460409.0);
-          final copied = clone.positionTt(TaiyinBody.sun, 2460409.0);
+          final epoch = JulianDate<TtScale>.fromDouble(2460409.0);
+          final original = taiyin.positionTt(TaiyinBody.sun, epoch);
+          final copied = clone.positionTt(TaiyinBody.sun, epoch);
           expect(copied.values, original.values);
         } finally {
           clone.close();
@@ -55,7 +94,10 @@ void main() {
       test('rejects calls after close', () {
         taiyin.close();
         expect(
-          () => taiyin.positionTt(TaiyinBody.sun, 2460409.0),
+          () => taiyin.positionTt(
+            TaiyinBody.sun,
+            JulianDate<TtScale>.fromDouble(2460409.0),
+          ),
           throwsStateError,
         );
       });

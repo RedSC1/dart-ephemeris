@@ -4,6 +4,8 @@ import 'dart:io';
 import 'package:ffi/ffi.dart';
 
 import 'bindings/taiyin_bindings.g.dart';
+import 'time/julian_date.dart';
+import 'time/time_scale.dart';
 
 const int _supportedAbiVersion = 1;
 
@@ -254,7 +256,7 @@ final class Taiyin implements Finalizable {
   /// Calculates a position at a TT Julian date.
   TaiyinPosition positionTt(
     TaiyinBody body,
-    double julianDate, {
+    JulianDate<TtScale> julianDate, {
     Set<TaiyinPositionFlag> flags = const {},
   }) {
     return _position(
@@ -262,7 +264,7 @@ final class Taiyin implements Finalizable {
       (mask, output) => _bindings.taiyin_calc_position_tt(
         _context,
         body.id,
-        julianDate,
+        julianDate.toDouble(),
         mask,
         output,
         nullptr,
@@ -273,7 +275,7 @@ final class Taiyin implements Finalizable {
   /// Calculates a position at a UT Julian date.
   TaiyinPosition positionUt(
     TaiyinBody body,
-    double julianDate, {
+    JulianDate<Ut1Scale> julianDate, {
     Set<TaiyinPositionFlag> flags = const {},
   }) {
     return _position(
@@ -281,7 +283,7 @@ final class Taiyin implements Finalizable {
       (mask, output) => _bindings.taiyin_calc_position_ut(
         _context,
         body.id,
-        julianDate,
+        julianDate.toDouble(),
         mask,
         output,
         nullptr,

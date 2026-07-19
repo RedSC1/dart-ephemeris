@@ -31,7 +31,7 @@ void main() {
   try {
     final moon = taiyin.positionTt(
       TaiyinBody.moon,
-      2460409.0,
+      JulianDate<TtScale>.fromDouble(2460409.0),
       flags: {
         TaiyinPositionFlag.xyz,
         TaiyinPositionFlag.speed,
@@ -47,6 +47,23 @@ void main() {
 
 `libraryPath` can be omitted when the library is available under the
 platform-standard loader name, or supplied through `TAIYIN_LIBRARY_PATH`.
+
+## Time values
+
+Calendar values preserve astronomical year numbering and integer nanoseconds:
+
+```dart
+final calendar = AstroDateTime(
+  2026, 7, 19, 12, 34, 56, 123456789,
+);
+final tt = calendar.toJulianDate<TtScale>();
+```
+
+`JulianDate<S>` stores an integer day and a normalized fractional day. Its time
+scale is part of the Dart type, so a `JulianDate<Ut1Scale>` cannot be passed to
+`positionTt`. `toJulianDate<S>()` interprets the calendar fields in that scale;
+it does not perform UTC/TAI/TT conversion. The two JD parts are merged only when
+calling the current C ABI.
 
 The native runtime is process-wide, so normally call `Taiyin.open` once. Finish
 runtime/catalog configuration before starting concurrent calculations. Use

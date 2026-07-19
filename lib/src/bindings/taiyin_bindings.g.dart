@@ -23,6 +23,21 @@ class TaiyinBindings {
     ffi.Pointer<T> Function<T extends ffi.NativeType>(String symbolName) lookup,
   ) : _lookup = lookup;
 
+  void taiyin_calendar_datetime_init(
+    ffi.Pointer<taiyin_calendar_datetime> value,
+  ) {
+    return _taiyin_calendar_datetime_init(value);
+  }
+
+  late final _taiyin_calendar_datetime_initPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<taiyin_calendar_datetime>)
+        >
+      >('taiyin_calendar_datetime_init');
+  late final _taiyin_calendar_datetime_init = _taiyin_calendar_datetime_initPtr
+      .asFunction<void Function(ffi.Pointer<taiyin_calendar_datetime>)>();
+
   int taiyin_get_c_abi_version() {
     return _taiyin_get_c_abi_version();
   }
@@ -250,6 +265,51 @@ class TaiyinBindings {
       );
   late final _taiyin_runtime_catalog_size = _taiyin_runtime_catalog_sizePtr
       .asFunction<int Function()>();
+
+  int taiyin_julian_day(
+    ffi.Pointer<taiyin_calendar_datetime> datetime,
+    ffi.Pointer<ffi.Double> out_jd,
+  ) {
+    return _taiyin_julian_day(datetime, out_jd);
+  }
+
+  late final _taiyin_julian_dayPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_calendar_datetime>,
+            ffi.Pointer<ffi.Double>,
+          )
+        >
+      >('taiyin_julian_day');
+  late final _taiyin_julian_day = _taiyin_julian_dayPtr
+      .asFunction<
+        int Function(
+          ffi.Pointer<taiyin_calendar_datetime>,
+          ffi.Pointer<ffi.Double>,
+        )
+      >();
+
+  int taiyin_reverse_julian_day(
+    double jd,
+    ffi.Pointer<taiyin_calendar_datetime> out_datetime,
+  ) {
+    return _taiyin_reverse_julian_day(jd, out_datetime);
+  }
+
+  late final _taiyin_reverse_julian_dayPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Double,
+            ffi.Pointer<taiyin_calendar_datetime>,
+          )
+        >
+      >('taiyin_reverse_julian_day');
+  late final _taiyin_reverse_julian_day = _taiyin_reverse_julian_dayPtr
+      .asFunction<
+        int Function(double, ffi.Pointer<taiyin_calendar_datetime>)
+      >();
 }
 
 typedef __int8_t = ffi.SignedChar;
@@ -456,6 +516,29 @@ final class taiyin_cartesian_state extends ffi.Struct {
   external taiyin_vector3 velocity_au_per_day;
 
   external taiyin_vector3 acceleration_au_per_day2;
+}
+
+final class taiyin_calendar_datetime extends ffi.Struct {
+  @ffi.Uint32()
+  external int struct_size;
+
+  @ffi.Int32()
+  external int year;
+
+  @ffi.Int32()
+  external int month;
+
+  @ffi.Int32()
+  external int day;
+
+  @ffi.Int32()
+  external int hour;
+
+  @ffi.Int32()
+  external int minute;
+
+  @ffi.Double()
+  external double second;
 }
 
 final class taiyin_ephemeris_diagnostic extends ffi.Struct {
@@ -744,4 +827,28 @@ final class taiyin_runtime_config extends ffi.Struct {
 
   @ffi.Uint8()
   external int reserved0;
+}
+
+sealed class taiyin_tdb_model {
+  static const TAIYIN_TDB_MODEL_FAST_PERIODIC = 0;
+  static const TAIYIN_TDB_MODEL_SOFA_FULL = 1;
+}
+
+sealed class taiyin_time_scale_route {
+  static const TAIYIN_TIME_ROUTE_NONE = 0;
+  static const TAIYIN_TIME_ROUTE_PRECISE_UTC_EOP = 1;
+  static const TAIYIN_TIME_ROUTE_ESTIMATED_DELTA_T = 2;
+}
+
+sealed class taiyin_time_scale_fallback_reason {
+  static const TAIYIN_TIME_FALLBACK_NONE = 0;
+  static const TAIYIN_TIME_FALLBACK_NULL_EOP_TABLE = 1;
+  static const TAIYIN_TIME_FALLBACK_EOP_OUT_OF_RANGE = 2;
+  static const TAIYIN_TIME_FALLBACK_LEAP_SECOND_UNAVAILABLE = 3;
+}
+
+sealed class taiyin_time_scale_diagnostic_flags {
+  static const TAIYIN_TIME_USED_LEAP_SECONDS = 1;
+  static const TAIYIN_TIME_USED_EOP = 2;
+  static const TAIYIN_TIME_USED_DELTA_T_MODEL = 4;
 }
