@@ -81,6 +81,17 @@ final class JulianDate<S extends TimeScale>
 
   /// `this - other`, expressed as fractional seconds.
   double secondsDifference(JulianDate<S> other) {
+    return coordinateSecondsDifference(other);
+  }
+
+  /// Difference between the numeric coordinates of two possibly distinct
+  /// time scales.
+  ///
+  /// This is useful for inspecting values such as TT−UT1. It does not by
+  /// itself perform a time-scale conversion.
+  double coordinateSecondsDifference<Other extends TimeScale>(
+    JulianDate<Other> other,
+  ) {
     final days = dayNumber - other.dayNumber;
     final fraction = dayFraction - other.dayFraction;
     return days * secondsPerDay + fraction * secondsPerDay;

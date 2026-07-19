@@ -16,17 +16,48 @@ functions:
     - taiyin_calendar_datetime_init
     - taiyin_julian_day
     - taiyin_reverse_julian_day
+    - taiyin_precise_time_scales_init
+    - taiyin_time_scale_diagnostic_init
+    - taiyin_estimated_time_scales_init
+    - taiyin_decimal_year_from_jd
+    - taiyin_julian_centuries_from_j2000
+    - taiyin_julian_millennia_from_j2000
+    - taiyin_add_seconds_to_jd
+    - taiyin_seconds_between_jd
+    - taiyin_estimated_delta_t_seconds_for_decimal_year
+    - taiyin_estimated_delta_t_seconds_from_ut1
+    - taiyin_estimated_delta_t_seconds_from_tt
+    - taiyin_tt_to_tdb
+    - taiyin_tdb_to_tt
+    - taiyin_tai_minus_utc_seconds
+    - taiyin_utc_to_tai
+    - taiyin_tai_to_tt
+    - taiyin_utc_to_tt
+    - taiyin_utc_to_ut1
+    - taiyin_delta_t_from_tai_minus_utc_and_dut1
+    - taiyin_tt_to_ut1
+    - taiyin_ut1_to_tt
+    - taiyin_make_precise_time_scales_from_utc
+    - taiyin_make_time_scales_from_utc
+    - taiyin_make_time_scales_from_ut_delta_t
+    - taiyin_make_estimated_time_scales_from_ut
     - taiyin_runtime_config_init
     - taiyin_runtime_initialize
     - taiyin_runtime_catalog_size
     - taiyin_context_create
     - taiyin_context_clone
     - taiyin_context_destroy
+    - taiyin_context_set_time_scale_policy
+    - taiyin_context_set_delta_t_model
+    - taiyin_context_set_tdb_model
     - taiyin_calc_position_tt
     - taiyin_calc_position_ut
 structs:
   include:
     - taiyin_calendar_datetime
+    - taiyin_precise_time_scales
+    - taiyin_time_scale_diagnostic
+    - taiyin_estimated_time_scales
     - taiyin_runtime_config
 enums:
   as-int:

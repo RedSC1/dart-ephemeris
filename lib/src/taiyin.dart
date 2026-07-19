@@ -5,6 +5,7 @@ import 'package:ffi/ffi.dart';
 
 import 'bindings/taiyin_bindings.g.dart';
 import 'time/julian_date.dart';
+import 'time/time_api.dart';
 import 'time/time_scale.dart';
 
 const int _supportedAbiVersion = 1;
@@ -127,6 +128,12 @@ final class Taiyin implements Finalizable {
     this._context,
     this._contextFinalizer,
   ) {
+    time = TaiyinTime.internal(
+      _bindings,
+      _context,
+      _ensureOpen,
+      (status) => _checkStatus(_bindings, status),
+    );
     _contextFinalizer.attach(this, _context.cast(), detach: this);
   }
 
@@ -225,6 +232,7 @@ final class Taiyin implements Finalizable {
   final TaiyinBindings _bindings;
   final Pointer<taiyin_context> _context;
   final NativeFinalizer _contextFinalizer;
+  late final TaiyinTime time;
   bool _closed = false;
 
   /// The Taiyin C ABI version.

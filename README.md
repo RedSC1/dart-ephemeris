@@ -65,6 +65,23 @@ scale is part of the Dart type, so a `JulianDate<Ut1Scale>` cannot be passed to
 it does not perform UTC/TAI/TT conversion. The two JD parts are merged only when
 calling the current C ABI.
 
+Use the context-owned time service for actual scale conversion:
+
+```dart
+final utcCalendar = AstroDateTime(2000, 1, 1);
+final scales = taiyin.time.scalesFromUtc(utcCalendar);
+
+print(scales.value.utc);
+print(scales.value.ut1);
+print(scales.value.tt);
+print(scales.value.tdb);
+print(scales.diagnostic.route);
+```
+
+`TaiyinTime` also exposes explicit UTC/TAI/TT/UT1/TDB conversions, Delta-T
+estimation, precise conversions with caller-supplied TAI−UTC and DUT1, and
+context policy/model configuration.
+
 The native runtime is process-wide, so normally call `Taiyin.open` once. Finish
 runtime/catalog configuration before starting concurrent calculations. Use
 `taiyin.clone()` when you need independent contexts for parallel work; every
