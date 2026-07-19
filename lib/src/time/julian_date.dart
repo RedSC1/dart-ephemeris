@@ -4,8 +4,8 @@ import 'time_scale.dart';
 ///
 /// Keeping the two parts separate avoids the precision loss caused by
 /// subtracting or incrementing absolute Julian dates around 2.4 million.
-/// Taiyin's current C ABI accepts a single `double`, so [toDouble] performs the
-/// unavoidable precision-reducing merge at the FFI boundary.
+/// Taiyin's split-Julian-Date C ABI preserves both parts across the FFI
+/// boundary.
 final class JulianDate<S extends TimeScale>
     implements Comparable<JulianDate<S>> {
   const JulianDate._(this.dayNumber, this.dayFraction);
@@ -39,7 +39,7 @@ final class JulianDate<S extends TimeScale>
   /// The normalized fractional day in the range `[0, 1)`.
   final double dayFraction;
 
-  /// Merges both parts into the single `double` required by the current ABI.
+  /// Merges both parts into a single, precision-reducing `double`.
   double toDouble() => dayNumber + dayFraction;
 
   /// Returns a value offset by a Dart [Duration].

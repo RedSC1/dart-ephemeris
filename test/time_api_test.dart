@@ -44,6 +44,62 @@ void main() {
         );
       });
 
+      test('round-trips nanoseconds through the native split calendar ABI', () {
+        final jd = taiyin.time.julianDay<UtcScale>(utcCalendar);
+        final roundTrip = taiyin.time.reverseJulianDay(jd);
+
+        expect(roundTrip, utcCalendar);
+      });
+
+      test('preserves nanosecond separation across scale conversions', () {
+        final first = JulianDate<UtcScale>.fromParts(2451545, 0.25);
+        final second = first.addNanoseconds(1);
+
+        final firstTt = taiyin.time.utcToTt(first, taiMinusUtcSeconds: 37);
+        final secondTt = taiyin.time.utcToTt(second, taiMinusUtcSeconds: 37);
+        final firstUt1 = taiyin.time.utcToUt1(first, dut1Seconds: -0.1);
+        final secondUt1 = taiyin.time.utcToUt1(second, dut1Seconds: -0.1);
+        final firstTdb = taiyin.time.ttToTdb(firstTt, model: TdbModel.sofaFull);
+        final secondTdb = taiyin.time.ttToTdb(
+          secondTt,
+          model: TdbModel.sofaFull,
+        );
+
+        expect(secondTt.secondsDifference(firstTt), closeTo(1e-9, 5e-12));
+        expect(secondUt1.secondsDifference(firstUt1), closeTo(1e-9, 5e-12));
+        expect(secondTdb.secondsDifference(firstTdb), closeTo(1e-9, 5e-12));
+        expect(
+          taiyin.time
+              .tdbToTt(firstTdb, model: TdbModel.sofaFull)
+              .secondsDifference(firstTt),
+          closeTo(0, 5e-12),
+        );
+        expect(
+          taiyin.time
+              .ttToUt1(firstTt, deltaTSeconds: 69.284)
+              .coordinateSecondsDifference(firstUt1),
+          closeTo(0, 1e-11),
+        );
+      });
+
+      test('rejects non-finite linear conversion offsets', () {
+        expect(
+          () => taiyin.time.utcToTai(utc, taiMinusUtcSeconds: double.nan),
+          throwsArgumentError,
+        );
+        expect(
+          () => taiyin.time.utcToUt1(utc, dut1Seconds: double.infinity),
+          throwsArgumentError,
+        );
+        expect(
+          () => taiyin.time.ut1ToTt(
+            JulianDate<Ut1Scale>.fromDouble(2451545),
+            deltaTSeconds: double.negativeInfinity,
+          ),
+          throwsArgumentError,
+        );
+      });
+
       test('builds explicit precise time scales', () {
         final scales = taiyin.time.preciseScalesFromUtc(
           utcCalendar,
@@ -99,6 +155,11 @@ void main() {
         );
         expect(result.diagnostic.ephemerisFamilyId, 441);
         expect(result.value.deltaTSeconds.isFinite, isTrue);
+        expect(result.value.tai.toDouble(), 0);
+        expect(
+          result.value.tt.coordinateSecondsDifference(result.value.ut1),
+          closeTo(result.value.deltaTSeconds, 1e-11),
+        );
       });
 
       test('builds estimated scales with supplied or modeled Delta-T', () {
@@ -123,7 +184,7 @@ void main() {
         for (final model in TdbModel.values) {
           final tdb = taiyin.time.ttToTdb(tt, model: model);
           final roundTrip = taiyin.time.tdbToTt(tdb, model: model);
-          expect(roundTrip.secondsDifference(tt), closeTo(0, 0.00005));
+          expect(roundTrip.secondsDifference(tt), closeTo(0, 5e-12));
         }
       });
 

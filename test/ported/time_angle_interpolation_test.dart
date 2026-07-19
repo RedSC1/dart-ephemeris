@@ -86,13 +86,13 @@ void main() {
         final ttFromUtc = taiyin.time.utcToTt(utc, taiMinusUtcSeconds: 37);
         final ut1 = taiyin.time.utcToUt1(utc, dut1Seconds: -0.1);
 
-        expect(tai.coordinateSecondsDifference(utc), closeTo(37, 5e-5));
+        expect(tai.coordinateSecondsDifference(utc), closeTo(37, 1e-11));
         expect(
           ttFromTai.coordinateSecondsDifference(utc),
-          closeTo(69.184, 5e-5),
+          closeTo(69.184, 1e-11),
         );
-        expect(ttFromTai.secondsDifference(ttFromUtc), closeTo(0, 1e-12));
-        expect(ut1.coordinateSecondsDifference(utc), closeTo(-0.1, 5e-5));
+        expect(ttFromTai.secondsDifference(ttFromUtc), closeTo(0, 1e-11));
+        expect(ut1.coordinateSecondsDifference(utc), closeTo(-0.1, 1e-11));
         expect(
           taiyin.time.deltaT(taiMinusUtcSeconds: 37, dut1Seconds: -0.1),
           closeTo(69.284, 1e-12),
@@ -120,15 +120,15 @@ void main() {
         expect(scales.utc.toDouble(), closeTo(2460409.262037037, 1e-12));
         expect(
           scales.tai.coordinateSecondsDifference(scales.utc),
-          closeTo(37, 5e-5),
+          closeTo(37, 1e-11),
         );
         expect(
           scales.tt.coordinateSecondsDifference(scales.utc),
-          closeTo(69.184, 5e-5),
+          closeTo(69.184, 1e-11),
         );
         expect(
           scales.ut1.coordinateSecondsDifference(scales.utc),
-          closeTo(-0.1, 5e-5),
+          closeTo(-0.1, 1e-11),
         );
         expect(scales.deltaTSeconds, closeTo(69.284, 1e-12));
       });
@@ -152,7 +152,7 @@ void main() {
           );
           expect(
             taiyin.time.tdbToTt(tdb, model: model).secondsDifference(tt),
-            closeTo(0, 1e-7),
+            closeTo(0, 5e-12),
           );
         }
       });
@@ -238,14 +238,14 @@ void main() {
         expect(manual.ut1.toDouble(), closeTo(2460409.262037037, 1e-12));
         expect(
           manual.tt.coordinateSecondsDifference(manual.ut1),
-          closeTo(69.17035296181177, 5e-5),
+          closeTo(69.17035296181177, 1e-11),
         );
         expect(manual.deltaTSeconds, 69.17035296181177);
 
         final estimated = taiyin.time.estimatedScalesFromUt1(calendar);
         expect(
           estimated.tt.coordinateSecondsDifference(estimated.ut1),
-          closeTo(estimated.deltaTSeconds, 5e-5),
+          closeTo(estimated.deltaTSeconds, 1e-11),
         );
         expect(
           estimated.deltaTSeconds,
@@ -253,7 +253,7 @@ void main() {
         );
         expect(
           taiyin.time.tdbToTt(estimated.tdb).secondsDifference(estimated.tt),
-          closeTo(0, 1e-7),
+          closeTo(0, 5e-12),
         );
       });
     },
