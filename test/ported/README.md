@@ -17,7 +17,8 @@ Dart equivalent.
 - `c_api` and `c_api_static`: metadata, runtime/context lifetime, calendar,
   time-scale, context configuration, and position portions are covered.
   `runtime_api_test.dart` exercises source discovery, EOP and lunar-limb
-  lifecycle, cache management, native file errors, and closed-context guards.
+  lifecycle, cache management, native file errors, and independent context
+  lifetimes.
   `context_api_test.dart` exercises observer, atmosphere, astronomy/apparent
   models, topocentric modes, deflectors, clone/reset ownership, and invalid
   inputs. `position_api_test.dart` exercises single, batch, and
