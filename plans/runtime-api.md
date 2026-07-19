@@ -12,14 +12,18 @@ options already exposed by `Taiyin.open` remain unchanged.
 
 ## Dart API
 
-- [x] Add a context-owned `taiyin.runtime` service.
+- [x] Keep native runtime initialization internal to `Taiyin.open()`.
+- [x] Represent the process-wide engine with `Taiyin`.
+- [x] Represent user calculation state with a separate `TaiyinContext`.
+- [x] Create independent contexts through `taiyin.createContext()`.
+- [x] Allow worker isolates to create context-only attachments without
+  reinitializing the runtime.
 - [x] Add source-path discovery.
 - [x] Add file and built-in EOP lifecycle management.
 - [x] Add lunar-limb model lifecycle management.
 - [x] Add ephemeris cache clear and count operations.
-- [x] Move catalog-size access behind the runtime service while preserving the
-  existing `Taiyin.catalogSize` convenience.
-- [x] Reject empty paths and use after close.
+- [x] Keep global metadata and catalog/cache queries on `Taiyin`.
+- [x] Reject empty paths.
 - [x] Document process-wide ownership and setup-time mutation.
 
 ## Tests and documentation
@@ -28,5 +32,6 @@ options already exposed by `Taiyin.open` remain unchanged.
 - [x] Cover source discovery and catalog count.
 - [x] Cover EOP and lunar-limb load/clear/has lifecycles.
 - [x] Cover cache population, count, and clear.
-- [x] Cover native error propagation, invalid paths, and use after close.
+- [x] Cover native error propagation and invalid paths.
+- [x] Cover independent context lifetimes and multi-Isolate calculations.
 - [x] Update README and upstream C API coverage notes.

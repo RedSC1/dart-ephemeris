@@ -3,7 +3,7 @@
 ## Goal
 
 Expose the complete stable `taiyin/c/context.h` surface as an idiomatic,
-context-owned Dart service available through `taiyin.context`.
+user-owned `TaiyinContext` and its `configuration` service.
 
 The API must preserve native validation and status reporting, initialize every
 versioned C structure before use, reject invalid Dart values before crossing
@@ -12,8 +12,9 @@ concurrent calculation.
 
 ## Public Dart design
 
-- [x] Add `TaiyinContextApi` and expose it as `Taiyin.context`.
-- [x] Keep the existing `Taiyin.time` policy/model methods source-compatible.
+- [x] Add `TaiyinContextConfiguration` and expose it as
+  `TaiyinContext.configuration`.
+- [x] Keep time policy/model methods on the owning `TaiyinContext`.
 - [x] Add immutable Dart value types:
   - [x] `TaiyinObserverLocation`
   - [x] `TaiyinAtmosphere`
@@ -75,7 +76,7 @@ concurrent calculation.
 
 The already wrapped `taiyin_context_set_time_scale_policy`,
 `taiyin_context_set_delta_t_model`, and `taiyin_context_set_tdb_model` remain
-owned by `Taiyin.time` for source compatibility.
+owned by `TaiyinContext.time`.
 
 ### Deflection, light time, and Shapiro delay
 

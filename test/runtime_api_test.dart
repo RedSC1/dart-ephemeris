@@ -12,82 +12,84 @@ void main() {
   final lunarLimbPath = '$nativeDataPath/lunar-limb/kaguya_lalt_16ppd.tll1';
 
   group(
-    'TaiyinRuntimeApi native integration',
+    'Taiyin global runtime native integration',
     () {
-      late Taiyin taiyin;
+      late Taiyin runtime;
+      late TaiyinContext context;
 
       setUp(() {
-        taiyin = Taiyin.open(libraryPath: libraryPath);
+        runtime = Taiyin.open(libraryPath: libraryPath);
+        context = runtime.createContext();
       });
 
       tearDown(() {
-        if (!taiyin.runtime.hasEopTable) {
-          taiyin.runtime.loadBuiltinEopTable();
+        if (!runtime.hasEopTable) {
+          runtime.loadBuiltinEopTable();
         }
-        taiyin.runtime
+        runtime
           ..clearLunarLimbModel()
           ..clearEphemerisCache();
-        taiyin.close();
+        context.close();
       });
 
       test('reports Singularity release metadata', () {
-        expect(taiyin.abiVersion, 1);
-        expect(taiyin.libraryVersion, '1.0.0');
-        expect(taiyin.libraryCodename, 'Singularity');
+        expect(runtime.abiVersion, 1);
+        expect(runtime.libraryVersion, '1.0.0');
+        expect(runtime.libraryCodename, 'Singularity');
       });
 
       test('exposes catalog size and discovers a source path', () {
-        final initialSize = taiyin.runtime.catalogSize;
+        final initialSize = runtime.catalogSize;
 
         expect(initialSize, greaterThan(0));
-        expect(taiyin.catalogSize, initialSize);
-        taiyin.runtime.addSourcePath(nativeDataPath);
-        expect(taiyin.runtime.catalogSize, greaterThanOrEqualTo(initialSize));
+        expect(runtime.catalogSize, initialSize);
+        runtime.addSourcePath(nativeDataPath);
+        expect(runtime.catalogSize, greaterThanOrEqualTo(initialSize));
       });
 
       test('manages the built-in EOP table lifecycle', () {
-        expect(taiyin.runtime.hasEopTable, isTrue);
+        expect(runtime.hasEopTable, isTrue);
 
-        taiyin.runtime.clearEopTable();
-        expect(taiyin.runtime.hasEopTable, isFalse);
+        runtime.clearEopTable();
+        expect(runtime.hasEopTable, isFalse);
 
-        taiyin.runtime.loadBuiltinEopTable();
-        expect(taiyin.runtime.hasEopTable, isTrue);
+        runtime.loadBuiltinEopTable();
+        expect(runtime.hasEopTable, isTrue);
       });
 
       test('loads and clears a lunar-limb model', () {
-        taiyin.runtime.clearLunarLimbModel();
-        expect(taiyin.runtime.hasLunarLimbModel, isFalse);
+        runtime.clearLunarLimbModel();
+        expect(runtime.hasLunarLimbModel, isFalse);
 
-        taiyin.runtime.loadLunarLimbModel(lunarLimbPath);
-        expect(taiyin.runtime.hasLunarLimbModel, isTrue);
+        runtime.loadLunarLimbModel(lunarLimbPath);
+        expect(runtime.hasLunarLimbModel, isTrue);
 
-        taiyin.runtime.clearLunarLimbModel();
-        expect(taiyin.runtime.hasLunarLimbModel, isFalse);
+        runtime.clearLunarLimbModel();
+        expect(runtime.hasLunarLimbModel, isFalse);
       });
 
       test('counts and clears ephemeris cache entries', () {
-        taiyin.runtime.clearEphemerisCache();
-        expect(taiyin.runtime.cacheEntryCount, 0);
+        runtime.clearEphemerisCache();
+        expect(runtime.cacheEntryCount, 0);
 
-        taiyin.runtime.addSourcePath(nativeDataPath);
-        taiyin.context.setRouteRule(TaiyinRouteRule.opm2);
-        taiyin.position.atTt(
+        runtime.addSourcePath(nativeDataPath);
+        context.configuration.setRouteRule(TaiyinRouteRule.opm2);
+        context.position.atTt(
           TaiyinBody.mercury,
           JulianDate<TtScale>.fromDouble(2460409.0),
           flags: {TaiyinPositionFlag.xyz, TaiyinPositionFlag.truePosition},
         );
-        expect(taiyin.runtime.cacheEntryCount, greaterThan(0));
+        expect(runtime.cacheEntryCount, greaterThan(0));
 
-        taiyin.runtime.clearEphemerisCache();
-        expect(taiyin.runtime.cacheEntryCount, 0);
+        runtime.clearEphemerisCache();
+        expect(runtime.cacheEntryCount, 0);
       });
 
       test('preserves native file errors', () {
         const missingPath = '/taiyin/this/file/does/not/exist';
 
         expect(
-          () => taiyin.runtime.loadEopTable(missingPath),
+          () => runtime.loadEopTable(missingPath),
           throwsA(
             isA<TaiyinException>()
                 .having((error) => error.status, 'status', -2001)
@@ -99,7 +101,7 @@ void main() {
           ),
         );
         expect(
-          () => taiyin.runtime.loadLunarLimbModel(missingPath),
+          () => runtime.loadLunarLimbModel(missingPath),
           throwsA(
             isA<TaiyinException>().having(
               (error) => error.status,
@@ -109,7 +111,7 @@ void main() {
           ),
         );
         expect(
-          () => taiyin.runtime.addSourcePath(missingPath),
+          () => runtime.addSourcePath(missingPath),
           throwsA(
             isA<TaiyinException>().having(
               (error) => error.status,
@@ -121,46 +123,45 @@ void main() {
       });
 
       test('rejects empty paths before native calls', () {
-        expect(() => taiyin.runtime.addSourcePath(''), throwsArgumentError);
-        expect(() => taiyin.runtime.loadEopTable(''), throwsArgumentError);
+        expect(() => runtime.addSourcePath(''), throwsArgumentError);
+        expect(() => runtime.loadEopTable(''), throwsArgumentError);
+        expect(() => runtime.loadLunarLimbModel(''), throwsArgumentError);
         expect(
-          () => taiyin.runtime.loadLunarLimbModel(''),
+          () => runtime.addSourcePath('data\u0000ignored'),
           throwsArgumentError,
         );
         expect(
-          () => taiyin.runtime.addSourcePath('data\u0000ignored'),
+          () => runtime.loadEopTable('eop\u0000ignored'),
           throwsArgumentError,
         );
         expect(
-          () => taiyin.runtime.loadEopTable('eop\u0000ignored'),
-          throwsArgumentError,
-        );
-        expect(
-          () => taiyin.runtime.loadLunarLimbModel('limb\u0000ignored'),
+          () => runtime.loadLunarLimbModel('limb\u0000ignored'),
           throwsArgumentError,
         );
       });
 
-      test('rejects runtime access after the owning context closes', () {
-        final closed = taiyin.clone();
+      test('runtime lifetime is independent from user contexts', () {
+        final closed = runtime.createContext();
         closed.close();
 
-        final calls = <void Function()>[
-          () => closed.runtime.addSourcePath(nativeDataPath),
-          () => closed.runtime.loadEopTable(nativeDataPath),
-          closed.runtime.loadBuiltinEopTable,
-          closed.runtime.clearEopTable,
-          () => closed.runtime.hasEopTable,
-          () => closed.runtime.loadLunarLimbModel(lunarLimbPath),
-          closed.runtime.clearLunarLimbModel,
-          () => closed.runtime.hasLunarLimbModel,
-          closed.runtime.clearEphemerisCache,
-          () => closed.runtime.catalogSize,
-          () => closed.runtime.cacheEntryCount,
-        ];
+        expect(runtime.catalogSize, greaterThan(0));
+        expect(runtime.hasEopTable, isTrue);
 
-        for (final call in calls) {
-          expect(call, throwsStateError);
+        final surviving = runtime.createContext();
+        try {
+          expect(
+            surviving.position
+                .atTt(
+                  TaiyinBody.moon,
+                  JulianDate<TtScale>.fromDouble(2460409.0),
+                  flags: {TaiyinPositionFlag.xyz},
+                )
+                .value
+                .values,
+            everyElement(isA<double>()),
+          );
+        } finally {
+          surviving.close();
         }
       });
     },

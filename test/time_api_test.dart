@@ -12,12 +12,12 @@ void main() {
   group(
     'TaiyinTime native integration',
     () {
-      late Taiyin taiyin;
+      late TaiyinContext taiyin;
       late AstroDateTime utcCalendar;
       late JulianDate<UtcScale> utc;
 
       setUp(() {
-        taiyin = Taiyin.open(libraryPath: libraryPath);
+        taiyin = Taiyin.open(libraryPath: libraryPath).createContext();
         utcCalendar = AstroDateTime(2000, 1, 1, 0, 0, 0, 123456789);
         utc = utcCalendar.toJulianDate<UtcScale>();
       });

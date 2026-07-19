@@ -12,12 +12,12 @@ void main() {
   group(
     'TaiyinObservedApi native integration',
     () {
-      late Taiyin taiyin;
+      late TaiyinContext taiyin;
       final ut1 = JulianDate<Ut1Scale>.fromDouble(2460409.0);
       final utc = AstroDateTime(2024, 4, 8, 18);
 
       setUp(() {
-        taiyin = Taiyin.open(libraryPath: libraryPath);
+        taiyin = Taiyin.open(libraryPath: libraryPath).createContext();
       });
 
       tearDown(() {
@@ -138,7 +138,7 @@ void main() {
       });
 
       test('calculates topocentric horizontal coordinates and rates', () {
-        taiyin.context.setObserverLocation(
+        taiyin.configuration.setObserverLocation(
           const TaiyinObserverLocation(
             longitudeDegrees: 116.391,
             latitudeDegrees: 39.907,
@@ -169,7 +169,7 @@ void main() {
       });
 
       test('supports atmosphere fallback and strict meteorology', () {
-        taiyin.context
+        taiyin.configuration
           ..setObserverLocation(
             const TaiyinObserverLocation(
               longitudeDegrees: 0,
@@ -223,7 +223,7 @@ void main() {
       });
 
       test('solar deflector skips self-deflection for the Sun', () {
-        taiyin.context.useSolarDeflector();
+        taiyin.configuration.useSolarDeflector();
 
         final result = taiyin.observed.atUt1(TaiyinBody.sun, ut1);
 

@@ -1,10 +1,43 @@
 import 'dart:ffi';
 import 'dart:io';
+import 'dart:isolate';
 
 import 'package:ffi/ffi.dart';
 import 'package:taiyin/src/bindings/taiyin_bindings.g.dart';
 import 'package:taiyin/taiyin.dart';
 import 'package:test/test.dart';
+
+Future<List<double>> _calculateInWorker(
+  String libraryPath,
+  int dayOffset,
+) async {
+  final receivePort = ReceivePort();
+  await Isolate.spawn(_workerMain, (
+    receivePort.sendPort,
+    libraryPath,
+    dayOffset,
+  ));
+  return await receivePort.first as List<double>;
+}
+
+void _workerMain((SendPort, String, int) message) {
+  final (sendPort, libraryPath, dayOffset) = message;
+  final context = TaiyinContext.attach(libraryPath: libraryPath);
+  try {
+    context.configuration.setRouteRule(TaiyinRouteRule.moshier);
+    sendPort.send(
+      context
+          .positionTt(
+            TaiyinBody.moon,
+            JulianDate<TtScale>.fromDouble(2460409.0 + dayOffset),
+            flags: {TaiyinPositionFlag.xyz, TaiyinPositionFlag.speed},
+          )
+          .values,
+    );
+  } finally {
+    context.close();
+  }
+}
 
 void main() {
   final libraryPath =
@@ -15,10 +48,12 @@ void main() {
   group(
     'Taiyin native integration',
     () {
-      late Taiyin taiyin;
+      late Taiyin runtime;
+      late TaiyinContext taiyin;
 
       setUp(() {
-        taiyin = Taiyin.open(libraryPath: libraryPath);
+        runtime = Taiyin.open(libraryPath: libraryPath);
+        taiyin = runtime.createContext();
       });
 
       tearDown(() {
@@ -26,11 +61,11 @@ void main() {
       });
 
       test('validates metadata and initializes the catalog', () {
-        expect(taiyin.abiVersion, 1);
-        expect(taiyin.libraryVersion, '1.0.0');
-        expect(taiyin.catalogSize, greaterThan(0));
+        expect(runtime.abiVersion, 1);
+        expect(runtime.libraryVersion, '1.0.0');
+        expect(runtime.catalogSize, greaterThan(0));
         expect(
-          taiyin.availableCapabilities,
+          runtime.availableCapabilities,
           containsAll({
             TaiyinCapability.runtime,
             TaiyinCapability.time,
@@ -40,26 +75,26 @@ void main() {
             TaiyinCapability.astrology,
           }),
         );
-        expect(taiyin.hasCapability(TaiyinCapability.runtime), isTrue);
-        expect(taiyin.hasCapability(TaiyinCapability.splitTime), isTrue);
-        expect(taiyin.hasCapability(TaiyinCapability.position), isTrue);
+        expect(runtime.hasCapability(TaiyinCapability.runtime), isTrue);
+        expect(runtime.hasCapability(TaiyinCapability.splitTime), isTrue);
+        expect(runtime.hasCapability(TaiyinCapability.position), isTrue);
       });
 
       test('maps native status metadata', () {
         const invalidArgument = -1;
 
         expect(
-          taiyin.statusName(invalidArgument),
+          runtime.statusName(invalidArgument),
           'TAIYIN_ERROR_INVALID_ARGUMENT',
         );
-        expect(taiyin.statusMessage(invalidArgument), isNotEmpty);
+        expect(runtime.statusMessage(invalidArgument), isNotEmpty);
         expect(
-          taiyin.statusCategory(invalidArgument),
+          runtime.statusCategory(invalidArgument),
           TaiyinStatusCategory.generic,
         );
-        expect(taiyin.statusCategory(-1001), TaiyinStatusCategory.ephemeris);
-        expect(taiyin.statusCategory(-3001), TaiyinStatusCategory.time);
-        expect(taiyin.statusCategory(-6001), TaiyinStatusCategory.runtime);
+        expect(runtime.statusCategory(-1001), TaiyinStatusCategory.ephemeris);
+        expect(runtime.statusCategory(-3001), TaiyinStatusCategory.time);
+        expect(runtime.statusCategory(-6001), TaiyinStatusCategory.runtime);
       });
 
       test('calculates a finite Moon state vector', () {
@@ -119,6 +154,19 @@ void main() {
           expect(copied.values, original.values);
         } finally {
           clone.close();
+        }
+      });
+
+      test('worker isolates create independent contexts', () async {
+        final results = await Future.wait([
+          for (var worker = 0; worker < 4; worker++)
+            _calculateInWorker(libraryPath, worker),
+        ]);
+
+        expect(results, hasLength(4));
+        for (final values in results) {
+          expect(values, hasLength(6));
+          expect(values.every((value) => value.isFinite), isTrue);
         }
       });
 
