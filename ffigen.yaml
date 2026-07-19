@@ -18,15 +18,24 @@ functions:
     - taiyin_status_category
     - taiyin_calendar_datetime_init
     - taiyin_julian_day
+    - taiyin_julian_day_split
     - taiyin_reverse_julian_day
+    - taiyin_reverse_julian_day_split
     - taiyin_precise_time_scales_init
+    - taiyin_split_precise_time_scales_init
     - taiyin_time_scale_diagnostic_init
     - taiyin_estimated_time_scales_init
+    - taiyin_split_estimated_time_scales_init
+    - taiyin_split_julian_date_from_parts
+    - taiyin_split_julian_date_from_double
+    - taiyin_split_julian_date_to_double
     - taiyin_decimal_year_from_jd
     - taiyin_julian_centuries_from_j2000
     - taiyin_julian_millennia_from_j2000
     - taiyin_add_seconds_to_jd
     - taiyin_seconds_between_jd
+    - taiyin_add_seconds_to_split_jd
+    - taiyin_seconds_between_split_jd
     - taiyin_estimated_delta_t_seconds_for_decimal_year
     - taiyin_estimated_delta_t_seconds_from_ut1
     - taiyin_estimated_delta_t_seconds_from_tt
@@ -40,10 +49,22 @@ functions:
     - taiyin_delta_t_from_tai_minus_utc_and_dut1
     - taiyin_tt_to_ut1
     - taiyin_ut1_to_tt
+    - taiyin_utc_to_tai_split
+    - taiyin_tai_to_tt_split
+    - taiyin_utc_to_tt_split
+    - taiyin_utc_to_ut1_split
+    - taiyin_tt_to_ut1_split
+    - taiyin_ut1_to_tt_split
+    - taiyin_tt_to_tdb_split
+    - taiyin_tdb_to_tt_split
     - taiyin_make_precise_time_scales_from_utc
+    - taiyin_make_split_precise_time_scales_from_utc
     - taiyin_make_time_scales_from_utc
+    - taiyin_make_split_time_scales_from_utc
     - taiyin_make_time_scales_from_ut_delta_t
+    - taiyin_make_split_time_scales_from_ut_delta_t
     - taiyin_make_estimated_time_scales_from_ut
+    - taiyin_make_split_estimated_time_scales_from_ut
     - taiyin_runtime_config_init
     - taiyin_runtime_initialize
     - taiyin_runtime_catalog_size
@@ -58,9 +79,12 @@ functions:
 structs:
   include:
     - taiyin_calendar_datetime
+    - taiyin_split_julian_date
     - taiyin_precise_time_scales
+    - taiyin_split_precise_time_scales
     - taiyin_time_scale_diagnostic
     - taiyin_estimated_time_scales
+    - taiyin_split_estimated_time_scales
     - taiyin_runtime_config
 enums:
   as-int:

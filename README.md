@@ -80,7 +80,9 @@ print(scales.diagnostic.route);
 
 `TaiyinTime` also exposes explicit UTC/TAI/TT/UT1/TDB conversions, Delta-T
 estimation, precise conversions with caller-supplied TAI−UTC and DUT1, and
-context policy/model configuration.
+context policy/model configuration. Calendar conversion, UTC/TAI/TT/UT1/TDB
+conversion, and aggregate time-scale results all use Taiyin's split-Julian-Date
+C ABI, preserving sub-microsecond separation across the FFI boundary.
 
 The native runtime is process-wide, so normally call `Taiyin.open` once. Finish
 runtime/catalog configuration before starting concurrent calculations. Use

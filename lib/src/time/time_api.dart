@@ -8,6 +8,24 @@ import 'julian_date.dart';
 import 'time_models.dart';
 import 'time_scale.dart';
 
+typedef _UnarySplitConversion =
+    int Function(
+      Pointer<taiyin_split_julian_date>,
+      Pointer<taiyin_split_julian_date>,
+    );
+typedef _OffsetSplitConversion =
+    int Function(
+      Pointer<taiyin_split_julian_date>,
+      double,
+      Pointer<taiyin_split_julian_date>,
+    );
+typedef _ModeledSplitConversion =
+    int Function(
+      Pointer<taiyin_split_julian_date>,
+      int,
+      Pointer<taiyin_split_julian_date>,
+    );
+
 /// Time-scale conversion and Delta-T operations backed by Taiyin.
 final class TaiyinTime {
   /// Internal constructor used by an owning Taiyin context.
@@ -32,9 +50,9 @@ final class TaiyinTime {
     _ensureOpen();
     return using((arena) {
       final calendar = _writeCalendar(arena, value);
-      final output = arena<Double>();
-      _checkStatus(_bindings.taiyin_julian_day(calendar, output));
-      return JulianDate<S>.fromDouble(output.value);
+      final output = arena<taiyin_split_julian_date>();
+      _checkStatus(_bindings.taiyin_julian_day_split(calendar, output));
+      return _readJulianDate<S>(output.ref);
     });
   }
 
@@ -46,11 +64,10 @@ final class TaiyinTime {
   AstroDateTime reverseJulianDay<S extends TimeScale>(JulianDate<S> value) {
     _ensureOpen();
     return using((arena) {
+      final input = _writeJulianDate(arena, value);
       final output = arena<taiyin_calendar_datetime>();
       _bindings.taiyin_calendar_datetime_init(output);
-      _checkStatus(
-        _bindings.taiyin_reverse_julian_day(value.toDouble(), output),
-      );
+      _checkStatus(_bindings.taiyin_reverse_julian_day_split(input, output));
       final calendar = output.ref;
       final minute = AstroDateTime(
         calendar.year,
@@ -148,11 +165,10 @@ final class TaiyinTime {
     TdbModel model = TdbModel.fastPeriodic,
   }) {
     _ensureOpen();
-    return JulianDate<TdbScale>.fromDouble(
-      _finite(
-        _bindings.taiyin_tt_to_tdb(tt.toDouble(), model.id),
-        'TDB Julian date',
-      ),
+    return _convertModeled<TdbScale, TtScale>(
+      tt,
+      model,
+      _bindings.taiyin_tt_to_tdb_split,
     );
   }
 
@@ -161,11 +177,10 @@ final class TaiyinTime {
     TdbModel model = TdbModel.fastPeriodic,
   }) {
     _ensureOpen();
-    return JulianDate<TtScale>.fromDouble(
-      _finite(
-        _bindings.taiyin_tdb_to_tt(tdb.toDouble(), model.id),
-        'TT Julian date',
-      ),
+    return _convertModeled<TtScale, TdbScale>(
+      tdb,
+      model,
+      _bindings.taiyin_tdb_to_tt_split,
     );
   }
 
@@ -186,19 +201,16 @@ final class TaiyinTime {
   }) {
     _ensureOpen();
     _requireFinite(taiMinusUtcSeconds, 'taiMinusUtcSeconds');
-    return JulianDate<TaiScale>.fromDouble(
-      _finite(
-        _bindings.taiyin_utc_to_tai(utc.toDouble(), taiMinusUtcSeconds),
-        'TAI Julian date',
-      ),
+    return _convertWithOffset<TaiScale, UtcScale>(
+      utc,
+      taiMinusUtcSeconds,
+      _bindings.taiyin_utc_to_tai_split,
     );
   }
 
   JulianDate<TtScale> taiToTt(JulianDate<TaiScale> tai) {
     _ensureOpen();
-    return JulianDate<TtScale>.fromDouble(
-      _finite(_bindings.taiyin_tai_to_tt(tai.toDouble()), 'TT Julian date'),
-    );
+    return _convert<TtScale, TaiScale>(tai, _bindings.taiyin_tai_to_tt_split);
   }
 
   JulianDate<TtScale> utcToTt(
@@ -207,11 +219,10 @@ final class TaiyinTime {
   }) {
     _ensureOpen();
     _requireFinite(taiMinusUtcSeconds, 'taiMinusUtcSeconds');
-    return JulianDate<TtScale>.fromDouble(
-      _finite(
-        _bindings.taiyin_utc_to_tt(utc.toDouble(), taiMinusUtcSeconds),
-        'TT Julian date',
-      ),
+    return _convertWithOffset<TtScale, UtcScale>(
+      utc,
+      taiMinusUtcSeconds,
+      _bindings.taiyin_utc_to_tt_split,
     );
   }
 
@@ -221,11 +232,10 @@ final class TaiyinTime {
   }) {
     _ensureOpen();
     _requireFinite(dut1Seconds, 'dut1Seconds');
-    return JulianDate<Ut1Scale>.fromDouble(
-      _finite(
-        _bindings.taiyin_utc_to_ut1(utc.toDouble(), dut1Seconds),
-        'UT1 Julian date',
-      ),
+    return _convertWithOffset<Ut1Scale, UtcScale>(
+      utc,
+      dut1Seconds,
+      _bindings.taiyin_utc_to_ut1_split,
     );
   }
 
@@ -251,11 +261,10 @@ final class TaiyinTime {
   }) {
     _ensureOpen();
     _requireFinite(deltaTSeconds, 'deltaTSeconds');
-    return JulianDate<Ut1Scale>.fromDouble(
-      _finite(
-        _bindings.taiyin_tt_to_ut1(tt.toDouble(), deltaTSeconds),
-        'UT1 Julian date',
-      ),
+    return _convertWithOffset<Ut1Scale, TtScale>(
+      tt,
+      deltaTSeconds,
+      _bindings.taiyin_tt_to_ut1_split,
     );
   }
 
@@ -265,11 +274,10 @@ final class TaiyinTime {
   }) {
     _ensureOpen();
     _requireFinite(deltaTSeconds, 'deltaTSeconds');
-    return JulianDate<TtScale>.fromDouble(
-      _finite(
-        _bindings.taiyin_ut1_to_tt(ut1.toDouble(), deltaTSeconds),
-        'TT Julian date',
-      ),
+    return _convertWithOffset<TtScale, Ut1Scale>(
+      ut1,
+      deltaTSeconds,
+      _bindings.taiyin_ut1_to_tt_split,
     );
   }
 
@@ -285,10 +293,10 @@ final class TaiyinTime {
     _requireFinite(dut1Seconds, 'dut1Seconds');
     return using((arena) {
       final calendar = _writeCalendar(arena, utc);
-      final output = arena<taiyin_precise_time_scales>();
-      _bindings.taiyin_precise_time_scales_init(output);
+      final output = arena<taiyin_split_precise_time_scales>();
+      _bindings.taiyin_split_precise_time_scales_init(output);
       _checkStatus(
-        _bindings.taiyin_make_precise_time_scales_from_utc(
+        _bindings.taiyin_make_split_precise_time_scales_from_utc(
           calendar,
           taiMinusUtcSeconds,
           dut1Seconds,
@@ -306,13 +314,13 @@ final class TaiyinTime {
     _ensureOpen();
     return using((arena) {
       final calendar = _writeCalendar(arena, utc);
-      final output = arena<taiyin_precise_time_scales>();
+      final output = arena<taiyin_split_precise_time_scales>();
       final diagnostic = arena<taiyin_time_scale_diagnostic>();
       _bindings
-        ..taiyin_precise_time_scales_init(output)
+        ..taiyin_split_precise_time_scales_init(output)
         ..taiyin_time_scale_diagnostic_init(diagnostic);
       _checkStatus(
-        _bindings.taiyin_make_time_scales_from_utc(
+        _bindings.taiyin_make_split_time_scales_from_utc(
           _context,
           calendar,
           output,
@@ -340,15 +348,15 @@ final class TaiyinTime {
     }
     return using((arena) {
       final calendar = _writeCalendar(arena, ut1);
-      final output = arena<taiyin_estimated_time_scales>();
-      _bindings.taiyin_estimated_time_scales_init(output);
+      final output = arena<taiyin_split_estimated_time_scales>();
+      _bindings.taiyin_split_estimated_time_scales_init(output);
       final status = deltaTSeconds == null
-          ? _bindings.taiyin_make_estimated_time_scales_from_ut(
+          ? _bindings.taiyin_make_split_estimated_time_scales_from_ut(
               calendar,
               tdbModel.id,
               output,
             )
-          : _bindings.taiyin_make_time_scales_from_ut_delta_t(
+          : _bindings.taiyin_make_split_time_scales_from_ut_delta_t(
               calendar,
               deltaTSeconds,
               tdbModel.id,
@@ -378,24 +386,24 @@ final class TaiyinTime {
     return native;
   }
 
-  PreciseTimeScales _readPrecise(taiyin_precise_time_scales value) {
+  PreciseTimeScales _readPrecise(taiyin_split_precise_time_scales value) {
     return PreciseTimeScales(
-      utc: JulianDate<UtcScale>.fromDouble(value.jd_utc),
-      tai: JulianDate<TaiScale>.fromDouble(value.jd_tai),
-      tt: JulianDate<TtScale>.fromDouble(value.jd_tt),
-      ut1: JulianDate<Ut1Scale>.fromDouble(value.jd_ut1),
-      tdb: JulianDate<TdbScale>.fromDouble(value.jd_tdb),
+      utc: _readJulianDate<UtcScale>(value.utc),
+      tai: _readJulianDate<TaiScale>(value.tai),
+      tt: _readJulianDate<TtScale>(value.tt),
+      ut1: _readJulianDate<Ut1Scale>(value.ut1),
+      tdb: _readJulianDate<TdbScale>(value.tdb),
       taiMinusUtcSeconds: value.tai_minus_utc_seconds,
       dut1Seconds: value.dut1_seconds,
       deltaTSeconds: value.delta_t_seconds,
     );
   }
 
-  EstimatedTimeScales _readEstimated(taiyin_estimated_time_scales value) {
+  EstimatedTimeScales _readEstimated(taiyin_split_estimated_time_scales value) {
     return EstimatedTimeScales(
-      ut1: JulianDate<Ut1Scale>.fromDouble(value.jd_ut1),
-      tt: JulianDate<TtScale>.fromDouble(value.jd_tt),
-      tdb: JulianDate<TdbScale>.fromDouble(value.jd_tdb),
+      ut1: _readJulianDate<Ut1Scale>(value.ut1),
+      tt: _readJulianDate<TtScale>(value.tt),
+      tdb: _readJulianDate<TdbScale>(value.tdb),
       deltaTSeconds: value.delta_t_seconds,
     );
   }
@@ -431,5 +439,71 @@ final class TaiyinTime {
     if (!value.isFinite) {
       throw ArgumentError.value(value, name, 'must be finite');
     }
+  }
+
+  Pointer<taiyin_split_julian_date> _writeJulianDate<S extends TimeScale>(
+    Arena arena,
+    JulianDate<S> value,
+  ) {
+    if (value.dayNumber < -0x8000000000000000 ||
+        value.dayNumber > 0x7fffffffffffffff) {
+      throw RangeError.range(
+        value.dayNumber,
+        -0x8000000000000000,
+        0x7fffffffffffffff,
+        'dayNumber',
+      );
+    }
+    final native = arena<taiyin_split_julian_date>();
+    native.ref
+      ..day_number = value.dayNumber
+      ..day_fraction = value.dayFraction;
+    return native;
+  }
+
+  JulianDate<S> _readJulianDate<S extends TimeScale>(
+    taiyin_split_julian_date value,
+  ) {
+    return JulianDate<S>.fromParts(value.day_number, value.day_fraction);
+  }
+
+  JulianDate<Output> _convert<
+    Output extends TimeScale,
+    Input extends TimeScale
+  >(JulianDate<Input> value, _UnarySplitConversion conversion) {
+    return using((arena) {
+      final input = _writeJulianDate(arena, value);
+      final output = arena<taiyin_split_julian_date>();
+      _checkStatus(conversion(input, output));
+      return _readJulianDate<Output>(output.ref);
+    });
+  }
+
+  JulianDate<Output>
+  _convertWithOffset<Output extends TimeScale, Input extends TimeScale>(
+    JulianDate<Input> value,
+    double offsetSeconds,
+    _OffsetSplitConversion conversion,
+  ) {
+    return using((arena) {
+      final input = _writeJulianDate(arena, value);
+      final output = arena<taiyin_split_julian_date>();
+      _checkStatus(conversion(input, offsetSeconds, output));
+      return _readJulianDate<Output>(output.ref);
+    });
+  }
+
+  JulianDate<Output>
+  _convertModeled<Output extends TimeScale, Input extends TimeScale>(
+    JulianDate<Input> value,
+    TdbModel model,
+    _ModeledSplitConversion conversion,
+  ) {
+    return using((arena) {
+      final input = _writeJulianDate(arena, value);
+      final output = arena<taiyin_split_julian_date>();
+      _checkStatus(conversion(input, model.id, output));
+      return _readJulianDate<Output>(output.ref);
+    });
   }
 }

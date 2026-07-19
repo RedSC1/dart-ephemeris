@@ -352,6 +352,24 @@ class TaiyinBindings {
       _taiyin_precise_time_scales_initPtr
           .asFunction<void Function(ffi.Pointer<taiyin_precise_time_scales>)>();
 
+  void taiyin_split_precise_time_scales_init(
+    ffi.Pointer<taiyin_split_precise_time_scales> value,
+  ) {
+    return _taiyin_split_precise_time_scales_init(value);
+  }
+
+  late final _taiyin_split_precise_time_scales_initPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<taiyin_split_precise_time_scales>)
+        >
+      >('taiyin_split_precise_time_scales_init');
+  late final _taiyin_split_precise_time_scales_init =
+      _taiyin_split_precise_time_scales_initPtr
+          .asFunction<
+            void Function(ffi.Pointer<taiyin_split_precise_time_scales>)
+          >();
+
   void taiyin_time_scale_diagnostic_init(
     ffi.Pointer<taiyin_time_scale_diagnostic> value,
   ) {
@@ -388,6 +406,95 @@ class TaiyinBindings {
             void Function(ffi.Pointer<taiyin_estimated_time_scales>)
           >();
 
+  void taiyin_split_estimated_time_scales_init(
+    ffi.Pointer<taiyin_split_estimated_time_scales> value,
+  ) {
+    return _taiyin_split_estimated_time_scales_init(value);
+  }
+
+  late final _taiyin_split_estimated_time_scales_initPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<taiyin_split_estimated_time_scales>)
+        >
+      >('taiyin_split_estimated_time_scales_init');
+  late final _taiyin_split_estimated_time_scales_init =
+      _taiyin_split_estimated_time_scales_initPtr
+          .asFunction<
+            void Function(ffi.Pointer<taiyin_split_estimated_time_scales>)
+          >();
+
+  int taiyin_split_julian_date_from_parts(
+    int day_number,
+    double day_fraction,
+    ffi.Pointer<taiyin_split_julian_date> out,
+  ) {
+    return _taiyin_split_julian_date_from_parts(day_number, day_fraction, out);
+  }
+
+  late final _taiyin_split_julian_date_from_partsPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Int64,
+            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
+          )
+        >
+      >('taiyin_split_julian_date_from_parts');
+  late final _taiyin_split_julian_date_from_parts =
+      _taiyin_split_julian_date_from_partsPtr
+          .asFunction<
+            int Function(int, double, ffi.Pointer<taiyin_split_julian_date>)
+          >();
+
+  int taiyin_split_julian_date_from_double(
+    double jd,
+    ffi.Pointer<taiyin_split_julian_date> out,
+  ) {
+    return _taiyin_split_julian_date_from_double(jd, out);
+  }
+
+  late final _taiyin_split_julian_date_from_doublePtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
+          )
+        >
+      >('taiyin_split_julian_date_from_double');
+  late final _taiyin_split_julian_date_from_double =
+      _taiyin_split_julian_date_from_doublePtr
+          .asFunction<
+            int Function(double, ffi.Pointer<taiyin_split_julian_date>)
+          >();
+
+  int taiyin_split_julian_date_to_double(
+    ffi.Pointer<taiyin_split_julian_date> jd,
+    ffi.Pointer<ffi.Double> out_jd,
+  ) {
+    return _taiyin_split_julian_date_to_double(jd, out_jd);
+  }
+
+  late final _taiyin_split_julian_date_to_doublePtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_split_julian_date>,
+            ffi.Pointer<ffi.Double>,
+          )
+        >
+      >('taiyin_split_julian_date_to_double');
+  late final _taiyin_split_julian_date_to_double =
+      _taiyin_split_julian_date_to_doublePtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_split_julian_date>,
+              ffi.Pointer<ffi.Double>,
+            )
+          >();
+
   int taiyin_julian_day(
     ffi.Pointer<taiyin_calendar_datetime> datetime,
     ffi.Pointer<ffi.Double> out_jd,
@@ -412,6 +519,30 @@ class TaiyinBindings {
         )
       >();
 
+  int taiyin_julian_day_split(
+    ffi.Pointer<taiyin_calendar_datetime> datetime,
+    ffi.Pointer<taiyin_split_julian_date> out_jd,
+  ) {
+    return _taiyin_julian_day_split(datetime, out_jd);
+  }
+
+  late final _taiyin_julian_day_splitPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_calendar_datetime>,
+            ffi.Pointer<taiyin_split_julian_date>,
+          )
+        >
+      >('taiyin_julian_day_split');
+  late final _taiyin_julian_day_split = _taiyin_julian_day_splitPtr
+      .asFunction<
+        int Function(
+          ffi.Pointer<taiyin_calendar_datetime>,
+          ffi.Pointer<taiyin_split_julian_date>,
+        )
+      >();
+
   int taiyin_reverse_julian_day(
     double jd,
     ffi.Pointer<taiyin_calendar_datetime> out_datetime,
@@ -432,6 +563,31 @@ class TaiyinBindings {
       .asFunction<
         int Function(double, ffi.Pointer<taiyin_calendar_datetime>)
       >();
+
+  int taiyin_reverse_julian_day_split(
+    ffi.Pointer<taiyin_split_julian_date> jd,
+    ffi.Pointer<taiyin_calendar_datetime> out_datetime,
+  ) {
+    return _taiyin_reverse_julian_day_split(jd, out_datetime);
+  }
+
+  late final _taiyin_reverse_julian_day_splitPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_split_julian_date>,
+            ffi.Pointer<taiyin_calendar_datetime>,
+          )
+        >
+      >('taiyin_reverse_julian_day_split');
+  late final _taiyin_reverse_julian_day_split =
+      _taiyin_reverse_julian_day_splitPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_split_julian_date>,
+              ffi.Pointer<taiyin_calendar_datetime>,
+            )
+          >();
 
   double taiyin_decimal_year_from_jd(double jd) {
     return _taiyin_decimal_year_from_jd(jd);
@@ -489,6 +645,62 @@ class TaiyinBindings {
       );
   late final _taiyin_seconds_between_jd = _taiyin_seconds_between_jdPtr
       .asFunction<double Function(double, double)>();
+
+  int taiyin_add_seconds_to_split_jd(
+    ffi.Pointer<taiyin_split_julian_date> jd,
+    double seconds,
+    ffi.Pointer<taiyin_split_julian_date> out,
+  ) {
+    return _taiyin_add_seconds_to_split_jd(jd, seconds, out);
+  }
+
+  late final _taiyin_add_seconds_to_split_jdPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_split_julian_date>,
+            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
+          )
+        >
+      >('taiyin_add_seconds_to_split_jd');
+  late final _taiyin_add_seconds_to_split_jd =
+      _taiyin_add_seconds_to_split_jdPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_split_julian_date>,
+              double,
+              ffi.Pointer<taiyin_split_julian_date>,
+            )
+          >();
+
+  int taiyin_seconds_between_split_jd(
+    ffi.Pointer<taiyin_split_julian_date> jd_a,
+    ffi.Pointer<taiyin_split_julian_date> jd_b,
+    ffi.Pointer<ffi.Double> out_seconds,
+  ) {
+    return _taiyin_seconds_between_split_jd(jd_a, jd_b, out_seconds);
+  }
+
+  late final _taiyin_seconds_between_split_jdPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_split_julian_date>,
+            ffi.Pointer<taiyin_split_julian_date>,
+            ffi.Pointer<ffi.Double>,
+          )
+        >
+      >('taiyin_seconds_between_split_jd');
+  late final _taiyin_seconds_between_split_jd =
+      _taiyin_seconds_between_split_jdPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_split_julian_date>,
+              ffi.Pointer<taiyin_split_julian_date>,
+              ffi.Pointer<ffi.Double>,
+            )
+          >();
 
   double taiyin_estimated_delta_t_seconds_for_decimal_year(
     double decimal_year,
@@ -658,6 +870,219 @@ class TaiyinBindings {
   late final _taiyin_ut1_to_tt = _taiyin_ut1_to_ttPtr
       .asFunction<double Function(double, double)>();
 
+  int taiyin_utc_to_tai_split(
+    ffi.Pointer<taiyin_split_julian_date> jd_utc,
+    double tai_minus_utc_seconds,
+    ffi.Pointer<taiyin_split_julian_date> out_jd_tai,
+  ) {
+    return _taiyin_utc_to_tai_split(jd_utc, tai_minus_utc_seconds, out_jd_tai);
+  }
+
+  late final _taiyin_utc_to_tai_splitPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_split_julian_date>,
+            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
+          )
+        >
+      >('taiyin_utc_to_tai_split');
+  late final _taiyin_utc_to_tai_split = _taiyin_utc_to_tai_splitPtr
+      .asFunction<
+        int Function(
+          ffi.Pointer<taiyin_split_julian_date>,
+          double,
+          ffi.Pointer<taiyin_split_julian_date>,
+        )
+      >();
+
+  int taiyin_tai_to_tt_split(
+    ffi.Pointer<taiyin_split_julian_date> jd_tai,
+    ffi.Pointer<taiyin_split_julian_date> out_jd_tt,
+  ) {
+    return _taiyin_tai_to_tt_split(jd_tai, out_jd_tt);
+  }
+
+  late final _taiyin_tai_to_tt_splitPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_split_julian_date>,
+            ffi.Pointer<taiyin_split_julian_date>,
+          )
+        >
+      >('taiyin_tai_to_tt_split');
+  late final _taiyin_tai_to_tt_split = _taiyin_tai_to_tt_splitPtr
+      .asFunction<
+        int Function(
+          ffi.Pointer<taiyin_split_julian_date>,
+          ffi.Pointer<taiyin_split_julian_date>,
+        )
+      >();
+
+  int taiyin_utc_to_tt_split(
+    ffi.Pointer<taiyin_split_julian_date> jd_utc,
+    double tai_minus_utc_seconds,
+    ffi.Pointer<taiyin_split_julian_date> out_jd_tt,
+  ) {
+    return _taiyin_utc_to_tt_split(jd_utc, tai_minus_utc_seconds, out_jd_tt);
+  }
+
+  late final _taiyin_utc_to_tt_splitPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_split_julian_date>,
+            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
+          )
+        >
+      >('taiyin_utc_to_tt_split');
+  late final _taiyin_utc_to_tt_split = _taiyin_utc_to_tt_splitPtr
+      .asFunction<
+        int Function(
+          ffi.Pointer<taiyin_split_julian_date>,
+          double,
+          ffi.Pointer<taiyin_split_julian_date>,
+        )
+      >();
+
+  int taiyin_utc_to_ut1_split(
+    ffi.Pointer<taiyin_split_julian_date> jd_utc,
+    double dut1_seconds,
+    ffi.Pointer<taiyin_split_julian_date> out_jd_ut1,
+  ) {
+    return _taiyin_utc_to_ut1_split(jd_utc, dut1_seconds, out_jd_ut1);
+  }
+
+  late final _taiyin_utc_to_ut1_splitPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_split_julian_date>,
+            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
+          )
+        >
+      >('taiyin_utc_to_ut1_split');
+  late final _taiyin_utc_to_ut1_split = _taiyin_utc_to_ut1_splitPtr
+      .asFunction<
+        int Function(
+          ffi.Pointer<taiyin_split_julian_date>,
+          double,
+          ffi.Pointer<taiyin_split_julian_date>,
+        )
+      >();
+
+  int taiyin_tt_to_ut1_split(
+    ffi.Pointer<taiyin_split_julian_date> jd_tt,
+    double delta_t_seconds,
+    ffi.Pointer<taiyin_split_julian_date> out_jd_ut1,
+  ) {
+    return _taiyin_tt_to_ut1_split(jd_tt, delta_t_seconds, out_jd_ut1);
+  }
+
+  late final _taiyin_tt_to_ut1_splitPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_split_julian_date>,
+            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
+          )
+        >
+      >('taiyin_tt_to_ut1_split');
+  late final _taiyin_tt_to_ut1_split = _taiyin_tt_to_ut1_splitPtr
+      .asFunction<
+        int Function(
+          ffi.Pointer<taiyin_split_julian_date>,
+          double,
+          ffi.Pointer<taiyin_split_julian_date>,
+        )
+      >();
+
+  int taiyin_ut1_to_tt_split(
+    ffi.Pointer<taiyin_split_julian_date> jd_ut1,
+    double delta_t_seconds,
+    ffi.Pointer<taiyin_split_julian_date> out_jd_tt,
+  ) {
+    return _taiyin_ut1_to_tt_split(jd_ut1, delta_t_seconds, out_jd_tt);
+  }
+
+  late final _taiyin_ut1_to_tt_splitPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_split_julian_date>,
+            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
+          )
+        >
+      >('taiyin_ut1_to_tt_split');
+  late final _taiyin_ut1_to_tt_split = _taiyin_ut1_to_tt_splitPtr
+      .asFunction<
+        int Function(
+          ffi.Pointer<taiyin_split_julian_date>,
+          double,
+          ffi.Pointer<taiyin_split_julian_date>,
+        )
+      >();
+
+  int taiyin_tt_to_tdb_split(
+    ffi.Pointer<taiyin_split_julian_date> jd_tt,
+    int tdb_model_id,
+    ffi.Pointer<taiyin_split_julian_date> out_jd_tdb,
+  ) {
+    return _taiyin_tt_to_tdb_split(jd_tt, tdb_model_id, out_jd_tdb);
+  }
+
+  late final _taiyin_tt_to_tdb_splitPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_split_julian_date>,
+            ffi.Int32,
+            ffi.Pointer<taiyin_split_julian_date>,
+          )
+        >
+      >('taiyin_tt_to_tdb_split');
+  late final _taiyin_tt_to_tdb_split = _taiyin_tt_to_tdb_splitPtr
+      .asFunction<
+        int Function(
+          ffi.Pointer<taiyin_split_julian_date>,
+          int,
+          ffi.Pointer<taiyin_split_julian_date>,
+        )
+      >();
+
+  int taiyin_tdb_to_tt_split(
+    ffi.Pointer<taiyin_split_julian_date> jd_tdb,
+    int tdb_model_id,
+    ffi.Pointer<taiyin_split_julian_date> out_jd_tt,
+  ) {
+    return _taiyin_tdb_to_tt_split(jd_tdb, tdb_model_id, out_jd_tt);
+  }
+
+  late final _taiyin_tdb_to_tt_splitPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_split_julian_date>,
+            ffi.Int32,
+            ffi.Pointer<taiyin_split_julian_date>,
+          )
+        >
+      >('taiyin_tdb_to_tt_split');
+  late final _taiyin_tdb_to_tt_split = _taiyin_tdb_to_tt_splitPtr
+      .asFunction<
+        int Function(
+          ffi.Pointer<taiyin_split_julian_date>,
+          int,
+          ffi.Pointer<taiyin_split_julian_date>,
+        )
+      >();
+
   int taiyin_make_precise_time_scales_from_utc(
     ffi.Pointer<taiyin_calendar_datetime> datetime_utc,
     double tai_minus_utc_seconds,
@@ -698,6 +1123,46 @@ class TaiyinBindings {
             )
           >();
 
+  int taiyin_make_split_precise_time_scales_from_utc(
+    ffi.Pointer<taiyin_calendar_datetime> datetime_utc,
+    double tai_minus_utc_seconds,
+    double dut1_seconds,
+    int tdb_model_id,
+    ffi.Pointer<taiyin_split_precise_time_scales> out,
+  ) {
+    return _taiyin_make_split_precise_time_scales_from_utc(
+      datetime_utc,
+      tai_minus_utc_seconds,
+      dut1_seconds,
+      tdb_model_id,
+      out,
+    );
+  }
+
+  late final _taiyin_make_split_precise_time_scales_from_utcPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_calendar_datetime>,
+            ffi.Double,
+            ffi.Double,
+            ffi.Int32,
+            ffi.Pointer<taiyin_split_precise_time_scales>,
+          )
+        >
+      >('taiyin_make_split_precise_time_scales_from_utc');
+  late final _taiyin_make_split_precise_time_scales_from_utc =
+      _taiyin_make_split_precise_time_scales_from_utcPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_calendar_datetime>,
+              double,
+              double,
+              int,
+              ffi.Pointer<taiyin_split_precise_time_scales>,
+            )
+          >();
+
   int taiyin_make_time_scales_from_utc(
     ffi.Pointer<taiyin_context> context,
     ffi.Pointer<taiyin_calendar_datetime> datetime_utc,
@@ -730,6 +1195,42 @@ class TaiyinBindings {
               ffi.Pointer<taiyin_context>,
               ffi.Pointer<taiyin_calendar_datetime>,
               ffi.Pointer<taiyin_precise_time_scales>,
+              ffi.Pointer<taiyin_time_scale_diagnostic>,
+            )
+          >();
+
+  int taiyin_make_split_time_scales_from_utc(
+    ffi.Pointer<taiyin_context> context,
+    ffi.Pointer<taiyin_calendar_datetime> datetime_utc,
+    ffi.Pointer<taiyin_split_precise_time_scales> out,
+    ffi.Pointer<taiyin_time_scale_diagnostic> diagnostic,
+  ) {
+    return _taiyin_make_split_time_scales_from_utc(
+      context,
+      datetime_utc,
+      out,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_make_split_time_scales_from_utcPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Pointer<taiyin_calendar_datetime>,
+            ffi.Pointer<taiyin_split_precise_time_scales>,
+            ffi.Pointer<taiyin_time_scale_diagnostic>,
+          )
+        >
+      >('taiyin_make_split_time_scales_from_utc');
+  late final _taiyin_make_split_time_scales_from_utc =
+      _taiyin_make_split_time_scales_from_utcPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              ffi.Pointer<taiyin_calendar_datetime>,
+              ffi.Pointer<taiyin_split_precise_time_scales>,
               ffi.Pointer<taiyin_time_scale_diagnostic>,
             )
           >();
@@ -770,6 +1271,42 @@ class TaiyinBindings {
             )
           >();
 
+  int taiyin_make_split_time_scales_from_ut_delta_t(
+    ffi.Pointer<taiyin_calendar_datetime> datetime_ut,
+    double delta_t_seconds,
+    int tdb_model_id,
+    ffi.Pointer<taiyin_split_estimated_time_scales> out,
+  ) {
+    return _taiyin_make_split_time_scales_from_ut_delta_t(
+      datetime_ut,
+      delta_t_seconds,
+      tdb_model_id,
+      out,
+    );
+  }
+
+  late final _taiyin_make_split_time_scales_from_ut_delta_tPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_calendar_datetime>,
+            ffi.Double,
+            ffi.Int32,
+            ffi.Pointer<taiyin_split_estimated_time_scales>,
+          )
+        >
+      >('taiyin_make_split_time_scales_from_ut_delta_t');
+  late final _taiyin_make_split_time_scales_from_ut_delta_t =
+      _taiyin_make_split_time_scales_from_ut_delta_tPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_calendar_datetime>,
+              double,
+              int,
+              ffi.Pointer<taiyin_split_estimated_time_scales>,
+            )
+          >();
+
   int taiyin_make_estimated_time_scales_from_ut(
     ffi.Pointer<taiyin_calendar_datetime> datetime_ut,
     int tdb_model_id,
@@ -799,6 +1336,38 @@ class TaiyinBindings {
               ffi.Pointer<taiyin_calendar_datetime>,
               int,
               ffi.Pointer<taiyin_estimated_time_scales>,
+            )
+          >();
+
+  int taiyin_make_split_estimated_time_scales_from_ut(
+    ffi.Pointer<taiyin_calendar_datetime> datetime_ut,
+    int tdb_model_id,
+    ffi.Pointer<taiyin_split_estimated_time_scales> out,
+  ) {
+    return _taiyin_make_split_estimated_time_scales_from_ut(
+      datetime_ut,
+      tdb_model_id,
+      out,
+    );
+  }
+
+  late final _taiyin_make_split_estimated_time_scales_from_utPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_calendar_datetime>,
+            ffi.Int32,
+            ffi.Pointer<taiyin_split_estimated_time_scales>,
+          )
+        >
+      >('taiyin_make_split_estimated_time_scales_from_ut');
+  late final _taiyin_make_split_estimated_time_scales_from_ut =
+      _taiyin_make_split_estimated_time_scales_from_utPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_calendar_datetime>,
+              int,
+              ffi.Pointer<taiyin_split_estimated_time_scales>,
             )
           >();
 }
@@ -1344,6 +1913,14 @@ sealed class taiyin_time_scale_diagnostic_flags {
   static const TAIYIN_TIME_USED_DELTA_T_MODEL = 4;
 }
 
+final class taiyin_split_julian_date extends ffi.Struct {
+  @ffi.Int64()
+  external int day_number;
+
+  @ffi.Double()
+  external double day_fraction;
+}
+
 final class taiyin_precise_time_scales extends ffi.Struct {
   @ffi.Uint32()
   external int struct_size;
@@ -1362,6 +1939,30 @@ final class taiyin_precise_time_scales extends ffi.Struct {
 
   @ffi.Double()
   external double jd_tdb;
+
+  @ffi.Double()
+  external double tai_minus_utc_seconds;
+
+  @ffi.Double()
+  external double dut1_seconds;
+
+  @ffi.Double()
+  external double delta_t_seconds;
+}
+
+final class taiyin_split_precise_time_scales extends ffi.Struct {
+  @ffi.Uint32()
+  external int struct_size;
+
+  external taiyin_split_julian_date utc;
+
+  external taiyin_split_julian_date tai;
+
+  external taiyin_split_julian_date tt;
+
+  external taiyin_split_julian_date ut1;
+
+  external taiyin_split_julian_date tdb;
 
   @ffi.Double()
   external double tai_minus_utc_seconds;
@@ -1417,6 +2018,20 @@ final class taiyin_estimated_time_scales extends ffi.Struct {
 
   @ffi.Double()
   external double jd_tdb;
+
+  @ffi.Double()
+  external double delta_t_seconds;
+}
+
+final class taiyin_split_estimated_time_scales extends ffi.Struct {
+  @ffi.Uint32()
+  external int struct_size;
+
+  external taiyin_split_julian_date ut1;
+
+  external taiyin_split_julian_date tt;
+
+  external taiyin_split_julian_date tdb;
 
   @ffi.Double()
   external double delta_t_seconds;
