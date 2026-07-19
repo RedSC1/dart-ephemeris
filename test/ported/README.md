@@ -14,9 +14,11 @@ Dart equivalent.
 - `c_api_cpp`: ABI version, exact library version, typed capabilities, and
   initialized calendar behavior are covered by `test/taiyin_test.dart`.
 - `c_api` and `c_api_static`: metadata, runtime/context lifetime, calendar,
-  time-scale, and position portions are covered. The remaining public modules
-  move over as their wrappers are added. Static-vs-shared linkage is a native
-  build concern and shares the same Dart behavior tests.
+  time-scale, and position portions are covered. `position_api_test.dart`
+  exercises single, batch, and Cartesian-state entry points across TDB, TT,
+  UT1, explicit Delta-T, and UTC routes. The remaining public modules move over
+  as their wrappers are added. Static-vs-shared linkage is a native build
+  concern and shares the same Dart behavior tests.
 - `time_angle_interpolation`: all time behavior reachable through the C ABI is
   covered by `time_angle_interpolation_test.dart`, including the original
   Delta-T oracle table. Angle and interpolation helpers are C++ APIs and are

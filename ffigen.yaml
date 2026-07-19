@@ -17,6 +17,8 @@ functions:
     - taiyin_status_message
     - taiyin_status_category
     - taiyin_calendar_datetime_init
+    - taiyin_cartesian_state_init
+    - taiyin_ephemeris_diagnostic_init
     - taiyin_julian_day
     - taiyin_julian_day_split
     - taiyin_reverse_julian_day
@@ -76,9 +78,25 @@ functions:
     - taiyin_context_set_tdb_model
     - taiyin_calc_position_tt
     - taiyin_calc_position_ut
+    - taiyin_calc_position_tdb
+    - taiyin_calc_position_ut_delta_t
+    - taiyin_calc_position_utc
+    - taiyin_calc_positions_tdb
+    - taiyin_calc_positions_tt
+    - taiyin_calc_positions_ut
+    - taiyin_calc_positions_ut_delta_t
+    - taiyin_calc_positions_utc
+    - taiyin_calc_state_tdb
+    - taiyin_calc_state_tt
+    - taiyin_calc_state_ut
+    - taiyin_calc_state_ut_delta_t
+    - taiyin_calc_state_utc
 structs:
   include:
     - taiyin_calendar_datetime
+    - taiyin_vector3
+    - taiyin_cartesian_state
+    - taiyin_ephemeris_diagnostic
     - taiyin_split_julian_date
     - taiyin_precise_time_scales
     - taiyin_split_precise_time_scales
