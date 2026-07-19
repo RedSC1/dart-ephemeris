@@ -3,6 +3,7 @@ import 'dart:ffi';
 import 'package:ffi/ffi.dart';
 
 import '../bindings/taiyin_bindings.g.dart';
+import '../interop/calendar.dart';
 import 'astro_date_time.dart';
 import 'julian_date.dart';
 import 'time_models.dart';
@@ -49,7 +50,7 @@ final class TaiyinTime {
   JulianDate<S> julianDay<S extends TimeScale>(AstroDateTime value) {
     _ensureOpen();
     return using((arena) {
-      final calendar = _writeCalendar(arena, value);
+      final calendar = writeNativeCalendar(_bindings, arena, value);
       final output = arena<taiyin_split_julian_date>();
       _checkStatus(_bindings.taiyin_julian_day_split(calendar, output));
       return _readJulianDate<S>(output.ref);
@@ -188,7 +189,7 @@ final class TaiyinTime {
   double taiMinusUtc(AstroDateTime utc) {
     _ensureOpen();
     return using((arena) {
-      final calendar = _writeCalendar(arena, utc);
+      final calendar = writeNativeCalendar(_bindings, arena, utc);
       final output = arena<Double>();
       _checkStatus(_bindings.taiyin_tai_minus_utc_seconds(calendar, output));
       return output.value;
@@ -292,7 +293,7 @@ final class TaiyinTime {
     _requireFinite(taiMinusUtcSeconds, 'taiMinusUtcSeconds');
     _requireFinite(dut1Seconds, 'dut1Seconds');
     return using((arena) {
-      final calendar = _writeCalendar(arena, utc);
+      final calendar = writeNativeCalendar(_bindings, arena, utc);
       final output = arena<taiyin_split_precise_time_scales>();
       _bindings.taiyin_split_precise_time_scales_init(output);
       _checkStatus(
@@ -313,7 +314,7 @@ final class TaiyinTime {
   TimeScaleResult<PreciseTimeScales> scalesFromUtc(AstroDateTime utc) {
     _ensureOpen();
     return using((arena) {
-      final calendar = _writeCalendar(arena, utc);
+      final calendar = writeNativeCalendar(_bindings, arena, utc);
       final output = arena<taiyin_split_precise_time_scales>();
       final diagnostic = arena<taiyin_time_scale_diagnostic>();
       _bindings
@@ -347,7 +348,7 @@ final class TaiyinTime {
       _requireFinite(deltaTSeconds, 'deltaTSeconds');
     }
     return using((arena) {
-      final calendar = _writeCalendar(arena, ut1);
+      final calendar = writeNativeCalendar(_bindings, arena, ut1);
       final output = arena<taiyin_split_estimated_time_scales>();
       _bindings.taiyin_split_estimated_time_scales_init(output);
       final status = deltaTSeconds == null
@@ -365,25 +366,6 @@ final class TaiyinTime {
       _checkStatus(status);
       return _readEstimated(output.ref);
     });
-  }
-
-  Pointer<taiyin_calendar_datetime> _writeCalendar(
-    Arena arena,
-    AstroDateTime value,
-  ) {
-    if (value.year < -2147483648 || value.year > 2147483647) {
-      throw RangeError.range(value.year, -2147483648, 2147483647, 'year');
-    }
-    final native = arena<taiyin_calendar_datetime>();
-    _bindings.taiyin_calendar_datetime_init(native);
-    native.ref
-      ..year = value.year
-      ..month = value.month
-      ..day = value.day
-      ..hour = value.hour
-      ..minute = value.minute
-      ..second = value.fractionalSecond;
-    return native;
   }
 
   PreciseTimeScales _readPrecise(taiyin_split_precise_time_scales value) {
@@ -411,7 +393,7 @@ final class TaiyinTime {
   TimeScaleDiagnostic _readDiagnostic(taiyin_time_scale_diagnostic value) {
     final flags = {
       for (final flag in TimeScaleDiagnosticFlag.values)
-        if (value.flags & flag.mask != 0) flag,
+        if ((value.flags & flag.mask) != 0) flag,
     };
     return TimeScaleDiagnostic(
       route: TimeScaleRoute.fromId(value.route),

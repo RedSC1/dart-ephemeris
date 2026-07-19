@@ -3,11 +3,13 @@ import 'dart:ffi';
 import 'package:ffi/ffi.dart';
 
 import '../bindings/taiyin_bindings.g.dart';
+import '../interop/calendar.dart';
 import '../time/astro_date_time.dart';
 import '../time/julian_date.dart';
 import '../time/time_models.dart';
 import '../time/time_scale.dart';
-import 'position_models.dart';
+
+part 'position_models.dart';
 
 typedef _SinglePositionCalculation =
     int Function(
@@ -29,8 +31,15 @@ typedef _StateCalculation =
       Pointer<taiyin_cartesian_state> output,
       Pointer<taiyin_ephemeris_diagnostic> diagnostic,
     );
+typedef _PositionStatusChecker =
+    void Function(int status, TaiyinEphemerisDiagnostic? diagnostic);
 
 /// Position and Cartesian-state calculations backed by Taiyin.
+///
+/// Batch methods preserve one result and diagnostic per requested body when
+/// individual targets fail. Callers should inspect
+/// [TaiyinEphemerisDiagnostic.status] on every returned item. Failures that
+/// occur before native per-target diagnostics are available still throw.
 final class TaiyinPositionApi {
   /// Internal constructor used by an owning Taiyin context.
   TaiyinPositionApi.internal(
@@ -43,7 +52,7 @@ final class TaiyinPositionApi {
   final TaiyinBindings _bindings;
   final Pointer<taiyin_context> _context;
   final void Function() _ensureOpen;
-  final void Function(int status) _checkStatus;
+  final _PositionStatusChecker _checkStatus;
 
   /// Calculates one body at a TT Julian date.
   TaiyinEphemerisResult<TaiyinPosition> atTt(
@@ -51,6 +60,7 @@ final class TaiyinPositionApi {
     JulianDate<TtScale> julianDate, {
     Set<TaiyinPositionFlag> flags = const {},
   }) {
+    _ensureOpen();
     return _position(
       flags,
       (mask, output, diagnostic) => _bindings.taiyin_calc_position_tt(
@@ -70,6 +80,7 @@ final class TaiyinPositionApi {
     JulianDate<Ut1Scale> julianDate, {
     Set<TaiyinPositionFlag> flags = const {},
   }) {
+    _ensureOpen();
     return _position(
       flags,
       (mask, output, diagnostic) => _bindings.taiyin_calc_position_ut(
@@ -90,6 +101,7 @@ final class TaiyinPositionApi {
     JulianDate<TtScale> tt, {
     Set<TaiyinPositionFlag> flags = const {},
   }) {
+    _ensureOpen();
     return _position(
       flags,
       (mask, output, diagnostic) => _bindings.taiyin_calc_position_tdb(
@@ -111,6 +123,7 @@ final class TaiyinPositionApi {
     double deltaTSeconds, {
     Set<TaiyinPositionFlag> flags = const {},
   }) {
+    _ensureOpen();
     _requireFinite(deltaTSeconds, 'deltaTSeconds');
     return _position(
       flags,
@@ -134,7 +147,7 @@ final class TaiyinPositionApi {
   }) {
     _ensureOpen();
     return using((arena) {
-      final calendar = _writeCalendar(arena, utc);
+      final calendar = writeNativeCalendar(_bindings, arena, utc);
       return _position(
         flags,
         (mask, output, diagnostic) => _bindings.taiyin_calc_position_utc(
@@ -155,6 +168,7 @@ final class TaiyinPositionApi {
     JulianDate<TtScale> julianDate, {
     Set<TaiyinPositionFlag> flags = const {},
   }) {
+    _ensureOpen();
     return _positions(
       bodies,
       flags,
@@ -177,6 +191,7 @@ final class TaiyinPositionApi {
     JulianDate<Ut1Scale> julianDate, {
     Set<TaiyinPositionFlag> flags = const {},
   }) {
+    _ensureOpen();
     return _positions(
       bodies,
       flags,
@@ -200,6 +215,7 @@ final class TaiyinPositionApi {
     JulianDate<TtScale> tt, {
     Set<TaiyinPositionFlag> flags = const {},
   }) {
+    _ensureOpen();
     return _positions(
       bodies,
       flags,
@@ -224,6 +240,7 @@ final class TaiyinPositionApi {
     double deltaTSeconds, {
     Set<TaiyinPositionFlag> flags = const {},
   }) {
+    _ensureOpen();
     _requireFinite(deltaTSeconds, 'deltaTSeconds');
     return _positions(
       bodies,
@@ -250,7 +267,7 @@ final class TaiyinPositionApi {
   }) {
     _ensureOpen();
     return using((arena) {
-      final calendar = _writeCalendar(arena, utc);
+      final calendar = writeNativeCalendar(_bindings, arena, utc);
       return _positions(
         bodies,
         flags,
@@ -269,11 +286,16 @@ final class TaiyinPositionApi {
   }
 
   /// Calculates a Cartesian state at a TT Julian date.
+  ///
+  /// Cartesian position, velocity, and acceleration are always returned, so
+  /// [TaiyinPositionFlag.xyz] and [TaiyinPositionFlag.speed] are implied and
+  /// have no effect. Frame and apparent-correction flags still apply.
   TaiyinEphemerisResult<TaiyinCartesianState> stateAtTt(
     TaiyinBody body,
     JulianDate<TtScale> julianDate, {
     Set<TaiyinPositionFlag> flags = const {},
   }) {
+    _ensureOpen();
     return _state(
       flags,
       (mask, output, diagnostic) => _bindings.taiyin_calc_state_tt(
@@ -288,11 +310,14 @@ final class TaiyinPositionApi {
   }
 
   /// Calculates a Cartesian state at a UT1 Julian date.
+  ///
+  /// Position and derivative flags behave as described by [stateAtTt].
   TaiyinEphemerisResult<TaiyinCartesianState> stateAtUt1(
     TaiyinBody body,
     JulianDate<Ut1Scale> julianDate, {
     Set<TaiyinPositionFlag> flags = const {},
   }) {
+    _ensureOpen();
     return _state(
       flags,
       (mask, output, diagnostic) => _bindings.taiyin_calc_state_ut(
@@ -307,12 +332,15 @@ final class TaiyinPositionApi {
   }
 
   /// Calculates a Cartesian state with explicit TDB and TT coordinates.
+  ///
+  /// Position and derivative flags behave as described by [stateAtTt].
   TaiyinEphemerisResult<TaiyinCartesianState> stateAtTdb(
     TaiyinBody body,
     JulianDate<TdbScale> tdb,
     JulianDate<TtScale> tt, {
     Set<TaiyinPositionFlag> flags = const {},
   }) {
+    _ensureOpen();
     return _state(
       flags,
       (mask, output, diagnostic) => _bindings.taiyin_calc_state_tdb(
@@ -328,12 +356,15 @@ final class TaiyinPositionApi {
   }
 
   /// Calculates a Cartesian state at UT1 with an explicit TT−UT1 value.
+  ///
+  /// Position and derivative flags behave as described by [stateAtTt].
   TaiyinEphemerisResult<TaiyinCartesianState> stateAtUt1WithDeltaT(
     TaiyinBody body,
     JulianDate<Ut1Scale> julianDate,
     double deltaTSeconds, {
     Set<TaiyinPositionFlag> flags = const {},
   }) {
+    _ensureOpen();
     _requireFinite(deltaTSeconds, 'deltaTSeconds');
     return _state(
       flags,
@@ -350,6 +381,8 @@ final class TaiyinPositionApi {
   }
 
   /// Calculates a Cartesian state from a UTC calendar value.
+  ///
+  /// Position and derivative flags behave as described by [stateAtTt].
   TaiyinEphemerisResult<TaiyinCartesianState> stateAtUtc(
     TaiyinBody body,
     AstroDateTime utc, {
@@ -357,7 +390,7 @@ final class TaiyinPositionApi {
   }) {
     _ensureOpen();
     return using((arena) {
-      final calendar = _writeCalendar(arena, utc);
+      final calendar = writeNativeCalendar(_bindings, arena, utc);
       return _state(
         flags,
         (mask, output, diagnostic) => _bindings.taiyin_calc_state_utc(
@@ -376,19 +409,20 @@ final class TaiyinPositionApi {
     Set<TaiyinPositionFlag> flags,
     _SinglePositionCalculation calculate,
   ) {
-    _ensureOpen();
     final frozenFlags = Set<TaiyinPositionFlag>.unmodifiable(flags);
     final mask = _flagMask(frozenFlags);
     return using((arena) {
       final output = arena<Double>(6);
       final diagnostic = arena<taiyin_ephemeris_diagnostic>();
       _bindings.taiyin_ephemeris_diagnostic_init(diagnostic);
-      _checkStatus(calculate(mask, output, diagnostic));
+      final status = calculate(mask, output, diagnostic);
+      final mappedDiagnostic = _readDiagnostic(diagnostic.ref);
+      _checkStatus(status, mappedDiagnostic);
       return TaiyinEphemerisResult(
-        value: TaiyinPosition([
+        value: TaiyinPosition._([
           for (var index = 0; index < 6; index++) output[index],
         ], frozenFlags),
-        diagnostic: _readDiagnostic(diagnostic.ref),
+        diagnostic: mappedDiagnostic,
       );
     });
   }
@@ -398,7 +432,6 @@ final class TaiyinPositionApi {
     Set<TaiyinPositionFlag> flags,
     _BatchPositionCalculation calculate,
   ) {
-    _ensureOpen();
     if (bodies.isEmpty) return const [];
     final frozenFlags = Set<TaiyinPositionFlag>.unmodifiable(flags);
     final mask = _flagMask(frozenFlags);
@@ -410,19 +443,28 @@ final class TaiyinPositionApi {
         targetIds[index] = bodies[index].id;
         _bindings.taiyin_ephemeris_diagnostic_init(diagnostics + index);
       }
-      _checkStatus(
-        calculate(targetIds, bodies.length, mask, output, diagnostics),
+      final status = calculate(
+        targetIds,
+        bodies.length,
+        mask,
+        output,
+        diagnostics,
       );
-      return List.unmodifiable([
+      final results = List<TaiyinEphemerisResult<TaiyinPosition>>.unmodifiable([
         for (var bodyIndex = 0; bodyIndex < bodies.length; bodyIndex++)
           TaiyinEphemerisResult(
-            value: TaiyinPosition([
+            value: TaiyinPosition._([
               for (var valueIndex = 0; valueIndex < 6; valueIndex++)
                 output[bodyIndex * 6 + valueIndex],
             ], frozenFlags),
             diagnostic: _readDiagnostic(diagnostics[bodyIndex]),
           ),
       ]);
+      if (status != 0 &&
+          !results.any((result) => result.diagnostic.status != 0)) {
+        _checkStatus(status, null);
+      }
+      return results;
     });
   }
 
@@ -430,7 +472,6 @@ final class TaiyinPositionApi {
     Set<TaiyinPositionFlag> flags,
     _StateCalculation calculate,
   ) {
-    _ensureOpen();
     final mask = _flagMask(flags);
     return using((arena) {
       final output = arena<taiyin_cartesian_state>();
@@ -438,7 +479,9 @@ final class TaiyinPositionApi {
       _bindings
         ..taiyin_cartesian_state_init(output)
         ..taiyin_ephemeris_diagnostic_init(diagnostic);
-      _checkStatus(calculate(mask, output, diagnostic));
+      final status = calculate(mask, output, diagnostic);
+      final mappedDiagnostic = _readDiagnostic(diagnostic.ref);
+      _checkStatus(status, mappedDiagnostic);
       final state = output.ref;
       return TaiyinEphemerisResult(
         value: TaiyinCartesianState(
@@ -446,34 +489,15 @@ final class TaiyinPositionApi {
           velocityAuPerDay: _readVector(state.velocity_au_per_day),
           accelerationAuPerDay2: _readVector(state.acceleration_au_per_day2),
         ),
-        diagnostic: _readDiagnostic(diagnostic.ref),
+        diagnostic: mappedDiagnostic,
       );
     });
-  }
-
-  Pointer<taiyin_calendar_datetime> _writeCalendar(
-    Arena arena,
-    AstroDateTime value,
-  ) {
-    if (value.year < -2147483648 || value.year > 2147483647) {
-      throw RangeError.range(value.year, -2147483648, 2147483647, 'year');
-    }
-    final native = arena<taiyin_calendar_datetime>();
-    _bindings.taiyin_calendar_datetime_init(native);
-    native.ref
-      ..year = value.year
-      ..month = value.month
-      ..day = value.day
-      ..hour = value.hour
-      ..minute = value.minute
-      ..second = value.fractionalSecond;
-    return native;
   }
 
   TaiyinEphemerisDiagnostic _readDiagnostic(taiyin_ephemeris_diagnostic value) {
     final timeScaleFlags = {
       for (final flag in TimeScaleDiagnosticFlag.values)
-        if (value.time_scale_flags & flag.mask != 0) flag,
+        if ((value.time_scale_flags & flag.mask) != 0) flag,
     };
     return TaiyinEphemerisDiagnostic(
       status: value.status,

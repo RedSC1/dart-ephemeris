@@ -92,6 +92,47 @@ void main() {
         }
       });
 
+      test('preserves successful targets when a batch target fails', () {
+        const bodies = [TaiyinBody.sun, TaiyinBody.mars];
+        final batch = taiyin.position.batchAtTt(bodies, tt);
+
+        expect(batch, hasLength(2));
+        expect(batch[0].diagnostic.status, 0);
+        expect(batch[0].value.values.every((value) => value.isFinite), isTrue);
+        expect(batch[1].diagnostic.status, isNot(0));
+        expect(batch[1].diagnostic.targetId, TaiyinBody.mars.id);
+      });
+
+      test('attaches native diagnostics to single-target failures', () {
+        expect(
+          () => taiyin.position.atTt(TaiyinBody.mars, tt),
+          throwsA(
+            isA<TaiyinException>()
+                .having(
+                  (error) => error.diagnostic?.targetId,
+                  'diagnostic target',
+                  TaiyinBody.mars.id,
+                )
+                .having(
+                  (error) => error.diagnostic?.status,
+                  'diagnostic status',
+                  isNot(0),
+                ),
+          ),
+        );
+
+        expect(
+          () => taiyin.position.stateAtTt(TaiyinBody.earth, tt),
+          throwsA(
+            isA<TaiyinException>().having(
+              (error) => error.diagnostic?.targetId,
+              'state diagnostic target',
+              TaiyinBody.earth.id,
+            ),
+          ),
+        );
+      });
+
       test('returns finite Cartesian position, velocity, and acceleration', () {
         final result = taiyin.position.stateAtTt(TaiyinBody.moon, tt);
         final state = result.value;

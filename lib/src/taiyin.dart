@@ -6,7 +6,6 @@ import 'package:ffi/ffi.dart';
 import 'bindings/taiyin_bindings.g.dart';
 import 'native_compatibility.dart';
 import 'position/position_api.dart';
-import 'position/position_models.dart';
 import 'time/julian_date.dart';
 import 'time/time_api.dart';
 import 'time/time_scale.dart';
@@ -80,11 +79,14 @@ final class TaiyinRuntimeOptions {
 
 /// A non-success status returned by the Taiyin C ABI.
 final class TaiyinException implements Exception {
-  const TaiyinException(this.status, this.name, this.message);
+  TaiyinException(this.status, this.name, this.message, {this.diagnostic});
 
   final int status;
   final String name;
   final String message;
+
+  /// Native route and coverage details for a failed ephemeris calculation.
+  final TaiyinEphemerisDiagnostic? diagnostic;
 
   @override
   String toString() => 'TaiyinException($status, $name): $message';
@@ -111,7 +113,8 @@ final class Taiyin implements Finalizable {
       _bindings,
       _context,
       _ensureOpen,
-      (status) => _checkStatus(_bindings, status),
+      (status, diagnostic) =>
+          _checkStatus(_bindings, status, diagnostic: diagnostic),
     );
     _contextFinalizer.attach(this, _context.cast(), detach: this);
   }
@@ -229,12 +232,12 @@ final class Taiyin implements Finalizable {
     final mask = capabilities;
     return Set.unmodifiable({
       for (final capability in TaiyinCapability.values)
-        if (mask & capability.mask != 0) capability,
+        if ((mask & capability.mask) != 0) capability,
     });
   }
 
   bool hasCapability(TaiyinCapability capability) {
-    return capabilities & capability.mask != 0;
+    return (capabilities & capability.mask) != 0;
   }
 
   /// Stable symbolic name for a native status code.
@@ -312,16 +315,27 @@ DynamicLibrary _openDefaultLibrary() {
   return DynamicLibrary.open('libtaiyin.so');
 }
 
-Never _throwStatus(TaiyinBindings bindings, int status) {
+Never _throwStatus(
+  TaiyinBindings bindings,
+  int status, {
+  TaiyinEphemerisDiagnostic? diagnostic,
+}) {
   throw TaiyinException(
     status,
     _readNativeString(bindings.taiyin_status_name(status)),
     _readNativeString(bindings.taiyin_status_message(status)),
+    diagnostic: diagnostic,
   );
 }
 
-void _checkStatus(TaiyinBindings bindings, int status) {
-  if (status != 0) _throwStatus(bindings, status);
+void _checkStatus(
+  TaiyinBindings bindings,
+  int status, {
+  TaiyinEphemerisDiagnostic? diagnostic,
+}) {
+  if (status != 0) {
+    _throwStatus(bindings, status, diagnostic: diagnostic);
+  }
 }
 
 String _readNativeString(Pointer<Char> value) {

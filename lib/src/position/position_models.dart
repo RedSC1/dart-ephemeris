@@ -1,4 +1,4 @@
-import '../time/time_models.dart';
+part of 'position_api.dart';
 
 /// A solar-system body understood by Taiyin.
 enum TaiyinBody {
@@ -77,7 +77,7 @@ enum TaiyinApparentFrame {
 /// [TaiyinPositionFlag.speed] is requested. Their coordinate system and units
 /// are described by [flags].
 final class TaiyinPosition {
-  TaiyinPosition(List<double> values, Set<TaiyinPositionFlag> flags)
+  TaiyinPosition._(List<double> values, Set<TaiyinPositionFlag> flags)
     : values = List.unmodifiable(values),
       flags = Set.unmodifiable(flags) {
     if (values.length != 6) {

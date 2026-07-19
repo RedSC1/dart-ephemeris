@@ -102,6 +102,11 @@ print(state.value.positionAu);
 print(state.diagnostic.frame);
 ```
 
+Single-target failures throw `TaiyinException` with its native `diagnostic`
+attached. Batch calls preserve one result per requested body when individual
+targets fail; inspect each `result.diagnostic.status` before consuming its
+position.
+
 The older `taiyin.positionTt` and `taiyin.positionUt` conveniences remain
 available and delegate to this module.
 
