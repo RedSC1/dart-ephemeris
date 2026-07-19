@@ -1,5 +1,6 @@
 import 'dart:ffi';
 import 'dart:io';
+import 'dart:math' as math;
 import 'dart:typed_data';
 
 import 'package:ffi/ffi.dart';
@@ -9,7 +10,9 @@ import 'context/context_models.dart';
 import 'interop/calendar.dart';
 import 'native_compatibility.dart';
 import 'observed/observed_models.dart';
+import 'phenomena/phenomena_models.dart';
 import 'position/position_api.dart';
+import 'solar_time/solar_time_models.dart';
 import 'star/star_models.dart';
 import 'time/astro_date_time.dart';
 import 'time/julian_date.dart';
@@ -19,7 +22,9 @@ import 'time/time_scale.dart';
 
 part 'context/context_api.dart';
 part 'observed/observed_api.dart';
+part 'phenomena/phenomena_api.dart';
 part 'runtime/runtime_api.dart';
+part 'solar_time/solar_time_api.dart';
 part 'star/star_api.dart';
 
 /// A feature module reported by the loaded Taiyin native library.
@@ -144,6 +149,20 @@ final class TaiyinContext implements Finalizable {
           diagnostics: diagnostics,
         ),
       );
+      phenomena = TaiyinPhenomenaApi._(
+        _bindings,
+        _context,
+        _ensureOpen,
+        (status, diagnostic) =>
+            _checkStatus(_bindings, status, diagnostic: diagnostic),
+      );
+      solarTime = TaiyinSolarTimeApi._(
+        _bindings,
+        _context,
+        _ensureOpen,
+        (status, diagnostic) =>
+            _checkStatus(_bindings, status, diagnostic: diagnostic),
+      );
       stars = TaiyinStarApi._(
         _bindings,
         _context,
@@ -211,6 +230,8 @@ final class TaiyinContext implements Finalizable {
   late final TaiyinTime time;
   late final TaiyinPositionApi position;
   late final TaiyinObservedApi observed;
+  late final TaiyinPhenomenaApi phenomena;
+  late final TaiyinSolarTimeApi solarTime;
   late final TaiyinStarApi stars;
   bool _closed = false;
 
@@ -336,4 +357,38 @@ void _checkStatus(
 String _readNativeString(Pointer<Char> value) {
   if (value == nullptr) return 'Unknown';
   return value.cast<Utf8>().toDartString();
+}
+
+TaiyinEphemerisDiagnostic _readEphemerisDiagnostic(
+  taiyin_ephemeris_diagnostic value,
+) {
+  final timeScaleFlags = {
+    for (final flag in TimeScaleDiagnosticFlag.values)
+      if ((value.time_scale_flags & flag.mask) != 0) flag,
+  };
+  return TaiyinEphemerisDiagnostic(
+    status: value.status,
+    targetId: value.target_id,
+    centerId: value.center_id,
+    frame: TaiyinApparentFrame.fromId(value.frame),
+    rawFrameId: value.frame,
+    julianDateTdb: value.jd_tdb,
+    candidateCount: value.candidate_count,
+    attemptedMethodId: value.attempted_method_id,
+    nearestCoverageStart: value.nearest_coverage_start,
+    nearestCoverageEnd: value.nearest_coverage_end,
+    componentTargetId: value.component_target_id,
+    componentCenterId: value.component_center_id,
+    componentMethodId: value.component_method_id,
+    timeScaleRoute: TimeScaleRoute.fromId(value.time_scale_route),
+    rawTimeScaleRouteId: value.time_scale_route,
+    timeScaleFallbackReason: TimeScaleFallbackReason.fromId(
+      value.time_scale_fallback_reason,
+    ),
+    rawTimeScaleFallbackReasonId: value.time_scale_fallback_reason,
+    timeScaleFlags: timeScaleFlags,
+    taiMinusUtcSeconds: value.tai_minus_utc_seconds,
+    dut1Seconds: value.dut1_seconds,
+    deltaTSeconds: value.delta_t_seconds,
+  );
 }

@@ -30,3 +30,13 @@ final class Ut1Scale extends TimeScale {
 final class TdbScale extends TimeScale {
   const TdbScale._() : super._();
 }
+
+/// Local mean solar time at a specific longitude.
+final class LocalMeanSolarTimeScale extends TimeScale {
+  const LocalMeanSolarTimeScale._() : super._();
+}
+
+/// Local apparent solar time at a specific longitude.
+final class LocalApparentSolarTimeScale extends TimeScale {
+  const LocalApparentSolarTimeScale._() : super._();
+}

@@ -29,6 +29,10 @@ Dart equivalent.
   `star_api_test.dart` exercises TSC1 file/memory ownership, TSF1 loading,
   magnitude aliases, all four single and batch star-position time routes,
   partial diagnostics, observed stars, horizontal output, and invalid inputs.
+  `solar_time_api_test.dart` covers UT1/TT equation-of-time parity, the
+  SwissEph equation oracle, and typed local-mean/apparent conversion.
+  `phenomena_api_test.dart` covers UT1/TT physical phenomena, the strict
+  first-quarter Moon SwissEph oracle, lunar parallax, and invalid bodies.
   The remaining public modules move over as their wrappers are added.
   Static-vs-shared linkage is a native build concern and shares the same Dart
   behavior tests.
@@ -57,7 +61,7 @@ These suites map to current or planned C ABI modules:
   `pure_functions_full`
 - `celestial_body_registry`, `body_registry`, `dispatch_models`
 - `apparent_position_oracles`, `apparent_self_skip`
-- `event_search`, `orbital_events`, `solar_time`, `phenomena`
+- `event_search`, `orbital_events`
 - `visibility_search`, `solar_visibility_public`, `moon_visibility_public`,
   `star_visibility_public`, `heliacal_visibility`, `occultation_search`,
   `planet_visibility_spk_oracles`, `planet_visibility_public`

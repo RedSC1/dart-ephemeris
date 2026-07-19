@@ -216,6 +216,47 @@ observer location. Refraction additionally requires complete atmosphere data
 or standard-atmosphere fallback. Add `strictMeteorology` to forbid fallback.
 UTC calculations require Earth-orientation data covering the requested date.
 
+## Solar time and body phenomena
+
+`context.solarTime` calculates the equation of time from UT1 or TT and converts
+between local mean and apparent solar time. The two local solar coordinates use
+distinct `JulianDate` scale markers, so they cannot be passed to the inverse
+conversion in the wrong order:
+
+```dart
+final ut1 = JulianDate<Ut1Scale>.fromDouble(2460311.0);
+final equation = context.solarTime.equationOfTimeAtUt1(ut1);
+
+final longitudeRadians = 116.3833 * 3.141592653589793 / 180;
+final localMean = JulianDate<LocalMeanSolarTimeScale>.fromDouble(
+  ut1.toDouble() + longitudeRadians / (2 * 3.141592653589793),
+);
+final localApparent = context.solarTime.meanToApparent(
+  localMean,
+  longitudeRadians,
+);
+print(equation.value.equationSeconds);
+print(localApparent.value);
+```
+
+`context.phenomena` calculates phase angle, illuminated fraction, solar
+elongation, apparent diameter, and apparent magnitude for the Sun, Moon, and
+physical planets. Lunar results additionally contain geocentric horizontal
+parallax:
+
+```dart
+final moonPhenomena = context.phenomena.atUt1(
+  TaiyinBody.moon,
+  JulianDate<Ut1Scale>.fromDouble(2460416.2916666665),
+);
+print(moonPhenomena.value.illuminatedFraction);
+print(moonPhenomena.value.apparentMagnitude);
+print(moonPhenomena.value.horizontalParallaxRadians);
+```
+
+Both modules attach the native ephemeris diagnostic to every successful result
+and throw `TaiyinException` with that diagnostic on native failure.
+
 ## Fixed stars
 
 Fixed-star catalogs are process-wide resources. Load TSC1 catalogs from a file
@@ -264,10 +305,10 @@ entries contain NaN coordinates and rates. Batch exceptions expose every
 available native failure through `TaiyinException.diagnostics`.
 
 This package requires an ABI-1 native library that reports
-`TaiyinCapability.splitTime` and exposes the late ABI-1 runtime and star
-symbols. Intermediate ABI-1 builds are rejected during `Taiyin.open` or
-`TaiyinContext.attach` with a clear compatibility error instead of failing
-later during a lazy symbol lookup.
+`TaiyinCapability.splitTime` and exposes the late ABI-1 runtime, star,
+solar-time, and phenomena symbols. Intermediate ABI-1 builds are rejected
+during `Taiyin.open` or `TaiyinContext.attach` with a clear compatibility error
+instead of failing later during a lazy symbol lookup.
 
 The native engine is process-wide, so call `Taiyin.open` once. Calling it again
 currently replaces the global catalog, cache, EOP table, and lunar-limb model.

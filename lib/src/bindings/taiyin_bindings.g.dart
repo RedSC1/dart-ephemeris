@@ -998,6 +998,105 @@ class TaiyinBindings {
             )
           >();
 
+  void taiyin_body_phenomena_init(ffi.Pointer<taiyin_body_phenomena> value) {
+    return _taiyin_body_phenomena_init(value);
+  }
+
+  late final _taiyin_body_phenomena_initPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<taiyin_body_phenomena>)
+        >
+      >('taiyin_body_phenomena_init');
+  late final _taiyin_body_phenomena_init = _taiyin_body_phenomena_initPtr
+      .asFunction<void Function(ffi.Pointer<taiyin_body_phenomena>)>();
+
+  int taiyin_calc_body_phenomena_tt(
+    ffi.Pointer<taiyin_context> context,
+    int body_id,
+    double jd_tt,
+    int flags,
+    ffi.Pointer<taiyin_body_phenomena> out,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_calc_body_phenomena_tt(
+      context,
+      body_id,
+      jd_tt,
+      flags,
+      out,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_calc_body_phenomena_ttPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Int32,
+            ffi.Double,
+            ffi.Uint64,
+            ffi.Pointer<taiyin_body_phenomena>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_calc_body_phenomena_tt');
+  late final _taiyin_calc_body_phenomena_tt = _taiyin_calc_body_phenomena_ttPtr
+      .asFunction<
+        int Function(
+          ffi.Pointer<taiyin_context>,
+          int,
+          double,
+          int,
+          ffi.Pointer<taiyin_body_phenomena>,
+          ffi.Pointer<taiyin_ephemeris_diagnostic>,
+        )
+      >();
+
+  int taiyin_calc_body_phenomena_ut(
+    ffi.Pointer<taiyin_context> context,
+    int body_id,
+    double jd_ut,
+    int flags,
+    ffi.Pointer<taiyin_body_phenomena> out,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_calc_body_phenomena_ut(
+      context,
+      body_id,
+      jd_ut,
+      flags,
+      out,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_calc_body_phenomena_utPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Int32,
+            ffi.Double,
+            ffi.Uint64,
+            ffi.Pointer<taiyin_body_phenomena>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_calc_body_phenomena_ut');
+  late final _taiyin_calc_body_phenomena_ut = _taiyin_calc_body_phenomena_utPtr
+      .asFunction<
+        int Function(
+          ffi.Pointer<taiyin_context>,
+          int,
+          double,
+          int,
+          ffi.Pointer<taiyin_body_phenomena>,
+          ffi.Pointer<taiyin_ephemeris_diagnostic>,
+        )
+      >();
+
   int taiyin_calc_position_tdb(
     ffi.Pointer<taiyin_context> context,
     int target_id,
@@ -1837,6 +1936,166 @@ class TaiyinBindings {
       );
   late final _taiyin_runtime_cache_entry_count =
       _taiyin_runtime_cache_entry_countPtr.asFunction<int Function()>();
+
+  void taiyin_equation_of_time_result_init(
+    ffi.Pointer<taiyin_equation_of_time_result> value,
+  ) {
+    return _taiyin_equation_of_time_result_init(value);
+  }
+
+  late final _taiyin_equation_of_time_result_initPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<taiyin_equation_of_time_result>)
+        >
+      >('taiyin_equation_of_time_result_init');
+  late final _taiyin_equation_of_time_result_init =
+      _taiyin_equation_of_time_result_initPtr
+          .asFunction<
+            void Function(ffi.Pointer<taiyin_equation_of_time_result>)
+          >();
+
+  int taiyin_calc_equation_of_time_ut(
+    ffi.Pointer<taiyin_context> context,
+    double jd_ut,
+    ffi.Pointer<taiyin_equation_of_time_result> out,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_calc_equation_of_time_ut(context, jd_ut, out, diagnostic);
+  }
+
+  late final _taiyin_calc_equation_of_time_utPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Double,
+            ffi.Pointer<taiyin_equation_of_time_result>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_calc_equation_of_time_ut');
+  late final _taiyin_calc_equation_of_time_ut =
+      _taiyin_calc_equation_of_time_utPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              double,
+              ffi.Pointer<taiyin_equation_of_time_result>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_calc_equation_of_time_tt(
+    ffi.Pointer<taiyin_context> context,
+    double jd_tt,
+    ffi.Pointer<taiyin_equation_of_time_result> out,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_calc_equation_of_time_tt(context, jd_tt, out, diagnostic);
+  }
+
+  late final _taiyin_calc_equation_of_time_ttPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Double,
+            ffi.Pointer<taiyin_equation_of_time_result>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_calc_equation_of_time_tt');
+  late final _taiyin_calc_equation_of_time_tt =
+      _taiyin_calc_equation_of_time_ttPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              double,
+              ffi.Pointer<taiyin_equation_of_time_result>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_local_mean_to_apparent_solar_time(
+    ffi.Pointer<taiyin_context> context,
+    double jd_local_mean,
+    double longitude_rad,
+    ffi.Pointer<ffi.Double> out_jd_local_apparent,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_local_mean_to_apparent_solar_time(
+      context,
+      jd_local_mean,
+      longitude_rad,
+      out_jd_local_apparent,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_local_mean_to_apparent_solar_timePtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Double,
+            ffi.Double,
+            ffi.Pointer<ffi.Double>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_local_mean_to_apparent_solar_time');
+  late final _taiyin_local_mean_to_apparent_solar_time =
+      _taiyin_local_mean_to_apparent_solar_timePtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              double,
+              double,
+              ffi.Pointer<ffi.Double>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_local_apparent_to_mean_solar_time(
+    ffi.Pointer<taiyin_context> context,
+    double jd_local_apparent,
+    double longitude_rad,
+    ffi.Pointer<ffi.Double> out_jd_local_mean,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_local_apparent_to_mean_solar_time(
+      context,
+      jd_local_apparent,
+      longitude_rad,
+      out_jd_local_mean,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_local_apparent_to_mean_solar_timePtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Double,
+            ffi.Double,
+            ffi.Pointer<ffi.Double>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_local_apparent_to_mean_solar_time');
+  late final _taiyin_local_apparent_to_mean_solar_time =
+      _taiyin_local_apparent_to_mean_solar_timePtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              double,
+              double,
+              ffi.Pointer<ffi.Double>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
 
   int taiyin_star_catalog_add_tsc1(ffi.Pointer<ffi.Char> path) {
     return _taiyin_star_catalog_add_tsc1(path);
@@ -3994,6 +4253,29 @@ final class taiyin_observed_position extends ffi.Struct {
   external taiyin_horizontal_rates refracted_horizontal_rates;
 }
 
+final class taiyin_body_phenomena extends ffi.Struct {
+  @ffi.Uint32()
+  external int struct_size;
+
+  @ffi.Double()
+  external double phase_angle_rad;
+
+  @ffi.Double()
+  external double illuminated_fraction;
+
+  @ffi.Double()
+  external double solar_elongation_rad;
+
+  @ffi.Double()
+  external double apparent_diameter_rad;
+
+  @ffi.Double()
+  external double apparent_magnitude;
+
+  @ffi.Double()
+  external double horizontal_parallax_rad;
+}
+
 sealed class taiyin_body_id {
   static const TAIYIN_BODY_SSB = 0;
   static const TAIYIN_BODY_MERCURY_BARYCENTER = 1;
@@ -4126,6 +4408,29 @@ final class taiyin_runtime_config extends ffi.Struct {
 
   @ffi.Uint8()
   external int reserved0;
+}
+
+final class taiyin_equation_of_time_result extends ffi.Struct {
+  @ffi.Uint32()
+  external int struct_size;
+
+  @ffi.Double()
+  external double jd_ut;
+
+  @ffi.Double()
+  external double jd_tt;
+
+  @ffi.Double()
+  external double equation_days;
+
+  @ffi.Double()
+  external double equation_seconds;
+
+  @ffi.Double()
+  external double apparent_sun_right_ascension_rad;
+
+  @ffi.Double()
+  external double gast_rad;
 }
 
 sealed class taiyin_tdb_model {

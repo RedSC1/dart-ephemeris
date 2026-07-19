@@ -135,6 +135,14 @@ functions:
     - taiyin_observed_position_init
     - taiyin_calc_observed_bodies_ut
     - taiyin_calc_observed_bodies_utc
+    - taiyin_body_phenomena_init
+    - taiyin_calc_body_phenomena_tt
+    - taiyin_calc_body_phenomena_ut
+    - taiyin_equation_of_time_result_init
+    - taiyin_calc_equation_of_time_ut
+    - taiyin_calc_equation_of_time_tt
+    - taiyin_local_mean_to_apparent_solar_time
+    - taiyin_local_apparent_to_mean_solar_time
     - taiyin_star_catalog_add_tsc1
     - taiyin_star_catalog_add_tsc1_memory
     - taiyin_star_catalog_add_tsf1
@@ -173,6 +181,8 @@ structs:
     - taiyin_horizontal_rates
     - taiyin_apparent_position
     - taiyin_observed_position
+    - taiyin_body_phenomena
+    - taiyin_equation_of_time_result
 enums:
   as-int:
     include:

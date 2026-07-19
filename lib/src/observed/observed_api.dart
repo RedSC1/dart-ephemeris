@@ -167,11 +167,7 @@ final class TaiyinObservedApi {
           for (final diagnostic in mapped)
             if (diagnostic.status != 0) diagnostic,
         ];
-        _checkStatus(
-          status,
-          failures.firstOrNull ?? mapped.first,
-          failures.isEmpty ? mapped : failures,
-        );
+        _checkStatus(status, failures.firstOrNull ?? mapped.first, mapped);
       }
 
       return List.unmodifiable([
@@ -299,34 +295,6 @@ final class TaiyinObservedApi {
   TaiyinEphemerisDiagnostic _readObservedDiagnostic(
     taiyin_ephemeris_diagnostic value,
   ) {
-    final timeScaleFlags = {
-      for (final flag in TimeScaleDiagnosticFlag.values)
-        if ((value.time_scale_flags & flag.mask) != 0) flag,
-    };
-    return TaiyinEphemerisDiagnostic(
-      status: value.status,
-      targetId: value.target_id,
-      centerId: value.center_id,
-      frame: TaiyinApparentFrame.fromId(value.frame),
-      rawFrameId: value.frame,
-      julianDateTdb: value.jd_tdb,
-      candidateCount: value.candidate_count,
-      attemptedMethodId: value.attempted_method_id,
-      nearestCoverageStart: value.nearest_coverage_start,
-      nearestCoverageEnd: value.nearest_coverage_end,
-      componentTargetId: value.component_target_id,
-      componentCenterId: value.component_center_id,
-      componentMethodId: value.component_method_id,
-      timeScaleRoute: TimeScaleRoute.fromId(value.time_scale_route),
-      rawTimeScaleRouteId: value.time_scale_route,
-      timeScaleFallbackReason: TimeScaleFallbackReason.fromId(
-        value.time_scale_fallback_reason,
-      ),
-      rawTimeScaleFallbackReasonId: value.time_scale_fallback_reason,
-      timeScaleFlags: timeScaleFlags,
-      taiMinusUtcSeconds: value.tai_minus_utc_seconds,
-      dut1Seconds: value.dut1_seconds,
-      deltaTSeconds: value.delta_t_seconds,
-    );
+    return _readEphemerisDiagnostic(value);
   }
 }
