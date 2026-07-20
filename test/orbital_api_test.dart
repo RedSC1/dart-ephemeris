@@ -159,6 +159,14 @@ void main() {
               startUt1,
             )
             .value;
+        final previousAscendingNode = context.orbits
+            .searchPlaneNodeFromUt1(
+              TaiyinBody.moon,
+              TaiyinPlaneNodeKind.ascending,
+              startUt1,
+              direction: TaiyinOrbitalSearchDirection.reverse,
+            )
+            .value;
 
         expect(
           perigee.coordinate.toDouble(),
@@ -184,6 +192,13 @@ void main() {
         expect(ascendingNode.kind, TaiyinPlaneNodeKind.ascending);
         expect(ascendingNode.referenceFrame, TaiyinApparentFrame.j2000Ecliptic);
         expect(ascendingNode.referencePlaneAngleRadians.isFinite, isTrue);
+
+        expect(previousAscendingNode.coordinate.isBefore(startUt1), isTrue);
+        expect(previousAscendingNode.kind, TaiyinPlaneNodeKind.ascending);
+        expect(
+          previousAscendingNode.direction,
+          TaiyinOrbitalSearchDirection.reverse,
+        );
       });
 
       test('TT and UT1 event searches preserve their time-scale types', () {
