@@ -63,6 +63,7 @@ final class Taiyin {
   }) {
     final state = _nativeLibraryStateFor(library);
     _initializeRuntime(state.bindings, options);
+    _closeCustomTargetRegistrationsAfterNativeClear(state);
     return Taiyin._(library, state.bindings, state.contextFinalizer);
   }
 
@@ -100,9 +101,9 @@ final class Taiyin {
 
   /// Registers a process-wide custom target backed by Dart evaluators.
   ///
-  /// [targetId] must be negative and may be registered only once. The native
-  /// ABI has no unregister operation, so successful registrations and their
-  /// callbacks remain valid until process exit.
+  /// [targetId] must be negative and may have only one active registration.
+  /// Keep the returned handle and call [TaiyinCustomTargetRegistration.close]
+  /// when the target is no longer needed.
   ///
   /// Evaluators may be invoked by calculations in worker isolates. Dart
   /// therefore requires the evaluator and everything it captures to be
@@ -111,12 +112,12 @@ final class Taiyin {
   /// `TAIYIN_ERROR_INTERNAL`; throw [TaiyinCustomEvaluatorFailure] to return a
   /// deliberate native failure status.
   ///
-  /// Register from the long-lived main isolate before concurrent calculations
-  /// begin. That isolate must remain alive while a custom target can be used.
+  /// Register and close custom targets from the long-lived main isolate.
+  /// Registration changes must not overlap calculations in any isolate.
   ///
   /// When [stateEvaluator] is omitted, Taiyin derives state vectors through
   /// its native finite-difference fallback.
-  TaiyinCustomTarget registerCustomTarget(
+  TaiyinCustomTargetRegistration registerCustomTarget(
     int targetId, {
     required TaiyinCustomPositionEvaluator positionEvaluator,
     TaiyinCustomStateEvaluator? stateEvaluator,
@@ -133,6 +134,20 @@ final class Taiyin {
       positionEvaluator,
       stateEvaluator,
     );
+  }
+
+  /// Clears every process-wide native custom target.
+  ///
+  /// This also closes the Dart registration handles owned by this isolate.
+  /// Native position evaluators registered through the C ABI by other clients
+  /// are removed as well.
+  ///
+  /// This is a setup-time operation and must not overlap calculations in any
+  /// isolate. Existing registration handles become closed.
+  void clearCustomTargets() {
+    final state = _nativeLibraryStateFor(_library);
+    _bindings.taiyin_clear_native_position_evaluators();
+    _closeCustomTargetRegistrationsAfterNativeClear(state);
   }
 
   /// Stable symbolic name for a native status code.

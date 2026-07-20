@@ -118,6 +118,8 @@ functions:
     - taiyin_context_disable_shapiro_delay
     - taiyin_context_set_eclipse_models
     - taiyin_register_native_position_evaluator
+    - taiyin_unregister_native_position_evaluator
+    - taiyin_clear_native_position_evaluators
     - taiyin_calc_position_tt
     - taiyin_calc_position_ut
     - taiyin_calc_position_tdb

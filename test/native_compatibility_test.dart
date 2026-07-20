@@ -119,17 +119,17 @@ void main() {
       );
     });
 
-    test('reports a missing custom-target registration symbol before use', () {
+    test('reports missing custom-target lifecycle symbols before use', () {
       expect(
         () => validateTaiyinRequiredSymbols(
           providesSymbol: (symbol) =>
-              symbol != 'taiyin_register_native_position_evaluator',
+              symbol != 'taiyin_unregister_native_position_evaluator',
         ),
         throwsA(
           isA<StateError>().having(
             (error) => error.message,
             'message',
-            contains('taiyin_register_native_position_evaluator'),
+            contains('taiyin_unregister_native_position_evaluator'),
           ),
         ),
       );

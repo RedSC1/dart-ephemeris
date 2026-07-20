@@ -1133,6 +1133,29 @@ class TaiyinBindings {
             )
           >();
 
+  int taiyin_unregister_native_position_evaluator(int target_id) {
+    return _taiyin_unregister_native_position_evaluator(target_id);
+  }
+
+  late final _taiyin_unregister_native_position_evaluatorPtr =
+      _lookup<ffi.NativeFunction<taiyin_status Function(ffi.Int32)>>(
+        'taiyin_unregister_native_position_evaluator',
+      );
+  late final _taiyin_unregister_native_position_evaluator =
+      _taiyin_unregister_native_position_evaluatorPtr
+          .asFunction<int Function(int)>();
+
+  void taiyin_clear_native_position_evaluators() {
+    return _taiyin_clear_native_position_evaluators();
+  }
+
+  late final _taiyin_clear_native_position_evaluatorsPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function()>>(
+        'taiyin_clear_native_position_evaluators',
+      );
+  late final _taiyin_clear_native_position_evaluators =
+      _taiyin_clear_native_position_evaluatorsPtr.asFunction<void Function()>();
+
   int taiyin_calc_position_tdb(
     ffi.Pointer<taiyin_context> context,
     int target_id,

@@ -296,8 +296,7 @@ final class _TaiyinNativeLibraryState {
 
   final TaiyinBindings bindings;
   final NativeFinalizer contextFinalizer;
-  final Map<int, _TaiyinCustomTargetRegistration> customTargetRegistrations =
-      {};
+  final Map<int, TaiyinCustomTargetRegistration> customTargetRegistrations = {};
 }
 
 // NativeFinalizer itself must stay reachable until its attachments have run.

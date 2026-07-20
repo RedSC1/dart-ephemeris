@@ -150,6 +150,13 @@ List<double> _customSunProxyEvaluator(TaiyinCustomTargetRequest request) {
   );
 }
 
+List<double> _selfRecursiveCustomEvaluator(TaiyinCustomTargetRequest request) =>
+    request.positionOf(request.target);
+
+List<double> _missingDependencyCustomEvaluator(
+  TaiyinCustomTargetRequest request,
+) => request.positionOf(TaiyinCustomTarget(-299999));
+
 void main() {
   final libraryPath =
       Platform.environment['TAIYIN_TEST_LIBRARY'] ??
@@ -224,10 +231,12 @@ void main() {
 
       test('registers and calculates a custom target', () {
         const targetId = -210001;
-        final target = runtime.registerCustomTarget(
+        final registration = runtime.registerCustomTarget(
           targetId,
           positionEvaluator: _customPositionEvaluator,
         );
+        addTearDown(registration.close);
+        final target = registration.target;
         final result = taiyin.position.atTdb(
           target,
           JulianDate<TdbScale>.fromDouble(2460409.25),
@@ -243,15 +252,20 @@ void main() {
         expect(result.value.values[4], 1.0);
         expect(result.diagnostic.status, 0);
         expect(result.diagnostic.targetId, targetId);
+        expect(result.diagnostic.centerId, -1);
+        expect(result.diagnostic.frame, TaiyinApparentFrame.unknown);
+        expect(result.diagnostic.rawFrameId, -1);
       });
 
       test('uses an exact custom state evaluator', () {
         const targetId = -210002;
-        final target = runtime.registerCustomTarget(
+        final registration = runtime.registerCustomTarget(
           targetId,
           positionEvaluator: _customPositionEvaluator,
           stateEvaluator: _customStateEvaluator,
         );
+        addTearDown(registration.close);
+        final target = registration.target;
         final result = taiyin.position.stateAtTt(
           target,
           JulianDate<TtScale>.fromDouble(2460409.0),
@@ -266,10 +280,12 @@ void main() {
 
       test('custom evaluator can calculate a dependency', () {
         const targetId = -210008;
-        final target = runtime.registerCustomTarget(
+        final registration = runtime.registerCustomTarget(
           targetId,
           positionEvaluator: _customSunProxyEvaluator,
         );
+        addTearDown(registration.close);
+        final target = registration.target;
         final tdb = JulianDate<TdbScale>.fromDouble(2460409.25);
         final tt = JulianDate<TtScale>.fromDouble(2460409.0);
         const flags = {
@@ -296,10 +312,11 @@ void main() {
 
       test('custom target callbacks work from a worker isolate', () async {
         const targetId = -210003;
-        runtime.registerCustomTarget(
+        final registration = runtime.registerCustomTarget(
           targetId,
           positionEvaluator: _customSunProxyEvaluator,
         );
+        addTearDown(registration.close);
 
         final values = await _calculateCustomTargetInWorker(
           libraryPath,
@@ -338,10 +355,11 @@ void main() {
           throwsArgumentError,
         );
 
-        runtime.registerCustomTarget(
+        final registration = runtime.registerCustomTarget(
           -210005,
           positionEvaluator: _customPositionEvaluator,
         );
+        addTearDown(registration.close);
         expect(
           () => runtime.registerCustomTarget(
             -210005,
@@ -352,10 +370,12 @@ void main() {
       });
 
       test('maps invalid and deliberate custom evaluator failures', () {
-        final invalidTarget = runtime.registerCustomTarget(
+        final invalidRegistration = runtime.registerCustomTarget(
           -210006,
           positionEvaluator: _invalidCustomPositionEvaluator,
         );
+        addTearDown(invalidRegistration.close);
+        final invalidTarget = invalidRegistration.target;
         expect(
           () => taiyin.position.atTt(
             invalidTarget,
@@ -372,10 +392,12 @@ void main() {
           ),
         );
 
-        final failingTarget = runtime.registerCustomTarget(
+        final failingRegistration = runtime.registerCustomTarget(
           -210007,
           positionEvaluator: _failingCustomPositionEvaluator,
         );
+        addTearDown(failingRegistration.close);
+        final failingTarget = failingRegistration.target;
         expect(
           () => taiyin.position.atTt(
             failingTarget,
@@ -389,6 +411,160 @@ void main() {
             ),
           ),
         );
+      });
+
+      test('unregisters, closes, and permits re-registration', () {
+        const targetId = -210009;
+        final registration = runtime.registerCustomTarget(
+          targetId,
+          positionEvaluator: _customPositionEvaluator,
+        );
+        final target = registration.target;
+
+        expect(
+          taiyin.position
+              .atTt(
+                target,
+                JulianDate<TtScale>.fromDouble(2460409.0),
+                flags: const {TaiyinPositionFlag.xyz},
+              )
+              .value
+              .values[0],
+          targetId.toDouble(),
+        );
+
+        registration.close();
+        expect(registration.isClosed, isTrue);
+        expect(registration.close, returnsNormally);
+        expect(
+          () => taiyin.position.atTt(
+            target,
+            JulianDate<TtScale>.fromDouble(2460409.0),
+          ),
+          throwsA(isA<TaiyinException>()),
+        );
+
+        final replacement = runtime.registerCustomTarget(
+          targetId,
+          positionEvaluator: _customPositionEvaluator,
+        );
+        addTearDown(replacement.close);
+        expect(replacement.target, target);
+        expect(replacement.isClosed, isFalse);
+      });
+
+      test('runtime reset closes existing custom registrations', () {
+        const targetId = -210010;
+        final registration = runtime.registerCustomTarget(
+          targetId,
+          positionEvaluator: _customPositionEvaluator,
+        );
+
+        final replacementRuntime = Taiyin.open(libraryPath: libraryPath);
+
+        expect(registration.isClosed, isTrue);
+        final replacement = replacementRuntime.registerCustomTarget(
+          targetId,
+          positionEvaluator: _customPositionEvaluator,
+        );
+        addTearDown(replacement.close);
+        expect(replacement.target.id, targetId);
+      });
+
+      test('clears all custom registrations explicitly', () {
+        final first = runtime.registerCustomTarget(
+          -210011,
+          positionEvaluator: _customPositionEvaluator,
+        );
+        final second = runtime.registerCustomTarget(
+          -210012,
+          positionEvaluator: _customPositionEvaluator,
+        );
+
+        runtime.clearCustomTargets();
+
+        expect(first.isClosed, isTrue);
+        expect(second.isClosed, isTrue);
+        final replacement = runtime.registerCustomTarget(
+          -210011,
+          positionEvaluator: _customPositionEvaluator,
+        );
+        addTearDown(replacement.close);
+        expect(replacement.isClosed, isFalse);
+      });
+
+      test(
+        'derives custom state with the native finite-difference fallback',
+        () {
+          const targetId = -210013;
+          final registration = runtime.registerCustomTarget(
+            targetId,
+            positionEvaluator: _customPositionEvaluator,
+          );
+          addTearDown(registration.close);
+
+          final result = taiyin.position.stateAtTt(
+            registration.target,
+            JulianDate<TtScale>.fromDouble(2460409.0),
+          );
+
+          expect(result.value.positionAu.x, targetId.toDouble());
+          expect(
+            [
+              ...result.value.positionAu.values,
+              ...result.value.velocityAuPerDay.values,
+              ...result.value.accelerationAuPerDay2.values,
+            ],
+            everyElement(
+              isA<double>().having((value) => value.isFinite, 'finite', isTrue),
+            ),
+          );
+        },
+      );
+
+      test('routes custom targets through UT1, UTC, and mixed batches', () {
+        const targetId = -210014;
+        final registration = runtime.registerCustomTarget(
+          targetId,
+          positionEvaluator: _customPositionEvaluator,
+        );
+        addTearDown(registration.close);
+        final target = registration.target;
+        final ut1 = JulianDate<Ut1Scale>.fromDouble(2460409.0);
+        const flags = {TaiyinPositionFlag.xyz};
+
+        final automatic = taiyin.position.atUt1(target, ut1, flags: flags);
+        final explicit = taiyin.position.atUt1WithDeltaT(
+          target,
+          ut1,
+          69.0,
+          flags: flags,
+        );
+        final utc = taiyin.position.atUtc(
+          target,
+          AstroDateTime(2024, 4, 8, 18, 0, 0),
+          flags: flags,
+        );
+        final batch = taiyin.position.batchAtTt(
+          [target, TaiyinBody.sun],
+          JulianDate<TtScale>.fromDouble(2460409.0),
+          flags: const {
+            TaiyinPositionFlag.xyz,
+            TaiyinPositionFlag.truePosition,
+          },
+        );
+
+        expect(automatic.diagnostic.status, 0);
+        expect(explicit.diagnostic.status, 0);
+        expect(utc.diagnostic.status, 0);
+        expect(
+          batch.map((result) => result.diagnostic.status),
+          everyElement(0),
+        );
+        expect(batch.map((result) => result.diagnostic.targetId), [
+          targetId,
+          TaiyinBody.sun.id,
+        ]);
       });
 
       test('matches native fractional calendar conversion', () {
@@ -466,6 +642,41 @@ void main() {
               (error) => error.message,
               'message',
               contains('Worker failed'),
+            ),
+          ),
+        );
+      });
+
+      test('propagates recursive and missing custom dependencies', () {
+        final recursive = runtime.registerCustomTarget(
+          -210015,
+          positionEvaluator: _selfRecursiveCustomEvaluator,
+        );
+        final missing = runtime.registerCustomTarget(
+          -210016,
+          positionEvaluator: _missingDependencyCustomEvaluator,
+        );
+        addTearDown(recursive.close);
+        addTearDown(missing.close);
+        final tt = JulianDate<TtScale>.fromDouble(2460409.0);
+
+        expect(
+          () => taiyin.position.atTt(recursive.target, tt),
+          throwsA(
+            isA<TaiyinException>().having(
+              (error) => error.status,
+              'recursive status',
+              -3,
+            ),
+          ),
+        );
+        expect(
+          () => taiyin.position.atTt(missing.target, tt),
+          throwsA(
+            isA<TaiyinException>().having(
+              (error) => error.status,
+              'missing dependency status',
+              -1001,
             ),
           ),
         );

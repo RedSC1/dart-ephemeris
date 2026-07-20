@@ -2,8 +2,8 @@
 
 Baseline: `taiyin-ephemeris/include/taiyin/c/*.h` on 2026-07-20.
 
-- Total callable C symbols: **312**
-- Included by the current Dart binding configuration: **167**
+- Total callable C symbols: **314**
+- Included by the current Dart binding configuration: **169**
 - Remaining: **145**
 
 `[x]` means the symbol is included in `ffigen.yaml` and its current Dart API
@@ -248,9 +248,11 @@ functions so ABI completeness can be tracked exactly.
 - [x] `taiyin_calc_body_phenomena_tt`
 - [x] `taiyin_calc_body_phenomena_ut`
 
-## `position.h` — 16/16
+## `position.h` — 18/18
 
 - [x] `taiyin_register_native_position_evaluator`
+- [x] `taiyin_unregister_native_position_evaluator`
+- [x] `taiyin_clear_native_position_evaluators`
 - [x] `taiyin_calc_position_tdb`
 - [x] `taiyin_calc_position_tt`
 - [x] `taiyin_calc_position_ut`

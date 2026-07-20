@@ -155,15 +155,16 @@ List<double> virtualPoint(TaiyinCustomTargetRequest request) => [
   0.0,
 ];
 
-final virtualTarget = taiyin.registerCustomTarget(
+final registration = taiyin.registerCustomTarget(
   -200001,
   positionEvaluator: virtualPoint,
 );
 final result = context.position.atTt(
-  virtualTarget,
+  registration.target,
   JulianDate<TtScale>.fromDouble(2460409.0),
   flags: {TaiyinPositionFlag.xyz},
 );
+registration.close();
 ```
 
 An optional `stateEvaluator` supplies an exact Cartesian state; otherwise the
@@ -174,9 +175,10 @@ context at the same TDB/TT epoch.
 Evaluators may run for calculations started by worker isolates, so their
 closures may capture only transitively immutable values and must not read
 isolate-local mutable globals. The Dart VM rejects mutable captures during
-registration. The current C ABI has no unregister operation: registrations,
-target IDs, and callbacks live until process exit, and the registering main
-isolate must remain alive while they can be invoked.
+registration. Keep each registration handle alive and call `close()` before
+discarding it. Registration and closing are setup-time operations and must not
+overlap calculations. Opening the process-wide runtime again clears existing
+custom registrations, including stale callbacks left by a Dart Hot Restart.
 
 ## Context configuration
 

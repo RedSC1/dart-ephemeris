@@ -116,14 +116,55 @@ final class TaiyinCustomEvaluatorFailure implements Exception {
   String toString() => 'TaiyinCustomEvaluatorFailure($status)';
 }
 
-final class _TaiyinCustomTargetRegistration {
-  const _TaiyinCustomTargetRegistration(this.position, this.state);
+/// Owns one process-wide Dart-backed custom-target registration.
+///
+/// Call [close] before discarding the registration. Closing first removes the
+/// native callback pointers and only then releases the Dart callbacks.
+final class TaiyinCustomTargetRegistration {
+  TaiyinCustomTargetRegistration._(
+    this.target,
+    this._nativeState,
+    this._position,
+    this._state,
+  );
 
-  final NativeCallable<taiyin_native_position_evaluator_fnFunction> position;
-  final NativeCallable<taiyin_native_state_evaluator_fnFunction>? state;
+  final TaiyinCustomTarget target;
+  final _TaiyinNativeLibraryState _nativeState;
+  final NativeCallable<taiyin_native_position_evaluator_fnFunction> _position;
+  final NativeCallable<taiyin_native_state_evaluator_fnFunction>? _state;
+  bool _closed = false;
+
+  bool get isClosed => _closed;
+
+  /// Unregisters this target and releases its Dart callbacks.
+  ///
+  /// Calling this more than once is safe. This setup-time operation must not
+  /// overlap calculations in any isolate.
+  void close() {
+    if (_closed) return;
+    final status = _nativeState.bindings
+        .taiyin_unregister_native_position_evaluator(target.id);
+    // Another process-wide runtime reset may already have removed the native
+    // pointer. In that case it is safe and necessary to release this isolate's
+    // remaining Dart callable.
+    if (status != _taiyinStatusOk && status != _taiyinErrorInvalidArgument) {
+      _checkStatus(_nativeState.bindings, status);
+    }
+    _closeAfterNativeClear();
+  }
+
+  void _closeAfterNativeClear() {
+    if (_closed) return;
+    _closed = true;
+    if (identical(_nativeState.customTargetRegistrations[target.id], this)) {
+      _nativeState.customTargetRegistrations.remove(target.id);
+    }
+    _state?.close();
+    _position.close();
+  }
 }
 
-TaiyinCustomTarget _registerCustomTarget(
+TaiyinCustomTargetRegistration _registerCustomTarget(
   DynamicLibrary library,
   _TaiyinNativeLibraryState nativeState,
   int targetId,
@@ -176,9 +217,24 @@ TaiyinCustomTarget _registerCustomTarget(
     _checkStatus(nativeState.bindings, status);
   }
 
-  nativeState.customTargetRegistrations[targetId] =
-      _TaiyinCustomTargetRegistration(registeredPosition, stateCallable);
-  return target;
+  final registration = TaiyinCustomTargetRegistration._(
+    target,
+    nativeState,
+    registeredPosition,
+    stateCallable,
+  );
+  nativeState.customTargetRegistrations[targetId] = registration;
+  return registration;
+}
+
+void _closeCustomTargetRegistrationsAfterNativeClear(
+  _TaiyinNativeLibraryState nativeState,
+) {
+  final registrations = nativeState.customTargetRegistrations.values.toList();
+  nativeState.customTargetRegistrations.clear();
+  for (final registration in registrations) {
+    registration._closeAfterNativeClear();
+  }
 }
 
 NativeCallable<taiyin_native_position_evaluator_fnFunction>
@@ -254,7 +310,6 @@ _createCustomPositionCallable(
           return _taiyinErrorInternal;
         }
       }, exceptionalReturn: _taiyinErrorInternal);
-  callable.keepIsolateAlive = false;
   return callable;
 }
 
@@ -326,7 +381,6 @@ _createCustomStateCallable(
           return _taiyinErrorInternal;
         }
       }, exceptionalReturn: _taiyinErrorInternal);
-  callable.keepIsolateAlive = false;
   return callable;
 }
 
@@ -340,7 +394,14 @@ void _finishCustomDiagnostic(
   diagnostic.ref
     ..status = status
     ..target_id = targetId
+    ..center_id = -1
+    ..frame = -1
     ..jd_tdb = jdTdb;
+  diagnostic.ref
+    ..attempted_method_id = -1
+    ..component_target_id = -1
+    ..component_center_id = -1
+    ..component_method_id = -1;
 }
 
 bool _isFiniteCustomState(TaiyinCartesianState state) {
