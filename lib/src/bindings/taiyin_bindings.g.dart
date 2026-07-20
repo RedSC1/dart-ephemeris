@@ -3849,6 +3849,470 @@ class TaiyinBindings {
           ffi.Pointer<taiyin_ephemeris_diagnostic>,
         )
       >();
+
+  void taiyin_body_osculating_orbit_init(
+    ffi.Pointer<taiyin_body_osculating_orbit> value,
+  ) {
+    return _taiyin_body_osculating_orbit_init(value);
+  }
+
+  late final _taiyin_body_osculating_orbit_initPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<taiyin_body_osculating_orbit>)
+        >
+      >('taiyin_body_osculating_orbit_init');
+  late final _taiyin_body_osculating_orbit_init =
+      _taiyin_body_osculating_orbit_initPtr
+          .asFunction<
+            void Function(ffi.Pointer<taiyin_body_osculating_orbit>)
+          >();
+
+  void taiyin_body_orbit_reference_points_init(
+    ffi.Pointer<taiyin_body_orbit_reference_points> value,
+  ) {
+    return _taiyin_body_orbit_reference_points_init(value);
+  }
+
+  late final _taiyin_body_orbit_reference_points_initPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<taiyin_body_orbit_reference_points>)
+        >
+      >('taiyin_body_orbit_reference_points_init');
+  late final _taiyin_body_orbit_reference_points_init =
+      _taiyin_body_orbit_reference_points_initPtr
+          .asFunction<
+            void Function(ffi.Pointer<taiyin_body_orbit_reference_points>)
+          >();
+
+  void taiyin_body_apsis_search_result_init(
+    ffi.Pointer<taiyin_body_apsis_search_result> value,
+  ) {
+    return _taiyin_body_apsis_search_result_init(value);
+  }
+
+  late final _taiyin_body_apsis_search_result_initPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<taiyin_body_apsis_search_result>)
+        >
+      >('taiyin_body_apsis_search_result_init');
+  late final _taiyin_body_apsis_search_result_init =
+      _taiyin_body_apsis_search_result_initPtr
+          .asFunction<
+            void Function(ffi.Pointer<taiyin_body_apsis_search_result>)
+          >();
+
+  void taiyin_body_node_search_result_init(
+    ffi.Pointer<taiyin_body_node_search_result> value,
+  ) {
+    return _taiyin_body_node_search_result_init(value);
+  }
+
+  late final _taiyin_body_node_search_result_initPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<taiyin_body_node_search_result>)
+        >
+      >('taiyin_body_node_search_result_init');
+  late final _taiyin_body_node_search_result_init =
+      _taiyin_body_node_search_result_initPtr
+          .asFunction<
+            void Function(ffi.Pointer<taiyin_body_node_search_result>)
+          >();
+
+  int taiyin_calc_body_osculating_orbit_tt(
+    ffi.Pointer<taiyin_context> context,
+    int body_id,
+    double jd_tt,
+    int reference_frame_id,
+    int flags,
+    ffi.Pointer<taiyin_body_osculating_orbit> out,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_calc_body_osculating_orbit_tt(
+      context,
+      body_id,
+      jd_tt,
+      reference_frame_id,
+      flags,
+      out,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_calc_body_osculating_orbit_ttPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Int32,
+            ffi.Double,
+            ffi.Int32,
+            ffi.Uint64,
+            ffi.Pointer<taiyin_body_osculating_orbit>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_calc_body_osculating_orbit_tt');
+  late final _taiyin_calc_body_osculating_orbit_tt =
+      _taiyin_calc_body_osculating_orbit_ttPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              int,
+              double,
+              int,
+              int,
+              ffi.Pointer<taiyin_body_osculating_orbit>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_calc_body_osculating_orbit_ut(
+    ffi.Pointer<taiyin_context> context,
+    int body_id,
+    double jd_ut,
+    int reference_frame_id,
+    int flags,
+    ffi.Pointer<taiyin_body_osculating_orbit> out,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_calc_body_osculating_orbit_ut(
+      context,
+      body_id,
+      jd_ut,
+      reference_frame_id,
+      flags,
+      out,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_calc_body_osculating_orbit_utPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Int32,
+            ffi.Double,
+            ffi.Int32,
+            ffi.Uint64,
+            ffi.Pointer<taiyin_body_osculating_orbit>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_calc_body_osculating_orbit_ut');
+  late final _taiyin_calc_body_osculating_orbit_ut =
+      _taiyin_calc_body_osculating_orbit_utPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              int,
+              double,
+              int,
+              int,
+              ffi.Pointer<taiyin_body_osculating_orbit>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_calc_body_orbit_reference_points_tt(
+    ffi.Pointer<taiyin_context> context,
+    int body_id,
+    double jd_tt,
+    int reference_frame_id,
+    int flags,
+    ffi.Pointer<taiyin_body_orbit_reference_points> out,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_calc_body_orbit_reference_points_tt(
+      context,
+      body_id,
+      jd_tt,
+      reference_frame_id,
+      flags,
+      out,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_calc_body_orbit_reference_points_ttPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Int32,
+            ffi.Double,
+            ffi.Int32,
+            ffi.Uint64,
+            ffi.Pointer<taiyin_body_orbit_reference_points>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_calc_body_orbit_reference_points_tt');
+  late final _taiyin_calc_body_orbit_reference_points_tt =
+      _taiyin_calc_body_orbit_reference_points_ttPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              int,
+              double,
+              int,
+              int,
+              ffi.Pointer<taiyin_body_orbit_reference_points>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_calc_body_orbit_reference_points_ut(
+    ffi.Pointer<taiyin_context> context,
+    int body_id,
+    double jd_ut,
+    int reference_frame_id,
+    int flags,
+    ffi.Pointer<taiyin_body_orbit_reference_points> out,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_calc_body_orbit_reference_points_ut(
+      context,
+      body_id,
+      jd_ut,
+      reference_frame_id,
+      flags,
+      out,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_calc_body_orbit_reference_points_utPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Int32,
+            ffi.Double,
+            ffi.Int32,
+            ffi.Uint64,
+            ffi.Pointer<taiyin_body_orbit_reference_points>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_calc_body_orbit_reference_points_ut');
+  late final _taiyin_calc_body_orbit_reference_points_ut =
+      _taiyin_calc_body_orbit_reference_points_utPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              int,
+              double,
+              int,
+              int,
+              ffi.Pointer<taiyin_body_orbit_reference_points>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_search_next_body_apsis_tt(
+    ffi.Pointer<taiyin_context> context,
+    int body_id,
+    int kind,
+    double jd_start_tt,
+    int flags,
+    ffi.Pointer<taiyin_body_apsis_search_result> out,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_search_next_body_apsis_tt(
+      context,
+      body_id,
+      kind,
+      jd_start_tt,
+      flags,
+      out,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_search_next_body_apsis_ttPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Int32,
+            ffi.Int32,
+            ffi.Double,
+            ffi.Uint64,
+            ffi.Pointer<taiyin_body_apsis_search_result>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_search_next_body_apsis_tt');
+  late final _taiyin_search_next_body_apsis_tt =
+      _taiyin_search_next_body_apsis_ttPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              int,
+              int,
+              double,
+              int,
+              ffi.Pointer<taiyin_body_apsis_search_result>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_search_next_body_apsis_ut(
+    ffi.Pointer<taiyin_context> context,
+    int body_id,
+    int kind,
+    double jd_start_ut,
+    int flags,
+    ffi.Pointer<taiyin_body_apsis_search_result> out,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_search_next_body_apsis_ut(
+      context,
+      body_id,
+      kind,
+      jd_start_ut,
+      flags,
+      out,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_search_next_body_apsis_utPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Int32,
+            ffi.Int32,
+            ffi.Double,
+            ffi.Uint64,
+            ffi.Pointer<taiyin_body_apsis_search_result>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_search_next_body_apsis_ut');
+  late final _taiyin_search_next_body_apsis_ut =
+      _taiyin_search_next_body_apsis_utPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              int,
+              int,
+              double,
+              int,
+              ffi.Pointer<taiyin_body_apsis_search_result>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_search_next_body_plane_node_tt(
+    ffi.Pointer<taiyin_context> context,
+    int body_id,
+    int kind,
+    double jd_start_tt,
+    int reference_frame_id,
+    int flags,
+    ffi.Pointer<taiyin_body_node_search_result> out,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_search_next_body_plane_node_tt(
+      context,
+      body_id,
+      kind,
+      jd_start_tt,
+      reference_frame_id,
+      flags,
+      out,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_search_next_body_plane_node_ttPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Int32,
+            ffi.Int32,
+            ffi.Double,
+            ffi.Int32,
+            ffi.Uint64,
+            ffi.Pointer<taiyin_body_node_search_result>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_search_next_body_plane_node_tt');
+  late final _taiyin_search_next_body_plane_node_tt =
+      _taiyin_search_next_body_plane_node_ttPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              int,
+              int,
+              double,
+              int,
+              int,
+              ffi.Pointer<taiyin_body_node_search_result>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_search_next_body_plane_node_ut(
+    ffi.Pointer<taiyin_context> context,
+    int body_id,
+    int kind,
+    double jd_start_ut,
+    int reference_frame_id,
+    int flags,
+    ffi.Pointer<taiyin_body_node_search_result> out,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_search_next_body_plane_node_ut(
+      context,
+      body_id,
+      kind,
+      jd_start_ut,
+      reference_frame_id,
+      flags,
+      out,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_search_next_body_plane_node_utPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Int32,
+            ffi.Int32,
+            ffi.Double,
+            ffi.Int32,
+            ffi.Uint64,
+            ffi.Pointer<taiyin_body_node_search_result>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_search_next_body_plane_node_ut');
+  late final _taiyin_search_next_body_plane_node_ut =
+      _taiyin_search_next_body_plane_node_utPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              int,
+              int,
+              double,
+              int,
+              int,
+              ffi.Pointer<taiyin_body_node_search_result>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
 }
 
 typedef __int8_t = ffi.SignedChar;
@@ -4770,4 +5234,168 @@ final class taiyin_split_equation_of_time_result extends ffi.Struct {
 
   @ffi.Double()
   external double gast_rad;
+}
+
+sealed class taiyin_body_apsis_kind {
+  static const TAIYIN_APSIS_PERICENTER = 0;
+  static const TAIYIN_APSIS_APOCENTER = 1;
+}
+
+sealed class taiyin_body_node_kind {
+  static const TAIYIN_NODE_ASCENDING = 0;
+  static const TAIYIN_NODE_DESCENDING = 1;
+}
+
+final class taiyin_body_orbit_reference_point extends ffi.Struct {
+  external taiyin_vector3 position_au;
+
+  @ffi.Double()
+  external double longitude_rad;
+
+  @ffi.Double()
+  external double latitude_rad;
+
+  @ffi.Double()
+  external double distance_au;
+}
+
+final class taiyin_body_orbit_reference_points extends ffi.Struct {
+  @ffi.Uint32()
+  external int struct_size;
+
+  @ffi.Int32()
+  external int body_id;
+
+  @ffi.Int32()
+  external int center_id;
+
+  @ffi.Int32()
+  external int reference_frame_id;
+
+  @ffi.Int32()
+  external int model_id;
+
+  external taiyin_body_orbit_reference_point ascending_node;
+
+  external taiyin_body_orbit_reference_point descending_node;
+
+  external taiyin_body_orbit_reference_point periapsis;
+
+  external taiyin_body_orbit_reference_point apoapsis;
+
+  external taiyin_body_orbit_reference_point second_focus;
+}
+
+final class taiyin_body_osculating_orbit extends ffi.Struct {
+  @ffi.Uint32()
+  external int struct_size;
+
+  @ffi.Int32()
+  external int body_id;
+
+  @ffi.Int32()
+  external int center_id;
+
+  @ffi.Int32()
+  external int reference_frame_id;
+
+  @ffi.Double()
+  external double gravitational_parameter_au3_per_day2;
+
+  @ffi.Double()
+  external double semi_major_axis_au;
+
+  @ffi.Double()
+  external double eccentricity;
+
+  @ffi.Double()
+  external double inclination_rad;
+
+  @ffi.Double()
+  external double longitude_of_ascending_node_rad;
+
+  @ffi.Double()
+  external double argument_of_periapsis_rad;
+
+  @ffi.Double()
+  external double true_anomaly_rad;
+
+  @ffi.Double()
+  external double mean_anomaly_rad;
+
+  @ffi.Double()
+  external double periapsis_distance_au;
+
+  @ffi.Double()
+  external double apoapsis_distance_au;
+
+  @ffi.Double()
+  external double osculating_period_days;
+
+  @ffi.Double()
+  external double current_distance_au;
+
+  @ffi.Double()
+  external double radial_velocity_au_per_day;
+}
+
+final class taiyin_body_apsis_search_result extends ffi.Struct {
+  @ffi.Uint32()
+  external int struct_size;
+
+  @ffi.Int32()
+  external int body_id;
+
+  @ffi.Int32()
+  external int center_id;
+
+  @ffi.Int32()
+  external int kind;
+
+  @ffi.Double()
+  external double jd;
+
+  @ffi.Double()
+  external double distance_au;
+
+  @ffi.Double()
+  external double radial_velocity_au_per_day;
+
+  @ffi.Int32()
+  external int iteration_count;
+
+  @ffi.Int32()
+  external int evaluation_count;
+}
+
+final class taiyin_body_node_search_result extends ffi.Struct {
+  @ffi.Uint32()
+  external int struct_size;
+
+  @ffi.Int32()
+  external int body_id;
+
+  @ffi.Int32()
+  external int center_id;
+
+  @ffi.Int32()
+  external int reference_frame_id;
+
+  @ffi.Int32()
+  external int kind;
+
+  @ffi.Double()
+  external double jd;
+
+  @ffi.Double()
+  external double reference_plane_angle_rad;
+
+  @ffi.Double()
+  external double distance_au;
+
+  @ffi.Int32()
+  external int iteration_count;
+
+  @ffi.Int32()
+  external int evaluation_count;
 }

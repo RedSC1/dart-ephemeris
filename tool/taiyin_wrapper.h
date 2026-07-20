@@ -10,5 +10,6 @@
 #include <taiyin/c/solar_time.h>
 #include <taiyin/c/star.h>
 #include <taiyin/c/time.h>
+#include <taiyin/c/orbital.h>
 
 #endif

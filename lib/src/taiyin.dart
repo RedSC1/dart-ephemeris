@@ -9,6 +9,7 @@ import 'context/context_models.dart';
 import 'interop/calendar.dart';
 import 'native_compatibility.dart';
 import 'observed/observed_models.dart';
+import 'orbital/orbital_models.dart';
 import 'phenomena/phenomena_models.dart';
 import 'position/position_api.dart';
 import 'solar_time/solar_time_models.dart';
@@ -21,6 +22,7 @@ import 'time/time_scale.dart';
 
 part 'context/context_api.dart';
 part 'observed/observed_api.dart';
+part 'orbital/orbital_api.dart';
 part 'phenomena/phenomena_api.dart';
 part 'runtime/runtime_api.dart';
 part 'solar_time/solar_time_api.dart';
@@ -148,6 +150,13 @@ final class TaiyinContext implements Finalizable {
           diagnostics: diagnostics,
         ),
       );
+      orbits = TaiyinOrbitalApi._(
+        _bindings,
+        _context,
+        _ensureOpen,
+        (status, diagnostic) =>
+            _checkStatus(_bindings, status, diagnostic: diagnostic),
+      );
       phenomena = TaiyinPhenomenaApi._(
         _bindings,
         _context,
@@ -229,6 +238,7 @@ final class TaiyinContext implements Finalizable {
   late final TaiyinTime time;
   late final TaiyinPositionApi position;
   late final TaiyinObservedApi observed;
+  late final TaiyinOrbitalApi orbits;
   late final TaiyinPhenomenaApi phenomena;
   late final TaiyinSolarTimeApi solarTime;
   late final TaiyinStarApi stars;

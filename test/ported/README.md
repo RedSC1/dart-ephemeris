@@ -33,6 +33,10 @@ Dart equivalent.
   SwissEph equation oracle, and typed local-mean/apparent conversion.
   `phenomena_api_test.dart` covers UT1/TT physical phenomena, the strict
   first-quarter Moon SwissEph oracle, lunar parallax, and invalid bodies.
+  `orbital_api_test.dart` covers all eight orbital operations through typed
+  TT/UT1 routes, osculating elements and reference-point geometry, forward and
+  reverse apsis/node searches, supported frames, and the upstream lunar Swiss
+  event oracles.
   The remaining public modules move over as their wrappers are added.
   Static-vs-shared linkage is a native build concern and shares the same Dart
   behavior tests.
@@ -61,13 +65,13 @@ These suites map to current or planned C ABI modules:
   `pure_functions_full`
 - `celestial_body_registry`, `body_registry`, `dispatch_models`
 - `apparent_position_oracles`, `apparent_self_skip`
-- `event_search`, `orbital_events`
+- `event_search`
 - `visibility_search`, `solar_visibility_public`, `moon_visibility_public`,
   `star_visibility_public`, `heliacal_visibility`, `occultation_search`,
   `planet_visibility_spk_oracles`, `planet_visibility_public`
 - `eclipse_search_smoke`, `eclipse_search_spk_oracles`,
   `sxwnl_solar_oracles`, `sxwnl_route_oracle`, `eclipse_forecast_json`,
-  `event_search_swiss`, `orbital_events_swiss`, `lunar_limb_eclipse`,
+  `event_search_swiss`, `lunar_limb_eclipse`,
   `sxwnl_lunar_oracles`
 
 ## Native implementation suites

@@ -261,6 +261,42 @@ remains geocentric in either mode.
 Both modules attach the native ephemeris diagnostic to every successful result
 and throw `TaiyinException` with that diagnostic on native failure.
 
+## Osculating orbits and orbital events
+
+`context.orbits` exposes the complete native orbital module. Calculations use
+the body's fixed physical primary: the Moon is Earth-centered, while Earth,
+EMB, and major planets or planet barycenters are Sun-centered.
+
+```dart
+final start = JulianDate<Ut1Scale>.fromDouble(2460409.0);
+final orbit = context.orbits.osculatingAtUt1(
+  TaiyinBody.moon,
+  start,
+);
+final perigee = context.orbits.searchApsisFromUt1(
+  TaiyinBody.moon,
+  TaiyinApsisKind.pericenter,
+  start,
+);
+final previousNode = context.orbits.searchPlaneNodeFromUt1(
+  TaiyinBody.moon,
+  TaiyinPlaneNodeKind.ascending,
+  start,
+  direction: TaiyinOrbitalSearchDirection.reverse,
+);
+
+print(orbit.value.semiMajorAxisAu);
+print(perigee.value.coordinate);
+print(previousNode.value.referencePlaneAngleRadians);
+```
+
+Osculating reference points are instantaneous orbit geometry, not searched
+passage times. Orbital operations are always geometric and accept only the
+explicit `allowBarycenterApproximation` policy; observer-dependent position
+flags are intentionally unavailable. The upstream orbital C ABI operates on
+scalar Julian dates, so split Dart coordinates are merged at that final FFI
+boundary while TT and UT1 remain distinct Dart types.
+
 ## Fixed stars
 
 Fixed-star catalogs are process-wide resources. Load TSC1 catalogs from a file

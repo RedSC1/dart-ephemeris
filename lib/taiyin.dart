@@ -4,6 +4,7 @@ library;
 export 'src/taiyin.dart';
 export 'src/context/context_models.dart';
 export 'src/observed/observed_models.dart';
+export 'src/orbital/orbital_models.dart';
 export 'src/phenomena/phenomena_models.dart';
 export 'src/position/position_api.dart';
 export 'src/solar_time/solar_time_models.dart';
