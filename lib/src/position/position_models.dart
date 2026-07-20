@@ -44,8 +44,12 @@ final class TaiyinCustomTarget implements TaiyinTarget {
   final int id;
 
   static int _validateId(int id) {
-    if (id >= 0) {
-      throw ArgumentError.value(id, 'id', 'must be negative');
+    if (id >= 0 || id < -0x80000000) {
+      throw ArgumentError.value(
+        id,
+        'id',
+        'must fit the native signed 32-bit range and be negative',
+      );
     }
     return id;
   }

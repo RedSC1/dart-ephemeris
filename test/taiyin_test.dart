@@ -157,6 +157,26 @@ List<double> _missingDependencyCustomEvaluator(
   TaiyinCustomTargetRequest request,
 ) => request.positionOf(TaiyinCustomTarget(-299999));
 
+TaiyinCustomTargetRequest? _callbackSavedRequest;
+
+List<double> _saveCustomRequestEvaluator(TaiyinCustomTargetRequest request) {
+  _callbackSavedRequest = request;
+  return _customPositionEvaluator(request);
+}
+
+List<double> _useSavedCustomRequestEvaluator(
+  TaiyinCustomTargetRequest request,
+) {
+  final saved = _callbackSavedRequest;
+  if (saved == null) return const [2.0, 0.0, 0.0, 0.0, 0.0, 0.0];
+  try {
+    saved.positionOf(TaiyinBody.sun);
+    return const [0.0, 0.0, 0.0, 0.0, 0.0, 0.0];
+  } on StateError {
+    return const [1.0, 0.0, 0.0, 0.0, 0.0, 0.0];
+  }
+}
+
 void main() {
   final libraryPath =
       Platform.environment['TAIYIN_TEST_LIBRARY'] ??
@@ -338,6 +358,15 @@ void main() {
 
       test('rejects mutable callback captures and duplicate IDs', () {
         expect(() => TaiyinCustomTarget(0), throwsArgumentError);
+        expect(TaiyinCustomTarget(-0x80000000).id, -0x80000000);
+        expect(() => TaiyinCustomTarget(-0x80000001), throwsArgumentError);
+        expect(
+          () => runtime.registerCustomTarget(
+            -0x80000001,
+            positionEvaluator: _customPositionEvaluator,
+          ),
+          throwsArgumentError,
+        );
 
         final mutableOffset = <double>[0.25];
         expect(
@@ -471,6 +500,40 @@ void main() {
         expect(replacement.target.id, targetId);
       });
 
+      test('failed runtime reset also closes existing registrations', () {
+        const targetId = -210017;
+        final registration = runtime.registerCustomTarget(
+          targetId,
+          positionEvaluator: _customPositionEvaluator,
+        );
+
+        expect(
+          () => Taiyin.open(
+            libraryPath: libraryPath,
+            options: const TaiyinRuntimeOptions(
+              eopPath: '/__taiyin_missing__/finals2000A.all',
+              loadBuiltinEop: false,
+            ),
+          ),
+          throwsA(
+            isA<TaiyinException>().having(
+              (error) => error.status,
+              'status',
+              -3,
+            ),
+          ),
+        );
+        expect(registration.isClosed, isTrue);
+
+        final recoveredRuntime = Taiyin.open(libraryPath: libraryPath);
+        final replacement = recoveredRuntime.registerCustomTarget(
+          targetId,
+          positionEvaluator: _customPositionEvaluator,
+        );
+        addTearDown(replacement.close);
+        expect(replacement.target.id, targetId);
+      });
+
       test('clears all custom registrations explicitly', () {
         final first = runtime.registerCustomTarget(
           -210011,
@@ -492,6 +555,36 @@ void main() {
         addTearDown(replacement.close);
         expect(replacement.isClosed, isFalse);
       });
+
+      test(
+        'rejects dependency access after a request escapes its callback',
+        () {
+          final producer = runtime.registerCustomTarget(
+            -210018,
+            positionEvaluator: _saveCustomRequestEvaluator,
+          );
+          final consumer = runtime.registerCustomTarget(
+            -210019,
+            positionEvaluator: _useSavedCustomRequestEvaluator,
+          );
+          addTearDown(() {
+            _callbackSavedRequest = null;
+            consumer.close();
+            producer.close();
+          });
+
+          taiyin.position.atTt(
+            producer.target,
+            JulianDate<TtScale>.fromDouble(2460409.0),
+          );
+          final result = taiyin.position.atTt(
+            consumer.target,
+            JulianDate<TtScale>.fromDouble(2460409.0),
+          );
+
+          expect(result.value.values[0], 1.0);
+        },
+      );
 
       test(
         'derives custom state with the native finite-difference fallback',

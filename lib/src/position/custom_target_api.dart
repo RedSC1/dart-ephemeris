@@ -25,6 +25,14 @@ typedef _DartCustomDependencyPosition =
       Pointer<taiyin_ephemeris_diagnostic>,
     );
 
+final class _TaiyinCustomTargetRequestScope {
+  bool isActive = true;
+
+  void invalidate() {
+    isActive = false;
+  }
+}
+
 /// Inputs supplied by Taiyin when evaluating a custom target.
 ///
 /// A request borrows its native calculation context and is valid only for the
@@ -38,8 +46,10 @@ final class TaiyinCustomTargetRequest {
     required Pointer<taiyin_context> context,
     required Pointer<NativeFunction<_NativeCustomDependencyPosition>>
     dependencyPosition,
+    required _TaiyinCustomTargetRequestScope scope,
   }) : _context = context,
-       _dependencyPosition = dependencyPosition;
+       _dependencyPosition = dependencyPosition,
+       _scope = scope;
 
   final TaiyinCustomTarget target;
   final double julianDateTdb;
@@ -48,6 +58,7 @@ final class TaiyinCustomTargetRequest {
   final Pointer<taiyin_context> _context;
   final Pointer<NativeFunction<_NativeCustomDependencyPosition>>
   _dependencyPosition;
+  final _TaiyinCustomTargetRequestScope _scope;
 
   Set<TaiyinPositionFlag> get flags => Set.unmodifiable({
     for (final flag in TaiyinPositionFlag.values)
@@ -64,6 +75,13 @@ final class TaiyinCustomTargetRequest {
     TaiyinTarget dependency, {
     Set<TaiyinPositionFlag> flags = const {},
   }) {
+    if (!_scope.isActive) {
+      throw StateError(
+        'This TaiyinCustomTargetRequest is no longer valid. '
+        'positionOf() may only be called synchronously while its evaluator '
+        'is running.',
+      );
+    }
     final mask = flags.fold(0, (value, flag) => value | flag.mask);
     final calculate = _dependencyPosition
         .asFunction<_DartCustomDependencyPosition>();
@@ -261,6 +279,7 @@ _createCustomPositionCallable(
         for (var index = 0; index < 6; index++) {
           output[index] = 0;
         }
+        final requestScope = _TaiyinCustomTargetRequestScope();
         try {
           final values = frozenEvaluator(
             TaiyinCustomTargetRequest._(
@@ -273,6 +292,7 @@ _createCustomPositionCallable(
                   Pointer<
                     NativeFunction<_NativeCustomDependencyPosition>
                   >.fromAddress(frozenDependencyPositionAddress),
+              scope: requestScope,
             ),
           );
           if (values.length != 6 || values.any((value) => !value.isFinite)) {
@@ -308,6 +328,8 @@ _createCustomPositionCallable(
             jdTdb,
           );
           return _taiyinErrorInternal;
+        } finally {
+          requestScope.invalidate();
         }
       }, exceptionalReturn: _taiyinErrorInternal);
   return callable;
@@ -334,6 +356,7 @@ _createCustomStateCallable(
         Pointer<Void> userData,
       ) {
         if (output == nullptr) return _taiyinErrorInvalidArgument;
+        final requestScope = _TaiyinCustomTargetRequestScope();
         try {
           final state = frozenEvaluator(
             TaiyinCustomTargetRequest._(
@@ -346,6 +369,7 @@ _createCustomStateCallable(
                   Pointer<
                     NativeFunction<_NativeCustomDependencyPosition>
                   >.fromAddress(frozenDependencyPositionAddress),
+              scope: requestScope,
             ),
           );
           if (!_isFiniteCustomState(state)) {
@@ -379,6 +403,8 @@ _createCustomStateCallable(
             jdTdb,
           );
           return _taiyinErrorInternal;
+        } finally {
+          requestScope.invalidate();
         }
       }, exceptionalReturn: _taiyinErrorInternal);
   return callable;

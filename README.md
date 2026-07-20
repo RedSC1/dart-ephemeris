@@ -179,6 +179,8 @@ registration. Keep each registration handle alive and call `close()` before
 discarding it. Registration and closing are setup-time operations and must not
 overlap calculations. Opening the process-wide runtime again clears existing
 custom registrations, including stale callbacks left by a Dart Hot Restart.
+See [custom target lifecycle and concurrency](docs/custom-target-lifecycle.md)
+for the complete threading, isolate, reset, and borrowed-request rules.
 
 ## Context configuration
 

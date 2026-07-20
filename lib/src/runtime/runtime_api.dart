@@ -62,8 +62,12 @@ final class Taiyin {
     TaiyinRuntimeOptions options = const TaiyinRuntimeOptions(),
   }) {
     final state = _nativeLibraryStateFor(library);
-    _initializeRuntime(state.bindings, options);
-    _closeCustomTargetRegistrationsAfterNativeClear(state);
+    _initializeRuntime(
+      state.bindings,
+      options,
+      afterNativeInitializationAttempt: () =>
+          _closeCustomTargetRegistrationsAfterNativeClear(state),
+    );
     return Taiyin._(library, state.bindings, state.contextFinalizer);
   }
 
@@ -264,7 +268,11 @@ final class Taiyin {
   }
 }
 
-void _initializeRuntime(TaiyinBindings bindings, TaiyinRuntimeOptions options) {
+void _initializeRuntime(
+  TaiyinBindings bindings,
+  TaiyinRuntimeOptions options, {
+  void Function()? afterNativeInitializationAttempt,
+}) {
   using((arena) {
     final config = arena<taiyin_runtime_config>();
     bindings.taiyin_runtime_config_init(config);
@@ -306,6 +314,10 @@ void _initializeRuntime(TaiyinBindings bindings, TaiyinRuntimeOptions options) {
         ..source_path_count = options.sourcePaths.length;
     }
 
-    _checkStatus(bindings, bindings.taiyin_runtime_initialize(config));
+    final status = bindings.taiyin_runtime_initialize(config);
+    // A valid native reset attempt clears callbacks before it can fail.
+    // Mirror that transition in this isolate before propagating the status.
+    afterNativeInitializationAttempt?.call();
+    _checkStatus(bindings, status);
   });
 }
