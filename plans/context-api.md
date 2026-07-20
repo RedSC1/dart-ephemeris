@@ -126,5 +126,6 @@ owned by `TaiyinContext.time`.
   separate runtime API PR.
 - Star, astrology, visibility, event, eclipse, and occultation calculations
   remain separate module PRs.
-- Process-lifetime custom Dart-to-C callbacks remain deferred until the
-  ordinary value-based APIs are complete.
+- Process-lifetime custom ayanamsha and house-system callbacks remain deferred
+  to the astrology API. Custom position evaluators are covered by the
+  process-wide custom-target API.

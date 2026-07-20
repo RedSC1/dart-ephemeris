@@ -24,6 +24,7 @@ part 'context/context_api.dart';
 part 'observed/observed_api.dart';
 part 'orbital/orbital_api.dart';
 part 'phenomena/phenomena_api.dart';
+part 'position/custom_target_api.dart';
 part 'runtime/runtime_api.dart';
 part 'solar_time/solar_time_api.dart';
 part 'star/star_api.dart';
@@ -259,7 +260,7 @@ final class TaiyinContext implements Finalizable {
 
   /// Calculates a position at a TT Julian date.
   TaiyinPosition positionTt(
-    TaiyinBody body,
+    TaiyinTarget body,
     JulianDate<TtScale> julianDate, {
     Set<TaiyinPositionFlag> flags = const {},
   }) {
@@ -268,7 +269,7 @@ final class TaiyinContext implements Finalizable {
 
   /// Calculates a position at a UT Julian date.
   TaiyinPosition positionUt(
-    TaiyinBody body,
+    TaiyinTarget body,
     JulianDate<Ut1Scale> julianDate, {
     Set<TaiyinPositionFlag> flags = const {},
   }) {
@@ -291,10 +292,12 @@ final class TaiyinContext implements Finalizable {
 }
 
 final class _TaiyinNativeLibraryState {
-  const _TaiyinNativeLibraryState(this.bindings, this.contextFinalizer);
+  _TaiyinNativeLibraryState(this.bindings, this.contextFinalizer);
 
   final TaiyinBindings bindings;
   final NativeFinalizer contextFinalizer;
+  final Map<int, _TaiyinCustomTargetRegistration> customTargetRegistrations =
+      {};
 }
 
 // NativeFinalizer itself must stay reachable until its attachments have run.

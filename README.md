@@ -142,6 +142,42 @@ position.
 The `context.positionTt` and `context.positionUt` conveniences remain
 available and delegate to this module.
 
+Custom negative target IDs can be backed by Dart evaluators. Register them once
+on the process-wide runtime before starting concurrent calculations:
+
+```dart
+List<double> virtualPoint(TaiyinCustomTargetRequest request) => [
+  1.0,
+  2.0,
+  3.0,
+  0.0,
+  0.0,
+  0.0,
+];
+
+final virtualTarget = taiyin.registerCustomTarget(
+  -200001,
+  positionEvaluator: virtualPoint,
+);
+final result = context.position.atTt(
+  virtualTarget,
+  JulianDate<TtScale>.fromDouble(2460409.0),
+  flags: {TaiyinPositionFlag.xyz},
+);
+```
+
+An optional `stateEvaluator` supplies an exact Cartesian state; otherwise the
+native runtime uses finite differences. An evaluator can call
+`request.positionOf(...)` to calculate a dependency with the borrowed native
+context at the same TDB/TT epoch.
+
+Evaluators may run for calculations started by worker isolates, so their
+closures may capture only transitively immutable values and must not read
+isolate-local mutable globals. The Dart VM rejects mutable captures during
+registration. The current C ABI has no unregister operation: registrations,
+target IDs, and callbacks live until process exit, and the registering main
+isolate must remain alive while they can be invoked.
+
 ## Context configuration
 
 `context.configuration` owns observer, atmosphere, astronomy-model,

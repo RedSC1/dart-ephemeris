@@ -56,7 +56,7 @@ final class TaiyinPositionApi {
 
   /// Calculates one body at a TT Julian date.
   TaiyinEphemerisResult<TaiyinPosition> atTt(
-    TaiyinBody body,
+    TaiyinTarget body,
     JulianDate<TtScale> julianDate, {
     Set<TaiyinPositionFlag> flags = const {},
   }) {
@@ -76,7 +76,7 @@ final class TaiyinPositionApi {
 
   /// Calculates one body at a UT1 Julian date using Taiyin's time policy.
   TaiyinEphemerisResult<TaiyinPosition> atUt1(
-    TaiyinBody body,
+    TaiyinTarget body,
     JulianDate<Ut1Scale> julianDate, {
     Set<TaiyinPositionFlag> flags = const {},
   }) {
@@ -96,7 +96,7 @@ final class TaiyinPositionApi {
 
   /// Calculates one body with explicit TDB and TT coordinates.
   TaiyinEphemerisResult<TaiyinPosition> atTdb(
-    TaiyinBody body,
+    TaiyinTarget body,
     JulianDate<TdbScale> tdb,
     JulianDate<TtScale> tt, {
     Set<TaiyinPositionFlag> flags = const {},
@@ -118,7 +118,7 @@ final class TaiyinPositionApi {
 
   /// Calculates one body at UT1 with an explicit TT−UT1 value.
   TaiyinEphemerisResult<TaiyinPosition> atUt1WithDeltaT(
-    TaiyinBody body,
+    TaiyinTarget body,
     JulianDate<Ut1Scale> julianDate,
     double deltaTSeconds, {
     Set<TaiyinPositionFlag> flags = const {},
@@ -141,7 +141,7 @@ final class TaiyinPositionApi {
 
   /// Calculates one body from a UTC calendar value.
   TaiyinEphemerisResult<TaiyinPosition> atUtc(
-    TaiyinBody body,
+    TaiyinTarget body,
     AstroDateTime utc, {
     Set<TaiyinPositionFlag> flags = const {},
   }) {
@@ -164,7 +164,7 @@ final class TaiyinPositionApi {
 
   /// Calculates several bodies at one TT Julian date.
   List<TaiyinEphemerisResult<TaiyinPosition>> batchAtTt(
-    List<TaiyinBody> bodies,
+    List<TaiyinTarget> bodies,
     JulianDate<TtScale> julianDate, {
     Set<TaiyinPositionFlag> flags = const {},
   }) {
@@ -187,7 +187,7 @@ final class TaiyinPositionApi {
 
   /// Calculates several bodies at one UT1 Julian date.
   List<TaiyinEphemerisResult<TaiyinPosition>> batchAtUt1(
-    List<TaiyinBody> bodies,
+    List<TaiyinTarget> bodies,
     JulianDate<Ut1Scale> julianDate, {
     Set<TaiyinPositionFlag> flags = const {},
   }) {
@@ -210,7 +210,7 @@ final class TaiyinPositionApi {
 
   /// Calculates several bodies with explicit TDB and TT coordinates.
   List<TaiyinEphemerisResult<TaiyinPosition>> batchAtTdb(
-    List<TaiyinBody> bodies,
+    List<TaiyinTarget> bodies,
     JulianDate<TdbScale> tdb,
     JulianDate<TtScale> tt, {
     Set<TaiyinPositionFlag> flags = const {},
@@ -235,7 +235,7 @@ final class TaiyinPositionApi {
 
   /// Calculates several bodies at UT1 with an explicit TT−UT1 value.
   List<TaiyinEphemerisResult<TaiyinPosition>> batchAtUt1WithDeltaT(
-    List<TaiyinBody> bodies,
+    List<TaiyinTarget> bodies,
     JulianDate<Ut1Scale> julianDate,
     double deltaTSeconds, {
     Set<TaiyinPositionFlag> flags = const {},
@@ -261,7 +261,7 @@ final class TaiyinPositionApi {
 
   /// Calculates several bodies from one UTC calendar value.
   List<TaiyinEphemerisResult<TaiyinPosition>> batchAtUtc(
-    List<TaiyinBody> bodies,
+    List<TaiyinTarget> bodies,
     AstroDateTime utc, {
     Set<TaiyinPositionFlag> flags = const {},
   }) {
@@ -291,7 +291,7 @@ final class TaiyinPositionApi {
   /// [TaiyinPositionFlag.xyz] and [TaiyinPositionFlag.speed] are implied and
   /// have no effect. Frame and apparent-correction flags still apply.
   TaiyinEphemerisResult<TaiyinCartesianState> stateAtTt(
-    TaiyinBody body,
+    TaiyinTarget body,
     JulianDate<TtScale> julianDate, {
     Set<TaiyinPositionFlag> flags = const {},
   }) {
@@ -313,7 +313,7 @@ final class TaiyinPositionApi {
   ///
   /// Position and derivative flags behave as described by [stateAtTt].
   TaiyinEphemerisResult<TaiyinCartesianState> stateAtUt1(
-    TaiyinBody body,
+    TaiyinTarget body,
     JulianDate<Ut1Scale> julianDate, {
     Set<TaiyinPositionFlag> flags = const {},
   }) {
@@ -335,7 +335,7 @@ final class TaiyinPositionApi {
   ///
   /// Position and derivative flags behave as described by [stateAtTt].
   TaiyinEphemerisResult<TaiyinCartesianState> stateAtTdb(
-    TaiyinBody body,
+    TaiyinTarget body,
     JulianDate<TdbScale> tdb,
     JulianDate<TtScale> tt, {
     Set<TaiyinPositionFlag> flags = const {},
@@ -359,7 +359,7 @@ final class TaiyinPositionApi {
   ///
   /// Position and derivative flags behave as described by [stateAtTt].
   TaiyinEphemerisResult<TaiyinCartesianState> stateAtUt1WithDeltaT(
-    TaiyinBody body,
+    TaiyinTarget body,
     JulianDate<Ut1Scale> julianDate,
     double deltaTSeconds, {
     Set<TaiyinPositionFlag> flags = const {},
@@ -384,7 +384,7 @@ final class TaiyinPositionApi {
   ///
   /// Position and derivative flags behave as described by [stateAtTt].
   TaiyinEphemerisResult<TaiyinCartesianState> stateAtUtc(
-    TaiyinBody body,
+    TaiyinTarget body,
     AstroDateTime utc, {
     Set<TaiyinPositionFlag> flags = const {},
   }) {
@@ -428,7 +428,7 @@ final class TaiyinPositionApi {
   }
 
   List<TaiyinEphemerisResult<TaiyinPosition>> _positions(
-    List<TaiyinBody> bodies,
+    List<TaiyinTarget> bodies,
     Set<TaiyinPositionFlag> flags,
     _BatchPositionCalculation calculate,
   ) {

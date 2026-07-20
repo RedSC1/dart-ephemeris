@@ -5,6 +5,7 @@ const int taiyinSplitTimeCapability = 1 << 14;
 /// high-level APIs exposed by this package.
 const Set<String> taiyinRequiredAbi1Symbols = {
   'taiyin_get_library_codename',
+  'taiyin_register_native_position_evaluator',
   'taiyin_runtime_add_source_path',
   'taiyin_runtime_load_eop_table',
   'taiyin_runtime_load_builtin_eop_table',

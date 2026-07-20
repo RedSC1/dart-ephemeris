@@ -38,6 +38,37 @@ Future<List<double>> _calculateInWorker(
   }
 }
 
+Future<List<double>> _calculateCustomTargetInWorker(
+  String libraryPath,
+  int targetId,
+) async {
+  final receivePort = ReceivePort();
+  await Isolate.spawn(
+    _customTargetWorkerMain,
+    (receivePort.sendPort, libraryPath, targetId),
+    onError: receivePort.sendPort,
+    onExit: receivePort.sendPort,
+  );
+  try {
+    final message = await receivePort.first;
+    if (message case ['result', ...final List<Object?> values]) {
+      return values.cast<double>();
+    }
+    if (message case ['error', final Object error, final Object stackTrace]) {
+      throw StateError('Worker failed: $error\n$stackTrace');
+    }
+    if (message == null) {
+      throw StateError('Worker exited before returning a result.');
+    }
+    if (message case [final Object error, final Object stackTrace]) {
+      throw StateError('Worker isolate error: $error\n$stackTrace');
+    }
+    throw StateError('Worker returned an unexpected message: $message');
+  } finally {
+    receivePort.close();
+  }
+}
+
 void _workerMain((SendPort, String, int) message) {
   final (sendPort, libraryPath, workerIndex) = message;
   TaiyinContext? context;
@@ -61,6 +92,62 @@ void _workerMain((SendPort, String, int) message) {
   } finally {
     context?.close();
   }
+}
+
+void _customTargetWorkerMain((SendPort, String, int) message) {
+  final (sendPort, libraryPath, targetId) = message;
+  TaiyinContext? context;
+  try {
+    context = TaiyinContext.attach(libraryPath: libraryPath);
+    final result = context.position.atTt(
+      TaiyinCustomTarget(targetId),
+      JulianDate<TtScale>.fromDouble(2460409.0),
+      flags: {TaiyinPositionFlag.xyz, TaiyinPositionFlag.speed},
+    );
+    sendPort.send(['result', ...result.value.values]);
+  } catch (error, stackTrace) {
+    sendPort.send(['error', '$error', '$stackTrace']);
+  } finally {
+    context?.close();
+  }
+}
+
+List<double> _customPositionEvaluator(TaiyinCustomTargetRequest request) => [
+  request.target.id.toDouble(),
+  request.julianDateTdb,
+  request.julianDateTt,
+  request.hasFlag(TaiyinPositionFlag.xyz) ? 1.0 : 0.0,
+  request.flags.contains(TaiyinPositionFlag.speed) ? 1.0 : 0.0,
+  0.0,
+];
+
+TaiyinCartesianState _customStateEvaluator(TaiyinCustomTargetRequest request) {
+  return TaiyinCartesianState(
+    positionAu: TaiyinVector3(request.target.id.toDouble(), 2.0, 3.0),
+    velocityAuPerDay: const TaiyinVector3(4.0, 5.0, 6.0),
+    accelerationAuPerDay2: const TaiyinVector3(7.0, 8.0, 9.0),
+  );
+}
+
+List<double> _invalidCustomPositionEvaluator(
+  TaiyinCustomTargetRequest request,
+) => const [1.0];
+
+List<double> _failingCustomPositionEvaluator(
+  TaiyinCustomTargetRequest request,
+) {
+  throw const TaiyinCustomEvaluatorFailure(-1004);
+}
+
+List<double> _customSunProxyEvaluator(TaiyinCustomTargetRequest request) {
+  return request.positionOf(
+    TaiyinBody.sun,
+    flags: const {
+      TaiyinPositionFlag.xyz,
+      TaiyinPositionFlag.speed,
+      TaiyinPositionFlag.truePosition,
+    },
+  );
 }
 
 void main() {
@@ -133,6 +220,175 @@ void main() {
         expect(position.values, everyElement(isA<double>()));
         expect(position.values.every((value) => value.isFinite), isTrue);
         expect(position.isCartesian, isTrue);
+      });
+
+      test('registers and calculates a custom target', () {
+        const targetId = -210001;
+        final target = runtime.registerCustomTarget(
+          targetId,
+          positionEvaluator: _customPositionEvaluator,
+        );
+        final result = taiyin.position.atTdb(
+          target,
+          JulianDate<TdbScale>.fromDouble(2460409.25),
+          JulianDate<TtScale>.fromDouble(2460409.0),
+          flags: {TaiyinPositionFlag.xyz, TaiyinPositionFlag.speed},
+        );
+
+        expect(target, TaiyinCustomTarget(targetId));
+        expect(result.value.values[0], targetId.toDouble());
+        expect(result.value.values[1], closeTo(2460409.25, 1e-12));
+        expect(result.value.values[2], closeTo(2460409.0, 1e-12));
+        expect(result.value.values[3], 1.0);
+        expect(result.value.values[4], 1.0);
+        expect(result.diagnostic.status, 0);
+        expect(result.diagnostic.targetId, targetId);
+      });
+
+      test('uses an exact custom state evaluator', () {
+        const targetId = -210002;
+        final target = runtime.registerCustomTarget(
+          targetId,
+          positionEvaluator: _customPositionEvaluator,
+          stateEvaluator: _customStateEvaluator,
+        );
+        final result = taiyin.position.stateAtTt(
+          target,
+          JulianDate<TtScale>.fromDouble(2460409.0),
+        );
+
+        expect(result.value.positionAu.x, targetId.toDouble());
+        expect(result.value.positionAu.y, 2.0);
+        expect(result.value.velocityAuPerDay.values, [4.0, 5.0, 6.0]);
+        expect(result.value.accelerationAuPerDay2.values, [7.0, 8.0, 9.0]);
+        expect(result.diagnostic.targetId, targetId);
+      });
+
+      test('custom evaluator can calculate a dependency', () {
+        const targetId = -210008;
+        final target = runtime.registerCustomTarget(
+          targetId,
+          positionEvaluator: _customSunProxyEvaluator,
+        );
+        final tdb = JulianDate<TdbScale>.fromDouble(2460409.25);
+        final tt = JulianDate<TtScale>.fromDouble(2460409.0);
+        const flags = {
+          TaiyinPositionFlag.xyz,
+          TaiyinPositionFlag.speed,
+          TaiyinPositionFlag.truePosition,
+        };
+
+        final custom = taiyin.position.atTdb(target, tdb, tt, flags: flags);
+        final sun = taiyin.position.atTdb(
+          TaiyinBody.sun,
+          tdb,
+          tt,
+          flags: flags,
+        );
+
+        for (var index = 0; index < 6; index++) {
+          expect(
+            custom.value.values[index],
+            closeTo(sun.value.values[index], 0),
+          );
+        }
+      });
+
+      test('custom target callbacks work from a worker isolate', () async {
+        const targetId = -210003;
+        runtime.registerCustomTarget(
+          targetId,
+          positionEvaluator: _customSunProxyEvaluator,
+        );
+
+        final values = await _calculateCustomTargetInWorker(
+          libraryPath,
+          targetId,
+        );
+        final sun = taiyin.position.atTt(
+          TaiyinBody.sun,
+          JulianDate<TtScale>.fromDouble(2460409.0),
+          flags: const {
+            TaiyinPositionFlag.xyz,
+            TaiyinPositionFlag.speed,
+            TaiyinPositionFlag.truePosition,
+          },
+        );
+        for (var index = 0; index < 6; index++) {
+          expect(values[index], closeTo(sun.value.values[index], 1e-15));
+        }
+      });
+
+      test('rejects mutable callback captures and duplicate IDs', () {
+        expect(() => TaiyinCustomTarget(0), throwsArgumentError);
+
+        final mutableOffset = <double>[0.25];
+        expect(
+          () => runtime.registerCustomTarget(
+            -210004,
+            positionEvaluator: (request) => [
+              1.0 + mutableOffset.single,
+              2.0,
+              3.0,
+              0.0,
+              0.0,
+              0.0,
+            ],
+          ),
+          throwsArgumentError,
+        );
+
+        runtime.registerCustomTarget(
+          -210005,
+          positionEvaluator: _customPositionEvaluator,
+        );
+        expect(
+          () => runtime.registerCustomTarget(
+            -210005,
+            positionEvaluator: _customPositionEvaluator,
+          ),
+          throwsArgumentError,
+        );
+      });
+
+      test('maps invalid and deliberate custom evaluator failures', () {
+        final invalidTarget = runtime.registerCustomTarget(
+          -210006,
+          positionEvaluator: _invalidCustomPositionEvaluator,
+        );
+        expect(
+          () => taiyin.position.atTt(
+            invalidTarget,
+            JulianDate<TtScale>.fromDouble(2460409.0),
+          ),
+          throwsA(
+            isA<TaiyinException>()
+                .having((error) => error.status, 'status', -1)
+                .having(
+                  (error) => error.diagnostic?.targetId,
+                  'diagnostic target',
+                  invalidTarget.id,
+                ),
+          ),
+        );
+
+        final failingTarget = runtime.registerCustomTarget(
+          -210007,
+          positionEvaluator: _failingCustomPositionEvaluator,
+        );
+        expect(
+          () => taiyin.position.atTt(
+            failingTarget,
+            JulianDate<TtScale>.fromDouble(2460409.0),
+          ),
+          throwsA(
+            isA<TaiyinException>().having(
+              (error) => error.status,
+              'status',
+              -1004,
+            ),
+          ),
+        );
       });
 
       test('matches native fractional calendar conversion', () {

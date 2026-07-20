@@ -98,6 +98,43 @@ final class Taiyin {
     return (capabilities & capability.mask) != 0;
   }
 
+  /// Registers a process-wide custom target backed by Dart evaluators.
+  ///
+  /// [targetId] must be negative and may be registered only once. The native
+  /// ABI has no unregister operation, so successful registrations and their
+  /// callbacks remain valid until process exit.
+  ///
+  /// Evaluators may be invoked by calculations in worker isolates. Dart
+  /// therefore requires the evaluator and everything it captures to be
+  /// transitively immutable. Registration throws [ArgumentError] when that
+  /// requirement is not met. Callback exceptions become
+  /// `TAIYIN_ERROR_INTERNAL`; throw [TaiyinCustomEvaluatorFailure] to return a
+  /// deliberate native failure status.
+  ///
+  /// Register from the long-lived main isolate before concurrent calculations
+  /// begin. That isolate must remain alive while a custom target can be used.
+  ///
+  /// When [stateEvaluator] is omitted, Taiyin derives state vectors through
+  /// its native finite-difference fallback.
+  TaiyinCustomTarget registerCustomTarget(
+    int targetId, {
+    required TaiyinCustomPositionEvaluator positionEvaluator,
+    TaiyinCustomStateEvaluator? stateEvaluator,
+  }) {
+    if (!hasCapability(TaiyinCapability.customTargets)) {
+      throw UnsupportedError(
+        'The loaded Taiyin library does not support custom targets.',
+      );
+    }
+    return _registerCustomTarget(
+      _library,
+      _nativeLibraryStateFor(_library),
+      targetId,
+      positionEvaluator,
+      stateEvaluator,
+    );
+  }
+
   /// Stable symbolic name for a native status code.
   String statusName(int status) {
     return _readNativeString(_bindings.taiyin_status_name(status));

@@ -1097,6 +1097,42 @@ class TaiyinBindings {
         )
       >();
 
+  int taiyin_register_native_position_evaluator(
+    int target_id,
+    taiyin_native_position_evaluator_fn position_evaluator,
+    taiyin_native_state_evaluator_fn state_evaluator,
+    ffi.Pointer<ffi.Void> user_data,
+  ) {
+    return _taiyin_register_native_position_evaluator(
+      target_id,
+      position_evaluator,
+      state_evaluator,
+      user_data,
+    );
+  }
+
+  late final _taiyin_register_native_position_evaluatorPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Int32,
+            taiyin_native_position_evaluator_fn,
+            taiyin_native_state_evaluator_fn,
+            ffi.Pointer<ffi.Void>,
+          )
+        >
+      >('taiyin_register_native_position_evaluator');
+  late final _taiyin_register_native_position_evaluator =
+      _taiyin_register_native_position_evaluatorPtr
+          .asFunction<
+            int Function(
+              int,
+              taiyin_native_position_evaluator_fn,
+              taiyin_native_state_evaluator_fn,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
+
   int taiyin_calc_position_tdb(
     ffi.Pointer<taiyin_context> context,
     int target_id,
