@@ -23,9 +23,12 @@ Dart equivalent.
   models, topocentric modes, deflectors, clone/reset ownership, and invalid
   inputs. `position_api_test.dart` exercises single, batch, and
   Cartesian-state entry points across TDB, TT, UT1, explicit Delta-T, and UTC
-  routes. `observed_api_test.dart` exercises single and batch UT1/UTC observed
-  positions, nested apparent states and diagnostics, topocentric horizontal
-  rates, atmospheric refraction policy, and invalid inputs.
+  routes. `taiyin_test.dart` covers process-wide custom position/state
+  evaluators, worker-isolate callbacks, duplicate IDs, invalid callback
+  captures, and native failure propagation. `observed_api_test.dart` exercises
+  single and batch UT1/UTC observed positions, nested apparent states and
+  diagnostics, topocentric horizontal rates, atmospheric refraction policy,
+  and invalid inputs.
   `star_api_test.dart` exercises TSC1 file/memory ownership, TSF1 loading,
   magnitude aliases, all four single and batch star-position time routes,
   partial diagnostics, observed stars, horizontal output, and invalid inputs.

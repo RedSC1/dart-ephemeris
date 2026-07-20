@@ -118,5 +118,21 @@ void main() {
         ),
       );
     });
+
+    test('reports missing custom-target lifecycle symbols before use', () {
+      expect(
+        () => validateTaiyinRequiredSymbols(
+          providesSymbol: (symbol) =>
+              symbol != 'taiyin_unregister_native_position_evaluator',
+        ),
+        throwsA(
+          isA<StateError>().having(
+            (error) => error.message,
+            'message',
+            contains('taiyin_unregister_native_position_evaluator'),
+          ),
+        ),
+      );
+    });
   });
 }

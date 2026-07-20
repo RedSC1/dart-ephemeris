@@ -1,7 +1,12 @@
 part of 'position_api.dart';
 
-/// A solar-system body understood by Taiyin.
-enum TaiyinBody {
+/// A calculation target understood by Taiyin.
+abstract interface class TaiyinTarget {
+  int get id;
+}
+
+/// A solar-system body built into Taiyin.
+enum TaiyinBody implements TaiyinTarget {
   solarSystemBarycenter(0),
   mercuryBarycenter(1),
   venusBarycenter(2),
@@ -27,7 +32,37 @@ enum TaiyinBody {
   const TaiyinBody(this.id);
 
   /// The stable body ID from the Taiyin C ABI.
+  @override
   final int id;
+}
+
+/// A process-wide custom calculation target backed by a Dart evaluator.
+final class TaiyinCustomTarget implements TaiyinTarget {
+  TaiyinCustomTarget(int id) : id = _validateId(id);
+
+  @override
+  final int id;
+
+  static int _validateId(int id) {
+    if (id >= 0 || id < -0x80000000) {
+      throw ArgumentError.value(
+        id,
+        'id',
+        'must fit the native signed 32-bit range and be negative',
+      );
+    }
+    return id;
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      other is TaiyinCustomTarget && other.id == id;
+
+  @override
+  int get hashCode => id.hashCode;
+
+  @override
+  String toString() => 'TaiyinCustomTarget($id)';
 }
 
 /// Modifiers for a position or Cartesian-state calculation.

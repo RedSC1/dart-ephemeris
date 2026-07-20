@@ -62,7 +62,12 @@ final class Taiyin {
     TaiyinRuntimeOptions options = const TaiyinRuntimeOptions(),
   }) {
     final state = _nativeLibraryStateFor(library);
-    _initializeRuntime(state.bindings, options);
+    _initializeRuntime(
+      state.bindings,
+      options,
+      afterNativeInitializationAttempt: () =>
+          _closeCustomTargetRegistrationsAfterNativeClear(state),
+    );
     return Taiyin._(library, state.bindings, state.contextFinalizer);
   }
 
@@ -96,6 +101,57 @@ final class Taiyin {
 
   bool hasCapability(TaiyinCapability capability) {
     return (capabilities & capability.mask) != 0;
+  }
+
+  /// Registers a process-wide custom target backed by Dart evaluators.
+  ///
+  /// [targetId] must be negative and may have only one active registration.
+  /// Keep the returned handle and call [TaiyinCustomTargetRegistration.close]
+  /// when the target is no longer needed.
+  ///
+  /// Evaluators may be invoked by calculations in worker isolates. Dart
+  /// therefore requires the evaluator and everything it captures to be
+  /// transitively immutable. Registration throws [ArgumentError] when that
+  /// requirement is not met. Callback exceptions become
+  /// `TAIYIN_ERROR_INTERNAL`; throw [TaiyinCustomEvaluatorFailure] to return a
+  /// deliberate native failure status.
+  ///
+  /// Register and close custom targets from the long-lived main isolate.
+  /// Registration changes must not overlap calculations in any isolate.
+  ///
+  /// When [stateEvaluator] is omitted, Taiyin derives state vectors through
+  /// its native finite-difference fallback.
+  TaiyinCustomTargetRegistration registerCustomTarget(
+    int targetId, {
+    required TaiyinCustomPositionEvaluator positionEvaluator,
+    TaiyinCustomStateEvaluator? stateEvaluator,
+  }) {
+    if (!hasCapability(TaiyinCapability.customTargets)) {
+      throw UnsupportedError(
+        'The loaded Taiyin library does not support custom targets.',
+      );
+    }
+    return _registerCustomTarget(
+      _library,
+      _nativeLibraryStateFor(_library),
+      targetId,
+      positionEvaluator,
+      stateEvaluator,
+    );
+  }
+
+  /// Clears every process-wide native custom target.
+  ///
+  /// This also closes the Dart registration handles owned by this isolate.
+  /// Native position evaluators registered through the C ABI by other clients
+  /// are removed as well.
+  ///
+  /// This is a setup-time operation and must not overlap calculations in any
+  /// isolate. Existing registration handles become closed.
+  void clearCustomTargets() {
+    final state = _nativeLibraryStateFor(_library);
+    _bindings.taiyin_clear_native_position_evaluators();
+    _closeCustomTargetRegistrationsAfterNativeClear(state);
   }
 
   /// Stable symbolic name for a native status code.
@@ -212,7 +268,11 @@ final class Taiyin {
   }
 }
 
-void _initializeRuntime(TaiyinBindings bindings, TaiyinRuntimeOptions options) {
+void _initializeRuntime(
+  TaiyinBindings bindings,
+  TaiyinRuntimeOptions options, {
+  void Function()? afterNativeInitializationAttempt,
+}) {
   using((arena) {
     final config = arena<taiyin_runtime_config>();
     bindings.taiyin_runtime_config_init(config);
@@ -254,6 +314,10 @@ void _initializeRuntime(TaiyinBindings bindings, TaiyinRuntimeOptions options) {
         ..source_path_count = options.sourcePaths.length;
     }
 
-    _checkStatus(bindings, bindings.taiyin_runtime_initialize(config));
+    final status = bindings.taiyin_runtime_initialize(config);
+    // A valid native reset attempt clears callbacks before it can fail.
+    // Mirror that transition in this isolate before propagating the status.
+    afterNativeInitializationAttempt?.call();
+    _checkStatus(bindings, status);
   });
 }
