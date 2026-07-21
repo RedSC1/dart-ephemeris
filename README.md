@@ -161,8 +161,9 @@ available and delegate to this module.
 positions, and houses. Sidereal positions always use ecliptic radians; request
 `TaiyinPositionFlag.speed` to include longitude rates. Time-based houses need
 an observer configured on the context, while `housesFromArmc` accepts explicit
-ARMC, latitude, and true obliquity. House cusps and returned house numbers are
-one-based.
+ARMC, latitude, and true obliquity. Returned house numbers are one-based.
+House cusps are a zero-indexed list of length 12: index `i` is the cusp of
+house `i + 1`.
 
 ```dart
 context.configuration.setObserverLocation(

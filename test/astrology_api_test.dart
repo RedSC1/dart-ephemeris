@@ -151,7 +151,65 @@ void main() {
         expect(midpoint.houseNumber, 1);
         expect(midpoint.fraction, closeTo(0.5, 1e-12));
         expect(midpoint.continuousHousePosition, closeTo(1.5, 1e-12));
+
+        final finalSpan = _normalizeRadians(
+          houses.cuspLongitudesRadians[0] - houses.cuspLongitudesRadians[11],
+        );
+        final wrapped = context.astrology.housePositionOf(
+          houses,
+          houses.cuspLongitudesRadians[11] + finalSpan / 2,
+        );
+        expect(wrapped.houseNumber, 12);
+        expect(wrapped.fraction, closeTo(0.5, 1e-12));
+        expect(wrapped.continuousHousePosition, closeTo(12.5, 1e-12));
       });
+
+      test(
+        'maps house fallbacks and suppresses discontinuous whole-sign rates',
+        () {
+          context.configuration.setObserverLocation(
+            const TaiyinObserverLocation(
+              longitudeDegrees: 0,
+              latitudeDegrees: 70,
+            ),
+          );
+          final fallback = context.astrology.housesAtUt1(
+            ut1,
+            system: TaiyinHouseSystem.placidus,
+          );
+          final porphyry = context.astrology.housesAtUt1(
+            ut1,
+            system: TaiyinHouseSystem.porphyry,
+          );
+
+          expect(fallback.requestedSystem, TaiyinHouseSystem.placidus);
+          expect(fallback.resolvedSystem, TaiyinHouseSystem.porphyry);
+          expect(
+            fallback.flags,
+            containsAll({
+              TaiyinHouseResultFlag.usedFallback,
+              TaiyinHouseResultFlag.fallbackPorphyry,
+            }),
+          );
+          for (var index = 0; index < 12; index++) {
+            expect(
+              _normalizeSignedRadians(
+                fallback.cuspLongitudesRadians[index] -
+                    porphyry.cuspLongitudesRadians[index],
+              ),
+              closeTo(0, 1e-12),
+            );
+          }
+
+          final ingress = _findWholeSignIngress(context, ut1);
+          expect(
+            ingress.flags,
+            contains(TaiyinHouseResultFlag.speedUnavailable),
+          );
+          expect(ingress.armcRateRadiansPerDay.isNaN, isTrue);
+          expect(ingress.cuspLongitudeRatesRadiansPerDay[0].isNaN, isTrue);
+        },
+      );
 
       test('calculates houses directly from ARMC', () {
         final houses = context.astrology.housesFromArmc(
@@ -193,6 +251,30 @@ void main() {
             ),
             throwsArgumentError,
           );
+          expect(
+            () => context.astrology.housesFromArmc(
+              armcRadians: 0,
+              observerLatitudeRadians: math.pi / 2,
+              trueObliquityRadians: math.pi / 6,
+            ),
+            throwsRangeError,
+          );
+          expect(
+            () => context.astrology.housesFromArmc(
+              armcRadians: 0,
+              observerLatitudeRadians: 0,
+              trueObliquityRadians: 0,
+            ),
+            throwsRangeError,
+          );
+          expect(
+            () => TaiyinHousePosition(
+              houseNumber: 0,
+              fraction: 0,
+              continuousHousePosition: 0,
+            ),
+            throwsRangeError,
+          );
 
           context.close();
           expect(() => context.astrology.ayanamshaAtTt(tt), throwsStateError);
@@ -215,3 +297,61 @@ double _normalizeSignedRadians(double value) {
   final normalized = _normalizeRadians(value);
   return normalized > math.pi ? normalized - 2 * math.pi : normalized;
 }
+
+TaiyinHouses _findWholeSignIngress(
+  TaiyinContext context,
+  JulianDate<Ut1Scale> start,
+) {
+  var lowerJulianDate = start.toDouble();
+  var lower = context.astrology.housesAtUt1(
+    JulianDate<Ut1Scale>.fromDouble(lowerJulianDate),
+    system: TaiyinHouseSystem.wholeSign,
+  );
+  var upperJulianDate = double.nan;
+
+  for (var sample = 1; sample <= 288; sample++) {
+    final sampleJulianDate = start.toDouble() + sample * 5 / 1440;
+    final candidate = context.astrology.housesAtUt1(
+      JulianDate<Ut1Scale>.fromDouble(sampleJulianDate),
+      system: TaiyinHouseSystem.wholeSign,
+    );
+    if (_angularDistance(
+          candidate.cuspLongitudesRadians[0],
+          lower.cuspLongitudesRadians[0],
+        ) >
+        math.pi / 180) {
+      upperJulianDate = sampleJulianDate;
+      break;
+    }
+    lowerJulianDate = sampleJulianDate;
+    lower = candidate;
+  }
+  if (!upperJulianDate.isFinite) {
+    throw StateError('Could not find a Whole Sign cusp ingress.');
+  }
+
+  for (var iteration = 0; iteration < 48; iteration++) {
+    final middleJulianDate = (lowerJulianDate + upperJulianDate) / 2;
+    final middle = context.astrology.housesAtUt1(
+      JulianDate<Ut1Scale>.fromDouble(middleJulianDate),
+      system: TaiyinHouseSystem.wholeSign,
+    );
+    if (_angularDistance(
+          middle.cuspLongitudesRadians[0],
+          lower.cuspLongitudesRadians[0],
+        ) <
+        1e-12) {
+      lowerJulianDate = middleJulianDate;
+      lower = middle;
+    } else {
+      upperJulianDate = middleJulianDate;
+    }
+  }
+  return context.astrology.housesAtUt1(
+    JulianDate<Ut1Scale>.fromDouble((lowerJulianDate + upperJulianDate) / 2),
+    system: TaiyinHouseSystem.wholeSign,
+  );
+}
+
+double _angularDistance(double left, double right) =>
+    _normalizeSignedRadians(left - right).abs();

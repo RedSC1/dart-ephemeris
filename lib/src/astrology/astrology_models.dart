@@ -88,11 +88,31 @@ final class TaiyinSiderealPosition {
   final TaiyinTarget target;
   final TaiyinAyanamsha ayanamsha;
   final TaiyinSiderealPrecessionPolicy precessionPolicy;
+
+  /// Tropical ecliptic longitude in radians.
   final double tropicalLongitudeRadians;
+
+  /// Sidereal ecliptic longitude in radians.
   final double siderealLongitudeRadians;
+
+  /// Ecliptic latitude in radians.
   final double latitudeRadians;
+
+  /// Distance in astronomical units.
   final double distanceAu;
+
+  /// Tropical ecliptic-longitude rate in radians per day.
+  ///
+  /// This is `double.nan` unless [flags] contains
+  /// [TaiyinPositionFlag.speed]. This result intentionally contains longitude
+  /// rates only, not latitude or distance rates.
   final double tropicalLongitudeRateRadiansPerDay;
+
+  /// Sidereal ecliptic-longitude rate in radians per day.
+  ///
+  /// This is `double.nan` unless [flags] contains
+  /// [TaiyinPositionFlag.speed]. This result intentionally contains longitude
+  /// rates only, not latitude or distance rates.
   final double siderealLongitudeRateRadiansPerDay;
 
   /// Native position options resolved for this ecliptic calculation.
@@ -156,7 +176,17 @@ final class TaiyinHouses {
   final double midheavenRateRadiansPerDay;
   final double vertexRateRadiansPerDay;
   final double eastPointRateRadiansPerDay;
+
+  /// Twelve ecliptic cusp longitudes in radians.
+  ///
+  /// This is a zero-indexed list: index `i` is the cusp of house `i + 1`.
   final List<double> cuspLongitudesRadians;
+
+  /// Ecliptic cusp-longitude rates in radians per day.
+  ///
+  /// This is zero-indexed in the same way as [cuspLongitudesRadians]. Values
+  /// are `NaN` for direct ARMC calculations and when
+  /// [TaiyinHouseResultFlag.speedUnavailable] is set.
   final List<double> cuspLongitudeRatesRadiansPerDay;
 
   TaiyinHouseSystem? get requestedSystem =>
@@ -167,11 +197,29 @@ final class TaiyinHouses {
 
 /// The house containing an ecliptic longitude.
 final class TaiyinHousePosition {
-  const TaiyinHousePosition({
+  TaiyinHousePosition({
     required this.houseNumber,
     required this.fraction,
     required this.continuousHousePosition,
-  });
+  }) {
+    if (houseNumber < 1 || houseNumber > 12) {
+      throw RangeError.range(houseNumber, 1, 12, 'houseNumber');
+    }
+    if (!fraction.isFinite || fraction < 0 || fraction >= 1) {
+      throw RangeError.range(fraction, 0, 1, 'fraction', 'must be in [0, 1)');
+    }
+    if (!continuousHousePosition.isFinite ||
+        continuousHousePosition < 1 ||
+        continuousHousePosition >= 13) {
+      throw RangeError.range(
+        continuousHousePosition,
+        1,
+        13,
+        'continuousHousePosition',
+        'must be in [1, 13)',
+      );
+    }
+  }
 
   /// One-based house index in the range 1–12.
   final int houseNumber;

@@ -53,6 +53,11 @@ final class TaiyinAstrologyApi {
   }
 
   /// Calculates sidereal ecliptic coordinates at TT.
+  ///
+  /// [flags] retain their normal physical-correction semantics. This
+  /// specialized result always has ecliptic spherical coordinates, so
+  /// [TaiyinPositionFlag.xyz] and [TaiyinPositionFlag.equatorial] are
+  /// rejected. [TaiyinPositionFlag.radians] is added automatically.
   TaiyinEphemerisResult<TaiyinSiderealPosition> siderealPositionAtTt(
     TaiyinTarget target,
     JulianDate<TtScale> tt, {
@@ -82,6 +87,8 @@ final class TaiyinAstrologyApi {
   }
 
   /// Calculates sidereal ecliptic coordinates at UT1 using the context policy.
+  ///
+  /// [flags] follow the same restrictions as [siderealPositionAtTt].
   TaiyinEphemerisResult<TaiyinSiderealPosition> siderealPositionAtUt1(
     TaiyinTarget target,
     JulianDate<Ut1Scale> ut1, {
@@ -121,6 +128,8 @@ final class TaiyinAstrologyApi {
     _requireFinite(armcRadians, 'armcRadians');
     _requireFinite(observerLatitudeRadians, 'observerLatitudeRadians');
     _requireFinite(trueObliquityRadians, 'trueObliquityRadians');
+    _requireOpenLatitude(observerLatitudeRadians, 'observerLatitudeRadians');
+    _requireOpenObliquity(trueObliquityRadians, 'trueObliquityRadians');
     return _houses(
       (output) => _bindings.taiyin_calc_houses_from_armc(
         armcRadians,
@@ -322,6 +331,28 @@ final class TaiyinAstrologyApi {
   void _requireFinite(double value, String name) {
     if (!value.isFinite) {
       throw ArgumentError.value(value, name, 'must be finite');
+    }
+  }
+
+  void _requireOpenLatitude(double value, String name) {
+    final limit = math.pi / 2;
+    if (value <= -limit || value >= limit) {
+      throw RangeError.value(
+        value,
+        name,
+        'must be strictly between -pi/2 and pi/2',
+      );
+    }
+  }
+
+  void _requireOpenObliquity(double value, String name) {
+    final limit = math.pi / 2;
+    if (value <= 0 || value >= limit) {
+      throw RangeError.value(
+        value,
+        name,
+        'must be strictly between 0 and pi/2',
+      );
     }
   }
 }
