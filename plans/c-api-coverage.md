@@ -27,6 +27,30 @@ functions so ABI completeness can be tracked exactly.
 - [ ] Remaining process-lifetime ayanamsha and house-system callbacks
 - [ ] Diagnostic formatting helper
 
+## Cross-cutting technical debt: split-JD calculation ABI
+
+The Dart `JulianDate` type preserves a split day number and day fraction, and
+time-scale conversions already use the native split-JD C ABI. Most calculation
+entry points still accept a single `double` Julian day, however. This includes
+the existing position, star, observed, phenomena, and orbital APIs as well as
+the remaining astrology, visibility, event, heliacal, occultation, and eclipse
+APIs. Their Dart wrappers therefore call `JulianDate.toDouble()` at the FFI
+boundary and cannot preserve the full split representation end to end.
+
+Treat this as a separate native ABI infrastructure project rather than mixing
+it into an individual feature PR such as astrology. The work must preserve the
+existing ABI-1 symbols while defining precise calculation entry points that
+accept split Julian dates, adding native precision regressions, regenerating
+the Dart bindings, and migrating the existing calculation wrappers before the
+debt can be considered closed.
+
+- [ ] Inventory every calculation entry point that accepts one or more Julian
+  dates as `double`.
+- [ ] Define an ABI-compatible split-JD naming and migration policy.
+- [ ] Add native boundary and sub-millisecond precision regressions.
+- [ ] Migrate existing Dart calculation APIs away from `JulianDate.toDouble()`.
+- [ ] Apply the same policy to newly wrapped calculation families.
+
 ## `astrology.h` — 0/27
 
 - [ ] `taiyin_sidereal_position_init`

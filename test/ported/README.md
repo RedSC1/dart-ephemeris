@@ -85,7 +85,7 @@ operations where applicable:
 
 - `math_primitives`, `field_set`, `ephemeris_catalog`,
   `ephemeris_segment_cache`, `ephemeris_route_rule`
-- `spk`, `kepler`, `kepler_file`, `kepler_catalog_tkc1`, `moshier`
+- `spk`, `kepler`, `kepler_file`, `kepler_catalog_tkc1`, `semi_analytic`
 - `corrections`, `corrections_oracles`, `geometry`, `coordinates`,
   `low_level_oracles`, `eop`
 - `mapped_file`, `math_solvers`, `calc_spec`, `opm2_staged_data`,

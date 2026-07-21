@@ -10,6 +10,8 @@ void main() {
       '../taiyin-ephemeris/build-c-api-release/libtaiyin.dylib';
   final nativeLibraryAvailable = File(libraryPath).existsSync();
   const degreesToRadians = math.pi / 180.0;
+  // The frozen lunar model documents a 5.22 arcsecond held-out maximum.
+  const semiAnalyticLunarAngleTolerance = (6 / 3600) * degreesToRadians;
 
   group(
     'TaiyinPhenomenaApi native integration',
@@ -36,48 +38,52 @@ void main() {
         context.close();
       });
 
-      test('matches the native first-quarter Moon oracle at UT1', () {
-        final result = context.phenomena.atUt1(
-          TaiyinBody.moon,
-          JulianDate<Ut1Scale>.fromDouble(2460416.2916666665),
-        );
-        final value = result.value;
+      test(
+        'matches the first-quarter Moon oracle on the semi-analytical route',
+        () {
+          context.configuration.setRouteRule(TaiyinRouteRule.semiAnalytic);
+          final result = context.phenomena.atUt1(
+            TaiyinBody.moon,
+            JulianDate<Ut1Scale>.fromDouble(2460416.2916666665),
+          );
+          final value = result.value;
 
-        expect(
-          value.phaseAngleRadians,
-          closeTo(
-            89.952673424033108 * degreesToRadians,
-            0.012 * degreesToRadians,
-          ),
-        );
-        expect(value.illuminatedFraction, closeTo(0.500413002240195, 1e-4));
-        expect(
-          value.solarElongationRadians,
-          closeTo(
-            89.896332647082019 * degreesToRadians,
-            2.5e-5 * degreesToRadians,
-          ),
-        );
-        expect(
-          value.apparentDiameterRadians,
-          closeTo(
-            0.503260123339875 * degreesToRadians,
-            6e-5 * degreesToRadians,
-          ),
-        );
-        expect(value.apparentMagnitude, closeTo(-10.048877989411316, 0.09));
-        expect(
-          value.geocentricHorizontalParallaxRadians,
-          closeTo(
-            0.923829244641875 * degreesToRadians,
-            1e-6 * degreesToRadians,
-          ),
-        );
-        expect(value.body, TaiyinBody.moon);
-        expect(value.origin, TaiyinPhenomenaOrigin.geocentric);
-        expect(result.diagnostic.status, 0);
-        expect(result.diagnostic.targetId, TaiyinBody.moon.id);
-      });
+          expect(
+            value.phaseAngleRadians,
+            closeTo(
+              89.952673424033108 * degreesToRadians,
+              0.012 * degreesToRadians,
+            ),
+          );
+          expect(value.illuminatedFraction, closeTo(0.500413002240195, 1e-4));
+          expect(
+            value.solarElongationRadians,
+            closeTo(
+              89.896332647082019 * degreesToRadians,
+              semiAnalyticLunarAngleTolerance,
+            ),
+          );
+          expect(
+            value.apparentDiameterRadians,
+            closeTo(
+              0.503260123339875 * degreesToRadians,
+              6e-5 * degreesToRadians,
+            ),
+          );
+          expect(value.apparentMagnitude, closeTo(-10.048877989411316, 0.09));
+          expect(
+            value.geocentricHorizontalParallaxRadians,
+            closeTo(
+              0.923829244641875 * degreesToRadians,
+              1e-6 * degreesToRadians,
+            ),
+          );
+          expect(value.body, TaiyinBody.moon);
+          expect(value.origin, TaiyinPhenomenaOrigin.geocentric);
+          expect(result.diagnostic.status, 0);
+          expect(result.diagnostic.targetId, TaiyinBody.moon.id);
+        },
+      );
 
       test('covers the TT route and nullable non-lunar parallax', () {
         final result = context.phenomena.atTt(

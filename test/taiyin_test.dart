@@ -75,7 +75,7 @@ void _workerMain((SendPort, String, int) message) {
   try {
     context = TaiyinContext.attach(libraryPath: libraryPath);
     context.configuration.setRouteRule(
-      workerIndex.isEven ? TaiyinRouteRule.moshier : TaiyinRouteRule.opm2,
+      workerIndex.isEven ? TaiyinRouteRule.semiAnalytic : TaiyinRouteRule.opm2,
     );
     final result = context.position.atTt(
       TaiyinBody.mercury,
