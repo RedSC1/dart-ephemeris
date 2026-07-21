@@ -1,5 +1,6 @@
 const int taiyinSupportedAbiVersion = 1;
 const int taiyinSplitTimeCapability = 1 << 14;
+const int taiyinSplitPositionCapability = 1 << 15;
 
 /// Symbols added while ABI 1 was still in development and required by the
 /// high-level APIs exposed by this package.
@@ -83,6 +84,12 @@ void validateTaiyinNativeCompatibility({
     throw StateError(
       'The loaded Taiyin library does not provide the split-time capability '
       'required by this package.',
+    );
+  }
+  if ((capabilities & taiyinSplitPositionCapability) == 0) {
+    throw StateError(
+      'The loaded Taiyin library does not provide the split-position '
+      'capability required by this package.',
     );
   }
 }

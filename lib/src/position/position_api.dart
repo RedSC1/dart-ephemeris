@@ -17,6 +17,14 @@ typedef _SinglePositionCalculation =
       Pointer<Double> output,
       Pointer<taiyin_ephemeris_diagnostic> diagnostic,
     );
+typedef _SplitPositionCalculation =
+    int Function(
+      Pointer<taiyin_split_julian_date> date,
+      Pointer<taiyin_split_julian_date>? secondDate,
+      int mask,
+      Pointer<Double> output,
+      Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+    );
 typedef _BatchPositionCalculation =
     int Function(
       Pointer<Int32> targetIds,
@@ -25,8 +33,26 @@ typedef _BatchPositionCalculation =
       Pointer<Double> output,
       Pointer<taiyin_ephemeris_diagnostic> diagnostics,
     );
+typedef _SplitBatchPositionCalculation =
+    int Function(
+      Pointer<taiyin_split_julian_date> date,
+      Pointer<taiyin_split_julian_date>? secondDate,
+      Pointer<Int32> targetIds,
+      int targetCount,
+      int mask,
+      Pointer<Double> output,
+      Pointer<taiyin_ephemeris_diagnostic> diagnostics,
+    );
 typedef _StateCalculation =
     int Function(
+      int mask,
+      Pointer<taiyin_cartesian_state> output,
+      Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+    );
+typedef _SplitStateCalculation =
+    int Function(
+      Pointer<taiyin_split_julian_date> date,
+      Pointer<taiyin_split_julian_date>? secondDate,
       int mask,
       Pointer<taiyin_cartesian_state> output,
       Pointer<taiyin_ephemeris_diagnostic> diagnostic,
@@ -61,16 +87,18 @@ final class TaiyinPositionApi {
     Set<TaiyinPositionFlag> flags = const {},
   }) {
     _ensureOpen();
-    return _position(
+    return _positionAtSplit(
+      julianDate,
       flags,
-      (mask, output, diagnostic) => _bindings.taiyin_calc_position_tt(
-        _context,
-        body.id,
-        julianDate.toDouble(),
-        mask,
-        output,
-        diagnostic,
-      ),
+      (date, _, mask, output, diagnostic) =>
+          _bindings.taiyin_calc_position_tt_split(
+            _context,
+            body.id,
+            date,
+            mask,
+            output,
+            diagnostic,
+          ),
     );
   }
 
@@ -81,16 +109,18 @@ final class TaiyinPositionApi {
     Set<TaiyinPositionFlag> flags = const {},
   }) {
     _ensureOpen();
-    return _position(
+    return _positionAtSplit(
+      julianDate,
       flags,
-      (mask, output, diagnostic) => _bindings.taiyin_calc_position_ut(
-        _context,
-        body.id,
-        julianDate.toDouble(),
-        mask,
-        output,
-        diagnostic,
-      ),
+      (date, _, mask, output, diagnostic) =>
+          _bindings.taiyin_calc_position_ut_split(
+            _context,
+            body.id,
+            date,
+            mask,
+            output,
+            diagnostic,
+          ),
     );
   }
 
@@ -102,17 +132,20 @@ final class TaiyinPositionApi {
     Set<TaiyinPositionFlag> flags = const {},
   }) {
     _ensureOpen();
-    return _position(
+    return _positionAtSplitPair(
+      tdb,
+      tt,
       flags,
-      (mask, output, diagnostic) => _bindings.taiyin_calc_position_tdb(
-        _context,
-        body.id,
-        tdb.toDouble(),
-        tt.toDouble(),
-        mask,
-        output,
-        diagnostic,
-      ),
+      (date, secondDate, mask, output, diagnostic) =>
+          _bindings.taiyin_calc_position_tdb_split(
+            _context,
+            body.id,
+            date,
+            secondDate!,
+            mask,
+            output,
+            diagnostic,
+          ),
     );
   }
 
@@ -125,17 +158,19 @@ final class TaiyinPositionApi {
   }) {
     _ensureOpen();
     _requireFinite(deltaTSeconds, 'deltaTSeconds');
-    return _position(
+    return _positionAtSplit(
+      julianDate,
       flags,
-      (mask, output, diagnostic) => _bindings.taiyin_calc_position_ut_delta_t(
-        _context,
-        body.id,
-        julianDate.toDouble(),
-        deltaTSeconds,
-        mask,
-        output,
-        diagnostic,
-      ),
+      (date, _, mask, output, diagnostic) =>
+          _bindings.taiyin_calc_position_ut_delta_t_split(
+            _context,
+            body.id,
+            date,
+            deltaTSeconds,
+            mask,
+            output,
+            diagnostic,
+          ),
     );
   }
 
@@ -169,15 +204,16 @@ final class TaiyinPositionApi {
     Set<TaiyinPositionFlag> flags = const {},
   }) {
     _ensureOpen();
-    return _positions(
+    return _positionsAtSplit(
       bodies,
+      julianDate,
       flags,
-      (targetIds, targetCount, mask, output, diagnostics) =>
-          _bindings.taiyin_calc_positions_tt(
+      (date, _, targetIds, targetCount, mask, output, diagnostics) =>
+          _bindings.taiyin_calc_positions_tt_split(
             _context,
             targetIds,
             targetCount,
-            julianDate.toDouble(),
+            date,
             mask,
             output,
             diagnostics,
@@ -192,15 +228,16 @@ final class TaiyinPositionApi {
     Set<TaiyinPositionFlag> flags = const {},
   }) {
     _ensureOpen();
-    return _positions(
+    return _positionsAtSplit(
       bodies,
+      julianDate,
       flags,
-      (targetIds, targetCount, mask, output, diagnostics) =>
-          _bindings.taiyin_calc_positions_ut(
+      (date, _, targetIds, targetCount, mask, output, diagnostics) =>
+          _bindings.taiyin_calc_positions_ut_split(
             _context,
             targetIds,
             targetCount,
-            julianDate.toDouble(),
+            date,
             mask,
             output,
             diagnostics,
@@ -216,16 +253,18 @@ final class TaiyinPositionApi {
     Set<TaiyinPositionFlag> flags = const {},
   }) {
     _ensureOpen();
-    return _positions(
+    return _positionsAtSplitPair(
       bodies,
+      tdb,
+      tt,
       flags,
-      (targetIds, targetCount, mask, output, diagnostics) =>
-          _bindings.taiyin_calc_positions_tdb(
+      (date, secondDate, targetIds, targetCount, mask, output, diagnostics) =>
+          _bindings.taiyin_calc_positions_tdb_split(
             _context,
             targetIds,
             targetCount,
-            tdb.toDouble(),
-            tt.toDouble(),
+            date,
+            secondDate!,
             mask,
             output,
             diagnostics,
@@ -242,15 +281,16 @@ final class TaiyinPositionApi {
   }) {
     _ensureOpen();
     _requireFinite(deltaTSeconds, 'deltaTSeconds');
-    return _positions(
+    return _positionsAtSplit(
       bodies,
+      julianDate,
       flags,
-      (targetIds, targetCount, mask, output, diagnostics) =>
-          _bindings.taiyin_calc_positions_ut_delta_t(
+      (date, _, targetIds, targetCount, mask, output, diagnostics) =>
+          _bindings.taiyin_calc_positions_ut_delta_t_split(
             _context,
             targetIds,
             targetCount,
-            julianDate.toDouble(),
+            date,
             deltaTSeconds,
             mask,
             output,
@@ -296,16 +336,18 @@ final class TaiyinPositionApi {
     Set<TaiyinPositionFlag> flags = const {},
   }) {
     _ensureOpen();
-    return _state(
+    return _stateAtSplit(
+      julianDate,
       flags,
-      (mask, output, diagnostic) => _bindings.taiyin_calc_state_tt(
-        _context,
-        body.id,
-        julianDate.toDouble(),
-        mask,
-        output,
-        diagnostic,
-      ),
+      (date, _, mask, output, diagnostic) =>
+          _bindings.taiyin_calc_state_tt_split(
+            _context,
+            body.id,
+            date,
+            mask,
+            output,
+            diagnostic,
+          ),
     );
   }
 
@@ -318,16 +360,18 @@ final class TaiyinPositionApi {
     Set<TaiyinPositionFlag> flags = const {},
   }) {
     _ensureOpen();
-    return _state(
+    return _stateAtSplit(
+      julianDate,
       flags,
-      (mask, output, diagnostic) => _bindings.taiyin_calc_state_ut(
-        _context,
-        body.id,
-        julianDate.toDouble(),
-        mask,
-        output,
-        diagnostic,
-      ),
+      (date, _, mask, output, diagnostic) =>
+          _bindings.taiyin_calc_state_ut_split(
+            _context,
+            body.id,
+            date,
+            mask,
+            output,
+            diagnostic,
+          ),
     );
   }
 
@@ -341,17 +385,20 @@ final class TaiyinPositionApi {
     Set<TaiyinPositionFlag> flags = const {},
   }) {
     _ensureOpen();
-    return _state(
+    return _stateAtSplitPair(
+      tdb,
+      tt,
       flags,
-      (mask, output, diagnostic) => _bindings.taiyin_calc_state_tdb(
-        _context,
-        body.id,
-        tdb.toDouble(),
-        tt.toDouble(),
-        mask,
-        output,
-        diagnostic,
-      ),
+      (date, secondDate, mask, output, diagnostic) =>
+          _bindings.taiyin_calc_state_tdb_split(
+            _context,
+            body.id,
+            date,
+            secondDate!,
+            mask,
+            output,
+            diagnostic,
+          ),
     );
   }
 
@@ -366,17 +413,19 @@ final class TaiyinPositionApi {
   }) {
     _ensureOpen();
     _requireFinite(deltaTSeconds, 'deltaTSeconds');
-    return _state(
+    return _stateAtSplit(
+      julianDate,
       flags,
-      (mask, output, diagnostic) => _bindings.taiyin_calc_state_ut_delta_t(
-        _context,
-        body.id,
-        julianDate.toDouble(),
-        deltaTSeconds,
-        mask,
-        output,
-        diagnostic,
-      ),
+      (date, _, mask, output, diagnostic) =>
+          _bindings.taiyin_calc_state_ut_delta_t_split(
+            _context,
+            body.id,
+            date,
+            deltaTSeconds,
+            mask,
+            output,
+            diagnostic,
+          ),
     );
   }
 
@@ -427,6 +476,41 @@ final class TaiyinPositionApi {
     });
   }
 
+  TaiyinEphemerisResult<TaiyinPosition> _positionAtSplit<S extends TimeScale>(
+    JulianDate<S> date,
+    Set<TaiyinPositionFlag> flags,
+    _SplitPositionCalculation calculate,
+  ) {
+    return using((arena) {
+      final nativeDate = _writeJulianDate(arena, date);
+      return _position(
+        flags,
+        (mask, output, diagnostic) =>
+            calculate(nativeDate, null, mask, output, diagnostic),
+      );
+    });
+  }
+
+  TaiyinEphemerisResult<TaiyinPosition> _positionAtSplitPair<
+    FirstScale extends TimeScale,
+    SecondScale extends TimeScale
+  >(
+    JulianDate<FirstScale> date,
+    JulianDate<SecondScale> secondDate,
+    Set<TaiyinPositionFlag> flags,
+    _SplitPositionCalculation calculate,
+  ) {
+    return using((arena) {
+      final nativeDate = _writeJulianDate(arena, date);
+      final nativeSecondDate = _writeJulianDate(arena, secondDate);
+      return _position(
+        flags,
+        (mask, output, diagnostic) =>
+            calculate(nativeDate, nativeSecondDate, mask, output, diagnostic),
+      );
+    });
+  }
+
   List<TaiyinEphemerisResult<TaiyinPosition>> _positions(
     List<TaiyinTarget> bodies,
     Set<TaiyinPositionFlag> flags,
@@ -468,6 +552,60 @@ final class TaiyinPositionApi {
     });
   }
 
+  List<TaiyinEphemerisResult<TaiyinPosition>>
+  _positionsAtSplit<S extends TimeScale>(
+    List<TaiyinTarget> bodies,
+    JulianDate<S> date,
+    Set<TaiyinPositionFlag> flags,
+    _SplitBatchPositionCalculation calculate,
+  ) {
+    return using((arena) {
+      final nativeDate = _writeJulianDate(arena, date);
+      return _positions(
+        bodies,
+        flags,
+        (targetIds, targetCount, mask, output, diagnostics) => calculate(
+          nativeDate,
+          null,
+          targetIds,
+          targetCount,
+          mask,
+          output,
+          diagnostics,
+        ),
+      );
+    });
+  }
+
+  List<TaiyinEphemerisResult<TaiyinPosition>> _positionsAtSplitPair<
+    FirstScale extends TimeScale,
+    SecondScale extends TimeScale
+  >(
+    List<TaiyinTarget> bodies,
+    JulianDate<FirstScale> date,
+    JulianDate<SecondScale> secondDate,
+    Set<TaiyinPositionFlag> flags,
+    _SplitBatchPositionCalculation calculate,
+  ) {
+    return using((arena) {
+      final nativeDate = _writeJulianDate(arena, date);
+      final nativeSecondDate = _writeJulianDate(arena, secondDate);
+      return _positions(
+        bodies,
+        flags,
+        (targetIds, targetCount, mask, output, diagnostics) => calculate(
+          nativeDate,
+          nativeSecondDate,
+          targetIds,
+          targetCount,
+          mask,
+          output,
+          diagnostics,
+        ),
+      );
+    });
+  }
+
   TaiyinEphemerisResult<TaiyinCartesianState> _state(
     Set<TaiyinPositionFlag> flags,
     _StateCalculation calculate,
@@ -492,6 +630,53 @@ final class TaiyinPositionApi {
         diagnostic: mappedDiagnostic,
       );
     });
+  }
+
+  TaiyinEphemerisResult<TaiyinCartesianState>
+  _stateAtSplit<S extends TimeScale>(
+    JulianDate<S> date,
+    Set<TaiyinPositionFlag> flags,
+    _SplitStateCalculation calculate,
+  ) {
+    return using((arena) {
+      final nativeDate = _writeJulianDate(arena, date);
+      return _state(
+        flags,
+        (mask, output, diagnostic) =>
+            calculate(nativeDate, null, mask, output, diagnostic),
+      );
+    });
+  }
+
+  TaiyinEphemerisResult<TaiyinCartesianState> _stateAtSplitPair<
+    FirstScale extends TimeScale,
+    SecondScale extends TimeScale
+  >(
+    JulianDate<FirstScale> date,
+    JulianDate<SecondScale> secondDate,
+    Set<TaiyinPositionFlag> flags,
+    _SplitStateCalculation calculate,
+  ) {
+    return using((arena) {
+      final nativeDate = _writeJulianDate(arena, date);
+      final nativeSecondDate = _writeJulianDate(arena, secondDate);
+      return _state(
+        flags,
+        (mask, output, diagnostic) =>
+            calculate(nativeDate, nativeSecondDate, mask, output, diagnostic),
+      );
+    });
+  }
+
+  Pointer<taiyin_split_julian_date> _writeJulianDate<S extends TimeScale>(
+    Arena arena,
+    JulianDate<S> value,
+  ) {
+    final native = arena<taiyin_split_julian_date>();
+    native.ref
+      ..day_number = value.dayNumber
+      ..day_fraction = value.dayFraction;
+    return native;
   }
 
   TaiyinEphemerisDiagnostic _readDiagnostic(taiyin_ephemeris_diagnostic value) {
