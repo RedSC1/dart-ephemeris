@@ -887,6 +887,346 @@ class TaiyinBindings {
       _taiyin_context_set_eclipse_modelsPtr
           .asFunction<int Function(ffi.Pointer<taiyin_context>, int, int)>();
 
+  void taiyin_sidereal_position_init(
+    ffi.Pointer<taiyin_sidereal_position> arg0,
+  ) {
+    return _taiyin_sidereal_position_init(arg0);
+  }
+
+  late final _taiyin_sidereal_position_initPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<taiyin_sidereal_position>)
+        >
+      >('taiyin_sidereal_position_init');
+  late final _taiyin_sidereal_position_init = _taiyin_sidereal_position_initPtr
+      .asFunction<void Function(ffi.Pointer<taiyin_sidereal_position>)>();
+
+  void taiyin_house_result_init(ffi.Pointer<taiyin_house_result> arg0) {
+    return _taiyin_house_result_init(arg0);
+  }
+
+  late final _taiyin_house_result_initPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Void Function(ffi.Pointer<taiyin_house_result>)>
+      >('taiyin_house_result_init');
+  late final _taiyin_house_result_init = _taiyin_house_result_initPtr
+      .asFunction<void Function(ffi.Pointer<taiyin_house_result>)>();
+
+  void taiyin_house_position_result_init(
+    ffi.Pointer<taiyin_house_position_result> arg0,
+  ) {
+    return _taiyin_house_position_result_init(arg0);
+  }
+
+  late final _taiyin_house_position_result_initPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<taiyin_house_position_result>)
+        >
+      >('taiyin_house_position_result_init');
+  late final _taiyin_house_position_result_init =
+      _taiyin_house_position_result_initPtr
+          .asFunction<
+            void Function(ffi.Pointer<taiyin_house_position_result>)
+          >();
+
+  int taiyin_calc_ayanamsha_tt(
+    ffi.Pointer<taiyin_context> context,
+    int ayanamsha_id,
+    int precession_policy,
+    double jd_tt,
+    ffi.Pointer<ffi.Double> out_ayanamsha_rad,
+  ) {
+    return _taiyin_calc_ayanamsha_tt(
+      context,
+      ayanamsha_id,
+      precession_policy,
+      jd_tt,
+      out_ayanamsha_rad,
+    );
+  }
+
+  late final _taiyin_calc_ayanamsha_ttPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Int32,
+            ffi.Int32,
+            ffi.Double,
+            ffi.Pointer<ffi.Double>,
+          )
+        >
+      >('taiyin_calc_ayanamsha_tt');
+  late final _taiyin_calc_ayanamsha_tt = _taiyin_calc_ayanamsha_ttPtr
+      .asFunction<
+        int Function(
+          ffi.Pointer<taiyin_context>,
+          int,
+          int,
+          double,
+          ffi.Pointer<ffi.Double>,
+        )
+      >();
+
+  int taiyin_calc_sidereal_position_tt(
+    ffi.Pointer<taiyin_context> context,
+    int ayanamsha_id,
+    int precession_policy,
+    int body_id,
+    double jd_tt,
+    int position_flags,
+    ffi.Pointer<taiyin_sidereal_position> out,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_calc_sidereal_position_tt(
+      context,
+      ayanamsha_id,
+      precession_policy,
+      body_id,
+      jd_tt,
+      position_flags,
+      out,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_calc_sidereal_position_ttPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Int32,
+            ffi.Int32,
+            ffi.Int32,
+            ffi.Double,
+            ffi.Uint32,
+            ffi.Pointer<taiyin_sidereal_position>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_calc_sidereal_position_tt');
+  late final _taiyin_calc_sidereal_position_tt =
+      _taiyin_calc_sidereal_position_ttPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              int,
+              int,
+              int,
+              double,
+              int,
+              ffi.Pointer<taiyin_sidereal_position>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_calc_sidereal_position_ut(
+    ffi.Pointer<taiyin_context> context,
+    int ayanamsha_id,
+    int precession_policy,
+    int body_id,
+    double jd_ut,
+    int position_flags,
+    ffi.Pointer<taiyin_sidereal_position> out,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_calc_sidereal_position_ut(
+      context,
+      ayanamsha_id,
+      precession_policy,
+      body_id,
+      jd_ut,
+      position_flags,
+      out,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_calc_sidereal_position_utPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Int32,
+            ffi.Int32,
+            ffi.Int32,
+            ffi.Double,
+            ffi.Uint32,
+            ffi.Pointer<taiyin_sidereal_position>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_calc_sidereal_position_ut');
+  late final _taiyin_calc_sidereal_position_ut =
+      _taiyin_calc_sidereal_position_utPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              int,
+              int,
+              int,
+              double,
+              int,
+              ffi.Pointer<taiyin_sidereal_position>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_calc_houses_from_armc(
+    double armc_rad,
+    double observer_latitude_rad,
+    double true_obliquity_rad,
+    int house_system_id,
+    ffi.Pointer<taiyin_house_result> out,
+  ) {
+    return _taiyin_calc_houses_from_armc(
+      armc_rad,
+      observer_latitude_rad,
+      true_obliquity_rad,
+      house_system_id,
+      out,
+    );
+  }
+
+  late final _taiyin_calc_houses_from_armcPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Double,
+            ffi.Double,
+            ffi.Double,
+            ffi.Int32,
+            ffi.Pointer<taiyin_house_result>,
+          )
+        >
+      >('taiyin_calc_houses_from_armc');
+  late final _taiyin_calc_houses_from_armc = _taiyin_calc_houses_from_armcPtr
+      .asFunction<
+        int Function(
+          double,
+          double,
+          double,
+          int,
+          ffi.Pointer<taiyin_house_result>,
+        )
+      >();
+
+  int taiyin_calc_houses_ut(
+    ffi.Pointer<taiyin_context> context,
+    double jd_ut,
+    int house_system_id,
+    ffi.Pointer<taiyin_house_result> out,
+  ) {
+    return _taiyin_calc_houses_ut(context, jd_ut, house_system_id, out);
+  }
+
+  late final _taiyin_calc_houses_utPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Double,
+            ffi.Int32,
+            ffi.Pointer<taiyin_house_result>,
+          )
+        >
+      >('taiyin_calc_houses_ut');
+  late final _taiyin_calc_houses_ut = _taiyin_calc_houses_utPtr
+      .asFunction<
+        int Function(
+          ffi.Pointer<taiyin_context>,
+          double,
+          int,
+          ffi.Pointer<taiyin_house_result>,
+        )
+      >();
+
+  int taiyin_calc_houses_tt(
+    ffi.Pointer<taiyin_context> context,
+    double jd_tt,
+    int house_system_id,
+    ffi.Pointer<taiyin_house_result> out,
+  ) {
+    return _taiyin_calc_houses_tt(context, jd_tt, house_system_id, out);
+  }
+
+  late final _taiyin_calc_houses_ttPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Double,
+            ffi.Int32,
+            ffi.Pointer<taiyin_house_result>,
+          )
+        >
+      >('taiyin_calc_houses_tt');
+  late final _taiyin_calc_houses_tt = _taiyin_calc_houses_ttPtr
+      .asFunction<
+        int Function(
+          ffi.Pointer<taiyin_context>,
+          double,
+          int,
+          ffi.Pointer<taiyin_house_result>,
+        )
+      >();
+
+  int taiyin_calc_house_position_from_longitude(
+    ffi.Pointer<taiyin_house_result> houses,
+    double ecliptic_longitude_rad,
+    ffi.Pointer<taiyin_house_position_result> out,
+  ) {
+    return _taiyin_calc_house_position_from_longitude(
+      houses,
+      ecliptic_longitude_rad,
+      out,
+    );
+  }
+
+  late final _taiyin_calc_house_position_from_longitudePtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_house_result>,
+            ffi.Double,
+            ffi.Pointer<taiyin_house_position_result>,
+          )
+        >
+      >('taiyin_calc_house_position_from_longitude');
+  late final _taiyin_calc_house_position_from_longitude =
+      _taiyin_calc_house_position_from_longitudePtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_house_result>,
+              double,
+              ffi.Pointer<taiyin_house_position_result>,
+            )
+          >();
+
+  int taiyin_has_house_system_model(int model_id) {
+    return _taiyin_has_house_system_model(model_id);
+  }
+
+  late final _taiyin_has_house_system_modelPtr =
+      _lookup<ffi.NativeFunction<taiyin_bool Function(ffi.Int32)>>(
+        'taiyin_has_house_system_model',
+      );
+  late final _taiyin_has_house_system_model = _taiyin_has_house_system_modelPtr
+      .asFunction<int Function(int)>();
+
+  int taiyin_has_ayanamsha_model(int model_id) {
+    return _taiyin_has_ayanamsha_model(model_id);
+  }
+
+  late final _taiyin_has_ayanamsha_modelPtr =
+      _lookup<ffi.NativeFunction<taiyin_bool Function(ffi.Int32)>>(
+        'taiyin_has_ayanamsha_model',
+      );
+  late final _taiyin_has_ayanamsha_model = _taiyin_has_ayanamsha_modelPtr
+      .asFunction<int Function(int)>();
+
   void taiyin_observed_position_init(
     ffi.Pointer<taiyin_observed_position> value,
   ) {
@@ -4854,6 +5194,202 @@ final class taiyin_apparent_deflector extends ffi.Struct {
   @ffi.Double()
   external double limit;
 }
+
+sealed class taiyin_ayanamsha_id {
+  static const TAIYIN_C_AYANAMSHA_FAGAN_BRADLEY = 0;
+  static const TAIYIN_C_AYANAMSHA_LAHIRI = 1;
+  static const TAIYIN_C_AYANAMSHA_RAMAN = 3;
+  static const TAIYIN_C_AYANAMSHA_KRISHNAMURTI = 5;
+  static const TAIYIN_C_AYANAMSHA_GALACTIC_CENTER_0_SAGITTARIUS = 17;
+  static const TAIYIN_C_AYANAMSHA_TRUE_CHITRA = 27;
+}
+
+sealed class taiyin_sidereal_precession_policy {
+  static const TAIYIN_C_SIDEREAL_COMPENSATE_TO_REFERENCE = 0;
+  static const TAIYIN_C_SIDEREAL_RAW_REFERENCE_OFFSET = 1;
+  static const TAIYIN_C_SIDEREAL_USE_REFERENCE_PRECESSION = 2;
+}
+
+sealed class taiyin_house_system_id {
+  static const TAIYIN_C_HOUSE_SYSTEM_WHOLE_SIGN = 0;
+  static const TAIYIN_C_HOUSE_SYSTEM_EQUAL = 1;
+  static const TAIYIN_C_HOUSE_SYSTEM_PORPHYRY = 2;
+  static const TAIYIN_C_HOUSE_SYSTEM_PLACIDUS = 3;
+  static const TAIYIN_C_HOUSE_SYSTEM_KOCH = 4;
+  static const TAIYIN_C_HOUSE_SYSTEM_REGIOMONTANUS = 5;
+  static const TAIYIN_C_HOUSE_SYSTEM_CAMPANUS = 6;
+  static const TAIYIN_C_HOUSE_SYSTEM_ALCABITIUS = 7;
+  static const TAIYIN_C_HOUSE_SYSTEM_POLICH_PAGE = 8;
+  static const TAIYIN_C_HOUSE_SYSTEM_MORINUS = 9;
+}
+
+sealed class taiyin_house_result_flags {
+  static const TAIYIN_C_HOUSE_RESULT_USED_FALLBACK = 1;
+  static const TAIYIN_C_HOUSE_RESULT_FALLBACK_PORPHYRY = 2;
+  static const TAIYIN_C_HOUSE_RESULT_SPEED_UNAVAILABLE = 4;
+}
+
+sealed class taiyin_lunar_node_kind {
+  static const TAIYIN_C_LUNAR_NODE_ASCENDING = 0;
+  static const TAIYIN_C_LUNAR_NODE_DESCENDING = 1;
+}
+
+sealed class taiyin_lunar_apsis_definition {
+  static const TAIYIN_C_LUNAR_APSIS_DELAUNAY_MEAN = 0;
+  static const TAIYIN_C_LUNAR_APSIS_OSCULATING_TWO_BODY = 1;
+  static const TAIYIN_C_LUNAR_APSIS_DE441_FITTED_NATURAL = 2;
+}
+
+sealed class taiyin_astrology_target_id {
+  static const TAIYIN_C_ASTROLOGY_TARGET_TRUE_NODE = -100001;
+  static const TAIYIN_C_ASTROLOGY_TARGET_TRUE_DESCENDING_NODE = -100002;
+  static const TAIYIN_C_ASTROLOGY_TARGET_MEAN_NODE = -100003;
+  static const TAIYIN_C_ASTROLOGY_TARGET_MEAN_DESCENDING_NODE = -100004;
+  static const TAIYIN_C_ASTROLOGY_TARGET_MEAN_LILITH = -100005;
+  static const TAIYIN_C_ASTROLOGY_TARGET_OSCULATING_LILITH = -100006;
+  static const TAIYIN_C_ASTROLOGY_TARGET_FITTED_LILITH = -100007;
+}
+
+final class taiyin_sidereal_position extends ffi.Struct {
+  @ffi.Uint32()
+  external int struct_size;
+
+  @ffi.Double()
+  external double tropical_longitude_rad;
+
+  @ffi.Double()
+  external double sidereal_longitude_rad;
+
+  @ffi.Double()
+  external double latitude_rad;
+
+  @ffi.Double()
+  external double distance_au;
+
+  @ffi.Double()
+  external double tropical_longitude_rate_rad_per_day;
+
+  @ffi.Double()
+  external double sidereal_longitude_rate_rad_per_day;
+}
+
+final class taiyin_house_result extends ffi.Struct {
+  @ffi.Uint32()
+  external int struct_size;
+
+  @ffi.Int32()
+  external int requested_system_id;
+
+  @ffi.Int32()
+  external int resolved_system_id;
+
+  @ffi.Uint32()
+  external int flags;
+
+  @ffi.Double()
+  external double armc_rad;
+
+  @ffi.Double()
+  external double ascendant_rad;
+
+  @ffi.Double()
+  external double midheaven_rad;
+
+  @ffi.Double()
+  external double vertex_rad;
+
+  @ffi.Double()
+  external double east_point_rad;
+
+  @ffi.Double()
+  external double armc_rate_rad_per_day;
+
+  @ffi.Double()
+  external double ascendant_rate_rad_per_day;
+
+  @ffi.Double()
+  external double midheaven_rate_rad_per_day;
+
+  @ffi.Double()
+  external double vertex_rate_rad_per_day;
+
+  @ffi.Double()
+  external double east_point_rate_rad_per_day;
+
+  @ffi.Array.multi([12])
+  external ffi.Array<ffi.Double> cusp_longitude_rad;
+
+  @ffi.Array.multi([12])
+  external ffi.Array<ffi.Double> cusp_longitude_rate_rad_per_day;
+}
+
+final class taiyin_house_position_result extends ffi.Struct {
+  @ffi.Uint32()
+  external int struct_size;
+
+  @ffi.Int32()
+  external int house_number;
+
+  @ffi.Double()
+  external double fraction;
+
+  @ffi.Double()
+  external double continuous_house_position;
+}
+
+typedef taiyin_ayanamsha_evaluator_fnFunction =
+    taiyin_status Function(
+      ffi.Pointer<taiyin_context> context,
+      ffi.Double jd_tt,
+      ffi.Uint64 native_position_flags,
+      ffi.Pointer<ffi.Double> out_ayanamsha_rad,
+      ffi.Pointer<ffi.Void> user_data,
+    );
+typedef Darttaiyin_ayanamsha_evaluator_fnFunction =
+    Darttaiyin_status Function(
+      ffi.Pointer<taiyin_context> context,
+      double jd_tt,
+      int native_position_flags,
+      ffi.Pointer<ffi.Double> out_ayanamsha_rad,
+      ffi.Pointer<ffi.Void> user_data,
+    );
+typedef taiyin_ayanamsha_evaluator_fn =
+    ffi.Pointer<ffi.NativeFunction<taiyin_ayanamsha_evaluator_fnFunction>>;
+
+final class taiyin_house_system_dispatch_data extends ffi.Struct {
+  @ffi.Uint32()
+  external int struct_size;
+
+  @ffi.Double()
+  external double armc_rad;
+
+  @ffi.Double()
+  external double observer_latitude_rad;
+
+  @ffi.Double()
+  external double true_obliquity_rad;
+
+  @ffi.Double()
+  external double ascendant_rad;
+
+  @ffi.Double()
+  external double midheaven_rad;
+}
+
+typedef taiyin_house_system_evaluator_fnFunction =
+    taiyin_bool Function(
+      ffi.Pointer<taiyin_house_system_dispatch_data> data,
+      ffi.Pointer<ffi.Double> out_cusp_longitude_rad,
+      ffi.Pointer<ffi.Void> user_data,
+    );
+typedef Darttaiyin_house_system_evaluator_fnFunction =
+    Darttaiyin_bool Function(
+      ffi.Pointer<taiyin_house_system_dispatch_data> data,
+      ffi.Pointer<ffi.Double> out_cusp_longitude_rad,
+      ffi.Pointer<ffi.Void> user_data,
+    );
+typedef taiyin_house_system_evaluator_fn =
+    ffi.Pointer<ffi.NativeFunction<taiyin_house_system_evaluator_fnFunction>>;
 
 sealed class taiyin_observed_flags {
   static const TAIYIN_OBSERVED_SPEED = 1;

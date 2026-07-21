@@ -155,6 +155,43 @@ position.
 The `context.positionTt` and `context.positionUt` conveniences remain
 available and delegate to this module.
 
+## Sidereal positions and houses
+
+`context.astrology` calculates built-in ayanamshas, sidereal ecliptic
+positions, and houses. Sidereal positions always use ecliptic radians; request
+`TaiyinPositionFlag.speed` to include longitude rates. Time-based houses need
+an observer configured on the context, while `housesFromArmc` accepts explicit
+ARMC, latitude, and true obliquity. Returned house numbers are one-based.
+House cusps are a zero-indexed list of length 12: index `i` is the cusp of
+house `i + 1`.
+
+```dart
+context.configuration.setObserverLocation(
+  const TaiyinObserverLocation(
+    longitudeDegrees: 116.3833,
+    latitudeDegrees: 39.9167,
+  ),
+);
+
+final siderealMoon = context.astrology.siderealPositionAtTt(
+  TaiyinBody.moon,
+  JulianDate<TtScale>.fromDouble(2460409.0),
+  ayanamsha: TaiyinAyanamsha.lahiri,
+);
+final houses = context.astrology.housesAtUt1(
+  JulianDate<Ut1Scale>.fromDouble(2460311.0),
+  system: TaiyinHouseSystem.placidus,
+);
+final moonHouse = context.astrology.housePositionOf(
+  houses,
+  siderealMoon.value.siderealLongitudeRadians,
+);
+```
+
+The current native astrology calculations take a scalar absolute Julian date,
+so typed split Dart coordinates are intentionally quantized at the physical
+calculation boundary (about 40 microseconds near the present epoch).
+
 Custom negative target IDs can be backed by Dart evaluators. Register them once
 on the process-wide runtime before starting concurrent calculations:
 

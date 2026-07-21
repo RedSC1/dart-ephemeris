@@ -2,6 +2,7 @@
 library;
 
 export 'src/taiyin.dart';
+export 'src/astrology/astrology_models.dart';
 export 'src/context/context_models.dart';
 export 'src/observed/observed_models.dart';
 export 'src/orbital/orbital_models.dart';

@@ -59,6 +59,18 @@ const Set<String> taiyinRequiredAbi1Symbols = {
   'taiyin_calc_star_positions_ut_delta_t',
   'taiyin_calc_observed_star_ut',
   'taiyin_calc_observed_stars_ut',
+  'taiyin_sidereal_position_init',
+  'taiyin_house_result_init',
+  'taiyin_house_position_result_init',
+  'taiyin_calc_ayanamsha_tt',
+  'taiyin_calc_sidereal_position_tt',
+  'taiyin_calc_sidereal_position_ut',
+  'taiyin_calc_houses_from_armc',
+  'taiyin_calc_houses_ut',
+  'taiyin_calc_houses_tt',
+  'taiyin_calc_house_position_from_longitude',
+  'taiyin_has_house_system_model',
+  'taiyin_has_ayanamsha_model',
 };
 
 /// Validates the native metadata available before any optional symbol lookup.
