@@ -280,7 +280,7 @@ void main() {
             TaiyinRouteRule.automatic.id,
             TaiyinRouteRule.opm2.id,
             TaiyinRouteRule.spk.id,
-            TaiyinRouteRule.moshier.id,
+            TaiyinRouteRule.semiAnalytic.id,
           ],
           [0, 1, 2, 3],
         );

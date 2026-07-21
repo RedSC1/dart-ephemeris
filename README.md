@@ -123,7 +123,15 @@ C ABI, preserving sub-microsecond separation across the FFI boundary.
 `context.position` exposes single-target and batch calculations at TDB, TT, UT1,
 explicit Delta-T, and UTC inputs. Every result includes the native ephemeris
 diagnostic. Cartesian states include position in AU, velocity in AU/day, and
-acceleration in AU/day²:
+acceleration in AU/day².
+
+The automatic route prefers SPK, then OPM2, then Taiyin's built-in
+semi-analytical ephemeris before file-backed Kepler fallbacks. To select the
+built-in model explicitly, configure the context with
+`TaiyinRouteRule.semiAnalytic`. The model covers approximately calendar years
+-3000 through +3000.
+
+For example:
 
 ```dart
 final state = context.position.stateAtTt(

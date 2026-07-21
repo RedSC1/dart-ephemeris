@@ -63,7 +63,7 @@ final class TaiyinRouteRule {
   static const automatic = TaiyinRouteRule.raw(0);
   static const opm2 = TaiyinRouteRule.raw(1);
   static const spk = TaiyinRouteRule.raw(2);
-  static const moshier = TaiyinRouteRule.raw(3);
+  static const semiAnalytic = TaiyinRouteRule.raw(3);
 
   final int id;
 }
