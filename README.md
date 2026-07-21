@@ -157,13 +157,18 @@ available and delegate to this module.
 
 ## Sidereal positions and houses
 
-`context.astrology` calculates built-in ayanamshas, sidereal ecliptic
-positions, and houses. Sidereal positions always use ecliptic radians; request
-`TaiyinPositionFlag.speed` to include longitude rates. Time-based houses need
-an observer configured on the context, while `housesFromArmc` accepts explicit
-ARMC, latitude, and true obliquity. Returned house numbers are one-based.
-House cusps are a zero-indexed list of length 12: index `i` is the cusp of
-house `i + 1`.
+`context.astrology` calculates built-in ayanamshas, sidereal positions, and
+houses. `siderealPositionAtTt`/`siderealPositionAtUt1` are the compact,
+ecliptic-spherical APIs: they always use radians and intentionally reject
+equatorial and Cartesian flags. Use `siderealCoordinatesAtTt` or
+`siderealCoordinatesAtUt1` when you need `equatorial`, `xyz`, or both. Their
+result explicitly reports a mean sidereal ecliptic-of-date or
+equator-of-date frame; `noNutation` is accepted but does not alter those mean
+frames. Request `TaiyinPositionFlag.speed` to include rates. Time-based houses
+need an observer configured on the context, while `housesFromArmc` accepts
+explicit ARMC, latitude, and true obliquity. Returned house numbers are
+one-based. House cusps are a zero-indexed list of length 12: index `i` is the
+cusp of house `i + 1`.
 
 ```dart
 context.configuration.setObserverLocation(
@@ -177,6 +182,15 @@ final siderealMoon = context.astrology.siderealPositionAtTt(
   TaiyinBody.moon,
   JulianDate<TtScale>.fromDouble(2460409.0),
   ayanamsha: TaiyinAyanamsha.lahiri,
+);
+final siderealMoonRa = context.astrology.siderealCoordinatesAtTt(
+  TaiyinBody.moon,
+  JulianDate<TtScale>.fromDouble(2460409.0),
+  ayanamsha: TaiyinAyanamsha.lahiri,
+  flags: {
+    TaiyinPositionFlag.equatorial,
+    TaiyinPositionFlag.speed,
+  },
 );
 final houses = context.astrology.housesAtUt1(
   JulianDate<Ut1Scale>.fromDouble(2460311.0),

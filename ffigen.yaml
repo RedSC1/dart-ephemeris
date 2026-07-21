@@ -180,11 +180,14 @@ functions:
     - taiyin_calc_observed_star_ut
     - taiyin_calc_observed_stars_ut
     - taiyin_sidereal_position_init
+    - taiyin_sidereal_coordinates_init
     - taiyin_house_result_init
     - taiyin_house_position_result_init
     - taiyin_calc_ayanamsha_tt
     - taiyin_calc_sidereal_position_tt
     - taiyin_calc_sidereal_position_ut
+    - taiyin_calc_sidereal_coordinates_tt
+    - taiyin_calc_sidereal_coordinates_ut
     - taiyin_calc_houses_from_armc
     - taiyin_calc_houses_ut
     - taiyin_calc_houses_tt
@@ -222,6 +225,7 @@ structs:
     - taiyin_equation_of_time_result
     - taiyin_split_equation_of_time_result
     - taiyin_sidereal_position
+    - taiyin_sidereal_coordinates
     - taiyin_house_result
     - taiyin_house_position_result
 enums:

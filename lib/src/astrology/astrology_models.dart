@@ -27,6 +27,26 @@ enum TaiyinSiderealPrecessionPolicy {
   final int id;
 }
 
+/// The mean reference plane used by a generic sidereal-coordinate result.
+///
+/// The origin is sidereal in both cases: it is rotated by the selected
+/// ayanamsha and precession policy. This is deliberately distinct from a
+/// tropical [TaiyinApparentFrame].
+enum TaiyinSiderealCoordinateFrame {
+  meanEclipticOfDate(0),
+  meanEquatorOfDate(1),
+  unknown(-1);
+
+  const TaiyinSiderealCoordinateFrame(this.id);
+
+  /// Stable identifier returned by Taiyin's C ABI.
+  final int id;
+
+  static TaiyinSiderealCoordinateFrame fromId(int id) {
+    return values.where((value) => value.id == id).firstOrNull ?? unknown;
+  }
+}
+
 /// A built-in astrological house system.
 enum TaiyinHouseSystem {
   wholeSign(0),
@@ -120,6 +140,54 @@ final class TaiyinSiderealPosition {
   /// [TaiyinPositionFlag.radians] is always present. Longitude rates are
   /// available only when this set contains [TaiyinPositionFlag.speed].
   final Set<TaiyinPositionFlag> flags;
+}
+
+/// Generic sidereal coordinates in either a mean ecliptic or mean equatorial
+/// frame.
+///
+/// [values] use the usual six-value position convention. Without
+/// [TaiyinPositionFlag.xyz], values 0–2 are longitude/right ascension,
+/// latitude/declination, and distance; values 3–5 are the corresponding rates
+/// when [TaiyinPositionFlag.speed] is present. With `xyz`, they are Cartesian
+/// position and velocity. Angular spherical values are radians when
+/// [TaiyinPositionFlag.radians] is present.
+final class TaiyinSiderealCoordinates {
+  TaiyinSiderealCoordinates({
+    required this.target,
+    required this.ayanamsha,
+    required this.precessionPolicy,
+    required this.coordinateFrame,
+    required this.rawCoordinateFrameId,
+    required List<double> values,
+    required Set<TaiyinPositionFlag> flags,
+  }) : values = List.unmodifiable(values),
+       flags = Set.unmodifiable(flags) {
+    if (values.length != 6) {
+      throw ArgumentError.value(values, 'values', 'must contain six values');
+    }
+  }
+
+  final TaiyinTarget target;
+  final TaiyinAyanamsha ayanamsha;
+  final TaiyinSiderealPrecessionPolicy precessionPolicy;
+
+  /// Mean sidereal plane used by these values.
+  final TaiyinSiderealCoordinateFrame coordinateFrame;
+
+  /// Unrecognized C ABI coordinate-frame ID, if any.
+  final int rawCoordinateFrameId;
+
+  final List<double> values;
+  final Set<TaiyinPositionFlag> flags;
+
+  List<double> get coordinates => values.sublist(0, 3);
+  List<double> get rates => values.sublist(3, 6);
+  bool get isCartesian => flags.contains(TaiyinPositionFlag.xyz);
+  bool get isEquatorial => flags.contains(TaiyinPositionFlag.equatorial);
+  bool get isRadians => flags.contains(TaiyinPositionFlag.radians);
+
+  @override
+  String toString() => 'TaiyinSiderealCoordinates($values)';
 }
 
 /// Twelve house cusps and derived angular points.
