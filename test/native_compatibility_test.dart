@@ -3,12 +3,11 @@ import 'package:test/test.dart';
 
 void main() {
   group('native compatibility', () {
-    test('accepts ABI 1 with split-time and split-position support', () {
+    test('accepts ABI 1 with split-time support', () {
       expect(
         () => validateTaiyinNativeCompatibility(
           abiVersion: taiyinSupportedAbiVersion,
-          capabilities:
-              taiyinSplitTimeCapability | taiyinSplitPositionCapability,
+          capabilities: taiyinSplitTimeCapability,
         ),
         returnsNormally,
       );
@@ -34,8 +33,7 @@ void main() {
       expect(
         () => validateTaiyinNativeCompatibility(
           abiVersion: taiyinSupportedAbiVersion + 1,
-          capabilities:
-              taiyinSplitTimeCapability | taiyinSplitPositionCapability,
+          capabilities: taiyinSplitTimeCapability,
         ),
         throwsA(
           isA<StateError>().having(

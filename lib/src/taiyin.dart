@@ -45,8 +45,7 @@ enum TaiyinCapability {
   customTargets(1 << 11),
   customAyanamsha(1 << 12),
   customHouses(1 << 13),
-  splitTime(taiyinSplitTimeCapability),
-  splitPosition(taiyinSplitPositionCapability);
+  splitTime(taiyinSplitTimeCapability);
 
   const TaiyinCapability(this.mask);
 
