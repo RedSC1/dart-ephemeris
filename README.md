@@ -116,14 +116,19 @@ print(scales.diagnostic.route);
 estimation, precise conversions with caller-supplied TAI−UTC and DUT1, and
 context policy/model configuration. Calendar conversion, UTC/TAI/TT/UT1/TDB
 conversion, and aggregate time-scale results all use Taiyin's split-Julian-Date
-C ABI, preserving sub-microsecond separation across the FFI boundary.
+C ABI, preserving sub-microsecond coordinate separation across the FFI
+boundary. This is a time-coordinate guarantee, not a claim that the current
+ephemeris calculation core resolves positions or events at that scale.
 
 ## Positions and Cartesian states
 
 `context.position` exposes single-target and batch calculations at TDB, TT, UT1,
 explicit Delta-T, and UTC inputs. Every result includes the native ephemeris
 diagnostic. Cartesian states include position in AU, velocity in AU/day, and
-acceleration in AU/day².
+acceleration in AU/day². The current native position/state engine accepts one
+absolute `double` Julian date, so split Dart coordinates are intentionally
+quantized at this calculation boundary (about 40 microseconds near the present
+epoch).
 
 The automatic route prefers SPK, then OPM2, then Taiyin's built-in
 semi-analytical ephemeris before file-backed Kepler fallbacks. To select the

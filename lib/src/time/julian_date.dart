@@ -4,8 +4,10 @@ import 'time_scale.dart';
 ///
 /// Keeping the two parts separate avoids the precision loss caused by
 /// subtracting or incrementing absolute Julian dates around 2.4 million.
-/// Taiyin's split-Julian-Date C ABI preserves both parts across the FFI
-/// boundary.
+/// Taiyin's split-Julian-Date time ABI preserves both parts across the FFI
+/// boundary. Native ephemeris calculations currently use scalar Julian dates;
+/// passing a value to one of those calculations intentionally reduces it via
+/// [toDouble].
 final class JulianDate<S extends TimeScale>
     implements Comparable<JulianDate<S>> {
   const JulianDate._(this.dayNumber, this.dayFraction);

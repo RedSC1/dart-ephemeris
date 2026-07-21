@@ -37,18 +37,24 @@ the remaining astrology, visibility, event, heliacal, occultation, and eclipse
 APIs. Their Dart wrappers therefore call `JulianDate.toDouble()` at the FFI
 boundary and cannot preserve the full split representation end to end.
 
-Treat this as a separate native ABI infrastructure project rather than mixing
-it into an individual feature PR such as astrology. The work must preserve the
-existing ABI-1 symbols while defining precise calculation entry points that
-accept split Julian dates, adding native precision regressions, regenerating
-the Dart bindings, and migrating the existing calculation wrappers before the
-debt can be considered closed.
+Do not add input-only `_split` calculation wrappers as an incremental shortcut.
+The former position/state experiment was reverted because it immediately merged
+the split input to `double`: it had no numerical effect and would have implied a
+precision guarantee the native core could not make. The Dart package therefore
+uses an explicit scalar boundary for physical calculations today.
+
+An eventual migration is a native-core project, not an ABI façade project. It
+must define an internal split epoch, propagate it through evaluation and search
+algorithms, introduce split representations for time-bearing result fields, and
+only then add matching C ABI and Dart APIs. Existing ABI-1 `double` symbols
+must remain available during that transition.
 
 - [ ] Inventory every calculation entry point that accepts one or more Julian
   dates as `double`.
-- [ ] Define an ABI-compatible split-JD naming and migration policy.
-- [ ] Add native boundary and sub-millisecond precision regressions.
-- [ ] Migrate existing Dart calculation APIs away from `JulianDate.toDouble()`.
+- [ ] Define the native-core split epoch and split result-field policy.
+- [ ] Migrate one complete calculation-and-search family end to end, with
+  numerical regression coverage.
+- [ ] Add C ABI and Dart APIs only for end-to-end-migrated families.
 - [ ] Apply the same policy to newly wrapped calculation families.
 
 ## `astrology.h` — 0/27

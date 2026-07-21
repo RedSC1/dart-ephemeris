@@ -36,6 +36,12 @@ typedef _PositionStatusChecker =
 
 /// Position and Cartesian-state calculations backed by Taiyin.
 ///
+/// The current native calculation core accepts a scalar absolute Julian date.
+/// A [JulianDate] is therefore intentionally quantized at this boundary;
+/// split-JD precision remains available for calendar and time-scale operations.
+/// This will be replaced only when the native core, search algorithms, and
+/// time-bearing result types have a complete split-JD design.
+///
 /// Batch methods preserve one result and diagnostic per requested body when
 /// individual targets fail. Callers should inspect
 /// [TaiyinEphemerisDiagnostic.status] on every returned item. Failures that
