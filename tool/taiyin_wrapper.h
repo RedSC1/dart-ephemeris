@@ -2,6 +2,7 @@
 #define TAIYIN_DART_WRAPPER_H
 
 #include <taiyin/c/base.h>
+#include <taiyin/c/astrology.h>
 #include <taiyin/c/context.h>
 #include <taiyin/c/observed.h>
 #include <taiyin/c/phenomena.h>

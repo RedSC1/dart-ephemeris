@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:ffi/ffi.dart';
 
 import 'bindings/taiyin_bindings.g.dart';
+import 'astrology/astrology_models.dart';
 import 'context/context_models.dart';
 import 'interop/calendar.dart';
 import 'native_compatibility.dart';
@@ -21,6 +22,7 @@ import 'time/time_models.dart';
 import 'time/time_scale.dart';
 
 part 'context/context_api.dart';
+part 'astrology/astrology_api.dart';
 part 'observed/observed_api.dart';
 part 'orbital/orbital_api.dart';
 part 'phenomena/phenomena_api.dart';
@@ -133,6 +135,13 @@ final class TaiyinContext implements Finalizable {
         _ensureOpen,
         (status) => _checkStatus(_bindings, status),
       );
+      astrology = TaiyinAstrologyApi._(
+        _bindings,
+        _context,
+        _ensureOpen,
+        (status, diagnostic) =>
+            _checkStatus(_bindings, status, diagnostic: diagnostic),
+      );
       position = TaiyinPositionApi.internal(
         _bindings,
         _context,
@@ -237,6 +246,7 @@ final class TaiyinContext implements Finalizable {
   final NativeFinalizer _contextFinalizer;
   late final TaiyinContextConfiguration configuration;
   late final TaiyinTime time;
+  late final TaiyinAstrologyApi astrology;
   late final TaiyinPositionApi position;
   late final TaiyinObservedApi observed;
   late final TaiyinOrbitalApi orbits;

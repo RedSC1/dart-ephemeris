@@ -134,5 +134,20 @@ void main() {
         ),
       );
     });
+
+    test('reports missing astrology symbols before use', () {
+      expect(
+        () => validateTaiyinRequiredSymbols(
+          providesSymbol: (symbol) => symbol != 'taiyin_calc_houses_ut',
+        ),
+        throwsA(
+          isA<StateError>().having(
+            (error) => error.message,
+            'message',
+            contains('taiyin_calc_houses_ut'),
+          ),
+        ),
+      );
+    });
   });
 }
