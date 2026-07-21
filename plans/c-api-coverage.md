@@ -44,11 +44,17 @@ accept split Julian dates, adding native precision regressions, regenerating
 the Dart bindings, and migrating the existing calculation wrappers before the
 debt can be considered closed.
 
+Phase 1 is now landed for the position/state family: native `_split` ABI
+symbols and a capability bit exist, and the Dart position/state wrapper passes
+`JulianDate` parts directly. The native calculation core still has scalar-JD
+internal layers, so the remaining end-to-end core migration is intentionally
+tracked separately.
+
 - [ ] Inventory every calculation entry point that accepts one or more Julian
   dates as `double`.
-- [ ] Define an ABI-compatible split-JD naming and migration policy.
-- [ ] Add native boundary and sub-millisecond precision regressions.
-- [ ] Migrate existing Dart calculation APIs away from `JulianDate.toDouble()`.
+- [x] Define an ABI-compatible split-JD naming and migration policy.
+- [x] Add native boundary and sub-millisecond precision regressions.
+- [x] Migrate the Dart position/state APIs away from `JulianDate.toDouble()`.
 - [ ] Apply the same policy to newly wrapped calculation families.
 
 ## `astrology.h` — 0/27
