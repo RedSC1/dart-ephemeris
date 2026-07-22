@@ -294,7 +294,16 @@ void main() {
         );
         final trueUt1 = context.astrology.lunarTrueNodeAtUt1(
           ut1,
+          flags: physicalFlags,
+        );
+        final apparentTrueUt1 = context.astrology.lunarTrueNodeAtUt1(
+          ut1,
           flags: meanFlags,
+        );
+        final trueDescendingUt1 = context.astrology.lunarTrueNodeAtUt1(
+          ut1,
+          kind: TaiyinLunarNodeKind.descending,
+          flags: physicalFlags,
         );
         final meanAscending = context.astrology.lunarMeanNodeAtTt(
           tt,
@@ -309,6 +318,15 @@ void main() {
           ut1,
           flags: meanFlags,
         );
+        final meanDescendingUt1 = context.astrology.lunarMeanNodeAtUt1(
+          ut1,
+          kind: TaiyinLunarNodeKind.descending,
+          flags: meanFlags,
+        );
+        final meanEquatorial = context.astrology.lunarMeanNodeAtTt(
+          tt,
+          flags: {TaiyinPositionFlag.equatorial},
+        );
         final meanApogee = context.astrology.lunarMeanApogeeAtTt(
           tt,
           flags: meanFlags,
@@ -322,6 +340,8 @@ void main() {
           flags: physicalFlags,
         );
         final osculatingApogeeUt1 = context.astrology
+            .lunarOsculatingApogeeAtUt1(ut1, flags: physicalFlags);
+        final apparentOsculatingApogeeUt1 = context.astrology
             .lunarOsculatingApogeeAtUt1(ut1, flags: meanFlags);
         final fittedApogee = context.astrology.lunarFittedApogeeAtTt(
           JulianDate<TtScale>.fromDouble(2460420.5913274437),
@@ -354,6 +374,24 @@ void main() {
         );
         expect(trueAscending.diagnostic.status, 0);
         expect(trueUt1.value.longitudeRadians.isFinite, isTrue);
+        expect(
+          _normalizeSignedRadians(
+            trueUt1.value.longitudeRadians -
+                apparentTrueUt1.value.longitudeRadians,
+          ).abs(),
+          greaterThan(1e-11),
+        );
+        expect(
+          _normalizeSignedRadians(
+            trueDescendingUt1.value.longitudeRadians -
+                trueUt1.value.longitudeRadians,
+          ).abs(),
+          closeTo(math.pi, 1e-13),
+        );
+        expect(
+          trueDescendingUt1.value.longitudeRateRadiansPerDay,
+          closeTo(trueUt1.value.longitudeRateRadiansPerDay, 1e-14),
+        );
 
         expect(
           meanAscending.value.referenceFrame,
@@ -371,6 +409,17 @@ void main() {
           closeTo(math.pi, 1e-13),
         );
         expect(meanUt1.value.longitudeRadians.isFinite, isTrue);
+        expect(
+          _normalizeSignedRadians(
+            meanDescendingUt1.value.longitudeRadians -
+                meanUt1.value.longitudeRadians,
+          ).abs(),
+          closeTo(math.pi, 1e-13),
+        );
+        expect(
+          meanEquatorial.value.referenceFrame,
+          TaiyinApparentFrame.trueEquatorOfDate,
+        );
 
         expect(
           meanApogee.value.definition,
@@ -399,6 +448,13 @@ void main() {
           closeTo(182.7274859203948, 1 / 60),
         );
         expect(osculatingApogeeUt1.value.distanceAu, greaterThan(0));
+        expect(
+          _normalizeSignedRadians(
+            osculatingApogeeUt1.value.longitudeRadians -
+                apparentOsculatingApogeeUt1.value.longitudeRadians,
+          ).abs(),
+          greaterThan(1e-11),
+        );
 
         expect(
           fittedApogee.value.definition,
@@ -411,6 +467,17 @@ void main() {
           closeTo(2.927240809794924, math.pi / 180 / 60),
         );
         expect(fittedApogeeUt1.value.distanceRateAuPerDay!.isFinite, isTrue);
+        for (final status in [
+          trueUt1.diagnostic.status,
+          trueDescendingUt1.diagnostic.status,
+          meanUt1.diagnostic.status,
+          meanDescendingUt1.diagnostic.status,
+          meanApogeeUt1.diagnostic.status,
+          osculatingApogeeUt1.diagnostic.status,
+          fittedApogeeUt1.diagnostic.status,
+        ]) {
+          expect(status, 0);
+        }
 
         final extrapolated = context.astrology.lunarFittedApogeeAtTt(
           JulianDate<TtScale>.fromDouble(-3100016.5),
@@ -632,6 +699,10 @@ void main() {
           context.close();
           expect(() => context.astrology.ayanamshaAtTt(tt), throwsStateError);
           expect(() => context.astrology.housesAtUt1(ut1), throwsStateError);
+          expect(
+            () => context.astrology.lunarFittedApogeeAtTt(tt),
+            throwsStateError,
+          );
         },
       );
     },

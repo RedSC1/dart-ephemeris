@@ -266,6 +266,12 @@ final class TaiyinLunarNodePosition {
 
   /// Accepted native physical-correction and frame-selection options.
   final Set<TaiyinPositionFlag> flags;
+
+  @override
+  String toString() =>
+      'TaiyinLunarNodePosition(kind: $kind, frame: $referenceFrame, '
+      'longitudeRadians: $longitudeRadians, '
+      'longitudeRateRadiansPerDay: $longitudeRateRadiansPerDay)';
 }
 
 /// A lunar apogee direction under one explicit astronomical convention.
@@ -311,6 +317,13 @@ final class TaiyinLunarApsisPosition {
 
   /// Accepted native physical-correction and frame-selection options.
   final Set<TaiyinPositionFlag> flags;
+
+  @override
+  String toString() =>
+      'TaiyinLunarApsisPosition(definition: $definition, '
+      'frame: $referenceFrame, longitudeRadians: $longitudeRadians, '
+      'latitudeRadians: $latitudeRadians, distanceAu: $distanceAu, '
+      'extrapolated: $extrapolated)';
 }
 
 /// Twelve house cusps and derived angular points.

@@ -394,7 +394,9 @@ final class TaiyinAstrologyApi {
   /// Calculates the DE441 fitted-natural lunar apogee at TT.
   ///
   /// The result reports [TaiyinLunarApsisPosition.extrapolated] when the
-  /// requested date lies outside the fitted DE441 interval.
+  /// requested date lies outside the fitted DE441 interval. Unlike the
+  /// conventional mean apogee, it includes a physical distance and rate from
+  /// the fitted model.
   TaiyinEphemerisResult<TaiyinLunarApsisPosition> lunarFittedApogeeAtTt(
     JulianDate<TtScale> tt, {
     Set<TaiyinPositionFlag> flags = const {},
