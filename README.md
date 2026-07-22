@@ -331,6 +331,48 @@ observer location. Refraction additionally requires complete atmosphere data
 or standard-atmosphere fallback. Add `strictMeteorology` to forbid fallback.
 UTC calculations require Earth-orientation data covering the requested date.
 
+## Visibility searches
+
+`context.visibility` searches a UT1 interval for lunar, solar, planetary, and
+catalogued-star rise/set or upper/lower meridian transit. The context must have
+an observer location; rise/set searches using their default atmospheric
+refraction also require atmosphere data or a standard-atmosphere fallback.
+
+```dart
+context.configuration
+  ..setObserverLocation(
+    const TaiyinObserverLocation(
+      longitudeDegrees: 116.3833,
+      latitudeDegrees: 39.9167,
+    ),
+  )
+  ..setStandardAtmosphere();
+
+final start = JulianDate<Ut1Scale>.fromDouble(2460409.0);
+final sunrise = context.visibility.solarRiseSetAtUt1(
+  start,
+  start.add(const Duration(days: 1)),
+  event: TaiyinVisibilityEventKind.rise,
+);
+
+if (sunrise.value.coordinate case final coordinate?) {
+  print(coordinate);
+} else {
+  print(sunrise.value.altitudeState); // e.g. alwaysAbove
+}
+```
+
+Set `horizonAltitudeRadians` to use a custom geometric horizon. The default
+empty flags set means refraction; use `TaiyinVisibilityFlag.noRefraction` to
+disable it. `fixedDiscSize` is available for Sun and Moon only—physical planet
+and star searches intentionally reject it. Twilight uses
+`solarTwilightAtUt1`, while `solarRiseSetFastAtTt` and
+`solarTransitFastAtTt` provide fast approximate solar values from an explicit
+observer location. Star searches additionally require the requested key in the
+process-wide star catalog. Search result dates are scalar native outputs and
+therefore have the same roughly 40-microsecond present-epoch precision boundary
+as other physical calculations.
+
 ## Solar time and body phenomena
 
 `context.solarTime` calculates the equation of time from UT1 or TT and converts

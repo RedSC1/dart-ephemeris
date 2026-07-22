@@ -3,8 +3,8 @@
 Baseline: `taiyin-ephemeris/include/taiyin/c/*.h` on 2026-07-20.
 
 - Total callable C symbols: **317**
-- Included by the current Dart binding configuration: **196**
-- Remaining: **121**
+- Included by the current Dart binding configuration: **214**
+- Remaining: **103**
 
 `[x]` means the symbol is included in `ffigen.yaml` and its current Dart API
 block has landed. `[ ]` means it still needs a Dart binding/API decision. The
@@ -16,7 +16,7 @@ functions so ABI completeness can be tracked exactly.
 - [x] Astrology core: ayanamsha, sidereal positions, houses, house positions,
   and built-in-model queries
 - [x] Lunar points: true/mean nodes and mean/osculating/fitted apogees
-- [ ] Visibility: Sun, Moon, planet, and star rise/set/transit searches
+- [x] Visibility: Sun, Moon, planet, and star rise/set/transit searches
 - [ ] Events: longitude, station, aspect, elongation, separation, transit, and
   lunar-phase searches
 - [ ] Heliacal visibility
@@ -401,23 +401,23 @@ must remain available during that transition.
 - [x] `taiyin_make_estimated_time_scales_from_ut`
 - [x] `taiyin_make_split_estimated_time_scales_from_ut`
 
-## `visibility.h` — 0/18
+## `visibility.h` — 18/18
 
-- [ ] `taiyin_visibility_event_result_init`
-- [ ] `taiyin_solar_rise_set_fast_result_init`
-- [ ] `taiyin_solar_transit_fast_result_init`
-- [ ] `taiyin_search_moon_rise_set_ut`
-- [ ] `taiyin_search_moon_rise_set_at_horizon_ut`
-- [ ] `taiyin_search_moon_transit_ut`
-- [ ] `taiyin_search_planet_rise_set_ut`
-- [ ] `taiyin_search_planet_rise_set_at_horizon_ut`
-- [ ] `taiyin_search_planet_transit_ut`
-- [ ] `taiyin_search_solar_rise_set_ut`
-- [ ] `taiyin_search_solar_rise_set_at_horizon_ut`
-- [ ] `taiyin_search_solar_twilight_ut`
-- [ ] `taiyin_search_solar_transit_ut`
-- [ ] `taiyin_compute_solar_rise_set_fast_tt`
-- [ ] `taiyin_compute_solar_transit_fast_tt`
-- [ ] `taiyin_search_star_rise_set_ut`
-- [ ] `taiyin_search_star_rise_set_at_horizon_ut`
-- [ ] `taiyin_search_star_transit_ut`
+- [x] `taiyin_visibility_event_result_init`
+- [x] `taiyin_solar_rise_set_fast_result_init`
+- [x] `taiyin_solar_transit_fast_result_init`
+- [x] `taiyin_search_moon_rise_set_ut`
+- [x] `taiyin_search_moon_rise_set_at_horizon_ut`
+- [x] `taiyin_search_moon_transit_ut`
+- [x] `taiyin_search_planet_rise_set_ut`
+- [x] `taiyin_search_planet_rise_set_at_horizon_ut`
+- [x] `taiyin_search_planet_transit_ut`
+- [x] `taiyin_search_solar_rise_set_ut`
+- [x] `taiyin_search_solar_rise_set_at_horizon_ut`
+- [x] `taiyin_search_solar_twilight_ut`
+- [x] `taiyin_search_solar_transit_ut`
+- [x] `taiyin_compute_solar_rise_set_fast_tt`
+- [x] `taiyin_compute_solar_transit_fast_tt`
+- [x] `taiyin_search_star_rise_set_ut`
+- [x] `taiyin_search_star_rise_set_at_horizon_ut`
+- [x] `taiyin_search_star_transit_ut`

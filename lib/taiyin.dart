@@ -15,3 +15,4 @@ export 'src/time/julian_date.dart';
 export 'src/time/time_api.dart';
 export 'src/time/time_models.dart';
 export 'src/time/time_scale.dart';
+export 'src/visibility/visibility_models.dart';

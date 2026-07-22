@@ -5232,6 +5232,830 @@ class TaiyinBindings {
               ffi.Pointer<taiyin_ephemeris_diagnostic>,
             )
           >();
+
+  void taiyin_visibility_event_result_init(
+    ffi.Pointer<taiyin_visibility_event_result> value,
+  ) {
+    return _taiyin_visibility_event_result_init(value);
+  }
+
+  late final _taiyin_visibility_event_result_initPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<taiyin_visibility_event_result>)
+        >
+      >('taiyin_visibility_event_result_init');
+  late final _taiyin_visibility_event_result_init =
+      _taiyin_visibility_event_result_initPtr
+          .asFunction<
+            void Function(ffi.Pointer<taiyin_visibility_event_result>)
+          >();
+
+  void taiyin_solar_rise_set_fast_result_init(
+    ffi.Pointer<taiyin_solar_rise_set_fast_result> value,
+  ) {
+    return _taiyin_solar_rise_set_fast_result_init(value);
+  }
+
+  late final _taiyin_solar_rise_set_fast_result_initPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<taiyin_solar_rise_set_fast_result>)
+        >
+      >('taiyin_solar_rise_set_fast_result_init');
+  late final _taiyin_solar_rise_set_fast_result_init =
+      _taiyin_solar_rise_set_fast_result_initPtr
+          .asFunction<
+            void Function(ffi.Pointer<taiyin_solar_rise_set_fast_result>)
+          >();
+
+  void taiyin_solar_transit_fast_result_init(
+    ffi.Pointer<taiyin_solar_transit_fast_result> value,
+  ) {
+    return _taiyin_solar_transit_fast_result_init(value);
+  }
+
+  late final _taiyin_solar_transit_fast_result_initPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<taiyin_solar_transit_fast_result>)
+        >
+      >('taiyin_solar_transit_fast_result_init');
+  late final _taiyin_solar_transit_fast_result_init =
+      _taiyin_solar_transit_fast_result_initPtr
+          .asFunction<
+            void Function(ffi.Pointer<taiyin_solar_transit_fast_result>)
+          >();
+
+  int taiyin_search_moon_rise_set_ut(
+    ffi.Pointer<taiyin_context> context,
+    double start_jd_ut,
+    double end_jd_ut,
+    int event_kind,
+    int limb_kind,
+    int flags,
+    ffi.Pointer<taiyin_visibility_event_result> out,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_search_moon_rise_set_ut(
+      context,
+      start_jd_ut,
+      end_jd_ut,
+      event_kind,
+      limb_kind,
+      flags,
+      out,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_search_moon_rise_set_utPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Double,
+            ffi.Double,
+            ffi.Int32,
+            ffi.Int32,
+            ffi.Uint64,
+            ffi.Pointer<taiyin_visibility_event_result>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_search_moon_rise_set_ut');
+  late final _taiyin_search_moon_rise_set_ut =
+      _taiyin_search_moon_rise_set_utPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              double,
+              double,
+              int,
+              int,
+              int,
+              ffi.Pointer<taiyin_visibility_event_result>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_search_moon_rise_set_at_horizon_ut(
+    ffi.Pointer<taiyin_context> context,
+    double start_jd_ut,
+    double end_jd_ut,
+    int event_kind,
+    int limb_kind,
+    double horizon_altitude_rad,
+    int flags,
+    ffi.Pointer<taiyin_visibility_event_result> out,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_search_moon_rise_set_at_horizon_ut(
+      context,
+      start_jd_ut,
+      end_jd_ut,
+      event_kind,
+      limb_kind,
+      horizon_altitude_rad,
+      flags,
+      out,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_search_moon_rise_set_at_horizon_utPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Double,
+            ffi.Double,
+            ffi.Int32,
+            ffi.Int32,
+            ffi.Double,
+            ffi.Uint64,
+            ffi.Pointer<taiyin_visibility_event_result>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_search_moon_rise_set_at_horizon_ut');
+  late final _taiyin_search_moon_rise_set_at_horizon_ut =
+      _taiyin_search_moon_rise_set_at_horizon_utPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              double,
+              double,
+              int,
+              int,
+              double,
+              int,
+              ffi.Pointer<taiyin_visibility_event_result>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_search_moon_transit_ut(
+    ffi.Pointer<taiyin_context> context,
+    double start_jd_ut,
+    double end_jd_ut,
+    int event_kind,
+    ffi.Pointer<taiyin_visibility_event_result> out,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_search_moon_transit_ut(
+      context,
+      start_jd_ut,
+      end_jd_ut,
+      event_kind,
+      out,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_search_moon_transit_utPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Double,
+            ffi.Double,
+            ffi.Int32,
+            ffi.Pointer<taiyin_visibility_event_result>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_search_moon_transit_ut');
+  late final _taiyin_search_moon_transit_ut = _taiyin_search_moon_transit_utPtr
+      .asFunction<
+        int Function(
+          ffi.Pointer<taiyin_context>,
+          double,
+          double,
+          int,
+          ffi.Pointer<taiyin_visibility_event_result>,
+          ffi.Pointer<taiyin_ephemeris_diagnostic>,
+        )
+      >();
+
+  int taiyin_search_planet_rise_set_ut(
+    ffi.Pointer<taiyin_context> context,
+    int body_id,
+    double start_jd_ut,
+    double end_jd_ut,
+    int event_kind,
+    int limb_kind,
+    int flags,
+    ffi.Pointer<taiyin_visibility_event_result> out,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_search_planet_rise_set_ut(
+      context,
+      body_id,
+      start_jd_ut,
+      end_jd_ut,
+      event_kind,
+      limb_kind,
+      flags,
+      out,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_search_planet_rise_set_utPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Int32,
+            ffi.Double,
+            ffi.Double,
+            ffi.Int32,
+            ffi.Int32,
+            ffi.Uint64,
+            ffi.Pointer<taiyin_visibility_event_result>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_search_planet_rise_set_ut');
+  late final _taiyin_search_planet_rise_set_ut =
+      _taiyin_search_planet_rise_set_utPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              int,
+              double,
+              double,
+              int,
+              int,
+              int,
+              ffi.Pointer<taiyin_visibility_event_result>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_search_planet_rise_set_at_horizon_ut(
+    ffi.Pointer<taiyin_context> context,
+    int body_id,
+    double start_jd_ut,
+    double end_jd_ut,
+    int event_kind,
+    int limb_kind,
+    double horizon_altitude_rad,
+    int flags,
+    ffi.Pointer<taiyin_visibility_event_result> out,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_search_planet_rise_set_at_horizon_ut(
+      context,
+      body_id,
+      start_jd_ut,
+      end_jd_ut,
+      event_kind,
+      limb_kind,
+      horizon_altitude_rad,
+      flags,
+      out,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_search_planet_rise_set_at_horizon_utPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Int32,
+            ffi.Double,
+            ffi.Double,
+            ffi.Int32,
+            ffi.Int32,
+            ffi.Double,
+            ffi.Uint64,
+            ffi.Pointer<taiyin_visibility_event_result>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_search_planet_rise_set_at_horizon_ut');
+  late final _taiyin_search_planet_rise_set_at_horizon_ut =
+      _taiyin_search_planet_rise_set_at_horizon_utPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              int,
+              double,
+              double,
+              int,
+              int,
+              double,
+              int,
+              ffi.Pointer<taiyin_visibility_event_result>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_search_planet_transit_ut(
+    ffi.Pointer<taiyin_context> context,
+    int body_id,
+    double start_jd_ut,
+    double end_jd_ut,
+    int event_kind,
+    ffi.Pointer<taiyin_visibility_event_result> out,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_search_planet_transit_ut(
+      context,
+      body_id,
+      start_jd_ut,
+      end_jd_ut,
+      event_kind,
+      out,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_search_planet_transit_utPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Int32,
+            ffi.Double,
+            ffi.Double,
+            ffi.Int32,
+            ffi.Pointer<taiyin_visibility_event_result>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_search_planet_transit_ut');
+  late final _taiyin_search_planet_transit_ut =
+      _taiyin_search_planet_transit_utPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              int,
+              double,
+              double,
+              int,
+              ffi.Pointer<taiyin_visibility_event_result>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_search_solar_rise_set_ut(
+    ffi.Pointer<taiyin_context> context,
+    double start_jd_ut,
+    double end_jd_ut,
+    int event_kind,
+    int limb_kind,
+    int flags,
+    ffi.Pointer<taiyin_visibility_event_result> out,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_search_solar_rise_set_ut(
+      context,
+      start_jd_ut,
+      end_jd_ut,
+      event_kind,
+      limb_kind,
+      flags,
+      out,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_search_solar_rise_set_utPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Double,
+            ffi.Double,
+            ffi.Int32,
+            ffi.Int32,
+            ffi.Uint64,
+            ffi.Pointer<taiyin_visibility_event_result>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_search_solar_rise_set_ut');
+  late final _taiyin_search_solar_rise_set_ut =
+      _taiyin_search_solar_rise_set_utPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              double,
+              double,
+              int,
+              int,
+              int,
+              ffi.Pointer<taiyin_visibility_event_result>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_search_solar_rise_set_at_horizon_ut(
+    ffi.Pointer<taiyin_context> context,
+    double start_jd_ut,
+    double end_jd_ut,
+    int event_kind,
+    int limb_kind,
+    double horizon_altitude_rad,
+    int flags,
+    ffi.Pointer<taiyin_visibility_event_result> out,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_search_solar_rise_set_at_horizon_ut(
+      context,
+      start_jd_ut,
+      end_jd_ut,
+      event_kind,
+      limb_kind,
+      horizon_altitude_rad,
+      flags,
+      out,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_search_solar_rise_set_at_horizon_utPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Double,
+            ffi.Double,
+            ffi.Int32,
+            ffi.Int32,
+            ffi.Double,
+            ffi.Uint64,
+            ffi.Pointer<taiyin_visibility_event_result>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_search_solar_rise_set_at_horizon_ut');
+  late final _taiyin_search_solar_rise_set_at_horizon_ut =
+      _taiyin_search_solar_rise_set_at_horizon_utPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              double,
+              double,
+              int,
+              int,
+              double,
+              int,
+              ffi.Pointer<taiyin_visibility_event_result>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_search_solar_twilight_ut(
+    ffi.Pointer<taiyin_context> context,
+    double start_jd_ut,
+    double end_jd_ut,
+    int event_kind,
+    int twilight_kind,
+    ffi.Pointer<taiyin_visibility_event_result> out,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_search_solar_twilight_ut(
+      context,
+      start_jd_ut,
+      end_jd_ut,
+      event_kind,
+      twilight_kind,
+      out,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_search_solar_twilight_utPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Double,
+            ffi.Double,
+            ffi.Int32,
+            ffi.Int32,
+            ffi.Pointer<taiyin_visibility_event_result>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_search_solar_twilight_ut');
+  late final _taiyin_search_solar_twilight_ut =
+      _taiyin_search_solar_twilight_utPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              double,
+              double,
+              int,
+              int,
+              ffi.Pointer<taiyin_visibility_event_result>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_search_solar_transit_ut(
+    ffi.Pointer<taiyin_context> context,
+    double start_jd_ut,
+    double end_jd_ut,
+    int event_kind,
+    ffi.Pointer<taiyin_visibility_event_result> out,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_search_solar_transit_ut(
+      context,
+      start_jd_ut,
+      end_jd_ut,
+      event_kind,
+      out,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_search_solar_transit_utPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Double,
+            ffi.Double,
+            ffi.Int32,
+            ffi.Pointer<taiyin_visibility_event_result>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_search_solar_transit_ut');
+  late final _taiyin_search_solar_transit_ut =
+      _taiyin_search_solar_transit_utPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              double,
+              double,
+              int,
+              ffi.Pointer<taiyin_visibility_event_result>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_compute_solar_rise_set_fast_tt(
+    ffi.Pointer<taiyin_context> context,
+    double center_jd_tt,
+    double longitude_deg,
+    double latitude_deg,
+    double height_m,
+    double horizon_altitude_rad,
+    ffi.Pointer<taiyin_solar_rise_set_fast_result> out,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_compute_solar_rise_set_fast_tt(
+      context,
+      center_jd_tt,
+      longitude_deg,
+      latitude_deg,
+      height_m,
+      horizon_altitude_rad,
+      out,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_compute_solar_rise_set_fast_ttPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Double,
+            ffi.Double,
+            ffi.Double,
+            ffi.Double,
+            ffi.Double,
+            ffi.Pointer<taiyin_solar_rise_set_fast_result>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_compute_solar_rise_set_fast_tt');
+  late final _taiyin_compute_solar_rise_set_fast_tt =
+      _taiyin_compute_solar_rise_set_fast_ttPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              double,
+              double,
+              double,
+              double,
+              double,
+              ffi.Pointer<taiyin_solar_rise_set_fast_result>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_compute_solar_transit_fast_tt(
+    ffi.Pointer<taiyin_context> context,
+    double center_jd_tt,
+    double longitude_deg,
+    double latitude_deg,
+    double height_m,
+    ffi.Pointer<taiyin_solar_transit_fast_result> out,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_compute_solar_transit_fast_tt(
+      context,
+      center_jd_tt,
+      longitude_deg,
+      latitude_deg,
+      height_m,
+      out,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_compute_solar_transit_fast_ttPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Double,
+            ffi.Double,
+            ffi.Double,
+            ffi.Double,
+            ffi.Pointer<taiyin_solar_transit_fast_result>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_compute_solar_transit_fast_tt');
+  late final _taiyin_compute_solar_transit_fast_tt =
+      _taiyin_compute_solar_transit_fast_ttPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              double,
+              double,
+              double,
+              double,
+              ffi.Pointer<taiyin_solar_transit_fast_result>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_search_star_rise_set_ut(
+    ffi.Pointer<taiyin_context> context,
+    ffi.Pointer<ffi.Char> star_key,
+    double start_jd_ut,
+    double end_jd_ut,
+    int event_kind,
+    int flags,
+    ffi.Pointer<taiyin_visibility_event_result> out,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_search_star_rise_set_ut(
+      context,
+      star_key,
+      start_jd_ut,
+      end_jd_ut,
+      event_kind,
+      flags,
+      out,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_search_star_rise_set_utPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Double,
+            ffi.Double,
+            ffi.Int32,
+            ffi.Uint64,
+            ffi.Pointer<taiyin_visibility_event_result>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_search_star_rise_set_ut');
+  late final _taiyin_search_star_rise_set_ut =
+      _taiyin_search_star_rise_set_utPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              ffi.Pointer<ffi.Char>,
+              double,
+              double,
+              int,
+              int,
+              ffi.Pointer<taiyin_visibility_event_result>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_search_star_rise_set_at_horizon_ut(
+    ffi.Pointer<taiyin_context> context,
+    ffi.Pointer<ffi.Char> star_key,
+    double start_jd_ut,
+    double end_jd_ut,
+    int event_kind,
+    double horizon_altitude_rad,
+    int flags,
+    ffi.Pointer<taiyin_visibility_event_result> out,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_search_star_rise_set_at_horizon_ut(
+      context,
+      star_key,
+      start_jd_ut,
+      end_jd_ut,
+      event_kind,
+      horizon_altitude_rad,
+      flags,
+      out,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_search_star_rise_set_at_horizon_utPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Double,
+            ffi.Double,
+            ffi.Int32,
+            ffi.Double,
+            ffi.Uint64,
+            ffi.Pointer<taiyin_visibility_event_result>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_search_star_rise_set_at_horizon_ut');
+  late final _taiyin_search_star_rise_set_at_horizon_ut =
+      _taiyin_search_star_rise_set_at_horizon_utPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              ffi.Pointer<ffi.Char>,
+              double,
+              double,
+              int,
+              double,
+              int,
+              ffi.Pointer<taiyin_visibility_event_result>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_search_star_transit_ut(
+    ffi.Pointer<taiyin_context> context,
+    ffi.Pointer<ffi.Char> star_key,
+    double start_jd_ut,
+    double end_jd_ut,
+    int event_kind,
+    ffi.Pointer<taiyin_visibility_event_result> out,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_search_star_transit_ut(
+      context,
+      star_key,
+      start_jd_ut,
+      end_jd_ut,
+      event_kind,
+      out,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_search_star_transit_utPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Double,
+            ffi.Double,
+            ffi.Int32,
+            ffi.Pointer<taiyin_visibility_event_result>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_search_star_transit_ut');
+  late final _taiyin_search_star_transit_ut = _taiyin_search_star_transit_utPtr
+      .asFunction<
+        int Function(
+          ffi.Pointer<taiyin_context>,
+          ffi.Pointer<ffi.Char>,
+          double,
+          double,
+          int,
+          ffi.Pointer<taiyin_visibility_event_result>,
+          ffi.Pointer<taiyin_ephemeris_diagnostic>,
+        )
+      >();
 }
 
 typedef __int8_t = ffi.SignedChar;
@@ -6582,4 +7406,118 @@ final class taiyin_body_node_search_result extends ffi.Struct {
 
   @ffi.Int32()
   external int evaluation_count;
+}
+
+sealed class taiyin_visibility_event_kind {
+  static const TAIYIN_VISIBILITY_EVENT_RISE = 1;
+  static const TAIYIN_VISIBILITY_EVENT_SET = 2;
+  static const TAIYIN_VISIBILITY_EVENT_UPPER_TRANSIT = 3;
+  static const TAIYIN_VISIBILITY_EVENT_LOWER_TRANSIT = 4;
+}
+
+sealed class taiyin_visibility_limb_kind {
+  static const TAIYIN_VISIBILITY_LIMB_UPPER = 1;
+  static const TAIYIN_VISIBILITY_LIMB_CENTER = 2;
+  static const TAIYIN_VISIBILITY_LIMB_LOWER = 3;
+}
+
+sealed class taiyin_visibility_twilight_kind {
+  static const TAIYIN_TWILIGHT_CIVIL = 1;
+  static const TAIYIN_TWILIGHT_NAUTICAL = 2;
+  static const TAIYIN_TWILIGHT_ASTRONOMICAL = 3;
+}
+
+sealed class taiyin_visibility_altitude_state {
+  static const TAIYIN_VISIBILITY_NOT_FOUND = 0;
+  static const TAIYIN_VISIBILITY_CROSSES = 1;
+  static const TAIYIN_VISIBILITY_ALWAYS_ABOVE = 2;
+  static const TAIYIN_VISIBILITY_ALWAYS_BELOW = 3;
+  static const TAIYIN_VISIBILITY_TANGENT = 4;
+}
+
+sealed class taiyin_visibility_crossing_direction {
+  static const TAIYIN_VISIBILITY_CROSSING_ANY = 0;
+  static const TAIYIN_VISIBILITY_CROSSING_RISING = 1;
+  static const TAIYIN_VISIBILITY_CROSSING_SETTING = 2;
+}
+
+sealed class taiyin_visibility_flags {
+  static const TAIYIN_VISIBILITY_REFRACTION = 1;
+  static const TAIYIN_VISIBILITY_FIXED_DISC_SIZE = 2;
+  static const TAIYIN_VISIBILITY_NO_REFRACTION = 4;
+}
+
+final class taiyin_visibility_event_result extends ffi.Struct {
+  @ffi.Uint32()
+  external int struct_size;
+
+  @ffi.Int32()
+  external int altitude_state;
+
+  @ffi.Int32()
+  external int crossing_direction;
+
+  @ffi.Double()
+  external double jd_ut;
+
+  @ffi.Double()
+  external double residual_rad;
+
+  @ffi.Double()
+  external double min_residual_rad;
+
+  @ffi.Double()
+  external double max_residual_rad;
+
+  @ffi.Double()
+  external double min_residual_jd_ut;
+
+  @ffi.Double()
+  external double max_residual_jd_ut;
+
+  @ffi.Int32()
+  external int sample_count;
+
+  @ffi.Int32()
+  external int refine_count;
+}
+
+final class taiyin_solar_rise_set_fast_result extends ffi.Struct {
+  @ffi.Uint32()
+  external int struct_size;
+
+  @ffi.Int32()
+  external int altitude_state;
+
+  @ffi.Double()
+  external double rise_jd_tt;
+
+  @ffi.Double()
+  external double set_jd_tt;
+
+  @ffi.Int32()
+  external int sample_count;
+
+  @ffi.Int32()
+  external int refine_count;
+}
+
+final class taiyin_solar_transit_fast_result extends ffi.Struct {
+  @ffi.Uint32()
+  external int struct_size;
+
+  @ffi.Double()
+  external double transit_jd_tt;
+
+  @ffi.Double()
+  external double altitude_rad;
+
+  @ffi.Double()
+  external double azimuth_rad;
+
+  @ffi.Int32()
+  external int sample_count;
+
+  @ffi.Int32()
+  external int refine_count;
 }
