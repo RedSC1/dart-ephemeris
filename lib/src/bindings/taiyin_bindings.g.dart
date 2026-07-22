@@ -949,6 +949,40 @@ class TaiyinBindings {
             void Function(ffi.Pointer<taiyin_house_position_result>)
           >();
 
+  void taiyin_lunar_node_position_init(
+    ffi.Pointer<taiyin_lunar_node_position> arg0,
+  ) {
+    return _taiyin_lunar_node_position_init(arg0);
+  }
+
+  late final _taiyin_lunar_node_position_initPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<taiyin_lunar_node_position>)
+        >
+      >('taiyin_lunar_node_position_init');
+  late final _taiyin_lunar_node_position_init =
+      _taiyin_lunar_node_position_initPtr
+          .asFunction<void Function(ffi.Pointer<taiyin_lunar_node_position>)>();
+
+  void taiyin_lunar_apsis_position_init(
+    ffi.Pointer<taiyin_lunar_apsis_position> arg0,
+  ) {
+    return _taiyin_lunar_apsis_position_init(arg0);
+  }
+
+  late final _taiyin_lunar_apsis_position_initPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<taiyin_lunar_apsis_position>)
+        >
+      >('taiyin_lunar_apsis_position_init');
+  late final _taiyin_lunar_apsis_position_init =
+      _taiyin_lunar_apsis_position_initPtr
+          .asFunction<
+            void Function(ffi.Pointer<taiyin_lunar_apsis_position>)
+          >();
+
   int taiyin_calc_ayanamsha_tt(
     ffi.Pointer<taiyin_context> context,
     int ayanamsha_id,
@@ -1348,6 +1382,370 @@ class TaiyinBindings {
       );
   late final _taiyin_has_ayanamsha_model = _taiyin_has_ayanamsha_modelPtr
       .asFunction<int Function(int)>();
+
+  int taiyin_calc_lunar_true_node_tt(
+    ffi.Pointer<taiyin_context> arg0,
+    double arg1,
+    int arg2,
+    int arg3,
+    ffi.Pointer<taiyin_lunar_node_position> arg4,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> arg5,
+  ) {
+    return _taiyin_calc_lunar_true_node_tt(arg0, arg1, arg2, arg3, arg4, arg5);
+  }
+
+  late final _taiyin_calc_lunar_true_node_ttPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Double,
+            ffi.Int32,
+            ffi.Uint32,
+            ffi.Pointer<taiyin_lunar_node_position>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_calc_lunar_true_node_tt');
+  late final _taiyin_calc_lunar_true_node_tt =
+      _taiyin_calc_lunar_true_node_ttPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              double,
+              int,
+              int,
+              ffi.Pointer<taiyin_lunar_node_position>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_calc_lunar_true_node_ut(
+    ffi.Pointer<taiyin_context> arg0,
+    double arg1,
+    int arg2,
+    int arg3,
+    ffi.Pointer<taiyin_lunar_node_position> arg4,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> arg5,
+  ) {
+    return _taiyin_calc_lunar_true_node_ut(arg0, arg1, arg2, arg3, arg4, arg5);
+  }
+
+  late final _taiyin_calc_lunar_true_node_utPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Double,
+            ffi.Int32,
+            ffi.Uint32,
+            ffi.Pointer<taiyin_lunar_node_position>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_calc_lunar_true_node_ut');
+  late final _taiyin_calc_lunar_true_node_ut =
+      _taiyin_calc_lunar_true_node_utPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              double,
+              int,
+              int,
+              ffi.Pointer<taiyin_lunar_node_position>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_calc_lunar_mean_node_tt(
+    ffi.Pointer<taiyin_context> arg0,
+    double arg1,
+    int arg2,
+    int arg3,
+    ffi.Pointer<taiyin_lunar_node_position> arg4,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> arg5,
+  ) {
+    return _taiyin_calc_lunar_mean_node_tt(arg0, arg1, arg2, arg3, arg4, arg5);
+  }
+
+  late final _taiyin_calc_lunar_mean_node_ttPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Double,
+            ffi.Int32,
+            ffi.Uint32,
+            ffi.Pointer<taiyin_lunar_node_position>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_calc_lunar_mean_node_tt');
+  late final _taiyin_calc_lunar_mean_node_tt =
+      _taiyin_calc_lunar_mean_node_ttPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              double,
+              int,
+              int,
+              ffi.Pointer<taiyin_lunar_node_position>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_calc_lunar_mean_node_ut(
+    ffi.Pointer<taiyin_context> arg0,
+    double arg1,
+    int arg2,
+    int arg3,
+    ffi.Pointer<taiyin_lunar_node_position> arg4,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> arg5,
+  ) {
+    return _taiyin_calc_lunar_mean_node_ut(arg0, arg1, arg2, arg3, arg4, arg5);
+  }
+
+  late final _taiyin_calc_lunar_mean_node_utPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Double,
+            ffi.Int32,
+            ffi.Uint32,
+            ffi.Pointer<taiyin_lunar_node_position>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_calc_lunar_mean_node_ut');
+  late final _taiyin_calc_lunar_mean_node_ut =
+      _taiyin_calc_lunar_mean_node_utPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              double,
+              int,
+              int,
+              ffi.Pointer<taiyin_lunar_node_position>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_calc_lunar_mean_apogee_tt(
+    ffi.Pointer<taiyin_context> arg0,
+    double arg1,
+    int arg2,
+    ffi.Pointer<taiyin_lunar_apsis_position> arg3,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> arg4,
+  ) {
+    return _taiyin_calc_lunar_mean_apogee_tt(arg0, arg1, arg2, arg3, arg4);
+  }
+
+  late final _taiyin_calc_lunar_mean_apogee_ttPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Double,
+            ffi.Uint32,
+            ffi.Pointer<taiyin_lunar_apsis_position>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_calc_lunar_mean_apogee_tt');
+  late final _taiyin_calc_lunar_mean_apogee_tt =
+      _taiyin_calc_lunar_mean_apogee_ttPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              double,
+              int,
+              ffi.Pointer<taiyin_lunar_apsis_position>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_calc_lunar_mean_apogee_ut(
+    ffi.Pointer<taiyin_context> arg0,
+    double arg1,
+    int arg2,
+    ffi.Pointer<taiyin_lunar_apsis_position> arg3,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> arg4,
+  ) {
+    return _taiyin_calc_lunar_mean_apogee_ut(arg0, arg1, arg2, arg3, arg4);
+  }
+
+  late final _taiyin_calc_lunar_mean_apogee_utPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Double,
+            ffi.Uint32,
+            ffi.Pointer<taiyin_lunar_apsis_position>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_calc_lunar_mean_apogee_ut');
+  late final _taiyin_calc_lunar_mean_apogee_ut =
+      _taiyin_calc_lunar_mean_apogee_utPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              double,
+              int,
+              ffi.Pointer<taiyin_lunar_apsis_position>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_calc_lunar_osculating_apogee_tt(
+    ffi.Pointer<taiyin_context> arg0,
+    double arg1,
+    int arg2,
+    ffi.Pointer<taiyin_lunar_apsis_position> arg3,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> arg4,
+  ) {
+    return _taiyin_calc_lunar_osculating_apogee_tt(
+      arg0,
+      arg1,
+      arg2,
+      arg3,
+      arg4,
+    );
+  }
+
+  late final _taiyin_calc_lunar_osculating_apogee_ttPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Double,
+            ffi.Uint32,
+            ffi.Pointer<taiyin_lunar_apsis_position>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_calc_lunar_osculating_apogee_tt');
+  late final _taiyin_calc_lunar_osculating_apogee_tt =
+      _taiyin_calc_lunar_osculating_apogee_ttPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              double,
+              int,
+              ffi.Pointer<taiyin_lunar_apsis_position>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_calc_lunar_osculating_apogee_ut(
+    ffi.Pointer<taiyin_context> arg0,
+    double arg1,
+    int arg2,
+    ffi.Pointer<taiyin_lunar_apsis_position> arg3,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> arg4,
+  ) {
+    return _taiyin_calc_lunar_osculating_apogee_ut(
+      arg0,
+      arg1,
+      arg2,
+      arg3,
+      arg4,
+    );
+  }
+
+  late final _taiyin_calc_lunar_osculating_apogee_utPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Double,
+            ffi.Uint32,
+            ffi.Pointer<taiyin_lunar_apsis_position>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_calc_lunar_osculating_apogee_ut');
+  late final _taiyin_calc_lunar_osculating_apogee_ut =
+      _taiyin_calc_lunar_osculating_apogee_utPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              double,
+              int,
+              ffi.Pointer<taiyin_lunar_apsis_position>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_calc_lunar_fitted_apogee_tt(
+    ffi.Pointer<taiyin_context> arg0,
+    double arg1,
+    int arg2,
+    ffi.Pointer<taiyin_lunar_apsis_position> arg3,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> arg4,
+  ) {
+    return _taiyin_calc_lunar_fitted_apogee_tt(arg0, arg1, arg2, arg3, arg4);
+  }
+
+  late final _taiyin_calc_lunar_fitted_apogee_ttPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Double,
+            ffi.Uint32,
+            ffi.Pointer<taiyin_lunar_apsis_position>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_calc_lunar_fitted_apogee_tt');
+  late final _taiyin_calc_lunar_fitted_apogee_tt =
+      _taiyin_calc_lunar_fitted_apogee_ttPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              double,
+              int,
+              ffi.Pointer<taiyin_lunar_apsis_position>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_calc_lunar_fitted_apogee_ut(
+    ffi.Pointer<taiyin_context> arg0,
+    double arg1,
+    int arg2,
+    ffi.Pointer<taiyin_lunar_apsis_position> arg3,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> arg4,
+  ) {
+    return _taiyin_calc_lunar_fitted_apogee_ut(arg0, arg1, arg2, arg3, arg4);
+  }
+
+  late final _taiyin_calc_lunar_fitted_apogee_utPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Double,
+            ffi.Uint32,
+            ffi.Pointer<taiyin_lunar_apsis_position>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_calc_lunar_fitted_apogee_ut');
+  late final _taiyin_calc_lunar_fitted_apogee_ut =
+      _taiyin_calc_lunar_fitted_apogee_utPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              double,
+              int,
+              ffi.Pointer<taiyin_lunar_apsis_position>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
 
   void taiyin_observed_position_init(
     ffi.Pointer<taiyin_observed_position> value,
@@ -5477,6 +5875,55 @@ final class taiyin_house_position_result extends ffi.Struct {
 
   @ffi.Double()
   external double continuous_house_position;
+}
+
+final class taiyin_lunar_node_position extends ffi.Struct {
+  @ffi.Uint32()
+  external int struct_size;
+
+  @ffi.Int32()
+  external int reference_frame_id;
+
+  @ffi.Double()
+  external double longitude_rad;
+
+  @ffi.Double()
+  external double longitude_rate_rad_per_day;
+}
+
+final class taiyin_lunar_apsis_position extends ffi.Struct {
+  @ffi.Uint32()
+  external int struct_size;
+
+  @ffi.Int32()
+  external int reference_frame_id;
+
+  @ffi.Int32()
+  external int definition;
+
+  @ffi.Double()
+  external double longitude_rad;
+
+  @ffi.Double()
+  external double latitude_rad;
+
+  @ffi.Double()
+  external double longitude_rate_rad_per_day;
+
+  @ffi.Double()
+  external double latitude_rate_rad_per_day;
+
+  @ffi.Double()
+  external double distance_au;
+
+  @ffi.Double()
+  external double distance_rate_au_per_day;
+
+  @ffi.Uint8()
+  external int extrapolated;
+
+  @ffi.Array.multi([7])
+  external ffi.Array<ffi.Uint8> reserved;
 }
 
 typedef taiyin_ayanamsha_evaluator_fnFunction =

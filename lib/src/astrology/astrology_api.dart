@@ -14,6 +14,18 @@ typedef _SiderealCoordinatesCalculation =
       Pointer<taiyin_sidereal_coordinates> output,
       Pointer<taiyin_ephemeris_diagnostic> diagnostic,
     );
+typedef _LunarNodeCalculation =
+    int Function(
+      int flags,
+      Pointer<taiyin_lunar_node_position> output,
+      Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+    );
+typedef _LunarApsisCalculation =
+    int Function(
+      int flags,
+      Pointer<taiyin_lunar_apsis_position> output,
+      Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+    );
 typedef _HouseCalculation = int Function(Pointer<taiyin_house_result> output);
 
 /// Sidereal coordinates and astrological house calculations.
@@ -196,6 +208,232 @@ final class TaiyinAstrologyApi {
     );
   }
 
+  /// Calculates the geocentric osculating ("true") lunar node at TT.
+  ///
+  /// The result is an angular direction, not a Cartesian body position. It
+  /// accepts apparent-correction flags such as `truePosition` and frame
+  /// selection through `equatorial` / `noNutation`; it always returns radians
+  /// and radians per day, so `radians` and `speed` are not accepted.
+  TaiyinEphemerisResult<TaiyinLunarNodePosition> lunarTrueNodeAtTt(
+    JulianDate<TtScale> tt, {
+    TaiyinLunarNodeKind kind = TaiyinLunarNodeKind.ascending,
+    Set<TaiyinPositionFlag> flags = const {},
+  }) {
+    _ensureOpen();
+    final resolvedFlags = _lunarPhysicalFlags(flags, 'lunar true node');
+    return _lunarNode(
+      kind,
+      resolvedFlags,
+      (mask, output, diagnostic) => _bindings.taiyin_calc_lunar_true_node_tt(
+        _context,
+        tt.toDouble(),
+        kind.id,
+        mask,
+        output,
+        diagnostic,
+      ),
+    );
+  }
+
+  /// Calculates the geocentric osculating ("true") lunar node at UT1.
+  ///
+  /// See [lunarTrueNodeAtTt] for the result and flag contract.
+  TaiyinEphemerisResult<TaiyinLunarNodePosition> lunarTrueNodeAtUt1(
+    JulianDate<Ut1Scale> ut1, {
+    TaiyinLunarNodeKind kind = TaiyinLunarNodeKind.ascending,
+    Set<TaiyinPositionFlag> flags = const {},
+  }) {
+    _ensureOpen();
+    final resolvedFlags = _lunarPhysicalFlags(flags, 'lunar true node');
+    return _lunarNode(
+      kind,
+      resolvedFlags,
+      (mask, output, diagnostic) => _bindings.taiyin_calc_lunar_true_node_ut(
+        _context,
+        ut1.toDouble(),
+        kind.id,
+        mask,
+        output,
+        diagnostic,
+      ),
+    );
+  }
+
+  /// Calculates the IERS 2003 conventional mean lunar node at TT.
+  ///
+  /// This is a mean-model direction, so only `equatorial` and `noNutation`
+  /// select its output frame; physical apparent-correction flags do not apply.
+  TaiyinEphemerisResult<TaiyinLunarNodePosition> lunarMeanNodeAtTt(
+    JulianDate<TtScale> tt, {
+    TaiyinLunarNodeKind kind = TaiyinLunarNodeKind.ascending,
+    Set<TaiyinPositionFlag> flags = const {},
+  }) {
+    _ensureOpen();
+    final resolvedFlags = _lunarMeanFlags(flags, 'lunar mean node');
+    return _lunarNode(
+      kind,
+      resolvedFlags,
+      (mask, output, diagnostic) => _bindings.taiyin_calc_lunar_mean_node_tt(
+        _context,
+        tt.toDouble(),
+        kind.id,
+        mask,
+        output,
+        diagnostic,
+      ),
+    );
+  }
+
+  /// Calculates the IERS 2003 conventional mean lunar node at UT1.
+  ///
+  /// See [lunarMeanNodeAtTt] for the result and flag contract.
+  TaiyinEphemerisResult<TaiyinLunarNodePosition> lunarMeanNodeAtUt1(
+    JulianDate<Ut1Scale> ut1, {
+    TaiyinLunarNodeKind kind = TaiyinLunarNodeKind.ascending,
+    Set<TaiyinPositionFlag> flags = const {},
+  }) {
+    _ensureOpen();
+    final resolvedFlags = _lunarMeanFlags(flags, 'lunar mean node');
+    return _lunarNode(
+      kind,
+      resolvedFlags,
+      (mask, output, diagnostic) => _bindings.taiyin_calc_lunar_mean_node_ut(
+        _context,
+        ut1.toDouble(),
+        kind.id,
+        mask,
+        output,
+        diagnostic,
+      ),
+    );
+  }
+
+  /// Calculates the Delaunay mean lunar apogee (mean Lilith) at TT.
+  ///
+  /// This conventional direction has no physical distance, so its
+  /// [TaiyinLunarApsisPosition.distanceAu] fields are null.
+  TaiyinEphemerisResult<TaiyinLunarApsisPosition> lunarMeanApogeeAtTt(
+    JulianDate<TtScale> tt, {
+    Set<TaiyinPositionFlag> flags = const {},
+  }) {
+    _ensureOpen();
+    return _lunarApsis(
+      _lunarMeanFlags(flags, 'lunar mean apogee'),
+      (mask, output, diagnostic) => _bindings.taiyin_calc_lunar_mean_apogee_tt(
+        _context,
+        tt.toDouble(),
+        mask,
+        output,
+        diagnostic,
+      ),
+    );
+  }
+
+  /// Calculates the Delaunay mean lunar apogee (mean Lilith) at UT1.
+  ///
+  /// See [lunarMeanApogeeAtTt] for the result and flag contract.
+  TaiyinEphemerisResult<TaiyinLunarApsisPosition> lunarMeanApogeeAtUt1(
+    JulianDate<Ut1Scale> ut1, {
+    Set<TaiyinPositionFlag> flags = const {},
+  }) {
+    _ensureOpen();
+    return _lunarApsis(
+      _lunarMeanFlags(flags, 'lunar mean apogee'),
+      (mask, output, diagnostic) => _bindings.taiyin_calc_lunar_mean_apogee_ut(
+        _context,
+        ut1.toDouble(),
+        mask,
+        output,
+        diagnostic,
+      ),
+    );
+  }
+
+  /// Calculates the geocentric osculating lunar apogee at TT.
+  ///
+  /// This instantaneous two-body apoapsis is commonly called true Lilith.
+  TaiyinEphemerisResult<TaiyinLunarApsisPosition> lunarOsculatingApogeeAtTt(
+    JulianDate<TtScale> tt, {
+    Set<TaiyinPositionFlag> flags = const {},
+  }) {
+    _ensureOpen();
+    return _lunarApsis(
+      _lunarPhysicalFlags(flags, 'lunar osculating apogee'),
+      (mask, output, diagnostic) =>
+          _bindings.taiyin_calc_lunar_osculating_apogee_tt(
+            _context,
+            tt.toDouble(),
+            mask,
+            output,
+            diagnostic,
+          ),
+    );
+  }
+
+  /// Calculates the geocentric osculating lunar apogee at UT1.
+  ///
+  /// See [lunarOsculatingApogeeAtTt] for the result and flag contract.
+  TaiyinEphemerisResult<TaiyinLunarApsisPosition> lunarOsculatingApogeeAtUt1(
+    JulianDate<Ut1Scale> ut1, {
+    Set<TaiyinPositionFlag> flags = const {},
+  }) {
+    _ensureOpen();
+    return _lunarApsis(
+      _lunarPhysicalFlags(flags, 'lunar osculating apogee'),
+      (mask, output, diagnostic) =>
+          _bindings.taiyin_calc_lunar_osculating_apogee_ut(
+            _context,
+            ut1.toDouble(),
+            mask,
+            output,
+            diagnostic,
+          ),
+    );
+  }
+
+  /// Calculates the DE441 fitted-natural lunar apogee at TT.
+  ///
+  /// The result reports [TaiyinLunarApsisPosition.extrapolated] when the
+  /// requested date lies outside the fitted DE441 interval.
+  TaiyinEphemerisResult<TaiyinLunarApsisPosition> lunarFittedApogeeAtTt(
+    JulianDate<TtScale> tt, {
+    Set<TaiyinPositionFlag> flags = const {},
+  }) {
+    _ensureOpen();
+    return _lunarApsis(
+      _lunarMeanFlags(flags, 'lunar fitted apogee'),
+      (mask, output, diagnostic) =>
+          _bindings.taiyin_calc_lunar_fitted_apogee_tt(
+            _context,
+            tt.toDouble(),
+            mask,
+            output,
+            diagnostic,
+          ),
+    );
+  }
+
+  /// Calculates the DE441 fitted-natural lunar apogee at UT1.
+  ///
+  /// See [lunarFittedApogeeAtTt] for the result and flag contract.
+  TaiyinEphemerisResult<TaiyinLunarApsisPosition> lunarFittedApogeeAtUt1(
+    JulianDate<Ut1Scale> ut1, {
+    Set<TaiyinPositionFlag> flags = const {},
+  }) {
+    _ensureOpen();
+    return _lunarApsis(
+      _lunarMeanFlags(flags, 'lunar fitted apogee'),
+      (mask, output, diagnostic) =>
+          _bindings.taiyin_calc_lunar_fitted_apogee_ut(
+            _context,
+            ut1.toDouble(),
+            mask,
+            output,
+            diagnostic,
+          ),
+    );
+  }
+
   /// Calculates houses directly from ARMC, latitude, and true obliquity.
   TaiyinHouses housesFromArmc({
     required double armcRadians,
@@ -368,6 +606,69 @@ final class TaiyinAstrologyApi {
     });
   }
 
+  TaiyinEphemerisResult<TaiyinLunarNodePosition> _lunarNode(
+    TaiyinLunarNodeKind kind,
+    Set<TaiyinPositionFlag> flags,
+    _LunarNodeCalculation calculate,
+  ) {
+    return using((arena) {
+      final output = arena<taiyin_lunar_node_position>();
+      final diagnostic = arena<taiyin_ephemeris_diagnostic>();
+      _bindings
+        ..taiyin_lunar_node_position_init(output)
+        ..taiyin_ephemeris_diagnostic_init(diagnostic);
+      final status = calculate(_flagMask(flags), output, diagnostic);
+      final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
+      _checkStatus(status, mappedDiagnostic);
+      final value = output.ref;
+      return TaiyinEphemerisResult(
+        value: TaiyinLunarNodePosition(
+          kind: kind,
+          referenceFrame: TaiyinApparentFrame.fromId(value.reference_frame_id),
+          rawReferenceFrameId: value.reference_frame_id,
+          longitudeRadians: value.longitude_rad,
+          longitudeRateRadiansPerDay: value.longitude_rate_rad_per_day,
+          flags: flags,
+        ),
+        diagnostic: mappedDiagnostic,
+      );
+    });
+  }
+
+  TaiyinEphemerisResult<TaiyinLunarApsisPosition> _lunarApsis(
+    Set<TaiyinPositionFlag> flags,
+    _LunarApsisCalculation calculate,
+  ) {
+    return using((arena) {
+      final output = arena<taiyin_lunar_apsis_position>();
+      final diagnostic = arena<taiyin_ephemeris_diagnostic>();
+      _bindings
+        ..taiyin_lunar_apsis_position_init(output)
+        ..taiyin_ephemeris_diagnostic_init(diagnostic);
+      final status = calculate(_flagMask(flags), output, diagnostic);
+      final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
+      _checkStatus(status, mappedDiagnostic);
+      final value = output.ref;
+      return TaiyinEphemerisResult(
+        value: TaiyinLunarApsisPosition(
+          referenceFrame: TaiyinApparentFrame.fromId(value.reference_frame_id),
+          rawReferenceFrameId: value.reference_frame_id,
+          definition: TaiyinLunarApsisDefinition.fromId(value.definition),
+          rawDefinitionId: value.definition,
+          longitudeRadians: value.longitude_rad,
+          latitudeRadians: value.latitude_rad,
+          longitudeRateRadiansPerDay: value.longitude_rate_rad_per_day,
+          latitudeRateRadiansPerDay: value.latitude_rate_rad_per_day,
+          distanceAu: _finiteOrNull(value.distance_au),
+          distanceRateAuPerDay: _finiteOrNull(value.distance_rate_au_per_day),
+          extrapolated: value.extrapolated != 0,
+          flags: flags,
+        ),
+        diagnostic: mappedDiagnostic,
+      );
+    });
+  }
+
   TaiyinHouses _houses(_HouseCalculation calculate) {
     return using((arena) {
       final output = arena<taiyin_house_result>();
@@ -450,6 +751,46 @@ final class TaiyinAstrologyApi {
     Set<TaiyinPositionFlag> flags,
   ) => Set.unmodifiable({...flags, TaiyinPositionFlag.radians});
 
+  Set<TaiyinPositionFlag> _lunarPhysicalFlags(
+    Set<TaiyinPositionFlag> flags,
+    String calculation,
+  ) => _lunarFlags(flags, calculation, _lunarPhysicalAllowedFlags);
+
+  Set<TaiyinPositionFlag> _lunarMeanFlags(
+    Set<TaiyinPositionFlag> flags,
+    String calculation,
+  ) => _lunarFlags(flags, calculation, _lunarMeanAllowedFlags);
+
+  Set<TaiyinPositionFlag> _lunarFlags(
+    Set<TaiyinPositionFlag> flags,
+    String calculation,
+    Set<TaiyinPositionFlag> allowed,
+  ) {
+    final unsupported = flags.difference(allowed);
+    if (unsupported.isNotEmpty) {
+      final unsupportedNames = [
+        for (final flag in TaiyinPositionFlag.values)
+          if (unsupported.contains(flag)) flag.name,
+      ];
+      final allowedNames = [
+        for (final flag in TaiyinPositionFlag.values)
+          if (allowed.contains(flag)) flag.name,
+      ];
+      throw ArgumentError.value(
+        flags,
+        'flags',
+        '$calculation does not support ${unsupportedNames.join(', ')}; '
+            'allowed: ${allowedNames.join(', ')}',
+      );
+    }
+    return Set.unmodifiable(flags);
+  }
+
+  int _flagMask(Set<TaiyinPositionFlag> flags) =>
+      flags.fold(0, (value, flag) => value | flag.mask);
+
+  double? _finiteOrNull(double value) => value.isFinite ? value : null;
+
   void _requireFinite(double value, String name) {
     if (!value.isFinite) {
       throw ArgumentError.value(value, name, 'must be finite');
@@ -477,4 +818,18 @@ final class TaiyinAstrologyApi {
       );
     }
   }
+
+  static const Set<TaiyinPositionFlag> _lunarPhysicalAllowedFlags = {
+    TaiyinPositionFlag.truePosition,
+    TaiyinPositionFlag.equatorial,
+    TaiyinPositionFlag.noAberration,
+    TaiyinPositionFlag.noGravitationalDeflection,
+    TaiyinPositionFlag.astrometric,
+    TaiyinPositionFlag.noNutation,
+  };
+
+  static const Set<TaiyinPositionFlag> _lunarMeanAllowedFlags = {
+    TaiyinPositionFlag.equatorial,
+    TaiyinPositionFlag.noNutation,
+  };
 }
