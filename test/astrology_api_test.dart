@@ -126,6 +126,25 @@ void main() {
             TaiyinPositionFlag.xyz,
           },
         );
+        final meanEquatorial = context.astrology.siderealCoordinatesAtTt(
+          TaiyinBody.sun,
+          tt,
+          ayanamsha: TaiyinAyanamsha.lahiri,
+          flags: {
+            TaiyinPositionFlag.speed,
+            TaiyinPositionFlag.equatorial,
+            TaiyinPositionFlag.noNutation,
+          },
+        );
+        final faganEquatorial = context.astrology.siderealCoordinatesAtTt(
+          TaiyinBody.sun,
+          tt,
+          flags: {
+            TaiyinPositionFlag.speed,
+            TaiyinPositionFlag.equatorial,
+            TaiyinPositionFlag.radians,
+          },
+        );
         final explicitMean = context.astrology.siderealCoordinatesAtTt(
           TaiyinBody.sun,
           tt,
@@ -144,10 +163,14 @@ void main() {
         );
         expect(
           equatorial.value.coordinateFrame,
-          TaiyinSiderealCoordinateFrame.meanEquatorOfDate,
+          TaiyinSiderealCoordinateFrame.trueEquatorOfDate,
         );
         expect(
           equatorialXyz.value.coordinateFrame,
+          TaiyinSiderealCoordinateFrame.trueEquatorOfDate,
+        );
+        expect(
+          meanEquatorial.value.coordinateFrame,
           TaiyinSiderealCoordinateFrame.meanEquatorOfDate,
         );
         expect(ecliptic.value.isCartesian, isFalse);
@@ -183,6 +206,40 @@ void main() {
           ecliptic.value.values[3],
           closeTo(structured.value.siderealLongitudeRateRadiansPerDay, 1e-12),
         );
+
+        final nativeTrueEquatorial = context.positionTt(
+          TaiyinBody.sun,
+          tt,
+          flags: {
+            TaiyinPositionFlag.speed,
+            TaiyinPositionFlag.equatorial,
+            TaiyinPositionFlag.radians,
+          },
+        );
+        final nativeMeanEquatorial = context.positionTt(
+          TaiyinBody.sun,
+          tt,
+          flags: {
+            TaiyinPositionFlag.speed,
+            TaiyinPositionFlag.equatorial,
+            TaiyinPositionFlag.noNutation,
+            TaiyinPositionFlag.radians,
+          },
+        );
+        for (var index = 0; index < 6; index++) {
+          expect(
+            equatorial.value.values[index],
+            closeTo(nativeTrueEquatorial.values[index], 1e-12),
+          );
+          expect(
+            meanEquatorial.value.values[index],
+            closeTo(nativeMeanEquatorial.values[index], 1e-12),
+          );
+          expect(
+            faganEquatorial.value.values[index],
+            closeTo(equatorial.value.values[index], 1e-12),
+          );
+        }
 
         final xyz = equatorialXyz.value.coordinates;
         final xy = math.sqrt(xyz[0] * xyz[0] + xyz[1] * xyz[1]);

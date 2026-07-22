@@ -5335,6 +5335,7 @@ sealed class taiyin_sidereal_precession_policy {
 sealed class taiyin_sidereal_coordinate_frame {
   static const TAIYIN_C_SIDEREAL_FRAME_MEAN_ECLIPTIC_OF_DATE = 0;
   static const TAIYIN_C_SIDEREAL_FRAME_MEAN_EQUATOR_OF_DATE = 1;
+  static const TAIYIN_C_SIDEREAL_FRAME_TRUE_EQUATOR_OF_DATE = 2;
 }
 
 sealed class taiyin_house_system_id {

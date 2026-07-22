@@ -127,10 +127,14 @@ final class TaiyinAstrologyApi {
   ///
   /// This is the coordinate-mode counterpart to [siderealPositionAtTt]. It
   /// accepts [TaiyinPositionFlag.equatorial], [TaiyinPositionFlag.xyz], and
-  /// their combination. The result is always a mean sidereal frame: either
-  /// mean ecliptic of date, or mean equator of date with `equatorial`.
-  /// [TaiyinPositionFlag.noNutation] is therefore accepted but has no further
-  /// effect. [TaiyinPositionFlag.radians] is added automatically.
+  /// their combination. Without `equatorial`, the result is on the sidereal
+  /// mean ecliptic of date and [TaiyinPositionFlag.noNutation] has no further
+  /// effect. With `equatorial`, this follows conventional Swiss
+  /// Ephemeris-compatible behavior: the result is tropical mean equator of
+  /// date with `noNutation`, or tropical true equator of date without it, and
+  /// is independent of [ayanamsha] and [precessionPolicy].
+  /// [TaiyinPositionFlag.radians] is added automatically. Other position flags
+  /// retain their ordinary native physical-correction semantics.
   TaiyinEphemerisResult<TaiyinSiderealCoordinates> siderealCoordinatesAtTt(
     TaiyinTarget target,
     JulianDate<TtScale> tt, {

@@ -27,14 +27,15 @@ enum TaiyinSiderealPrecessionPolicy {
   final int id;
 }
 
-/// The mean reference plane used by a generic sidereal-coordinate result.
+/// The output reference frame used by a generic sidereal-coordinate result.
 ///
-/// The origin is sidereal in both cases: it is rotated by the selected
-/// ayanamsha and precession policy. This is deliberately distinct from a
-/// tropical [TaiyinApparentFrame].
+/// The ecliptic variant has a sidereal origin. Equatorial variants follow the
+/// conventional Swiss Ephemeris-compatible behavior and are tropical
+/// mean/true equators of date instead.
 enum TaiyinSiderealCoordinateFrame {
   meanEclipticOfDate(0),
   meanEquatorOfDate(1),
+  trueEquatorOfDate(2),
   unknown(-1);
 
   const TaiyinSiderealCoordinateFrame(this.id);
@@ -142,15 +143,23 @@ final class TaiyinSiderealPosition {
   final Set<TaiyinPositionFlag> flags;
 }
 
-/// Generic sidereal coordinates in either a mean ecliptic or mean equatorial
+/// Generic sidereal coordinates in a sidereal ecliptic or tropical equatorial
 /// frame.
 ///
 /// [values] use the usual six-value position convention. Without
 /// [TaiyinPositionFlag.xyz], values 0–2 are longitude/right ascension,
 /// latitude/declination, and distance; values 3–5 are the corresponding rates
 /// when [TaiyinPositionFlag.speed] is present. With `xyz`, they are Cartesian
-/// position and velocity. Angular spherical values are radians when
-/// [TaiyinPositionFlag.radians] is present.
+/// position and velocity. The Dart API always adds
+/// [TaiyinPositionFlag.radians], so angular spherical values are always in
+/// radians. Without [TaiyinPositionFlag.speed], values 3–5 are `0.0`, as in
+/// the generic native-position convention; this differs from
+/// [TaiyinSiderealPosition], whose unavailable rate fields are `double.nan`.
+/// Without
+/// [TaiyinPositionFlag.equatorial], the frame is sidereal mean ecliptic of
+/// date. With it, the result follows Swiss Ephemeris-compatible behavior:
+/// tropical mean equator of date with [TaiyinPositionFlag.noNutation], or
+/// tropical true equator of date without it.
 final class TaiyinSiderealCoordinates {
   TaiyinSiderealCoordinates({
     required this.target,
@@ -171,16 +180,25 @@ final class TaiyinSiderealCoordinates {
   final TaiyinAyanamsha ayanamsha;
   final TaiyinSiderealPrecessionPolicy precessionPolicy;
 
-  /// Mean sidereal plane used by these values.
+  /// Output coordinate frame used by these values.
   final TaiyinSiderealCoordinateFrame coordinateFrame;
 
   /// Unrecognized C ABI coordinate-frame ID, if any.
+  ///
+  /// This preserves a future native frame ID even when this Dart package has
+  /// not yet added a corresponding enum value.
   final int rawCoordinateFrameId;
 
   final List<double> values;
+
+  /// Resolved native position options for this calculation.
+  ///
+  /// This always includes [TaiyinPositionFlag.radians].
   final Set<TaiyinPositionFlag> flags;
 
   List<double> get coordinates => values.sublist(0, 3);
+
+  /// Velocity or angular-rate slots, or three `0.0` values without `speed`.
   List<double> get rates => values.sublist(3, 6);
   bool get isCartesian => flags.contains(TaiyinPositionFlag.xyz);
   bool get isEquatorial => flags.contains(TaiyinPositionFlag.equatorial);

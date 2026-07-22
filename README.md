@@ -162,10 +162,13 @@ houses. `siderealPositionAtTt`/`siderealPositionAtUt1` are the compact,
 ecliptic-spherical APIs: they always use radians and intentionally reject
 equatorial and Cartesian flags. Use `siderealCoordinatesAtTt` or
 `siderealCoordinatesAtUt1` when you need `equatorial`, `xyz`, or both. Their
-result explicitly reports a mean sidereal ecliptic-of-date or
-equator-of-date frame; `noNutation` is accepted but does not alter those mean
-frames. Request `TaiyinPositionFlag.speed` to include rates. Time-based houses
-need an observer configured on the context, while `housesFromArmc` accepts
+result explicitly reports a sidereal mean ecliptic-of-date frame, or—with
+`equatorial`—a Swiss Ephemeris-compatible tropical mean/true equator-of-date
+frame. `noNutation` has no effect on the sidereal ecliptic path; on the
+equatorial path it selects the mean rather than true equator; ayanamsha and
+sidereal precession policy do not affect that path. Request
+`TaiyinPositionFlag.speed` to include rates. Time-based houses need an observer
+configured on the context, while `housesFromArmc` accepts
 explicit ARMC, latitude, and true obliquity. Returned house numbers are
 one-based. House cusps are a zero-indexed list of length 12: index `i` is the
 cusp of house `i + 1`.
