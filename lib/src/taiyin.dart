@@ -21,6 +21,7 @@ import 'time/julian_date.dart';
 import 'time/time_api.dart';
 import 'time/time_models.dart';
 import 'time/time_scale.dart';
+import 'visibility/visibility_models.dart';
 
 part 'context/context_api.dart';
 part 'astrology/astrology_api.dart';
@@ -31,6 +32,7 @@ part 'position/custom_target_api.dart';
 part 'runtime/runtime_api.dart';
 part 'solar_time/solar_time_api.dart';
 part 'star/star_api.dart';
+part 'visibility/visibility_api.dart';
 
 /// A feature module reported by the loaded Taiyin native library.
 enum TaiyinCapability {
@@ -182,6 +184,13 @@ final class TaiyinContext implements Finalizable {
         (status, diagnostic) =>
             _checkStatus(_bindings, status, diagnostic: diagnostic),
       );
+      visibility = TaiyinVisibilityApi._(
+        _bindings,
+        _context,
+        _ensureOpen,
+        (status, diagnostic) =>
+            _checkStatus(_bindings, status, diagnostic: diagnostic),
+      );
       stars = TaiyinStarApi._(
         _bindings,
         _context,
@@ -253,6 +262,7 @@ final class TaiyinContext implements Finalizable {
   late final TaiyinOrbitalApi orbits;
   late final TaiyinPhenomenaApi phenomena;
   late final TaiyinSolarTimeApi solarTime;
+  late final TaiyinVisibilityApi visibility;
   late final TaiyinStarApi stars;
   bool _closed = false;
 

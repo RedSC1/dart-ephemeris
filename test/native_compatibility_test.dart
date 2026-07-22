@@ -165,5 +165,21 @@ void main() {
         ),
       );
     });
+
+    test('reports missing visibility symbols before use', () {
+      expect(
+        () => validateTaiyinRequiredSymbols(
+          providesSymbol: (symbol) =>
+              symbol != 'taiyin_search_solar_twilight_ut',
+        ),
+        throwsA(
+          isA<StateError>().having(
+            (error) => error.message,
+            'message',
+            contains('taiyin_search_solar_twilight_ut'),
+          ),
+        ),
+      );
+    });
   });
 }

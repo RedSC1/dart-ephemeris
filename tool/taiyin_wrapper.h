@@ -12,5 +12,6 @@
 #include <taiyin/c/star.h>
 #include <taiyin/c/time.h>
 #include <taiyin/c/orbital.h>
+#include <taiyin/c/visibility.h>
 
 #endif
