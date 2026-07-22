@@ -902,6 +902,24 @@ class TaiyinBindings {
   late final _taiyin_sidereal_position_init = _taiyin_sidereal_position_initPtr
       .asFunction<void Function(ffi.Pointer<taiyin_sidereal_position>)>();
 
+  void taiyin_sidereal_coordinates_init(
+    ffi.Pointer<taiyin_sidereal_coordinates> arg0,
+  ) {
+    return _taiyin_sidereal_coordinates_init(arg0);
+  }
+
+  late final _taiyin_sidereal_coordinates_initPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<taiyin_sidereal_coordinates>)
+        >
+      >('taiyin_sidereal_coordinates_init');
+  late final _taiyin_sidereal_coordinates_init =
+      _taiyin_sidereal_coordinates_initPtr
+          .asFunction<
+            void Function(ffi.Pointer<taiyin_sidereal_coordinates>)
+          >();
+
   void taiyin_house_result_init(ffi.Pointer<taiyin_house_result> arg0) {
     return _taiyin_house_result_init(arg0);
   }
@@ -1070,6 +1088,110 @@ class TaiyinBindings {
               double,
               int,
               ffi.Pointer<taiyin_sidereal_position>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_calc_sidereal_coordinates_tt(
+    ffi.Pointer<taiyin_context> context,
+    int ayanamsha_id,
+    int precession_policy,
+    int body_id,
+    double jd_tt,
+    int position_flags,
+    ffi.Pointer<taiyin_sidereal_coordinates> out,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_calc_sidereal_coordinates_tt(
+      context,
+      ayanamsha_id,
+      precession_policy,
+      body_id,
+      jd_tt,
+      position_flags,
+      out,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_calc_sidereal_coordinates_ttPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Int32,
+            ffi.Int32,
+            ffi.Int32,
+            ffi.Double,
+            ffi.Uint32,
+            ffi.Pointer<taiyin_sidereal_coordinates>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_calc_sidereal_coordinates_tt');
+  late final _taiyin_calc_sidereal_coordinates_tt =
+      _taiyin_calc_sidereal_coordinates_ttPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              int,
+              int,
+              int,
+              double,
+              int,
+              ffi.Pointer<taiyin_sidereal_coordinates>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_calc_sidereal_coordinates_ut(
+    ffi.Pointer<taiyin_context> context,
+    int ayanamsha_id,
+    int precession_policy,
+    int body_id,
+    double jd_ut,
+    int position_flags,
+    ffi.Pointer<taiyin_sidereal_coordinates> out,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_calc_sidereal_coordinates_ut(
+      context,
+      ayanamsha_id,
+      precession_policy,
+      body_id,
+      jd_ut,
+      position_flags,
+      out,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_calc_sidereal_coordinates_utPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Int32,
+            ffi.Int32,
+            ffi.Int32,
+            ffi.Double,
+            ffi.Uint32,
+            ffi.Pointer<taiyin_sidereal_coordinates>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_calc_sidereal_coordinates_ut');
+  late final _taiyin_calc_sidereal_coordinates_ut =
+      _taiyin_calc_sidereal_coordinates_utPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              int,
+              int,
+              int,
+              double,
+              int,
+              ffi.Pointer<taiyin_sidereal_coordinates>,
               ffi.Pointer<taiyin_ephemeris_diagnostic>,
             )
           >();
@@ -5210,6 +5332,12 @@ sealed class taiyin_sidereal_precession_policy {
   static const TAIYIN_C_SIDEREAL_USE_REFERENCE_PRECESSION = 2;
 }
 
+sealed class taiyin_sidereal_coordinate_frame {
+  static const TAIYIN_C_SIDEREAL_FRAME_MEAN_ECLIPTIC_OF_DATE = 0;
+  static const TAIYIN_C_SIDEREAL_FRAME_MEAN_EQUATOR_OF_DATE = 1;
+  static const TAIYIN_C_SIDEREAL_FRAME_TRUE_EQUATOR_OF_DATE = 2;
+}
+
 sealed class taiyin_house_system_id {
   static const TAIYIN_C_HOUSE_SYSTEM_WHOLE_SIGN = 0;
   static const TAIYIN_C_HOUSE_SYSTEM_EQUAL = 1;
@@ -5271,6 +5399,20 @@ final class taiyin_sidereal_position extends ffi.Struct {
 
   @ffi.Double()
   external double sidereal_longitude_rate_rad_per_day;
+}
+
+final class taiyin_sidereal_coordinates extends ffi.Struct {
+  @ffi.Uint32()
+  external int struct_size;
+
+  @ffi.Int32()
+  external int coordinate_frame_id;
+
+  @ffi.Uint32()
+  external int position_flags;
+
+  @ffi.Array.multi([6])
+  external ffi.Array<ffi.Double> values;
 }
 
 final class taiyin_house_result extends ffi.Struct {

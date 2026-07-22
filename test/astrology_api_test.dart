@@ -97,6 +97,186 @@ void main() {
         expect(fromUt1.value.siderealLongitudeRateRadiansPerDay.isNaN, isTrue);
       });
 
+      test('supports generic sidereal ecliptic, equatorial, and XYZ modes', () {
+        final structured = context.astrology.siderealPositionAtTt(
+          TaiyinBody.sun,
+          tt,
+          ayanamsha: TaiyinAyanamsha.lahiri,
+          flags: {TaiyinPositionFlag.speed},
+        );
+        final ecliptic = context.astrology.siderealCoordinatesAtTt(
+          TaiyinBody.sun,
+          tt,
+          ayanamsha: TaiyinAyanamsha.lahiri,
+          flags: {TaiyinPositionFlag.speed},
+        );
+        final equatorial = context.astrology.siderealCoordinatesAtTt(
+          TaiyinBody.sun,
+          tt,
+          ayanamsha: TaiyinAyanamsha.lahiri,
+          flags: {TaiyinPositionFlag.speed, TaiyinPositionFlag.equatorial},
+        );
+        final equatorialXyz = context.astrology.siderealCoordinatesAtTt(
+          TaiyinBody.sun,
+          tt,
+          ayanamsha: TaiyinAyanamsha.lahiri,
+          flags: {
+            TaiyinPositionFlag.speed,
+            TaiyinPositionFlag.equatorial,
+            TaiyinPositionFlag.xyz,
+          },
+        );
+        final meanEquatorial = context.astrology.siderealCoordinatesAtTt(
+          TaiyinBody.sun,
+          tt,
+          ayanamsha: TaiyinAyanamsha.lahiri,
+          flags: {
+            TaiyinPositionFlag.speed,
+            TaiyinPositionFlag.equatorial,
+            TaiyinPositionFlag.noNutation,
+          },
+        );
+        final faganEquatorial = context.astrology.siderealCoordinatesAtTt(
+          TaiyinBody.sun,
+          tt,
+          flags: {
+            TaiyinPositionFlag.speed,
+            TaiyinPositionFlag.equatorial,
+            TaiyinPositionFlag.radians,
+          },
+        );
+        final explicitMean = context.astrology.siderealCoordinatesAtTt(
+          TaiyinBody.sun,
+          tt,
+          ayanamsha: TaiyinAyanamsha.lahiri,
+          flags: {TaiyinPositionFlag.noNutation},
+        );
+        final genericUt1 = context.astrology.siderealCoordinatesAtUt1(
+          TaiyinBody.sun,
+          ut1,
+          flags: {TaiyinPositionFlag.xyz},
+        );
+
+        expect(
+          ecliptic.value.coordinateFrame,
+          TaiyinSiderealCoordinateFrame.meanEclipticOfDate,
+        );
+        expect(
+          equatorial.value.coordinateFrame,
+          TaiyinSiderealCoordinateFrame.trueEquatorOfDate,
+        );
+        expect(
+          equatorialXyz.value.coordinateFrame,
+          TaiyinSiderealCoordinateFrame.trueEquatorOfDate,
+        );
+        expect(
+          meanEquatorial.value.coordinateFrame,
+          TaiyinSiderealCoordinateFrame.meanEquatorOfDate,
+        );
+        expect(ecliptic.value.isCartesian, isFalse);
+        expect(ecliptic.value.isEquatorial, isFalse);
+        expect(equatorial.value.isCartesian, isFalse);
+        expect(equatorial.value.isEquatorial, isTrue);
+        expect(equatorialXyz.value.isCartesian, isTrue);
+        expect(equatorialXyz.value.isEquatorial, isTrue);
+        expect(
+          equatorialXyz.value.flags,
+          containsAll({
+            TaiyinPositionFlag.speed,
+            TaiyinPositionFlag.equatorial,
+            TaiyinPositionFlag.xyz,
+            TaiyinPositionFlag.radians,
+          }),
+        );
+        expect(ecliptic.value.values, hasLength(6));
+        expect(ecliptic.value.values.every((value) => value.isFinite), isTrue);
+        expect(
+          ecliptic.value.values[0],
+          closeTo(structured.value.siderealLongitudeRadians, 1e-12),
+        );
+        expect(
+          ecliptic.value.values[1],
+          closeTo(structured.value.latitudeRadians, 1e-12),
+        );
+        expect(
+          ecliptic.value.values[2],
+          closeTo(structured.value.distanceAu, 1e-12),
+        );
+        expect(
+          ecliptic.value.values[3],
+          closeTo(structured.value.siderealLongitudeRateRadiansPerDay, 1e-12),
+        );
+
+        final nativeTrueEquatorial = context.positionTt(
+          TaiyinBody.sun,
+          tt,
+          flags: {
+            TaiyinPositionFlag.speed,
+            TaiyinPositionFlag.equatorial,
+            TaiyinPositionFlag.radians,
+          },
+        );
+        final nativeMeanEquatorial = context.positionTt(
+          TaiyinBody.sun,
+          tt,
+          flags: {
+            TaiyinPositionFlag.speed,
+            TaiyinPositionFlag.equatorial,
+            TaiyinPositionFlag.noNutation,
+            TaiyinPositionFlag.radians,
+          },
+        );
+        for (var index = 0; index < 6; index++) {
+          expect(
+            equatorial.value.values[index],
+            closeTo(nativeTrueEquatorial.values[index], 1e-12),
+          );
+          expect(
+            meanEquatorial.value.values[index],
+            closeTo(nativeMeanEquatorial.values[index], 1e-12),
+          );
+          expect(
+            faganEquatorial.value.values[index],
+            closeTo(equatorial.value.values[index], 1e-12),
+          );
+        }
+
+        final xyz = equatorialXyz.value.coordinates;
+        final xy = math.sqrt(xyz[0] * xyz[0] + xyz[1] * xyz[1]);
+        expect(
+          _normalizeRadians(math.atan2(xyz[1], xyz[0])),
+          closeTo(equatorial.value.values[0], 1e-12),
+        );
+        expect(
+          math.atan2(xyz[2], xy),
+          closeTo(equatorial.value.values[1], 1e-12),
+        );
+        expect(
+          math.sqrt(xy * xy + xyz[2] * xyz[2]),
+          closeTo(equatorial.value.values[2], 1e-12),
+        );
+        expect(
+          explicitMean.value.values[0],
+          closeTo(
+            context.astrology
+                .siderealCoordinatesAtTt(
+                  TaiyinBody.sun,
+                  tt,
+                  ayanamsha: TaiyinAyanamsha.lahiri,
+                )
+                .value
+                .values[0],
+            1e-12,
+          ),
+        );
+        expect(genericUt1.value.isCartesian, isTrue);
+        expect(
+          genericUt1.value.values.every((value) => value.isFinite),
+          isTrue,
+        );
+        expect(genericUt1.diagnostic.status, 0);
+      });
+
       test('calculates and locates houses from a configured observer', () {
         context.configuration.setObserverLocation(
           const TaiyinObserverLocation(

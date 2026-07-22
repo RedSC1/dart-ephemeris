@@ -8,6 +8,12 @@ typedef _SiderealCalculation =
       Pointer<taiyin_sidereal_position> output,
       Pointer<taiyin_ephemeris_diagnostic> diagnostic,
     );
+typedef _SiderealCoordinatesCalculation =
+    int Function(
+      int flags,
+      Pointer<taiyin_sidereal_coordinates> output,
+      Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+    );
 typedef _HouseCalculation = int Function(Pointer<taiyin_house_result> output);
 
 /// Sidereal coordinates and astrological house calculations.
@@ -114,6 +120,79 @@ final class TaiyinAstrologyApi {
         output,
         diagnostic,
       ),
+    );
+  }
+
+  /// Calculates generic sidereal coordinates at TT.
+  ///
+  /// This is the coordinate-mode counterpart to [siderealPositionAtTt]. It
+  /// accepts [TaiyinPositionFlag.equatorial], [TaiyinPositionFlag.xyz], and
+  /// their combination. Without `equatorial`, the result is on the sidereal
+  /// mean ecliptic of date and [TaiyinPositionFlag.noNutation] has no further
+  /// effect. With `equatorial`, this follows conventional Swiss
+  /// Ephemeris-compatible behavior: the result is tropical mean equator of
+  /// date with `noNutation`, or tropical true equator of date without it, and
+  /// is independent of [ayanamsha] and [precessionPolicy].
+  /// [TaiyinPositionFlag.radians] is added automatically. Other position flags
+  /// retain their ordinary native physical-correction semantics.
+  TaiyinEphemerisResult<TaiyinSiderealCoordinates> siderealCoordinatesAtTt(
+    TaiyinTarget target,
+    JulianDate<TtScale> tt, {
+    TaiyinAyanamsha ayanamsha = TaiyinAyanamsha.faganBradley,
+    TaiyinSiderealPrecessionPolicy precessionPolicy =
+        TaiyinSiderealPrecessionPolicy.compensateToReference,
+    Set<TaiyinPositionFlag> flags = const {},
+  }) {
+    _ensureOpen();
+    final resolvedFlags = _genericSiderealFlags(flags);
+    return _siderealCoordinates(
+      target,
+      ayanamsha,
+      precessionPolicy,
+      resolvedFlags,
+      (mask, output, diagnostic) =>
+          _bindings.taiyin_calc_sidereal_coordinates_tt(
+            _context,
+            ayanamsha.id,
+            precessionPolicy.id,
+            target.id,
+            tt.toDouble(),
+            mask,
+            output,
+            diagnostic,
+          ),
+    );
+  }
+
+  /// Calculates generic sidereal coordinates at UT1 using the context policy.
+  ///
+  /// See [siderealCoordinatesAtTt] for coordinate-mode and frame semantics.
+  TaiyinEphemerisResult<TaiyinSiderealCoordinates> siderealCoordinatesAtUt1(
+    TaiyinTarget target,
+    JulianDate<Ut1Scale> ut1, {
+    TaiyinAyanamsha ayanamsha = TaiyinAyanamsha.faganBradley,
+    TaiyinSiderealPrecessionPolicy precessionPolicy =
+        TaiyinSiderealPrecessionPolicy.compensateToReference,
+    Set<TaiyinPositionFlag> flags = const {},
+  }) {
+    _ensureOpen();
+    final resolvedFlags = _genericSiderealFlags(flags);
+    return _siderealCoordinates(
+      target,
+      ayanamsha,
+      precessionPolicy,
+      resolvedFlags,
+      (mask, output, diagnostic) =>
+          _bindings.taiyin_calc_sidereal_coordinates_ut(
+            _context,
+            ayanamsha.id,
+            precessionPolicy.id,
+            target.id,
+            ut1.toDouble(),
+            mask,
+            output,
+            diagnostic,
+          ),
     );
   }
 
@@ -250,6 +329,45 @@ final class TaiyinAstrologyApi {
     });
   }
 
+  TaiyinEphemerisResult<TaiyinSiderealCoordinates> _siderealCoordinates(
+    TaiyinTarget target,
+    TaiyinAyanamsha ayanamsha,
+    TaiyinSiderealPrecessionPolicy precessionPolicy,
+    Set<TaiyinPositionFlag> flags,
+    _SiderealCoordinatesCalculation calculate,
+  ) {
+    return using((arena) {
+      final output = arena<taiyin_sidereal_coordinates>();
+      final diagnostic = arena<taiyin_ephemeris_diagnostic>();
+      _bindings
+        ..taiyin_sidereal_coordinates_init(output)
+        ..taiyin_ephemeris_diagnostic_init(diagnostic);
+      final mask = flags.fold(0, (value, flag) => value | flag.mask);
+      final status = calculate(mask, output, diagnostic);
+      final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
+      _checkStatus(status, mappedDiagnostic);
+      final value = output.ref;
+      final outputFlags = Set<TaiyinPositionFlag>.unmodifiable({
+        for (final flag in TaiyinPositionFlag.values)
+          if ((value.position_flags & flag.mask) != 0) flag,
+      });
+      return TaiyinEphemerisResult(
+        value: TaiyinSiderealCoordinates(
+          target: target,
+          ayanamsha: ayanamsha,
+          precessionPolicy: precessionPolicy,
+          coordinateFrame: TaiyinSiderealCoordinateFrame.fromId(
+            value.coordinate_frame_id,
+          ),
+          rawCoordinateFrameId: value.coordinate_frame_id,
+          values: [for (var index = 0; index < 6; index++) value.values[index]],
+          flags: outputFlags,
+        ),
+        diagnostic: mappedDiagnostic,
+      );
+    });
+  }
+
   TaiyinHouses _houses(_HouseCalculation calculate) {
     return using((arena) {
       final output = arena<taiyin_house_result>();
@@ -327,6 +445,10 @@ final class TaiyinAstrologyApi {
     }
     return Set.unmodifiable({...flags, TaiyinPositionFlag.radians});
   }
+
+  Set<TaiyinPositionFlag> _genericSiderealFlags(
+    Set<TaiyinPositionFlag> flags,
+  ) => Set.unmodifiable({...flags, TaiyinPositionFlag.radians});
 
   void _requireFinite(double value, String name) {
     if (!value.isFinite) {

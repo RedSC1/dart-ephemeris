@@ -2,8 +2,8 @@
 
 Baseline: `taiyin-ephemeris/include/taiyin/c/*.h` on 2026-07-20.
 
-- Total callable C symbols: **314**
-- Included by the current Dart binding configuration: **181**
+- Total callable C symbols: **317**
+- Included by the current Dart binding configuration: **184**
 - Remaining: **133**
 
 `[x]` means the symbol is included in `ffigen.yaml` and its current Dart API
@@ -57,9 +57,10 @@ must remain available during that transition.
 - [ ] Add C ABI and Dart APIs only for end-to-end-migrated families.
 - [ ] Apply the same policy to newly wrapped calculation families.
 
-## `astrology.h` — 12/27
+## `astrology.h` — 15/30
 
 - [x] `taiyin_sidereal_position_init`
+- [x] `taiyin_sidereal_coordinates_init`
 - [x] `taiyin_house_result_init`
 - [x] `taiyin_house_position_result_init`
 - [ ] `taiyin_lunar_node_position_init`
@@ -67,6 +68,8 @@ must remain available during that transition.
 - [x] `taiyin_calc_ayanamsha_tt`
 - [x] `taiyin_calc_sidereal_position_tt`
 - [x] `taiyin_calc_sidereal_position_ut`
+- [x] `taiyin_calc_sidereal_coordinates_tt`
+- [x] `taiyin_calc_sidereal_coordinates_ut`
 - [x] `taiyin_calc_houses_from_armc`
 - [x] `taiyin_calc_houses_ut`
 - [x] `taiyin_calc_houses_tt`
