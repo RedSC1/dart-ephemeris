@@ -298,11 +298,88 @@ void main() {
       expect(rise.diagnostic.status, 0);
       expect(rise.value.altitudeState, TaiyinVisibilityAltitudeState.crosses);
       expect(rise.value.coordinate, isNotNull);
+      expect(
+        rise.value.crossingDirection,
+        TaiyinVisibilityCrossingDirection.rising,
+      );
+      expect(rise.value.residualRadians.abs(), lessThan(1e-8));
+      // Deterministic regression baselines for this bundled Spica catalog and
+      // native visibility configuration.
+      expect(
+        rise.value.coordinate!.toDouble(),
+        closeTo(2460409.5787725416, 1 / JulianDate.secondsPerDay),
+      );
       expect(customRise.diagnostic.status, 0);
       expect(customRise.value.coordinate, isNotNull);
+      expect(
+        customRise.value.coordinate!.isAfter(rise.value.coordinate!),
+        isTrue,
+      );
       expect(transit.diagnostic.status, 0);
       expect(transit.value.coordinate, isNotNull);
+      expect(transit.value.residualRadians.abs(), lessThan(1e-8));
+      expect(
+        transit.value.coordinate!.toDouble(),
+        closeTo(2460408.8043549885, 1 / JulianDate.secondsPerDay),
+      );
     });
+
+    test(
+      'honors strict meteorology only for refracted visibility searches',
+      () {
+        final strictContext = runtime.createContext();
+        addTearDown(strictContext.close);
+        strictContext.configuration
+          ..setGeocentricObserver(
+            observerId: TaiyinBody.earth.id,
+            centerId: TaiyinBody.earth.id,
+          )
+          ..setObserverLocation(denver)
+          ..setAtmospherePolicy({
+            TaiyinAtmospherePolicyFlag.allowStandardFallback,
+          })
+          ..useSolarDeflector()
+          ..setApparentConfig(
+            TaiyinApparentConfig(
+              flags: const {
+                TaiyinApparentFlag.spherical,
+                TaiyinApparentFlag.lightTime,
+                TaiyinApparentFlag.aberration,
+                TaiyinApparentFlag.deflection,
+              },
+              outputFrame: TaiyinApparentFrame.trueEclipticOfDate,
+            ),
+          );
+
+        expect(
+          () => strictContext.visibility.solarRiseSetAtUt1(
+            start,
+            end,
+            event: TaiyinVisibilityEventKind.rise,
+            flags: {TaiyinVisibilityFlag.strictMeteorology},
+          ),
+          throwsA(
+            isA<TaiyinException>().having(
+              (error) => error.status,
+              'status',
+              isNot(0),
+            ),
+          ),
+        );
+
+        final unrefracted = strictContext.visibility.solarRiseSetAtUt1(
+          start,
+          end,
+          event: TaiyinVisibilityEventKind.rise,
+          flags: {
+            TaiyinVisibilityFlag.strictMeteorology,
+            TaiyinVisibilityFlag.noRefraction,
+          },
+        );
+        expect(unrefracted.diagnostic.status, 0);
+        expect(unrefracted.value.coordinate, isNotNull);
+      },
+    );
 
     test('maps no-event states and rejects invalid Dart inputs', () {
       context.configuration.setObserverLocation(
@@ -354,6 +431,15 @@ void main() {
             TaiyinVisibilityFlag.refraction,
             TaiyinVisibilityFlag.noRefraction,
           },
+        ),
+        throwsArgumentError,
+      );
+      expect(
+        () => context.visibility.starTransitAtUt1(
+          'spica\u0000suffix',
+          start,
+          end,
+          event: TaiyinVisibilityEventKind.upperTransit,
         ),
         throwsArgumentError,
       );

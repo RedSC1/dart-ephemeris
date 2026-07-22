@@ -222,6 +222,9 @@ final class TaiyinVisibilityApi {
   }
 
   /// Searches a UT1 interval for a selected morning or evening twilight.
+  ///
+  /// [TaiyinVisibilityEventKind.rise] finds morning twilight (dawn), while
+  /// [TaiyinVisibilityEventKind.set] finds evening twilight (dusk).
   TaiyinEphemerisResult<TaiyinVisibilityEvent> solarTwilightAtUt1(
     JulianDate<Ut1Scale> start,
     JulianDate<Ut1Scale> end, {
@@ -569,6 +572,13 @@ final class TaiyinVisibilityApi {
   void _requireStarKey(String starKey) {
     if (starKey.isEmpty) {
       throw ArgumentError.value(starKey, 'starKey', 'must not be empty');
+    }
+    if (starKey.contains('\u0000')) {
+      throw ArgumentError.value(
+        starKey,
+        'starKey',
+        'must not contain a NUL character',
+      );
     }
   }
 
