@@ -149,5 +149,21 @@ void main() {
         ),
       );
     });
+
+    test('reports missing lunar-point symbols before use', () {
+      expect(
+        () => validateTaiyinRequiredSymbols(
+          providesSymbol: (symbol) =>
+              symbol != 'taiyin_calc_lunar_fitted_apogee_tt',
+        ),
+        throwsA(
+          isA<StateError>().having(
+            (error) => error.message,
+            'message',
+            contains('taiyin_calc_lunar_fitted_apogee_tt'),
+          ),
+        ),
+      );
+    });
   });
 }

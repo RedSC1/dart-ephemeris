@@ -173,6 +173,14 @@ explicit ARMC, latitude, and true obliquity. Returned house numbers are
 one-based. House cusps are a zero-indexed list of length 12: index `i` is the
 cusp of house `i + 1`.
 
+The same module exposes geocentric lunar points: `lunarTrueNodeAtTt` /
+`lunarMeanNodeAtTt` (and UT1 counterparts) return ascending or descending
+node directions; `lunarMeanApogeeAtTt`, `lunarOsculatingApogeeAtTt`, and
+`lunarFittedApogeeAtTt` distinguish the conventional mean, instantaneous
+two-body, and DE441 fitted-natural apogee conventions. Their angular values
+and rates are always radians; the mean apogee has no physical distance and is
+represented with nullable distance fields.
+
 ```dart
 context.configuration.setObserverLocation(
   const TaiyinObserverLocation(

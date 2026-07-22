@@ -63,6 +63,8 @@ const Set<String> taiyinRequiredAbi1Symbols = {
   'taiyin_sidereal_coordinates_init',
   'taiyin_house_result_init',
   'taiyin_house_position_result_init',
+  'taiyin_lunar_node_position_init',
+  'taiyin_lunar_apsis_position_init',
   'taiyin_calc_ayanamsha_tt',
   'taiyin_calc_sidereal_position_tt',
   'taiyin_calc_sidereal_position_ut',
@@ -74,6 +76,16 @@ const Set<String> taiyinRequiredAbi1Symbols = {
   'taiyin_calc_house_position_from_longitude',
   'taiyin_has_house_system_model',
   'taiyin_has_ayanamsha_model',
+  'taiyin_calc_lunar_true_node_tt',
+  'taiyin_calc_lunar_true_node_ut',
+  'taiyin_calc_lunar_mean_node_tt',
+  'taiyin_calc_lunar_mean_node_ut',
+  'taiyin_calc_lunar_mean_apogee_tt',
+  'taiyin_calc_lunar_mean_apogee_ut',
+  'taiyin_calc_lunar_osculating_apogee_tt',
+  'taiyin_calc_lunar_osculating_apogee_ut',
+  'taiyin_calc_lunar_fitted_apogee_tt',
+  'taiyin_calc_lunar_fitted_apogee_ut',
 };
 
 /// Validates the native metadata available before any optional symbol lookup.

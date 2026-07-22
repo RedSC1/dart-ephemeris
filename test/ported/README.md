@@ -40,6 +40,10 @@ Dart equivalent.
   TT/UT1 routes, osculating elements and reference-point geometry, forward and
   reverse apsis/node searches, supported frames, and the upstream lunar Swiss
   event oracles.
+  `astrology_api_test.dart` covers the direct lunar-node and lunar-apogee C ABI
+  routes, their frame/definition semantics, nullable mean-apogee distance,
+  fitted-model extrapolation, and Dart-side flag contracts. Process-lifetime
+  astrology-target registration remains a separate unwrapped API.
   The remaining public modules move over as their wrappers are added.
   Static-vs-shared linkage is a native build concern and shares the same Dart
   behavior tests.
@@ -64,8 +68,7 @@ These suites map to current or planned C ABI modules:
 
 - `custom_ephemeris_method`, `global_ephemeris_runtime`,
   `discovery_descriptors`, `spk_opm2_jplephem_oracles`
-- `sidereal_astrology`, `houses_astrology`, `lunar_points_astrology`,
-  `pure_functions_full`
+- `sidereal_astrology`, `houses_astrology`, `pure_functions_full`
 - `celestial_body_registry`, `body_registry`, `dispatch_models`
 - `apparent_position_oracles`, `apparent_self_skip`
 - `event_search`

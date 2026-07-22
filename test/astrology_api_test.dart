@@ -277,6 +277,246 @@ void main() {
         expect(genericUt1.diagnostic.status, 0);
       });
 
+      test('calculates lunar nodes and explicit apogee conventions', () {
+        final meanFlags = {TaiyinPositionFlag.noNutation};
+        final physicalFlags = {
+          TaiyinPositionFlag.truePosition,
+          TaiyinPositionFlag.noNutation,
+        };
+        final trueAscending = context.astrology.lunarTrueNodeAtTt(
+          tt,
+          flags: physicalFlags,
+        );
+        final trueDescending = context.astrology.lunarTrueNodeAtTt(
+          tt,
+          kind: TaiyinLunarNodeKind.descending,
+          flags: physicalFlags,
+        );
+        final trueUt1 = context.astrology.lunarTrueNodeAtUt1(
+          ut1,
+          flags: physicalFlags,
+        );
+        final apparentTrueUt1 = context.astrology.lunarTrueNodeAtUt1(
+          ut1,
+          flags: meanFlags,
+        );
+        final trueDescendingUt1 = context.astrology.lunarTrueNodeAtUt1(
+          ut1,
+          kind: TaiyinLunarNodeKind.descending,
+          flags: physicalFlags,
+        );
+        final meanAscending = context.astrology.lunarMeanNodeAtTt(
+          tt,
+          flags: meanFlags,
+        );
+        final meanDescending = context.astrology.lunarMeanNodeAtTt(
+          tt,
+          kind: TaiyinLunarNodeKind.descending,
+          flags: meanFlags,
+        );
+        final meanUt1 = context.astrology.lunarMeanNodeAtUt1(
+          ut1,
+          flags: meanFlags,
+        );
+        final meanDescendingUt1 = context.astrology.lunarMeanNodeAtUt1(
+          ut1,
+          kind: TaiyinLunarNodeKind.descending,
+          flags: meanFlags,
+        );
+        final meanEquatorial = context.astrology.lunarMeanNodeAtTt(
+          tt,
+          flags: {TaiyinPositionFlag.equatorial},
+        );
+        final meanApogee = context.astrology.lunarMeanApogeeAtTt(
+          tt,
+          flags: meanFlags,
+        );
+        final meanApogeeUt1 = context.astrology.lunarMeanApogeeAtUt1(
+          ut1,
+          flags: meanFlags,
+        );
+        final osculatingApogee = context.astrology.lunarOsculatingApogeeAtTt(
+          tt,
+          flags: physicalFlags,
+        );
+        final osculatingApogeeUt1 = context.astrology
+            .lunarOsculatingApogeeAtUt1(ut1, flags: physicalFlags);
+        final apparentOsculatingApogeeUt1 = context.astrology
+            .lunarOsculatingApogeeAtUt1(ut1, flags: meanFlags);
+        final fittedApogee = context.astrology.lunarFittedApogeeAtTt(
+          JulianDate<TtScale>.fromDouble(2460420.5913274437),
+          flags: meanFlags,
+        );
+        final fittedApogeeUt1 = context.astrology.lunarFittedApogeeAtUt1(
+          ut1,
+          flags: meanFlags,
+        );
+
+        expect(
+          trueAscending.value.referenceFrame,
+          TaiyinApparentFrame.meanEclipticOfDate,
+        );
+        expect(trueAscending.value.kind, TaiyinLunarNodeKind.ascending);
+        expect(
+          _normalizeSignedRadians(
+            trueDescending.value.longitudeRadians -
+                trueAscending.value.longitudeRadians,
+          ).abs(),
+          closeTo(math.pi, 1e-13),
+        );
+        expect(
+          trueDescending.value.longitudeRateRadiansPerDay,
+          closeTo(trueAscending.value.longitudeRateRadiansPerDay, 1e-14),
+        );
+        expect(
+          trueAscending.value.longitudeRadians * 180 / math.pi,
+          closeTo(15.627613595150201, 0.01),
+        );
+        expect(trueAscending.diagnostic.status, 0);
+        expect(trueUt1.value.longitudeRadians.isFinite, isTrue);
+        expect(
+          _normalizeSignedRadians(
+            trueUt1.value.longitudeRadians -
+                apparentTrueUt1.value.longitudeRadians,
+          ).abs(),
+          greaterThan(1e-11),
+        );
+        expect(
+          _normalizeSignedRadians(
+            trueDescendingUt1.value.longitudeRadians -
+                trueUt1.value.longitudeRadians,
+          ).abs(),
+          closeTo(math.pi, 1e-13),
+        );
+        expect(
+          trueDescendingUt1.value.longitudeRateRadiansPerDay,
+          closeTo(trueUt1.value.longitudeRateRadiansPerDay, 1e-14),
+        );
+
+        expect(
+          meanAscending.value.referenceFrame,
+          TaiyinApparentFrame.meanEclipticOfDate,
+        );
+        expect(
+          meanAscending.value.longitudeRadians * 180 / math.pi,
+          closeTo(15.662505452962762, 1e-11),
+        );
+        expect(
+          _normalizeSignedRadians(
+            meanDescending.value.longitudeRadians -
+                meanAscending.value.longitudeRadians,
+          ).abs(),
+          closeTo(math.pi, 1e-13),
+        );
+        expect(meanUt1.value.longitudeRadians.isFinite, isTrue);
+        expect(
+          _normalizeSignedRadians(
+            meanDescendingUt1.value.longitudeRadians -
+                meanUt1.value.longitudeRadians,
+          ).abs(),
+          closeTo(math.pi, 1e-13),
+        );
+        expect(
+          meanEquatorial.value.referenceFrame,
+          TaiyinApparentFrame.trueEquatorOfDate,
+        );
+
+        expect(
+          meanApogee.value.definition,
+          TaiyinLunarApsisDefinition.delaunayMean,
+        );
+        expect(meanApogee.value.distanceAu, isNull);
+        expect(meanApogee.value.distanceRateAuPerDay, isNull);
+        expect(
+          meanApogee.value.longitudeRadians * 180 / math.pi,
+          closeTo(170.92150432407695, 1e-11),
+        );
+        expect(
+          meanApogee.value.latitudeRadians * 180 / math.pi,
+          closeTo(2.1582226032549934, 1e-11),
+        );
+        expect(meanApogeeUt1.value.distanceAu, isNull);
+
+        expect(
+          osculatingApogee.value.definition,
+          TaiyinLunarApsisDefinition.osculatingTwoBody,
+        );
+        expect(osculatingApogee.value.distanceAu, greaterThan(0));
+        expect(osculatingApogee.value.distanceRateAuPerDay!.isFinite, isTrue);
+        expect(
+          osculatingApogee.value.longitudeRadians * 180 / math.pi,
+          closeTo(182.7274859203948, 1 / 60),
+        );
+        expect(osculatingApogeeUt1.value.distanceAu, greaterThan(0));
+        expect(
+          _normalizeSignedRadians(
+            osculatingApogeeUt1.value.longitudeRadians -
+                apparentOsculatingApogeeUt1.value.longitudeRadians,
+          ).abs(),
+          greaterThan(1e-11),
+        );
+
+        expect(
+          fittedApogee.value.definition,
+          TaiyinLunarApsisDefinition.de441FittedNatural,
+        );
+        expect(fittedApogee.value.extrapolated, isFalse);
+        expect(fittedApogee.value.distanceAu, greaterThan(0));
+        expect(
+          fittedApogee.value.longitudeRadians,
+          closeTo(2.927240809794924, math.pi / 180 / 60),
+        );
+        expect(fittedApogeeUt1.value.distanceRateAuPerDay!.isFinite, isTrue);
+        for (final status in [
+          trueUt1.diagnostic.status,
+          trueDescendingUt1.diagnostic.status,
+          meanUt1.diagnostic.status,
+          meanDescendingUt1.diagnostic.status,
+          meanApogeeUt1.diagnostic.status,
+          osculatingApogeeUt1.diagnostic.status,
+          fittedApogeeUt1.diagnostic.status,
+        ]) {
+          expect(status, 0);
+        }
+
+        final extrapolated = context.astrology.lunarFittedApogeeAtTt(
+          JulianDate<TtScale>.fromDouble(-3100016.5),
+        );
+        expect(extrapolated.value.extrapolated, isTrue);
+        expect(extrapolated.value.distanceAu, greaterThan(0));
+      });
+
+      test('validates lunar-point flag contracts before native calls', () {
+        expect(
+          () => context.astrology.lunarTrueNodeAtTt(
+            tt,
+            flags: {TaiyinPositionFlag.radians},
+          ),
+          throwsArgumentError,
+        );
+        expect(
+          () => context.astrology.lunarTrueNodeAtTt(
+            tt,
+            flags: {TaiyinPositionFlag.topocentric},
+          ),
+          throwsArgumentError,
+        );
+        expect(
+          () => context.astrology.lunarMeanNodeAtTt(
+            tt,
+            flags: {TaiyinPositionFlag.truePosition},
+          ),
+          throwsArgumentError,
+        );
+        expect(
+          () => context.astrology.lunarFittedApogeeAtTt(
+            tt,
+            flags: {TaiyinPositionFlag.noAberration},
+          ),
+          throwsArgumentError,
+        );
+      });
+
       test('calculates and locates houses from a configured observer', () {
         context.configuration.setObserverLocation(
           const TaiyinObserverLocation(
@@ -459,6 +699,10 @@ void main() {
           context.close();
           expect(() => context.astrology.ayanamshaAtTt(tt), throwsStateError);
           expect(() => context.astrology.housesAtUt1(ut1), throwsStateError);
+          expect(
+            () => context.astrology.lunarFittedApogeeAtTt(tt),
+            throwsStateError,
+          );
         },
       );
     },

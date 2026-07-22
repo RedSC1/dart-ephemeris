@@ -3,8 +3,8 @@
 Baseline: `taiyin-ephemeris/include/taiyin/c/*.h` on 2026-07-20.
 
 - Total callable C symbols: **317**
-- Included by the current Dart binding configuration: **184**
-- Remaining: **133**
+- Included by the current Dart binding configuration: **196**
+- Remaining: **121**
 
 `[x]` means the symbol is included in `ffigen.yaml` and its current Dart API
 block has landed. `[ ]` means it still needs a Dart binding/API decision. The
@@ -15,7 +15,7 @@ functions so ABI completeness can be tracked exactly.
 
 - [x] Astrology core: ayanamsha, sidereal positions, houses, house positions,
   and built-in-model queries
-- [ ] Lunar points: true/mean nodes and mean/osculating/fitted apogees
+- [x] Lunar points: true/mean nodes and mean/osculating/fitted apogees
 - [ ] Visibility: Sun, Moon, planet, and star rise/set/transit searches
 - [ ] Events: longitude, station, aspect, elongation, separation, transit, and
   lunar-phase searches
@@ -57,14 +57,14 @@ must remain available during that transition.
 - [ ] Add C ABI and Dart APIs only for end-to-end-migrated families.
 - [ ] Apply the same policy to newly wrapped calculation families.
 
-## `astrology.h` — 15/30
+## `astrology.h` — 27/30
 
 - [x] `taiyin_sidereal_position_init`
 - [x] `taiyin_sidereal_coordinates_init`
 - [x] `taiyin_house_result_init`
 - [x] `taiyin_house_position_result_init`
-- [ ] `taiyin_lunar_node_position_init`
-- [ ] `taiyin_lunar_apsis_position_init`
+- [x] `taiyin_lunar_node_position_init`
+- [x] `taiyin_lunar_apsis_position_init`
 - [x] `taiyin_calc_ayanamsha_tt`
 - [x] `taiyin_calc_sidereal_position_tt`
 - [x] `taiyin_calc_sidereal_position_ut`
@@ -78,16 +78,16 @@ must remain available during that transition.
 - [x] `taiyin_has_ayanamsha_model`
 - [ ] `taiyin_register_ayanamsha_model`
 - [ ] `taiyin_register_house_system_model`
-- [ ] `taiyin_calc_lunar_true_node_tt`
-- [ ] `taiyin_calc_lunar_true_node_ut`
-- [ ] `taiyin_calc_lunar_mean_node_tt`
-- [ ] `taiyin_calc_lunar_mean_node_ut`
-- [ ] `taiyin_calc_lunar_mean_apogee_tt`
-- [ ] `taiyin_calc_lunar_mean_apogee_ut`
-- [ ] `taiyin_calc_lunar_osculating_apogee_tt`
-- [ ] `taiyin_calc_lunar_osculating_apogee_ut`
-- [ ] `taiyin_calc_lunar_fitted_apogee_tt`
-- [ ] `taiyin_calc_lunar_fitted_apogee_ut`
+- [x] `taiyin_calc_lunar_true_node_tt`
+- [x] `taiyin_calc_lunar_true_node_ut`
+- [x] `taiyin_calc_lunar_mean_node_tt`
+- [x] `taiyin_calc_lunar_mean_node_ut`
+- [x] `taiyin_calc_lunar_mean_apogee_tt`
+- [x] `taiyin_calc_lunar_mean_apogee_ut`
+- [x] `taiyin_calc_lunar_osculating_apogee_tt`
+- [x] `taiyin_calc_lunar_osculating_apogee_ut`
+- [x] `taiyin_calc_lunar_fitted_apogee_tt`
+- [x] `taiyin_calc_lunar_fitted_apogee_ut`
 - [ ] `taiyin_register_builtin_astrology_targets`
 
 ## `base.h` — 10/11

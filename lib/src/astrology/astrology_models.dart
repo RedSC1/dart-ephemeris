@@ -91,6 +91,39 @@ enum TaiyinHouseResultFlag {
   final int mask;
 }
 
+/// The requested lunar-node direction.
+enum TaiyinLunarNodeKind {
+  ascending(0),
+  descending(1);
+
+  const TaiyinLunarNodeKind(this.id);
+
+  /// Stable value used by Taiyin's C ABI.
+  final int id;
+}
+
+/// The convention used to define a lunar apogee result.
+enum TaiyinLunarApsisDefinition {
+  /// A conventional direction derived from IERS 2003 Delaunay arguments.
+  delaunayMean(0),
+
+  /// The apoapsis of the Moon's instantaneous two-body osculating ellipse.
+  osculatingTwoBody(1),
+
+  /// A continuous natural-apogee direction fitted to DE441 apoapsis events.
+  de441FittedNatural(2),
+  unknown(-1);
+
+  const TaiyinLunarApsisDefinition(this.id);
+
+  /// Stable value returned by Taiyin's C ABI.
+  final int id;
+
+  static TaiyinLunarApsisDefinition fromId(int id) {
+    return values.where((value) => value.id == id).firstOrNull ?? unknown;
+  }
+}
+
 /// Tropical and sidereal ecliptic coordinates for one target.
 final class TaiyinSiderealPosition {
   TaiyinSiderealPosition({
@@ -206,6 +239,91 @@ final class TaiyinSiderealCoordinates {
 
   @override
   String toString() => 'TaiyinSiderealCoordinates($values)';
+}
+
+/// A geocentric lunar-node direction and its instantaneous longitude rate.
+///
+/// The node is an angular direction, not a physical body position. Its
+/// longitude is measured in [referenceFrame]; this is right ascension for an
+/// equatorial frame. Results are always in radians and radians per day.
+final class TaiyinLunarNodePosition {
+  TaiyinLunarNodePosition({
+    required this.kind,
+    required this.referenceFrame,
+    required this.rawReferenceFrameId,
+    required this.longitudeRadians,
+    required this.longitudeRateRadiansPerDay,
+    required Set<TaiyinPositionFlag> flags,
+  }) : flags = Set.unmodifiable(flags);
+
+  final TaiyinLunarNodeKind kind;
+  final TaiyinApparentFrame referenceFrame;
+
+  /// Raw native frame ID, retained if a newer native library adds a frame.
+  final int rawReferenceFrameId;
+  final double longitudeRadians;
+  final double longitudeRateRadiansPerDay;
+
+  /// Accepted native physical-correction and frame-selection options.
+  final Set<TaiyinPositionFlag> flags;
+
+  @override
+  String toString() =>
+      'TaiyinLunarNodePosition(kind: $kind, frame: $referenceFrame, '
+      'longitudeRadians: $longitudeRadians, '
+      'longitudeRateRadiansPerDay: $longitudeRateRadiansPerDay)';
+}
+
+/// A lunar apogee direction under one explicit astronomical convention.
+///
+/// Angular values are radians and radians per day. [distanceAu] and
+/// [distanceRateAuPerDay] are null for [TaiyinLunarApsisDefinition.delaunayMean],
+/// which is a conventional direction rather than a physical point.
+final class TaiyinLunarApsisPosition {
+  TaiyinLunarApsisPosition({
+    required this.referenceFrame,
+    required this.rawReferenceFrameId,
+    required this.definition,
+    required this.rawDefinitionId,
+    required this.longitudeRadians,
+    required this.latitudeRadians,
+    required this.longitudeRateRadiansPerDay,
+    required this.latitudeRateRadiansPerDay,
+    required this.distanceAu,
+    required this.distanceRateAuPerDay,
+    required this.extrapolated,
+    required Set<TaiyinPositionFlag> flags,
+  }) : flags = Set.unmodifiable(flags);
+
+  final TaiyinApparentFrame referenceFrame;
+
+  /// Raw native frame ID, retained if a newer native library adds a frame.
+  final int rawReferenceFrameId;
+  final TaiyinLunarApsisDefinition definition;
+
+  /// Raw native definition ID, retained if a newer library adds one.
+  final int rawDefinitionId;
+  final double longitudeRadians;
+  final double latitudeRadians;
+  final double longitudeRateRadiansPerDay;
+  final double latitudeRateRadiansPerDay;
+  final double? distanceAu;
+  final double? distanceRateAuPerDay;
+
+  /// Whether the DE441 fitted-natural model extrapolated a boundary segment.
+  ///
+  /// This is always false for the mean and osculating definitions.
+  final bool extrapolated;
+
+  /// Accepted native physical-correction and frame-selection options.
+  final Set<TaiyinPositionFlag> flags;
+
+  @override
+  String toString() =>
+      'TaiyinLunarApsisPosition(definition: $definition, '
+      'frame: $referenceFrame, longitudeRadians: $longitudeRadians, '
+      'latitudeRadians: $latitudeRadians, distanceAu: $distanceAu, '
+      'extrapolated: $extrapolated)';
 }
 
 /// Twelve house cusps and derived angular points.
