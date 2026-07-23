@@ -155,6 +155,22 @@ void main() {
       );
     });
 
+    test('reports missing custom astrology lifecycle symbols before use', () {
+      expect(
+        () => validateTaiyinRequiredSymbols(
+          providesSymbol: (symbol) =>
+              symbol != 'taiyin_unregister_ayanamsha_model',
+        ),
+        throwsA(
+          isA<StateError>().having(
+            (error) => error.message,
+            'message',
+            contains('taiyin_unregister_ayanamsha_model'),
+          ),
+        ),
+      );
+    });
+
     test('reports missing astrology symbols before use', () {
       expect(
         () => validateTaiyinRequiredSymbols(

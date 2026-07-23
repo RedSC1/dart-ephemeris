@@ -1,8 +1,67 @@
 import 'dart:io';
+import 'dart:isolate';
 import 'dart:math' as math;
 
 import 'package:taiyin/taiyin.dart';
 import 'package:test/test.dart';
+
+double _customAyanamsha(TaiyinCustomAyanamshaRequest request) =>
+    2 * math.pi + 0.123;
+
+List<double> _customHouseCusps(TaiyinCustomHouseSystemRequest request) {
+  const offset = 0.01;
+  final step = 2 * math.pi / 12;
+  return [
+    for (var index = 0; index < 12; index++)
+      (request.ascendantRadians + offset + index * step) % (2 * math.pi),
+  ];
+}
+
+List<double> _invalidCustomHouseCusps(TaiyinCustomHouseSystemRequest request) =>
+    const [0.0];
+
+Future<double> _calculateCustomAyanamshaInWorker(
+  String libraryPath,
+  int modelId,
+) async {
+  final receivePort = ReceivePort();
+  await Isolate.spawn(
+    _customAyanamshaWorkerMain,
+    (receivePort.sendPort, libraryPath, modelId),
+    onError: receivePort.sendPort,
+    onExit: receivePort.sendPort,
+  );
+  try {
+    final message = await receivePort.first;
+    if (message is double) return message;
+    if (message case ['error', final String error, final String stackTrace]) {
+      throw StateError('Worker failed: $error\n$stackTrace');
+    }
+    if (message == null) {
+      throw StateError('Worker exited before returning a result.');
+    }
+    throw StateError('Worker returned an unexpected message: $message');
+  } finally {
+    receivePort.close();
+  }
+}
+
+void _customAyanamshaWorkerMain((SendPort, String, int) message) {
+  final (sendPort, libraryPath, modelId) = message;
+  TaiyinContext? context;
+  try {
+    context = TaiyinContext.attach(libraryPath: libraryPath);
+    final result = context.astrology.ayanamshaAtTt(
+      JulianDate<TtScale>.fromDouble(2460409.0),
+      ayanamsha: TaiyinCustomAyanamshaModel(modelId),
+    );
+    sendPort.send(result);
+  } catch (error, stackTrace) {
+    sendPort.send(['error', '$error', '$stackTrace']);
+  } finally {
+    context?.close();
+  }
+}
 
 void main() {
   final libraryPath =
@@ -13,12 +72,14 @@ void main() {
   group(
     'TaiyinAstrologyApi native integration',
     () {
+      late Taiyin runtime;
       late TaiyinContext context;
       final tt = JulianDate<TtScale>.fromDouble(2460409.0);
       final ut1 = JulianDate<Ut1Scale>.fromDouble(2460311.0);
 
       setUp(() {
-        context = Taiyin.open(libraryPath: libraryPath).createContext();
+        runtime = Taiyin.open(libraryPath: libraryPath);
+        context = runtime.createContext();
       });
 
       tearDown(() {
@@ -46,6 +107,133 @@ void main() {
         for (final system in TaiyinHouseSystem.values) {
           expect(context.astrology.hasHouseSystemModel(system), isTrue);
         }
+      });
+
+      test('registers and closes custom astrology model callbacks', () async {
+        final ayanamsha = runtime.registerCustomAyanamshaModel(
+          100101,
+          evaluator: _customAyanamsha,
+          referencePrecessionModel: TaiyinPrecessionModel.iau2006,
+        );
+        final houseSystem = runtime.registerCustomHouseSystemModel(
+          100101,
+          evaluator: _customHouseCusps,
+        );
+        try {
+          expect(context.astrology.hasAyanamshaModel(ayanamsha.model), isTrue);
+          expect(
+            context.astrology.hasHouseSystemModel(houseSystem.model),
+            isTrue,
+          );
+
+          expect(
+            context.astrology.ayanamshaAtTt(tt, ayanamsha: ayanamsha.model),
+            closeTo(0.123, 1e-15),
+          );
+          expect(
+            await _calculateCustomAyanamshaInWorker(
+              libraryPath,
+              ayanamsha.model.id,
+            ),
+            closeTo(0.123, 1e-15),
+          );
+          final sidereal = context.astrology.siderealPositionAtTt(
+            TaiyinBody.sun,
+            tt,
+            ayanamsha: ayanamsha.model,
+          );
+          expect(sidereal.value.ayanamsha, ayanamsha.model);
+
+          final houses = context.astrology.housesFromArmc(
+            armcRadians: 1.0,
+            observerLatitudeRadians: 0.5,
+            trueObliquityRadians: 0.409,
+            system: houseSystem.model,
+          );
+          expect(houses.requestedSystemId, houseSystem.model.id);
+          expect(houses.resolvedSystemId, houseSystem.model.id);
+          expect(
+            houses.cuspLongitudesRadians[0],
+            closeTo((houses.ascendantRadians + 0.01) % (2 * math.pi), 1e-15),
+          );
+        } finally {
+          houseSystem.close();
+          ayanamsha.close();
+        }
+
+        expect(houseSystem.isClosed, isTrue);
+        expect(ayanamsha.isClosed, isTrue);
+        expect(context.astrology.hasAyanamshaModel(ayanamsha.model), isFalse);
+        expect(
+          context.astrology.hasHouseSystemModel(houseSystem.model),
+          isFalse,
+        );
+      });
+
+      test('rejects mutable custom callback captures', () {
+        final mutable = <double>[0.123];
+        expect(
+          () => runtime.registerCustomAyanamshaModel(
+            100104,
+            evaluator: (request) => mutable.single,
+          ),
+          throwsArgumentError,
+        );
+        expect(
+          () => runtime.registerCustomHouseSystemModel(
+            100104,
+            evaluator: (request) => List<double>.filled(12, mutable.single),
+          ),
+          throwsArgumentError,
+        );
+      });
+
+      test('clears custom models and applies a custom house fallback', () {
+        final fallback = runtime.registerCustomHouseSystemModel(
+          100102,
+          evaluator: _invalidCustomHouseCusps,
+          fallback: TaiyinHouseSystem.porphyry,
+        );
+        final ayanamsha = runtime.registerCustomAyanamshaModel(
+          100102,
+          evaluator: _customAyanamsha,
+        );
+        try {
+          final houses = context.astrology.housesFromArmc(
+            armcRadians: 1.0,
+            observerLatitudeRadians: 0.5,
+            trueObliquityRadians: 0.409,
+            system: fallback.model,
+          );
+          expect(houses.requestedSystemId, fallback.model.id);
+          expect(houses.resolvedSystem, TaiyinHouseSystem.porphyry);
+          expect(houses.flags, contains(TaiyinHouseResultFlag.usedFallback));
+
+          runtime
+            ..clearCustomAyanamshaModels()
+            ..clearCustomHouseSystemModels();
+          expect(ayanamsha.isClosed, isTrue);
+          expect(fallback.isClosed, isTrue);
+        } finally {
+          fallback.close();
+          ayanamsha.close();
+        }
+      });
+
+      test('runtime reset releases custom callback handles', () {
+        final ayanamsha = runtime.registerCustomAyanamshaModel(
+          100103,
+          evaluator: _customAyanamsha,
+        );
+        final houseSystem = runtime.registerCustomHouseSystemModel(
+          100103,
+          evaluator: _customHouseCusps,
+        );
+
+        Taiyin.open(libraryPath: libraryPath);
+
+        expect(ayanamsha.isClosed, isTrue);
+        expect(houseSystem.isClosed, isTrue);
       });
 
       test('calculates sidereal ecliptic positions with a diagnostic', () {

@@ -49,7 +49,7 @@ final class TaiyinAstrologyApi {
   /// Evaluates an ayanamsha at a TT coordinate.
   double ayanamshaAtTt(
     JulianDate<TtScale> tt, {
-    TaiyinAyanamsha ayanamsha = TaiyinAyanamsha.faganBradley,
+    TaiyinAyanamshaModel ayanamsha = TaiyinAyanamsha.faganBradley,
     TaiyinSiderealPrecessionPolicy precessionPolicy =
         TaiyinSiderealPrecessionPolicy.compensateToReference,
   }) {
@@ -79,7 +79,7 @@ final class TaiyinAstrologyApi {
   TaiyinEphemerisResult<TaiyinSiderealPosition> siderealPositionAtTt(
     TaiyinTarget target,
     JulianDate<TtScale> tt, {
-    TaiyinAyanamsha ayanamsha = TaiyinAyanamsha.faganBradley,
+    TaiyinAyanamshaModel ayanamsha = TaiyinAyanamsha.faganBradley,
     TaiyinSiderealPrecessionPolicy precessionPolicy =
         TaiyinSiderealPrecessionPolicy.compensateToReference,
     Set<TaiyinPositionFlag> flags = const {},
@@ -110,7 +110,7 @@ final class TaiyinAstrologyApi {
   TaiyinEphemerisResult<TaiyinSiderealPosition> siderealPositionAtUt1(
     TaiyinTarget target,
     JulianDate<Ut1Scale> ut1, {
-    TaiyinAyanamsha ayanamsha = TaiyinAyanamsha.faganBradley,
+    TaiyinAyanamshaModel ayanamsha = TaiyinAyanamsha.faganBradley,
     TaiyinSiderealPrecessionPolicy precessionPolicy =
         TaiyinSiderealPrecessionPolicy.compensateToReference,
     Set<TaiyinPositionFlag> flags = const {},
@@ -150,7 +150,7 @@ final class TaiyinAstrologyApi {
   TaiyinEphemerisResult<TaiyinSiderealCoordinates> siderealCoordinatesAtTt(
     TaiyinTarget target,
     JulianDate<TtScale> tt, {
-    TaiyinAyanamsha ayanamsha = TaiyinAyanamsha.faganBradley,
+    TaiyinAyanamshaModel ayanamsha = TaiyinAyanamsha.faganBradley,
     TaiyinSiderealPrecessionPolicy precessionPolicy =
         TaiyinSiderealPrecessionPolicy.compensateToReference,
     Set<TaiyinPositionFlag> flags = const {},
@@ -182,7 +182,7 @@ final class TaiyinAstrologyApi {
   TaiyinEphemerisResult<TaiyinSiderealCoordinates> siderealCoordinatesAtUt1(
     TaiyinTarget target,
     JulianDate<Ut1Scale> ut1, {
-    TaiyinAyanamsha ayanamsha = TaiyinAyanamsha.faganBradley,
+    TaiyinAyanamshaModel ayanamsha = TaiyinAyanamsha.faganBradley,
     TaiyinSiderealPrecessionPolicy precessionPolicy =
         TaiyinSiderealPrecessionPolicy.compensateToReference,
     Set<TaiyinPositionFlag> flags = const {},
@@ -441,7 +441,7 @@ final class TaiyinAstrologyApi {
     required double armcRadians,
     required double observerLatitudeRadians,
     required double trueObliquityRadians,
-    TaiyinHouseSystem system = TaiyinHouseSystem.porphyry,
+    TaiyinHouseSystemModel system = TaiyinHouseSystem.porphyry,
   }) {
     _ensureOpen();
     _requireFinite(armcRadians, 'armcRadians');
@@ -463,7 +463,7 @@ final class TaiyinAstrologyApi {
   /// Calculates houses at a UT1 coordinate using the context observer.
   TaiyinHouses housesAtUt1(
     JulianDate<Ut1Scale> ut1, {
-    TaiyinHouseSystem system = TaiyinHouseSystem.porphyry,
+    TaiyinHouseSystemModel system = TaiyinHouseSystem.porphyry,
   }) {
     _ensureOpen();
     return _houses(
@@ -479,7 +479,7 @@ final class TaiyinAstrologyApi {
   /// Calculates houses at a TT coordinate using the context observer.
   TaiyinHouses housesAtTt(
     JulianDate<TtScale> tt, {
-    TaiyinHouseSystem system = TaiyinHouseSystem.porphyry,
+    TaiyinHouseSystemModel system = TaiyinHouseSystem.porphyry,
   }) {
     _ensureOpen();
     return _houses(
@@ -519,21 +519,21 @@ final class TaiyinAstrologyApi {
     });
   }
 
-  /// Whether the native runtime provides this built-in ayanamsha model.
-  bool hasAyanamshaModel(TaiyinAyanamsha ayanamsha) {
+  /// Whether the native runtime provides [ayanamsha].
+  bool hasAyanamshaModel(TaiyinAyanamshaModel ayanamsha) {
     _ensureOpen();
     return _bindings.taiyin_has_ayanamsha_model(ayanamsha.id) != 0;
   }
 
-  /// Whether the native runtime provides this built-in house-system model.
-  bool hasHouseSystemModel(TaiyinHouseSystem system) {
+  /// Whether the native runtime provides [system].
+  bool hasHouseSystemModel(TaiyinHouseSystemModel system) {
     _ensureOpen();
     return _bindings.taiyin_has_house_system_model(system.id) != 0;
   }
 
   TaiyinEphemerisResult<TaiyinSiderealPosition> _siderealPosition(
     TaiyinTarget target,
-    TaiyinAyanamsha ayanamsha,
+    TaiyinAyanamshaModel ayanamsha,
     TaiyinSiderealPrecessionPolicy precessionPolicy,
     Set<TaiyinPositionFlag> flags,
     _SiderealCalculation calculate,
@@ -571,7 +571,7 @@ final class TaiyinAstrologyApi {
 
   TaiyinEphemerisResult<TaiyinSiderealCoordinates> _siderealCoordinates(
     TaiyinTarget target,
-    TaiyinAyanamsha ayanamsha,
+    TaiyinAyanamshaModel ayanamsha,
     TaiyinSiderealPrecessionPolicy precessionPolicy,
     Set<TaiyinPositionFlag> flags,
     _SiderealCoordinatesCalculation calculate,

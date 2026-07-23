@@ -65,8 +65,11 @@ final class Taiyin {
     _initializeRuntime(
       state.bindings,
       options,
-      afterNativeInitializationAttempt: () =>
-          _closeCustomTargetRegistrationsAfterNativeClear(state),
+      afterNativeInitializationAttempt: () {
+        _closeCustomTargetRegistrationsAfterNativeClear(state);
+        _closeCustomAyanamshaRegistrationsAfterNativeClear(state);
+        _closeCustomHouseSystemRegistrationsAfterNativeClear(state);
+      },
     );
     return Taiyin._(library, state.bindings, state.contextFinalizer);
   }
@@ -152,6 +155,85 @@ final class Taiyin {
     final state = _nativeLibraryStateFor(_library);
     _bindings.taiyin_clear_native_position_evaluators();
     _closeCustomTargetRegistrationsAfterNativeClear(state);
+  }
+
+  /// Registers a process-wide custom ayanamsha backed by a Dart evaluator.
+  ///
+  /// [modelId] must be at least 10000 and may have only one active Dart
+  /// registration. Keep the returned handle and call
+  /// [TaiyinCustomAyanamshaRegistration.close] when it is no longer needed.
+  ///
+  /// Evaluators may be invoked by calculations in worker isolates, so the
+  /// evaluator and everything it captures must be transitively immutable.
+  /// Callback exceptions become `TAIYIN_ERROR_INTERNAL`. Register and close
+  /// models from the long-lived main isolate; those setup changes must not
+  /// overlap calculations in any isolate.
+  TaiyinCustomAyanamshaRegistration registerCustomAyanamshaModel(
+    int modelId, {
+    required TaiyinCustomAyanamshaEvaluator evaluator,
+    TaiyinPrecessionModel? referencePrecessionModel,
+  }) {
+    if (!hasCapability(TaiyinCapability.customAyanamsha)) {
+      throw UnsupportedError(
+        'The loaded Taiyin library does not support custom ayanamsha models.',
+      );
+    }
+    return _registerCustomAyanamshaModel(
+      _nativeLibraryStateFor(_library),
+      modelId,
+      evaluator,
+      referencePrecessionModel,
+    );
+  }
+
+  /// Registers a process-wide custom house system backed by a Dart evaluator.
+  ///
+  /// [modelId] must be at least 10000 and may have only one active Dart
+  /// registration. [fallback] is used by Taiyin when the evaluator rejects a
+  /// calculation; omit it to return the native evaluation failure instead.
+  /// Keep the returned handle and call [TaiyinCustomHouseSystemRegistration.close]
+  /// when it is no longer needed.
+  ///
+  /// Evaluators may be invoked by calculations in worker isolates, so the
+  /// evaluator and everything it captures must be transitively immutable.
+  /// Register and close models from the long-lived main isolate; those setup
+  /// changes must not overlap calculations in any isolate.
+  TaiyinCustomHouseSystemRegistration registerCustomHouseSystemModel(
+    int modelId, {
+    required TaiyinCustomHouseSystemEvaluator evaluator,
+    TaiyinHouseSystemModel? fallback,
+  }) {
+    if (!hasCapability(TaiyinCapability.customHouses)) {
+      throw UnsupportedError(
+        'The loaded Taiyin library does not support custom house systems.',
+      );
+    }
+    return _registerCustomHouseSystemModel(
+      _nativeLibraryStateFor(_library),
+      modelId,
+      evaluator,
+      fallback,
+    );
+  }
+
+  /// Clears all C-API custom ayanamsha models and closes Dart-owned handles.
+  ///
+  /// Built-in and non-C-API native models are not affected. This setup-time
+  /// operation must not overlap calculations in any isolate.
+  void clearCustomAyanamshaModels() {
+    final state = _nativeLibraryStateFor(_library);
+    _bindings.taiyin_clear_ayanamsha_models();
+    _closeCustomAyanamshaRegistrationsAfterNativeClear(state);
+  }
+
+  /// Clears all C-API custom house systems and closes Dart-owned handles.
+  ///
+  /// Built-in and non-C-API native models are not affected. This setup-time
+  /// operation must not overlap calculations in any isolate.
+  void clearCustomHouseSystemModels() {
+    final state = _nativeLibraryStateFor(_library);
+    _bindings.taiyin_clear_house_system_models();
+    _closeCustomHouseSystemRegistrationsAfterNativeClear(state);
   }
 
   /// Stable symbolic name for a native status code.
