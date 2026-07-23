@@ -751,9 +751,9 @@ final class TaiyinEclipseApi {
     }
   }
 
-  void _requireCapacity(int capacity) {
+  void _requireCapacity(int capacity, {String name = 'maxResults'}) {
     if (capacity <= 0) {
-      throw RangeError.range(capacity, 1, null, 'maxResults');
+      throw RangeError.range(capacity, 1, null, name);
     }
   }
 
@@ -1130,6 +1130,8 @@ final class TaiyinEclipseApi {
   }
 
   /// Evaluates a fitted solar Besselian [polynomial] at [timeOffsetHours].
+  ///
+  /// [timeOffsetHours] is relative to [TaiyinSolarBesselianPolynomial.referenceEpoch].
   TaiyinSolarBesselianElements evaluateSolarBesselianPolynomial(
     TaiyinSolarBesselianPolynomial polynomial,
     double timeOffsetHours,
@@ -1215,7 +1217,7 @@ final class TaiyinEclipseApi {
     _ensureOpen();
     _requireRouteInterval(start, end);
     _requirePositiveFinite(stepMinutes, 'stepMinutes');
-    _requireCapacity(maxRows);
+    _requireCapacity(maxRows, name: 'maxRows');
     final mask = _solarRouteMask(positionFlags, options);
     return _solarRouteRows(maxRows, (output, capacity, count, diagnostic) {
       return _bindings.taiyin_compute_solar_eclipse_route_tt(
@@ -1249,7 +1251,7 @@ final class TaiyinEclipseApi {
     _ensureOpen();
     _requireRouteInterval(start, end);
     _requirePositiveFinite(stepMinutes, 'stepMinutes');
-    _requireCapacity(maxRows);
+    _requireCapacity(maxRows, name: 'maxRows');
     final mask = _solarRouteMask(positionFlags, options);
     return _solarRouteRows(maxRows, (output, capacity, count, diagnostic) {
       return _bindings.taiyin_compute_solar_eclipse_route_ut(
@@ -1600,8 +1602,12 @@ final class TaiyinEclipseApi {
     taiyin_solar_eclipse_route_row value,
   ) {
     return TaiyinSolarEclipseRouteRow(
-      coordinateTt: JulianDate<TtScale>.fromDouble(value.jd_tt),
-      coordinateUt1: JulianDate<Ut1Scale>.fromDouble(value.jd_ut),
+      coordinateTt: JulianDate<TtScale>.fromDouble(
+        _requireFiniteNativeRouteCoordinate(value.jd_tt, 'jd_tt'),
+      ),
+      coordinateUt1: JulianDate<Ut1Scale>.fromDouble(
+        _requireFiniteNativeRouteCoordinate(value.jd_ut, 'jd_ut'),
+      ),
       centerLine: _readSolarEclipseRoutePoint(value.center_line),
       penumbralNorthLimit: _readSolarEclipseRoutePoint(
         value.penumbral_north_limit,
@@ -1719,6 +1725,28 @@ final class TaiyinEclipseApi {
       native.l1[index] = value.l1Coefficients[index];
       native.l2[index] = value.l2Coefficients[index];
     }
+    _writeSolarBesselianElements(native.center, value.center);
+    _writeSolarBesselianElements(native.max_residual, value.maxResidual);
+  }
+
+  void _writeSolarBesselianElements(
+    taiyin_solar_besselian_elements native,
+    TaiyinSolarBesselianElements value,
+  ) {
+    native
+      ..t_hours = value.tHours
+      ..x = value.x
+      ..y = value.y
+      ..zeta = value.zeta
+      ..d_deg = value.dDegrees
+      ..mu_deg = value.muDegrees
+      ..l1 = value.l1
+      ..l2 = value.l2
+      ..f1_deg = value.f1Degrees
+      ..f2_deg = value.f2Degrees
+      ..tan_f1 = value.tanF1
+      ..tan_f2 = value.tanF2
+      ..gamma = value.gamma;
   }
 
   int _solarSolveMask(
@@ -1769,6 +1797,16 @@ final class TaiyinEclipseApi {
     if (!value.isFinite) {
       throw ArgumentError.value(value, name, 'must be finite');
     }
+  }
+
+  double _requireFiniteNativeRouteCoordinate(double value, String name) {
+    if (!value.isFinite) {
+      throw StateError(
+        'Native solar eclipse route row returned non-finite $name after a '
+        'successful calculation',
+      );
+    }
+    return value;
   }
 
   void _requirePositiveFinite(double value, String name) {

@@ -300,6 +300,46 @@ void main() {
           polynomial.value,
           0,
         );
+        final directAtTwoHours = context.eclipses.solarBesselianElementsAtTt(
+          JulianDate<TtScale>.fromDouble(center.toDouble() + 2 / 24),
+          timeOffsetHours: 2,
+        );
+        final evaluatedAtTwoHours = context.eclipses
+            .evaluateSolarBesselianPolynomial(polynomial.value, 2);
+        const zeroElements = TaiyinSolarBesselianElements(
+          tHours: 0,
+          x: 0,
+          y: 0,
+          zeta: 0,
+          dDegrees: 0,
+          muDegrees: 0,
+          l1: 0,
+          l2: 0,
+          f1Degrees: 0,
+          f2Degrees: 0,
+          tanF1: 0,
+          tanF2: 0,
+          gamma: 0,
+        );
+        final normalizedPolynomial = TaiyinSolarBesselianPolynomial(
+          referenceEpoch: center,
+          spanHours: 1,
+          sampleStepHours: 1,
+          degree: 1,
+          xCoefficients: List.generate(8, (index) => index.toDouble()),
+          yCoefficients: List.filled(8, 0),
+          zetaCoefficients: List.filled(8, 0),
+          dDegreesCoefficients: List.filled(8, 0),
+          muDegreesCoefficients: List.filled(8, 0),
+          l1Coefficients: List.filled(8, 0),
+          l2Coefficients: List.filled(8, 0),
+          f1Degrees: 0,
+          f2Degrees: 0,
+          tanF1: 0,
+          tanF2: 0,
+          center: zeroElements,
+          maxResidual: zeroElements,
+        );
 
         expect(elements.value.tHours, 0);
         expect(elements.value.x, closeTo(0.158222771478, 1e-9));
@@ -322,8 +362,12 @@ void main() {
         expect(evaluated.y, closeTo(elements.value.y, 1e-8));
         expect(evaluated.l1, closeTo(elements.value.l1, 1e-8));
         expect(evaluated.l2, closeTo(elements.value.l2, 1e-8));
+        expect(evaluatedAtTwoHours.tHours, 2);
+        expect(evaluatedAtTwoHours.x, closeTo(directAtTwoHours.value.x, 1e-7));
+        expect(evaluatedAtTwoHours.y, closeTo(directAtTwoHours.value.y, 1e-7));
         expect(polynomial.value.maxResidual.x, lessThan(1e-7));
         expect(polynomial.value.maxResidual.y, lessThan(1e-7));
+        expect(normalizedPolynomial.xCoefficients, [0, 1, 0, 0, 0, 0, 0, 0]);
         expect(
           () => context.eclipses.solarBesselianElementsAtTt(
             center,
@@ -405,6 +449,12 @@ void main() {
         expect(rowUt.value.durationSeconds, closeTo(268.106442, 8));
         expect(rowUt.value.northLimit.intersectsEarth, isTrue);
         expect(rowUt.value.southLimit.intersectsEarth, isTrue);
+        final annularEndpoint = context.eclipses.solarEclipseRouteRowAtUt1(
+          JulianDate<Ut1Scale>.fromDouble(2461443.2438330743),
+        );
+        expect(annularEndpoint.value.northLimit.intersectsEarth, isTrue);
+        expect(annularEndpoint.value.southLimit.intersectsEarth, isFalse);
+        expect(annularEndpoint.value.southLimit.latitudeDegrees, isNull);
         expect(truePositionRow.value.hasRoute, isTrue);
         expect(rowTt.value.hasRoute, isTrue);
         expect(rowTt.value.centerLine.latitudeDegrees, isNotNull);
@@ -426,6 +476,17 @@ void main() {
             maxRows: 1,
           ),
           throwsA(isA<TaiyinException>()),
+        );
+        expect(
+          () => context.eclipses.solarEclipseRouteAtUt1(
+            JulianDate<Ut1Scale>.fromDouble(2460409.25),
+            JulianDate<Ut1Scale>.fromDouble(2460409.27),
+            stepMinutes: 10,
+            maxRows: 0,
+          ),
+          throwsA(
+            isA<RangeError>().having((error) => error.name, 'name', 'maxRows'),
+          ),
         );
         expect(
           () => context.eclipses.solarEclipseRouteAtUt1(

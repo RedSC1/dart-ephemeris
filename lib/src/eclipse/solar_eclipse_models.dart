@@ -311,8 +311,8 @@ final class TaiyinSolarBesselianElements {
 /// A fitted, fixed-capacity Besselian polynomial around one TT epoch.
 ///
 /// Each coefficient list has [coefficientCount] entries. Only indices through
-/// [degree] are meaningful; later entries preserve the fixed native layout
-/// and are normally zero. [maxResidual] records the largest fit residual at
+/// [degree] are meaningful; later entries are normalized to zero to preserve
+/// the fixed native layout. [maxResidual] records the largest fit residual at
 /// native sample coordinates.
 final class TaiyinSolarBesselianPolynomial {
   TaiyinSolarBesselianPolynomial({
@@ -336,30 +336,37 @@ final class TaiyinSolarBesselianPolynomial {
   }) : xCoefficients = _freezeBesselianCoefficients(
          xCoefficients,
          'xCoefficients',
+         degree,
        ),
        yCoefficients = _freezeBesselianCoefficients(
          yCoefficients,
          'yCoefficients',
+         degree,
        ),
        zetaCoefficients = _freezeBesselianCoefficients(
          zetaCoefficients,
          'zetaCoefficients',
+         degree,
        ),
        dDegreesCoefficients = _freezeBesselianCoefficients(
          dDegreesCoefficients,
          'dDegreesCoefficients',
+         degree,
        ),
        muDegreesCoefficients = _freezeBesselianCoefficients(
          muDegreesCoefficients,
          'muDegreesCoefficients',
+         degree,
        ),
        l1Coefficients = _freezeBesselianCoefficients(
          l1Coefficients,
          'l1Coefficients',
+         degree,
        ),
        l2Coefficients = _freezeBesselianCoefficients(
          l2Coefficients,
          'l2Coefficients',
+         degree,
        ) {
     if (!spanHours.isFinite || spanHours <= 0) {
       throw ArgumentError.value(
@@ -410,6 +417,7 @@ final class TaiyinSolarBesselianPolynomial {
 List<double> _freezeBesselianCoefficients(
   Iterable<double> source,
   String name,
+  int degree,
 ) {
   final values = List<double>.of(source, growable: false);
   if (values.length != TaiyinSolarBesselianPolynomial.coefficientCount) {
@@ -422,5 +430,8 @@ List<double> _freezeBesselianCoefficients(
   if (values.any((value) => !value.isFinite)) {
     throw ArgumentError.value(source, name, 'must contain only finite values');
   }
-  return List.unmodifiable(values);
+  return List.unmodifiable([
+    for (var index = 0; index < values.length; index++)
+      index <= degree ? values[index] : 0.0,
+  ]);
 }
