@@ -195,13 +195,15 @@ final class Taiyin {
         );
       }
       final output = arena<Char>(requiredSize.value);
+      // The native C ABI requires out_required_size on both formatting calls.
+      final outputRequiredSize = arena<Size>();
       _checkStatus(
         _bindings,
         _bindings.taiyin_format_ephemeris_diagnostic(
           nativeDiagnostic,
           output,
           requiredSize.value,
-          requiredSize,
+          outputRequiredSize,
         ),
       );
       return output.cast<Utf8>().toDartString();
@@ -214,6 +216,11 @@ final class Taiyin {
   /// position or state API. Calling this more than once is harmless. This is
   /// a setup-time operation and must not overlap calculations in any isolate.
   void registerBuiltinAstrologyTargets() {
+    if (!hasCapability(TaiyinCapability.astrology)) {
+      throw UnsupportedError(
+        'The loaded Taiyin library does not support astrology targets.',
+      );
+    }
     _checkStatus(
       _bindings,
       _bindings.taiyin_register_builtin_astrology_targets(),

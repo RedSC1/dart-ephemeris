@@ -19,6 +19,12 @@ enum TaiyinAyanamsha {
 ///
 /// Call [Taiyin.registerBuiltinAstrologyTargets] during setup before using one
 /// of these targets with a position or state calculation.
+///
+/// The four node targets are direction-only. Their generic spherical-position
+/// distance and distance-rate slots are `double.nan`; Cartesian output is
+/// likewise unavailable. Use [TaiyinAstrologyApi.lunarTrueNodeAtTt] or
+/// [TaiyinAstrologyApi.lunarMeanNodeAtTt] when a node direction is all that is
+/// required.
 enum TaiyinAstrologyTarget implements TaiyinTarget {
   trueNode(-100001),
   trueDescendingNode(-100002),

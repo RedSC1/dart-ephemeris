@@ -456,6 +456,7 @@ void _writeEphemerisDiagnostic(
       0,
       (mask, flag) => mask | flag.mask,
     )
+    ..reserved0 = 0
     ..tai_minus_utc_seconds = value.taiMinusUtcSeconds
     ..dut1_seconds = value.dut1Seconds
     ..delta_t_seconds = value.deltaTSeconds;
