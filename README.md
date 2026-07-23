@@ -217,6 +217,53 @@ The current native astrology calculations take a scalar absolute Julian date,
 so typed split Dart coordinates are intentionally quantized at the physical
 calculation boundary (about 40 microseconds near the present epoch).
 
+Custom ayanamsha and house-system models can also be backed by Dart callbacks.
+They are process-wide setup-time registrations: keep the handles alive, close
+them before discarding the callbacks, and do not change registrations while any
+isolate is calculating.
+
+```dart
+import 'dart:math' as math;
+
+double customAyanamsha(TaiyinCustomAyanamshaRequest request) => 0.123;
+
+List<double> customCusps(TaiyinCustomHouseSystemRequest request) {
+  final step = 2 * math.pi / 12;
+  return [
+    for (var i = 0; i < 12; i++)
+      (request.ascendantRadians + i * step) % (2 * math.pi),
+  ];
+}
+
+final ayanamsha = taiyin.registerCustomAyanamshaModel(
+  10001,
+  evaluator: customAyanamsha,
+);
+final houses = taiyin.registerCustomHouseSystemModel(
+  10001,
+  evaluator: customCusps,
+  fallback: TaiyinHouseSystem.porphyry,
+);
+try {
+  final value = context.astrology.ayanamshaAtTt(
+    JulianDate<TtScale>.fromDouble(2460409.0),
+    ayanamsha: ayanamsha.model,
+  );
+  final chartHouses = context.astrology.housesAtUt1(
+    JulianDate<Ut1Scale>.fromDouble(2460311.0),
+    system: houses.model,
+  );
+} finally {
+  houses.close();
+  ayanamsha.close();
+}
+```
+
+Opening the process runtime again, or calling either `clearCustom…Models`
+method, closes the matching Dart handles because native callback pointers have
+already been removed. Callbacks may run for worker-isolate calculations, so
+their closures may capture only transitively immutable state.
+
 Custom negative target IDs can be backed by Dart evaluators. Register them once
 on the process-wide runtime before starting concurrent calculations:
 

@@ -2,14 +2,14 @@
 
 Baseline: `taiyin-ephemeris/include/taiyin/c/*.h` on 2026-07-20.
 
-- Total callable C symbols: **317**
-- Included by the current Dart binding configuration: **315**
-- Remaining: **2**
+- Total callable C symbols: **325**
+- Included by the current Dart binding configuration: **325**
+- Remaining: **0**
 
 `[x]` means the symbol is included in `ffigen.yaml` and its current Dart API
 block has landed. `[ ]` means it still needs a Dart binding/API decision. The
-list includes result initializers and process-lifetime callback registration
-functions so ABI completeness can be tracked exactly.
+list includes result initializers and callback registration/lifecycle functions
+so ABI completeness can be tracked exactly.
 
 ## Suggested implementation order
 
@@ -26,8 +26,8 @@ functions so ABI completeness can be tracked exactly.
 - [x] Solar Besselian elements, routes, curves, and map products
 - [x] Diagnostic formatting helper
 - [x] Built-in astrology-target registration
-- [ ] Process-lifetime ayanamsha and house-system callbacks (requires native
-  lifecycle APIs before Dart callbacks can be safe)
+- [x] Custom ayanamsha and house-system callbacks, including native
+  unregister/clear lifecycle APIs
 
 ## Cross-cutting technical debt: split-JD calculation ABI
 
@@ -59,7 +59,7 @@ must remain available during that transition.
 - [ ] Add C ABI and Dart APIs only for end-to-end-migrated families.
 - [ ] Apply the same policy to newly wrapped calculation families.
 
-## `astrology.h` — 28/30
+## `astrology.h` — 38/38
 
 - [x] `taiyin_sidereal_position_init`
 - [x] `taiyin_sidereal_coordinates_init`
@@ -78,8 +78,16 @@ must remain available during that transition.
 - [x] `taiyin_calc_house_position_from_longitude`
 - [x] `taiyin_has_house_system_model`
 - [x] `taiyin_has_ayanamsha_model`
-- [ ] `taiyin_register_ayanamsha_model`
-- [ ] `taiyin_register_house_system_model`
+- [x] `taiyin_register_ayanamsha_model`
+- [x] `taiyin_register_house_system_model`
+- [x] `taiyin_register_ayanamsha_model_with_token`
+- [x] `taiyin_register_house_system_model_with_token`
+- [x] `taiyin_unregister_ayanamsha_model`
+- [x] `taiyin_unregister_house_system_model`
+- [x] `taiyin_unregister_ayanamsha_model_with_token`
+- [x] `taiyin_unregister_house_system_model_with_token`
+- [x] `taiyin_clear_ayanamsha_models`
+- [x] `taiyin_clear_house_system_models`
 - [x] `taiyin_calc_lunar_true_node_tt`
 - [x] `taiyin_calc_lunar_true_node_ut`
 - [x] `taiyin_calc_lunar_mean_node_tt`

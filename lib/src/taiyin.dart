@@ -34,6 +34,7 @@ part 'events/event_api.dart';
 part 'occultation/occultation_api.dart';
 part 'heliacal/heliacal_api.dart';
 part 'astrology/astrology_api.dart';
+part 'astrology/custom_model_api.dart';
 part 'observed/observed_api.dart';
 part 'orbital/orbital_api.dart';
 part 'phenomena/phenomena_api.dart';
@@ -359,6 +360,10 @@ final class _TaiyinNativeLibraryState {
   final TaiyinBindings bindings;
   final NativeFinalizer contextFinalizer;
   final Map<int, TaiyinCustomTargetRegistration> customTargetRegistrations = {};
+  final Map<int, TaiyinCustomAyanamshaRegistration>
+  customAyanamshaRegistrations = {};
+  final Map<int, TaiyinCustomHouseSystemRegistration>
+  customHouseSystemRegistrations = {};
 }
 
 // NativeFinalizer itself must stay reachable until its attachments have run.

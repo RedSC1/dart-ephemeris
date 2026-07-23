@@ -1,7 +1,13 @@
 import '../position/position_api.dart';
 
+/// An ayanamsha definition recognized by the process-wide native registry.
+abstract interface class TaiyinAyanamshaModel {
+  /// Stable identifier used by Taiyin's C ABI.
+  int get id;
+}
+
 /// A built-in sidereal ayanamsha definition.
-enum TaiyinAyanamsha {
+enum TaiyinAyanamsha implements TaiyinAyanamshaModel {
   faganBradley(0),
   lahiri(1),
   raman(3),
@@ -12,7 +18,42 @@ enum TaiyinAyanamsha {
   const TaiyinAyanamsha(this.id);
 
   /// Stable identifier used by Taiyin's C ABI.
+  @override
   final int id;
+}
+
+/// A process-wide custom ayanamsha model identifier.
+///
+/// Obtain an owned Dart-backed registration from
+/// [Taiyin.registerCustomAyanamshaModel]. Constructing this value directly is
+/// also useful in a worker isolate to refer to an already registered native
+/// model, but it does not register a callback or own its lifecycle.
+final class TaiyinCustomAyanamshaModel implements TaiyinAyanamshaModel {
+  TaiyinCustomAyanamshaModel(int id) : id = _validateId(id);
+
+  @override
+  final int id;
+
+  static int _validateId(int id) {
+    if (id < 10000 || id > 0x7fffffff) {
+      throw ArgumentError.value(
+        id,
+        'id',
+        'must fit the native signed 32-bit range and be at least 10000',
+      );
+    }
+    return id;
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      other is TaiyinCustomAyanamshaModel && other.id == id;
+
+  @override
+  int get hashCode => id.hashCode;
+
+  @override
+  String toString() => 'TaiyinCustomAyanamshaModel($id)';
 }
 
 /// A native position target supplied by Taiyin's astrology extension.
@@ -74,8 +115,14 @@ enum TaiyinSiderealCoordinateFrame {
   }
 }
 
+/// A house-system definition recognized by the process-wide native registry.
+abstract interface class TaiyinHouseSystemModel {
+  /// Stable identifier used by Taiyin's C ABI.
+  int get id;
+}
+
 /// A built-in astrological house system.
-enum TaiyinHouseSystem {
+enum TaiyinHouseSystem implements TaiyinHouseSystemModel {
   wholeSign(0),
   equal(1),
   porphyry(2),
@@ -90,6 +137,7 @@ enum TaiyinHouseSystem {
   const TaiyinHouseSystem(this.id);
 
   /// Stable identifier used by Taiyin's C ABI.
+  @override
   final int id;
 
   static TaiyinHouseSystem? fromIdOrNull(int id) {
@@ -98,6 +146,40 @@ enum TaiyinHouseSystem {
     }
     return null;
   }
+}
+
+/// A process-wide custom house-system model identifier.
+///
+/// Obtain an owned Dart-backed registration from
+/// [Taiyin.registerCustomHouseSystemModel]. Constructing this value directly
+/// only identifies an already registered native model; it does not register a
+/// callback or own its lifecycle.
+final class TaiyinCustomHouseSystemModel implements TaiyinHouseSystemModel {
+  TaiyinCustomHouseSystemModel(int id) : id = _validateId(id);
+
+  @override
+  final int id;
+
+  static int _validateId(int id) {
+    if (id < 10000 || id > 0x7fffffff) {
+      throw ArgumentError.value(
+        id,
+        'id',
+        'must fit the native signed 32-bit range and be at least 10000',
+      );
+    }
+    return id;
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      other is TaiyinCustomHouseSystemModel && other.id == id;
+
+  @override
+  int get hashCode => id.hashCode;
+
+  @override
+  String toString() => 'TaiyinCustomHouseSystemModel($id)';
 }
 
 /// A condition reported while calculating time-based astrological houses.
@@ -166,7 +248,7 @@ final class TaiyinSiderealPosition {
   }) : flags = Set.unmodifiable(flags);
 
   final TaiyinTarget target;
-  final TaiyinAyanamsha ayanamsha;
+  final TaiyinAyanamshaModel ayanamsha;
   final TaiyinSiderealPrecessionPolicy precessionPolicy;
 
   /// Tropical ecliptic longitude in radians.
@@ -236,7 +318,7 @@ final class TaiyinSiderealCoordinates {
   }
 
   final TaiyinTarget target;
-  final TaiyinAyanamsha ayanamsha;
+  final TaiyinAyanamshaModel ayanamsha;
   final TaiyinSiderealPrecessionPolicy precessionPolicy;
 
   /// Output coordinate frame used by these values.
@@ -419,10 +501,23 @@ final class TaiyinHouses {
   /// [TaiyinHouseResultFlag.speedUnavailable] is set.
   final List<double> cuspLongitudeRatesRadiansPerDay;
 
-  TaiyinHouseSystem? get requestedSystem =>
-      TaiyinHouseSystem.fromIdOrNull(requestedSystemId);
-  TaiyinHouseSystem? get resolvedSystem =>
-      TaiyinHouseSystem.fromIdOrNull(resolvedSystemId);
+  /// The requested system's ID as a built-in or custom type tag.
+  ///
+  /// A custom result only identifies an ID; it does not imply that this Dart
+  /// isolate owns or has registered that callback.
+  TaiyinHouseSystemModel? get requestedSystem =>
+      _houseSystemModelFromId(requestedSystemId);
+
+  /// The resolved system's ID as a built-in or custom type tag.
+  ///
+  /// See [requestedSystem] for the ownership semantics of custom IDs.
+  TaiyinHouseSystemModel? get resolvedSystem =>
+      _houseSystemModelFromId(resolvedSystemId);
+
+  static TaiyinHouseSystemModel? _houseSystemModelFromId(int id) {
+    return TaiyinHouseSystem.fromIdOrNull(id) ??
+        (id >= 10000 ? TaiyinCustomHouseSystemModel(id) : null);
+  }
 }
 
 /// The house containing an ecliptic longitude.
