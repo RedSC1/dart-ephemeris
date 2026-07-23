@@ -74,6 +74,7 @@ void main() {
       final venus = context.heliacal.bodyAtUt1(
         TaiyinBody.venus,
         aprilEclipse,
+        positionFlags: {TaiyinPositionFlag.truePosition},
         flags: {TaiyinHeliacalFlag.includeMoonlight},
         conditions: conditions,
       );
@@ -157,6 +158,14 @@ void main() {
           result.value.windowEnd.isAfter(result.value.windowStart),
           isTrue,
         );
+        expect(
+          result.value.coordinate.isAfter(result.value.windowStart),
+          isTrue,
+        );
+        expect(
+          result.value.coordinate.isBefore(result.value.windowEnd),
+          isTrue,
+        );
         expect(result.value.sampledWindowCount, greaterThan(0));
         expect(result.value.visibilityEvaluationCount, greaterThan(0));
       }
@@ -179,6 +188,10 @@ void main() {
         isTrue,
       );
       expect(result.value.windowEnd.isAfter(result.value.windowStart), isTrue);
+      expect(result.value.coordinate.isAfter(result.value.windowStart), isTrue);
+      expect(result.value.coordinate.isBefore(result.value.windowEnd), isTrue);
+      expect(result.value.sampledWindowCount, greaterThan(0));
+      expect(result.value.visibilityEvaluationCount, greaterThan(0));
       expect(result.value.visibility.visible, isTrue);
     });
 
@@ -204,11 +217,29 @@ void main() {
         throwsArgumentError,
       );
       expect(
+        () => context.heliacal.bodyAtUt1(
+          TaiyinBody.venus,
+          aprilEclipse,
+          positionFlags: {TaiyinPositionFlag.xyz},
+        ),
+        throwsArgumentError,
+      );
+      expect(
         () => context.heliacal.nextBodyEventAtUt1(
           TaiyinBody.venus,
           aprilEclipse,
           event: TaiyinHeliacalEventKind.morningFirst,
           maxSearchDays: 0,
+        ),
+        throwsArgumentError,
+      );
+      expect(
+        () => context.heliacal.bodyAtUt1(
+          TaiyinBody.venus,
+          aprilEclipse,
+          conditions: const TaiyinHeliacalVisibilityConditions(
+            extinctionMagnitudePerAirmass: 0,
+          ),
         ),
         throwsArgumentError,
       );

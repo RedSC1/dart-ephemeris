@@ -4,12 +4,14 @@ typedef _HeliacalStatusChecker =
     void Function(int status, TaiyinEphemerisDiagnostic? diagnostic);
 typedef _HeliacalVisibilityCalculation =
     int Function(
+      Arena arena,
       Pointer<taiyin_heliacal_visibility_conditions> conditions,
       Pointer<taiyin_heliacal_visibility_result> output,
       Pointer<taiyin_ephemeris_diagnostic> diagnostic,
     );
 typedef _HeliacalSearchCalculation =
     int Function(
+      Arena arena,
       Pointer<taiyin_heliacal_visibility_conditions> conditions,
       Pointer<taiyin_heliacal_visibility_search_result> output,
       Pointer<taiyin_ephemeris_diagnostic> diagnostic,
@@ -50,7 +52,7 @@ final class TaiyinHeliacalApi {
     _requireBodyTarget(target);
     final mask = _heliacalMask(positionFlags, flags);
     _validateConditions(conditions);
-    return _calculate(conditions, (nativeConditions, output, diagnostic) {
+    return _calculate(conditions, (_, nativeConditions, output, diagnostic) {
       return _bindings.taiyin_calc_body_heliacal_visibility_ut(
         _context,
         target.id,
@@ -76,19 +78,22 @@ final class TaiyinHeliacalApi {
     _requireStarKey(starKey);
     final mask = _heliacalMask(positionFlags, flags);
     _validateConditions(conditions);
-    return using((arena) {
+    return _calculate(conditions, (
+      arena,
+      nativeConditions,
+      output,
+      diagnostic,
+    ) {
       final nativeStarKey = starKey.toNativeUtf8(allocator: arena).cast<Char>();
-      return _calculate(conditions, (nativeConditions, output, diagnostic) {
-        return _bindings.taiyin_calc_star_heliacal_visibility_ut(
-          _context,
-          nativeStarKey,
-          ut1.toDouble(),
-          mask,
-          nativeConditions,
-          output,
-          diagnostic,
-        );
-      });
+      return _bindings.taiyin_calc_star_heliacal_visibility_ut(
+        _context,
+        nativeStarKey,
+        ut1.toDouble(),
+        mask,
+        nativeConditions,
+        output,
+        diagnostic,
+      );
     });
   }
 
@@ -110,7 +115,7 @@ final class TaiyinHeliacalApi {
     _requirePositiveFinite(maxSearchDays, 'maxSearchDays');
     final mask = _heliacalMask(positionFlags, flags);
     _validateConditions(conditions);
-    return _search(conditions, (nativeConditions, output, diagnostic) {
+    return _search(conditions, (_, nativeConditions, output, diagnostic) {
       return _bindings.taiyin_search_next_body_heliacal_visibility_ut(
         _context,
         target.id,
@@ -143,21 +148,19 @@ final class TaiyinHeliacalApi {
     _requirePositiveFinite(maxSearchDays, 'maxSearchDays');
     final mask = _heliacalMask(positionFlags, flags);
     _validateConditions(conditions);
-    return using((arena) {
+    return _search(conditions, (arena, nativeConditions, output, diagnostic) {
       final nativeStarKey = starKey.toNativeUtf8(allocator: arena).cast<Char>();
-      return _search(conditions, (nativeConditions, output, diagnostic) {
-        return _bindings.taiyin_search_next_star_heliacal_visibility_ut(
-          _context,
-          nativeStarKey,
-          start.toDouble(),
-          event.id,
-          maxSearchDays,
-          mask,
-          nativeConditions,
-          output,
-          diagnostic,
-        );
-      });
+      return _bindings.taiyin_search_next_star_heliacal_visibility_ut(
+        _context,
+        nativeStarKey,
+        start.toDouble(),
+        event.id,
+        maxSearchDays,
+        mask,
+        nativeConditions,
+        output,
+        diagnostic,
+      );
     });
   }
 
@@ -172,7 +175,7 @@ final class TaiyinHeliacalApi {
       _bindings
         ..taiyin_heliacal_visibility_result_init(output)
         ..taiyin_ephemeris_diagnostic_init(diagnostic);
-      final status = calculate(nativeConditions, output, diagnostic);
+      final status = calculate(arena, nativeConditions, output, diagnostic);
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
       return TaiyinEphemerisResult(
@@ -193,7 +196,7 @@ final class TaiyinHeliacalApi {
       _bindings
         ..taiyin_heliacal_visibility_search_result_init(output)
         ..taiyin_ephemeris_diagnostic_init(diagnostic);
-      final status = calculate(nativeConditions, output, diagnostic);
+      final status = calculate(arena, nativeConditions, output, diagnostic);
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
       final value = output.ref;

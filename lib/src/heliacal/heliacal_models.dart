@@ -2,6 +2,10 @@ import '../time/julian_date.dart';
 import '../time/time_scale.dart';
 
 /// A date-level transition in morning or evening heliacal visibility.
+///
+/// Its stable values are the `TAIYIN_C_HELIACAL_EVENT_*` C ABI constants;
+/// the native runtime names the equivalent constants
+/// `TAIYIN_HELIACAL_VISIBILITY_EVENT_*`.
 enum TaiyinHeliacalEventKind {
   morningFirst(1),
   morningLast(2),
@@ -55,6 +59,11 @@ final class TaiyinHeliacalVisibilityConditions {
 }
 
 /// Visibility diagnostics returned by the selected heliacal model.
+///
+/// [requiredSunAltitudeRadians] and [solarDepressionMarginRadians] are the
+/// only optional scalar diagnostics: native non-finite sentinels map to
+/// `null`. The other numeric fields preserve the native model output and are
+/// finite for the bundled models on a successful calculation.
 final class TaiyinHeliacalVisibilityResult {
   const TaiyinHeliacalVisibilityResult({
     required this.visible,
