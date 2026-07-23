@@ -223,6 +223,13 @@ void main() {
         );
         expect(
           () => context.occultation.nextGeocentricBodyAtUt1(
+            TaiyinBody.solarSystemBarycenter,
+            start,
+          ),
+          throwsArgumentError,
+        );
+        expect(
+          () => context.occultation.nextGeocentricBodyAtUt1(
             TaiyinBody.mercury,
             start,
             targetRadiusKilometers: -1,

@@ -41,6 +41,15 @@ final class TaiyinOccultationApi {
   final void Function() _ensureOpen;
   final _OccultationStatusChecker _checkStatus;
 
+  // Native lunar-occultation searches do not define these as target bodies.
+  static final Set<int> _unsupportedBodyTargetIds = Set.unmodifiable({
+    TaiyinBody.solarSystemBarycenter.id,
+    TaiyinBody.earthMoonBarycenter.id,
+    TaiyinBody.sun.id,
+    TaiyinBody.moon.id,
+    TaiyinBody.earth.id,
+  });
+
   /// Finds the next geocentric lunar occultation of a catalogued star.
   TaiyinEphemerisResult<TaiyinLunarOccultationResult> nextGeocentricStarAtUt1(
     String starKey,
@@ -455,24 +464,30 @@ final class TaiyinOccultationApi {
     );
     return List.unmodifiable([
       for (var index = 0; index < safeCount; index++)
-        if (values[index].valid != 0)
-          TaiyinLunarOccultationVisibilityInterval(
-            begin: _requiredUt1(
-              values[index].begin_jd_ut,
-              '$name[$index].begin',
-            ),
-            end: _requiredUt1(values[index].end_jd_ut, '$name[$index].end'),
-          ),
+        _readInterval(values[index], name, index),
     ]);
+  }
+
+  TaiyinLunarOccultationVisibilityInterval _readInterval(
+    taiyin_lunar_occultation_visibility_interval value,
+    String name,
+    int index,
+  ) {
+    _requireValidEntry(value.valid, '$name[$index]');
+    return TaiyinLunarOccultationVisibilityInterval(
+      begin: _requiredUt1(value.begin_jd_ut, '$name[$index].begin'),
+      end: _requiredUt1(value.end_jd_ut, '$name[$index].end'),
+    );
   }
 
   TaiyinLunarOccultationWhereResult _readWhere(
     taiyin_lunar_occultation_where_result value,
   ) {
+    final coordinate = _ut1OrNull(value.jd_ut);
     return TaiyinLunarOccultationWhereResult(
       centerLineHitsEarth: value.center_line_hits_earth != 0,
       types: TaiyinOccultationType.fromMask(value.type_flags),
-      coordinate: _ut1OrNull(value.jd_ut),
+      coordinate: coordinate,
       centerLineBegin: _ut1OrNull(value.center_line_begin_jd_ut),
       centerLineEnd: _ut1OrNull(value.center_line_end_jd_ut),
       centerLinePath: _readPath(
@@ -532,7 +547,7 @@ final class TaiyinOccultationApi {
       visibleRegionMaxLatitudeDegrees: _finiteOrNull(
         value.visible_region_max_latitude_deg,
       ),
-      maximumLocation: _readMaximumLocation(value),
+      maximumLocation: _readMaximumLocation(value, coordinate),
       separationRadians: _finiteOrNull(value.separation_rad),
       moonRadiusRadians: _finiteOrNull(value.moon_radius_rad),
       targetRadiusRadians: _finiteOrNull(value.target_radius_rad),
@@ -547,8 +562,8 @@ final class TaiyinOccultationApi {
 
   TaiyinLunarOccultationPathPoint? _readMaximumLocation(
     taiyin_lunar_occultation_where_result value,
+    JulianDate<Ut1Scale>? coordinate,
   ) {
-    final coordinate = _ut1OrNull(value.jd_ut);
     final longitude = _finiteOrNull(value.longitude_deg);
     final latitude = _finiteOrNull(value.latitude_deg);
     final height = _finiteOrNull(value.height_m);
@@ -576,15 +591,18 @@ final class TaiyinOccultationApi {
     final safeCount = _validatedCount(count, capacity, name);
     return List.unmodifiable([
       for (var index = 0; index < safeCount; index++)
-        _readPathPoint(values[index]),
+        _readPathPoint(values[index], name, index),
     ]);
   }
 
   TaiyinLunarOccultationPathPoint _readPathPoint(
     taiyin_lunar_occultation_path_point value,
+    String name,
+    int index,
   ) {
+    _requireValidEntry(value.valid, '$name[$index]');
     return TaiyinLunarOccultationPathPoint(
-      valid: value.valid != 0,
+      valid: true,
       coordinate: _ut1OrNull(value.jd_ut),
       longitudeDegrees: _finiteOrNull(value.longitude_deg),
       latitudeDegrees: _finiteOrNull(value.latitude_deg),
@@ -632,8 +650,10 @@ final class TaiyinOccultationApi {
     Set<TaiyinOccultationSearchOption> options,
   ) {
     _requireSupportedPositionFlags(positionFlags);
-    return positionFlags.fold(0, (mask, flag) => mask | flag.mask) |
-        options.fold(0, (mask, option) => mask | option.mask);
+    return _mergeDisjointMasks(
+      _positionMask(positionFlags),
+      options.fold(0, (mask, option) => mask | option.mask),
+    );
   }
 
   int _whereMask(
@@ -641,8 +661,22 @@ final class TaiyinOccultationApi {
     Set<TaiyinOccultationVisibilityOption> visibilityOptions,
   ) {
     _requireSupportedPositionFlags(positionFlags);
-    return positionFlags.fold(0, (mask, flag) => mask | flag.mask) |
-        _visibilityMask(visibilityOptions);
+    return _mergeDisjointMasks(
+      _positionMask(positionFlags),
+      _visibilityMask(visibilityOptions),
+    );
+  }
+
+  int _positionMask(Set<TaiyinPositionFlag> flags) {
+    return flags.fold(0, (mask, flag) => mask | flag.mask);
+  }
+
+  int _mergeDisjointMasks(int positionMask, int optionMask) {
+    assert(
+      (positionMask & optionMask) == 0,
+      'Position flags and occultation options bit ranges overlap',
+    );
+    return positionMask | optionMask;
   }
 
   int _visibilityMask(Set<TaiyinOccultationVisibilityOption> options) {
@@ -678,14 +712,7 @@ final class TaiyinOccultationApi {
   }
 
   void _requireBodyTarget(TaiyinTarget target) {
-    final unsupportedIds = {
-      0,
-      TaiyinBody.earthMoonBarycenter.id,
-      TaiyinBody.sun.id,
-      TaiyinBody.moon.id,
-      TaiyinBody.earth.id,
-    };
-    if (unsupportedIds.contains(target.id)) {
+    if (_unsupportedBodyTargetIds.contains(target.id)) {
       throw ArgumentError.value(
         target,
         'target',
@@ -726,6 +753,14 @@ final class TaiyinOccultationApi {
       );
     }
     return count;
+  }
+
+  void _requireValidEntry(int valid, String name) {
+    if (valid == 0) {
+      throw StateError(
+        'Native occultation result reported an invalid $name inside its count',
+      );
+    }
   }
 
   JulianDate<Ut1Scale> _requiredUt1(double value, String name) {

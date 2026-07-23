@@ -245,6 +245,9 @@ final class TaiyinLunarOccultationLocalVisibility {
 }
 
 /// A point on a global occultation path or visible-region polygon.
+///
+/// Native count fields include only valid entries. The Dart API therefore
+/// rejects a malformed result with an invalid entry inside that count.
 final class TaiyinLunarOccultationPathPoint {
   const TaiyinLunarOccultationPathPoint({
     required this.valid,
