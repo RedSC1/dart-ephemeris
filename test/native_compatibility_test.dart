@@ -197,5 +197,21 @@ void main() {
         ),
       );
     });
+
+    test('reports missing events symbols before use', () {
+      expect(
+        () => validateTaiyinRequiredSymbols(
+          providesSymbol: (symbol) =>
+              symbol != 'taiyin_search_next_local_solar_transit_ut',
+        ),
+        throwsA(
+          isA<StateError>().having(
+            (error) => error.message,
+            'message',
+            contains('taiyin_search_next_local_solar_transit_ut'),
+          ),
+        ),
+      );
+    });
   });
 }

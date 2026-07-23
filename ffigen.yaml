@@ -231,6 +231,32 @@ functions:
     - taiyin_calc_star_heliacal_visibility_ut
     - taiyin_search_next_body_heliacal_visibility_ut
     - taiyin_search_next_star_heliacal_visibility_ut
+    - taiyin_greatest_elongation_result_init
+    - taiyin_angular_separation_result_init
+    - taiyin_solar_transit_result_init
+    - taiyin_local_solar_transit_result_init
+    - taiyin_recommended_longitude_search_step_days
+    - taiyin_recommended_aspect_search_step_days
+    - taiyin_search_solar_longitude_ut
+    - taiyin_search_solar_longitude_tt
+    - taiyin_search_moon_longitude_ut
+    - taiyin_search_moon_longitude_tt
+    - taiyin_search_body_longitude_crossings_ut
+    - taiyin_search_body_longitude_crossings_tt
+    - taiyin_search_body_longitude_stations_ut
+    - taiyin_search_body_longitude_stations_tt
+    - taiyin_search_body_aspect_crossings_ut
+    - taiyin_search_body_aspect_crossings_tt
+    - taiyin_search_body_exact_aspects_ut
+    - taiyin_search_body_exact_aspects_tt
+    - taiyin_search_greatest_elongation_ut
+    - taiyin_search_minimum_angular_separation_ut
+    - taiyin_search_minimum_angular_separation_tt
+    - taiyin_search_next_solar_transit_ut
+    - taiyin_compute_local_solar_transit_ut
+    - taiyin_search_next_local_solar_transit_ut
+    - taiyin_search_lunar_phase_crossings_ut
+    - taiyin_search_lunar_phase_crossings_tt
 structs:
   include:
     - taiyin_calendar_datetime
@@ -273,6 +299,10 @@ structs:
     - taiyin_heliacal_visibility_conditions
     - taiyin_heliacal_visibility_result
     - taiyin_heliacal_visibility_search_result
+    - taiyin_greatest_elongation_result
+    - taiyin_angular_separation_result
+    - taiyin_solar_transit_result
+    - taiyin_local_solar_transit_result
 enums:
   as-int:
     include:

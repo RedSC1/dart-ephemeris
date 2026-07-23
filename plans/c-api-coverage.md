@@ -3,8 +3,8 @@
 Baseline: `taiyin-ephemeris/include/taiyin/c/*.h` on 2026-07-20.
 
 - Total callable C symbols: **317**
-- Included by the current Dart binding configuration: **221**
-- Remaining: **96**
+- Included by the current Dart binding configuration: **247**
+- Remaining: **70**
 
 `[x]` means the symbol is included in `ffigen.yaml` and its current Dart API
 block has landed. `[ ]` means it still needs a Dart binding/API decision. The
@@ -17,7 +17,7 @@ functions so ABI completeness can be tracked exactly.
   and built-in-model queries
 - [x] Lunar points: true/mean nodes and mean/osculating/fitted apogees
 - [x] Visibility: Sun, Moon, planet, and star rise/set/transit searches
-- [ ] Events: longitude, station, aspect, elongation, separation, transit, and
+- [x] Events: longitude, station, aspect, elongation, separation, transit, and
   lunar-phase searches
 - [x] Heliacal visibility
 - [ ] Lunar occultations
@@ -198,34 +198,34 @@ must remain available during that transition.
 - [ ] `taiyin_compute_local_solar_eclipse_boundary_tt`
 - [ ] `taiyin_compute_local_solar_eclipse_boundary_ut`
 
-## `events.h` — 0/26
+## `events.h` — 26/26
 
-- [ ] `taiyin_greatest_elongation_result_init`
-- [ ] `taiyin_angular_separation_result_init`
-- [ ] `taiyin_solar_transit_result_init`
-- [ ] `taiyin_local_solar_transit_result_init`
-- [ ] `taiyin_recommended_longitude_search_step_days`
-- [ ] `taiyin_recommended_aspect_search_step_days`
-- [ ] `taiyin_search_solar_longitude_ut`
-- [ ] `taiyin_search_solar_longitude_tt`
-- [ ] `taiyin_search_moon_longitude_ut`
-- [ ] `taiyin_search_moon_longitude_tt`
-- [ ] `taiyin_search_body_longitude_crossings_ut`
-- [ ] `taiyin_search_body_longitude_crossings_tt`
-- [ ] `taiyin_search_body_longitude_stations_ut`
-- [ ] `taiyin_search_body_longitude_stations_tt`
-- [ ] `taiyin_search_body_aspect_crossings_ut`
-- [ ] `taiyin_search_body_aspect_crossings_tt`
-- [ ] `taiyin_search_body_exact_aspects_ut`
-- [ ] `taiyin_search_body_exact_aspects_tt`
-- [ ] `taiyin_search_greatest_elongation_ut`
-- [ ] `taiyin_search_minimum_angular_separation_ut`
-- [ ] `taiyin_search_minimum_angular_separation_tt`
-- [ ] `taiyin_search_next_solar_transit_ut`
-- [ ] `taiyin_compute_local_solar_transit_ut`
-- [ ] `taiyin_search_next_local_solar_transit_ut`
-- [ ] `taiyin_search_lunar_phase_crossings_ut`
-- [ ] `taiyin_search_lunar_phase_crossings_tt`
+- [x] `taiyin_greatest_elongation_result_init`
+- [x] `taiyin_angular_separation_result_init`
+- [x] `taiyin_solar_transit_result_init`
+- [x] `taiyin_local_solar_transit_result_init`
+- [x] `taiyin_recommended_longitude_search_step_days`
+- [x] `taiyin_recommended_aspect_search_step_days`
+- [x] `taiyin_search_solar_longitude_ut`
+- [x] `taiyin_search_solar_longitude_tt`
+- [x] `taiyin_search_moon_longitude_ut`
+- [x] `taiyin_search_moon_longitude_tt`
+- [x] `taiyin_search_body_longitude_crossings_ut`
+- [x] `taiyin_search_body_longitude_crossings_tt`
+- [x] `taiyin_search_body_longitude_stations_ut`
+- [x] `taiyin_search_body_longitude_stations_tt`
+- [x] `taiyin_search_body_aspect_crossings_ut`
+- [x] `taiyin_search_body_aspect_crossings_tt`
+- [x] `taiyin_search_body_exact_aspects_ut`
+- [x] `taiyin_search_body_exact_aspects_tt`
+- [x] `taiyin_search_greatest_elongation_ut`
+- [x] `taiyin_search_minimum_angular_separation_ut`
+- [x] `taiyin_search_minimum_angular_separation_tt`
+- [x] `taiyin_search_next_solar_transit_ut`
+- [x] `taiyin_compute_local_solar_transit_ut`
+- [x] `taiyin_search_next_local_solar_transit_ut`
+- [x] `taiyin_search_lunar_phase_crossings_ut`
+- [x] `taiyin_search_lunar_phase_crossings_tt`
 
 ## `heliacal.h` — 7/7
 
