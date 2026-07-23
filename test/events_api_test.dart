@@ -218,6 +218,19 @@ void main() {
         expect(phasesTt.value, hasLength(1));
       });
 
+      test('reports insufficient bounded-search result capacity', () {
+        expect(
+          () => context.events.lunarPhaseCrossingsAtUt1(
+            0,
+            JulianDate<Ut1Scale>.fromDouble(2460380.5),
+            JulianDate<Ut1Scale>.fromDouble(2460450.5),
+            maxStepDays: 1,
+            maxResults: 1,
+          ),
+          throwsA(isA<TaiyinException>()),
+        );
+      });
+
       test('searches extrema and global and local solar transits', () {
         final elongation = context.events.greatestElongationAtUt1(
           TaiyinBody.mercury,

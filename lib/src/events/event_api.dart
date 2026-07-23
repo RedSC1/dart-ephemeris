@@ -50,6 +50,9 @@ final class TaiyinEventsApi {
   }
 
   /// Native-recommended maximum step for a bounded aspect search.
+  ///
+  /// The recommendation is independent of target order: native code uses the
+  /// smaller of the two targets' longitude-search recommendations.
   double recommendedAspectSearchStepDays(
     TaiyinTarget bodyA,
     TaiyinTarget bodyB,
@@ -828,9 +831,10 @@ final class TaiyinEventsApi {
       final status = calculate(output, maxResults, count, diagnostic);
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
+      final resultCount = _validatedResultCount(count.value, maxResults);
       final values = List<JulianDate<S>>.unmodifiable(
         List.generate(
-          count.value,
+          resultCount,
           (index) => JulianDate<S>.fromDouble((output + index).value),
         ),
       );
@@ -858,9 +862,10 @@ final class TaiyinEventsApi {
       );
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
+      final resultCount = _validatedResultCount(count.value, maxResults);
       final values = List<T>.unmodifiable(
         List.generate(
-          count.value,
+          resultCount,
           (index) => read((primary + index).value, (secondary + index).value),
         ),
       );
@@ -927,9 +932,10 @@ final class TaiyinEventsApi {
       );
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
+      final resultCount = _validatedResultCount(count.value, maxResults);
       final values = List<TaiyinExactAspectEvent<S>>.unmodifiable(
         List.generate(
-          count.value,
+          resultCount,
           (index) => TaiyinExactAspectEvent(
             coordinate: JulianDate<S>.fromDouble((output + index).value),
             aspectRadians: (outputAspects + index).value,
@@ -1032,11 +1038,11 @@ final class TaiyinEventsApi {
             value.visibility_flags,
           ),
           contactSunAltitudeDegrees: List.generate(
-            5,
+            TaiyinLocalSolarTransitEvent.contactSlotCount,
             (index) => value.contact_sun_altitude_deg[index],
           ),
           contactSunAzimuthDegrees: List.generate(
-            5,
+            TaiyinLocalSolarTransitEvent.contactSlotCount,
             (index) => value.contact_sun_azimuth_deg[index],
           ),
           sunrise: _ut1OrNull(value.sunrise_jd_ut),
@@ -1078,10 +1084,10 @@ final class TaiyinEventsApi {
       ..minimum_separation_rad = value.minimumSeparationRadians
       ..sun_radius_rad = value.sunRadiusRadians
       ..body_radius_rad = value.bodyRadiusRadians
-      ..t1_jd_ut = value.t1?.toDouble() ?? 0
-      ..t2_jd_ut = value.t2?.toDouble() ?? 0
-      ..t3_jd_ut = value.t3?.toDouble() ?? 0
-      ..t4_jd_ut = value.t4?.toDouble() ?? 0
+      ..t1_jd_ut = value.t1?.toDouble() ?? double.nan
+      ..t2_jd_ut = value.t2?.toDouble() ?? double.nan
+      ..t3_jd_ut = value.t3?.toDouble() ?? double.nan
+      ..t4_jd_ut = value.t4?.toDouble() ?? double.nan
       ..iteration_count = value.iterationCount
       ..evaluation_count = value.evaluationCount;
   }
@@ -1196,6 +1202,16 @@ final class TaiyinEventsApi {
     if (maxResults <= 0) {
       throw RangeError.range(maxResults, 1, null, 'maxResults');
     }
+  }
+
+  int _validatedResultCount(int nativeCount, int capacity) {
+    if (nativeCount > capacity) {
+      throw StateError(
+        'Native event search returned $nativeCount results for capacity '
+        '$capacity',
+      );
+    }
+    return nativeCount;
   }
 
   JulianDate<Ut1Scale>? _ut1OrNull(double value) {

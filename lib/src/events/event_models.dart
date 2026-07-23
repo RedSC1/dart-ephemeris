@@ -4,8 +4,11 @@ import '../time/time_scale.dart';
 /// High-level options supported by a particular event-search entry point.
 ///
 /// Not every option applies to every method. Longitude searches and global
-/// solar-transit searches accept [reverse]; local solar-transit methods accept
-/// [refraction] or [noRefraction]. Other event searches reject options.
+/// solar-transit searches accept [reverse].
+/// [TaiyinEventsApi.nextLocalSolarTransitAtUt1] accepts [reverse],
+/// [refraction], and [noRefraction], while
+/// [TaiyinEventsApi.localSolarTransitAtUt1] accepts only the refraction
+/// choices. Other event searches reject options.
 enum TaiyinEventSearchOption {
   reverse(1 << 32),
   refraction(1 << 33),
@@ -106,9 +109,8 @@ final class TaiyinEventPhenomena {
 
   /// Geocentric horizontal parallax, when native code provides it.
   ///
-  /// This is normally available for lunar results. Other targets can have no
-  /// meaningful horizontal parallax, which native code represents as a
-  /// non-finite value.
+  /// Native `taiyin_body_phenomena` represents an unavailable value as
+  /// non-finite; the Dart API exposes that as `null`.
   final double? horizontalParallaxRadians;
 }
 
@@ -196,9 +198,15 @@ final class TaiyinSolarTransitEvent {
 /// Local visibility and contact geometry for a solar transit.
 ///
 /// Contact altitudes and azimuths are ordered `T1`, `T2`, greatest, `T3`,
-/// `T4`. Values preserve the native output, including its zero or non-finite
-/// sentinel where a contact does not exist.
+/// `T4`. Values preserve the native non-finite sentinel where a contact does
+/// not exist.
 final class TaiyinLocalSolarTransitEvent {
+  /// Mirrors `TAIYIN_SOLAR_TRANSIT_CONTACT_SLOT_COUNT` in the C ABI.
+  ///
+  /// Update this constant whenever the native header changes the corresponding
+  /// array size.
+  static const int contactSlotCount = 5;
+
   TaiyinLocalSolarTransitEvent({
     required this.global,
     required this.topocentric,
