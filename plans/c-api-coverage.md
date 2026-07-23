@@ -3,8 +3,8 @@
 Baseline: `taiyin-ephemeris/include/taiyin/c/*.h` on 2026-07-20.
 
 - Total callable C symbols: **317**
-- Included by the current Dart binding configuration: **293**
-- Remaining: **24**
+- Included by the current Dart binding configuration: **303**
+- Remaining: **14**
 
 `[x]` means the symbol is included in `ffigen.yaml` and its current Dart API
 block has landed. `[ ]` means it still needs a Dart binding/API decision. The
@@ -143,7 +143,7 @@ must remain available during that transition.
 - [x] `taiyin_context_disable_shapiro_delay`
 - [x] `taiyin_context_set_eclipse_models`
 
-## `eclipse.h` — 32/52
+## `eclipse.h` — 42/52
 
 - [x] `taiyin_lunar_eclipse_result_tt_init`
 - [x] `taiyin_lunar_eclipse_result_ut_init`
@@ -156,10 +156,10 @@ must remain available during that transition.
 - [x] `taiyin_local_solar_eclipse_circumstances_tt_init`
 - [x] `taiyin_local_solar_eclipse_circumstances_ut_init`
 - [ ] `taiyin_local_solar_eclipse_boundary_init`
-- [ ] `taiyin_solar_eclipse_route_row_init`
+- [x] `taiyin_solar_eclipse_route_row_init`
 - [ ] `taiyin_solar_eclipse_route_product_summary_init`
-- [ ] `taiyin_solar_besselian_elements_init`
-- [ ] `taiyin_solar_besselian_polynomial_init`
+- [x] `taiyin_solar_besselian_elements_init`
+- [x] `taiyin_solar_besselian_polynomial_init`
 - [x] `taiyin_solve_lunar_eclipse_at_tt`
 - [x] `taiyin_solve_lunar_eclipse_at_ut`
 - [x] `taiyin_search_next_lunar_eclipse_tt`
@@ -182,13 +182,13 @@ must remain available during that transition.
 - [x] `taiyin_search_next_local_solar_eclipse_ut`
 - [x] `taiyin_compute_local_solar_circumstances_tt`
 - [x] `taiyin_compute_local_solar_circumstances_ut`
-- [ ] `taiyin_compute_solar_besselian_elements_tt`
-- [ ] `taiyin_compute_solar_besselian_polynomial_tt`
-- [ ] `taiyin_evaluate_solar_besselian_polynomial`
-- [ ] `taiyin_compute_solar_eclipse_route_row_tt`
-- [ ] `taiyin_compute_solar_eclipse_route_row_ut`
-- [ ] `taiyin_compute_solar_eclipse_route_tt`
-- [ ] `taiyin_compute_solar_eclipse_route_ut`
+- [x] `taiyin_compute_solar_besselian_elements_tt`
+- [x] `taiyin_compute_solar_besselian_polynomial_tt`
+- [x] `taiyin_evaluate_solar_besselian_polynomial`
+- [x] `taiyin_compute_solar_eclipse_route_row_tt`
+- [x] `taiyin_compute_solar_eclipse_route_row_ut`
+- [x] `taiyin_compute_solar_eclipse_route_tt`
+- [x] `taiyin_compute_solar_eclipse_route_ut`
 - [ ] `taiyin_compute_solar_eclipse_route_curves_tt`
 - [ ] `taiyin_compute_solar_eclipse_route_curves_ut`
 - [ ] `taiyin_compute_solar_eclipse_route_product_tt`

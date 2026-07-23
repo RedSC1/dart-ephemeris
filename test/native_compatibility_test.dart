@@ -261,5 +261,37 @@ void main() {
         ),
       );
     });
+
+    test('reports missing solar Besselian symbols before use', () {
+      expect(
+        () => validateTaiyinRequiredSymbols(
+          providesSymbol: (symbol) =>
+              symbol != 'taiyin_evaluate_solar_besselian_polynomial',
+        ),
+        throwsA(
+          isA<StateError>().having(
+            (error) => error.message,
+            'message',
+            contains('taiyin_evaluate_solar_besselian_polynomial'),
+          ),
+        ),
+      );
+    });
+
+    test('reports missing solar route symbols before use', () {
+      expect(
+        () => validateTaiyinRequiredSymbols(
+          providesSymbol: (symbol) =>
+              symbol != 'taiyin_compute_solar_eclipse_route_ut',
+        ),
+        throwsA(
+          isA<StateError>().having(
+            (error) => error.message,
+            'message',
+            contains('taiyin_compute_solar_eclipse_route_ut'),
+          ),
+        ),
+      );
+    });
   });
 }

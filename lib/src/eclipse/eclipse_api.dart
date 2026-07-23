@@ -80,6 +80,18 @@ typedef _SolarCircumstancesUtCalculation =
       Pointer<taiyin_local_solar_eclipse_circumstances_ut> output,
       Pointer<taiyin_ephemeris_diagnostic> diagnostic,
     );
+typedef _SolarRouteRowCalculation =
+    int Function(
+      Pointer<taiyin_solar_eclipse_route_row> output,
+      Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+    );
+typedef _SolarRouteRowsCalculation =
+    int Function(
+      Pointer<taiyin_solar_eclipse_route_row> output,
+      int capacity,
+      Pointer<Size> count,
+      Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+    );
 
 // Shared by the solve and search C ABI option families. Local solar results
 // always include contacts, regardless of the public option set supplied.
@@ -1044,6 +1056,216 @@ final class TaiyinEclipseApi {
     });
   }
 
+  /// Computes Besselian elements at a TT [coordinate].
+  ///
+  /// [timeOffsetHours] is retained as the conventional Besselian time offset
+  /// in the returned value. The physical calculation crosses the current
+  /// scalar-Julian-date C ABI boundary.
+  TaiyinEphemerisResult<TaiyinSolarBesselianElements>
+  solarBesselianElementsAtTt(
+    JulianDate<TtScale> coordinate, {
+    double timeOffsetHours = 0,
+  }) {
+    _ensureOpen();
+    _requireFinite(timeOffsetHours, 'timeOffsetHours');
+    return using((arena) {
+      final output = arena<taiyin_solar_besselian_elements>();
+      final diagnostic = arena<taiyin_ephemeris_diagnostic>();
+      _bindings
+        ..taiyin_solar_besselian_elements_init(output)
+        ..taiyin_ephemeris_diagnostic_init(diagnostic);
+      final status = _bindings.taiyin_compute_solar_besselian_elements_tt(
+        _context,
+        coordinate.toDouble(),
+        timeOffsetHours,
+        output,
+        diagnostic,
+      );
+      final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
+      _checkStatus(status, mappedDiagnostic);
+      return TaiyinEphemerisResult(
+        value: _readSolarBesselianElements(output.ref),
+        diagnostic: mappedDiagnostic,
+      );
+    });
+  }
+
+  /// Fits a Besselian polynomial centred on a TT [coordinate].
+  ///
+  /// [spanHours] and [sampleStepHours] must be positive. The native model
+  /// permits polynomial [degree] values from 1 through 7.
+  TaiyinEphemerisResult<TaiyinSolarBesselianPolynomial>
+  solarBesselianPolynomialAtTt(
+    JulianDate<TtScale> coordinate, {
+    required double spanHours,
+    required double sampleStepHours,
+    int degree = 4,
+  }) {
+    _ensureOpen();
+    _requirePositiveFinite(spanHours, 'spanHours');
+    _requirePositiveFinite(sampleStepHours, 'sampleStepHours');
+    _requireBesselianDegree(degree);
+    return using((arena) {
+      final output = arena<taiyin_solar_besselian_polynomial>();
+      final diagnostic = arena<taiyin_ephemeris_diagnostic>();
+      _bindings
+        ..taiyin_solar_besselian_polynomial_init(output)
+        ..taiyin_ephemeris_diagnostic_init(diagnostic);
+      final status = _bindings.taiyin_compute_solar_besselian_polynomial_tt(
+        _context,
+        coordinate.toDouble(),
+        spanHours,
+        sampleStepHours,
+        degree,
+        output,
+        diagnostic,
+      );
+      final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
+      _checkStatus(status, mappedDiagnostic);
+      return TaiyinEphemerisResult(
+        value: _readSolarBesselianPolynomial(output.ref),
+        diagnostic: mappedDiagnostic,
+      );
+    });
+  }
+
+  /// Evaluates a fitted solar Besselian [polynomial] at [timeOffsetHours].
+  TaiyinSolarBesselianElements evaluateSolarBesselianPolynomial(
+    TaiyinSolarBesselianPolynomial polynomial,
+    double timeOffsetHours,
+  ) {
+    _ensureOpen();
+    _requireFinite(timeOffsetHours, 'timeOffsetHours');
+    return using((arena) {
+      final nativePolynomial = arena<taiyin_solar_besselian_polynomial>();
+      final output = arena<taiyin_solar_besselian_elements>();
+      _bindings
+        ..taiyin_solar_besselian_polynomial_init(nativePolynomial)
+        ..taiyin_solar_besselian_elements_init(output);
+      _writeSolarBesselianPolynomial(nativePolynomial.ref, polynomial);
+      _checkStatus(
+        _bindings.taiyin_evaluate_solar_besselian_polynomial(
+          nativePolynomial,
+          timeOffsetHours,
+          output,
+        ),
+        null,
+      );
+      return _readSolarBesselianElements(output.ref);
+    });
+  }
+
+  /// Calculates the global solar-eclipse route geometry at TT [coordinate].
+  ///
+  /// Only [TaiyinPositionFlag.truePosition] and
+  /// [TaiyinSolarEclipseRouteOption.lunarLimbCorrection] are supported.
+  TaiyinEphemerisResult<TaiyinSolarEclipseRouteRow> solarEclipseRouteRowAtTt(
+    JulianDate<TtScale> coordinate, {
+    Set<TaiyinPositionFlag> positionFlags = const {},
+    Set<TaiyinSolarEclipseRouteOption> options = const {},
+  }) {
+    _ensureOpen();
+    final mask = _solarRouteMask(positionFlags, options);
+    return _solarRouteRow((output, diagnostic) {
+      return _bindings.taiyin_compute_solar_eclipse_route_row_tt(
+        _context,
+        coordinate.toDouble(),
+        mask,
+        output,
+        diagnostic,
+      );
+    });
+  }
+
+  /// Calculates the global solar-eclipse route geometry at UT1 [coordinate].
+  ///
+  /// Only [TaiyinPositionFlag.truePosition] and
+  /// [TaiyinSolarEclipseRouteOption.lunarLimbCorrection] are supported.
+  TaiyinEphemerisResult<TaiyinSolarEclipseRouteRow> solarEclipseRouteRowAtUt1(
+    JulianDate<Ut1Scale> coordinate, {
+    Set<TaiyinPositionFlag> positionFlags = const {},
+    Set<TaiyinSolarEclipseRouteOption> options = const {},
+  }) {
+    _ensureOpen();
+    final mask = _solarRouteMask(positionFlags, options);
+    return _solarRouteRow((output, diagnostic) {
+      return _bindings.taiyin_compute_solar_eclipse_route_row_ut(
+        _context,
+        coordinate.toDouble(),
+        mask,
+        output,
+        diagnostic,
+      );
+    });
+  }
+
+  /// Samples global solar-eclipse route geometry from TT [start] through [end].
+  ///
+  /// Both endpoints are included when they land on [stepMinutes]. The range
+  /// may contain one coordinate. Rows with no Earth-intersecting route branch
+  /// are omitted by native code.
+  TaiyinEphemerisResult<List<TaiyinSolarEclipseRouteRow>> solarEclipseRouteAtTt(
+    JulianDate<TtScale> start,
+    JulianDate<TtScale> end, {
+    required double stepMinutes,
+    int maxRows = 256,
+    Set<TaiyinPositionFlag> positionFlags = const {},
+    Set<TaiyinSolarEclipseRouteOption> options = const {},
+  }) {
+    _ensureOpen();
+    _requireRouteInterval(start, end);
+    _requirePositiveFinite(stepMinutes, 'stepMinutes');
+    _requireCapacity(maxRows);
+    final mask = _solarRouteMask(positionFlags, options);
+    return _solarRouteRows(maxRows, (output, capacity, count, diagnostic) {
+      return _bindings.taiyin_compute_solar_eclipse_route_tt(
+        _context,
+        start.toDouble(),
+        end.toDouble(),
+        stepMinutes,
+        mask,
+        output,
+        capacity,
+        count,
+        diagnostic,
+      );
+    });
+  }
+
+  /// Samples global solar-eclipse route geometry from UT1 [start] through [end].
+  ///
+  /// Both endpoints are included when they land on [stepMinutes]. The range
+  /// may contain one coordinate. Rows with no Earth-intersecting route branch
+  /// are omitted by native code.
+  TaiyinEphemerisResult<List<TaiyinSolarEclipseRouteRow>>
+  solarEclipseRouteAtUt1(
+    JulianDate<Ut1Scale> start,
+    JulianDate<Ut1Scale> end, {
+    required double stepMinutes,
+    int maxRows = 256,
+    Set<TaiyinPositionFlag> positionFlags = const {},
+    Set<TaiyinSolarEclipseRouteOption> options = const {},
+  }) {
+    _ensureOpen();
+    _requireRouteInterval(start, end);
+    _requirePositiveFinite(stepMinutes, 'stepMinutes');
+    _requireCapacity(maxRows);
+    final mask = _solarRouteMask(positionFlags, options);
+    return _solarRouteRows(maxRows, (output, capacity, count, diagnostic) {
+      return _bindings.taiyin_compute_solar_eclipse_route_ut(
+        _context,
+        start.toDouble(),
+        end.toDouble(),
+        stepMinutes,
+        mask,
+        output,
+        capacity,
+        count,
+        diagnostic,
+      );
+    });
+  }
+
   TaiyinEphemerisResult<TaiyinSolarEclipseResult<TtScale>> _solarTt(
     _SolarTtCalculation calculate,
   ) {
@@ -1128,6 +1350,51 @@ final class TaiyinEclipseApi {
         value: List.unmodifiable([
           for (var index = 0; index < resultCount; index++)
             _readSolarUt((output + index).ref),
+        ]),
+        diagnostic: mappedDiagnostic,
+      );
+    });
+  }
+
+  TaiyinEphemerisResult<TaiyinSolarEclipseRouteRow> _solarRouteRow(
+    _SolarRouteRowCalculation calculate,
+  ) {
+    return using((arena) {
+      final output = arena<taiyin_solar_eclipse_route_row>();
+      final diagnostic = arena<taiyin_ephemeris_diagnostic>();
+      _bindings
+        ..taiyin_solar_eclipse_route_row_init(output)
+        ..taiyin_ephemeris_diagnostic_init(diagnostic);
+      final status = calculate(output, diagnostic);
+      final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
+      _checkStatus(status, mappedDiagnostic);
+      return TaiyinEphemerisResult(
+        value: _readSolarEclipseRouteRow(output.ref),
+        diagnostic: mappedDiagnostic,
+      );
+    });
+  }
+
+  TaiyinEphemerisResult<List<TaiyinSolarEclipseRouteRow>> _solarRouteRows(
+    int capacity,
+    _SolarRouteRowsCalculation calculate,
+  ) {
+    return using((arena) {
+      final output = arena<taiyin_solar_eclipse_route_row>(capacity);
+      final count = arena<Size>();
+      final diagnostic = arena<taiyin_ephemeris_diagnostic>();
+      for (var index = 0; index < capacity; index++) {
+        _bindings.taiyin_solar_eclipse_route_row_init(output + index);
+      }
+      _bindings.taiyin_ephemeris_diagnostic_init(diagnostic);
+      final status = calculate(output, capacity, count, diagnostic);
+      final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
+      _checkStatus(status, mappedDiagnostic);
+      final resultCount = _validatedResultCount(count.value, capacity);
+      return TaiyinEphemerisResult(
+        value: List.unmodifiable([
+          for (var index = 0; index < resultCount; index++)
+            _readSolarEclipseRouteRow((output + index).ref),
         ]),
         diagnostic: mappedDiagnostic,
       );
@@ -1329,6 +1596,131 @@ final class TaiyinEclipseApi {
     );
   }
 
+  TaiyinSolarEclipseRouteRow _readSolarEclipseRouteRow(
+    taiyin_solar_eclipse_route_row value,
+  ) {
+    return TaiyinSolarEclipseRouteRow(
+      coordinateTt: JulianDate<TtScale>.fromDouble(value.jd_tt),
+      coordinateUt1: JulianDate<Ut1Scale>.fromDouble(value.jd_ut),
+      centerLine: _readSolarEclipseRoutePoint(value.center_line),
+      penumbralNorthLimit: _readSolarEclipseRoutePoint(
+        value.penumbral_north_limit,
+      ),
+      penumbralSouthLimit: _readSolarEclipseRoutePoint(
+        value.penumbral_south_limit,
+      ),
+      northLimit: _readSolarEclipseRoutePoint(value.north_limit),
+      southLimit: _readSolarEclipseRoutePoint(value.south_limit),
+      halfMagnitudeNorthLimit: _readSolarEclipseRoutePoint(
+        value.half_magnitude_north_limit,
+      ),
+      halfMagnitudeSouthLimit: _readSolarEclipseRoutePoint(
+        value.half_magnitude_south_limit,
+      ),
+      pathWidthKilometers: _finiteOrNull(value.path_width_km),
+      durationSeconds: _finiteOrNull(value.duration_seconds),
+      sunAltitudeDegrees: _finiteOrNull(value.sun_altitude_deg),
+      sunAzimuthDegrees: _finiteOrNull(value.sun_azimuth_deg),
+    );
+  }
+
+  TaiyinSolarEclipseRoutePoint _readSolarEclipseRoutePoint(
+    taiyin_solar_eclipse_path_point value,
+  ) {
+    return TaiyinSolarEclipseRoutePoint(
+      coordinateTt: _ttOrNull(value.jd_tt),
+      coordinateUt1: _ut1OrNull(value.jd_ut),
+      latitudeDegrees: _finiteOrNull(value.latitude_deg),
+      longitudeDegrees: _finiteOrNull(value.longitude_deg),
+      elevationMeters: _finiteOrNull(value.elevation_m),
+      sunAltitudeDegrees: _finiteOrNull(value.sun_altitude_deg),
+      sunAzimuthDegrees: _finiteOrNull(value.sun_azimuth_deg),
+    );
+  }
+
+  TaiyinSolarBesselianElements _readSolarBesselianElements(
+    taiyin_solar_besselian_elements value,
+  ) {
+    return TaiyinSolarBesselianElements(
+      tHours: value.t_hours,
+      x: value.x,
+      y: value.y,
+      zeta: value.zeta,
+      dDegrees: value.d_deg,
+      muDegrees: value.mu_deg,
+      l1: value.l1,
+      l2: value.l2,
+      f1Degrees: value.f1_deg,
+      f2Degrees: value.f2_deg,
+      tanF1: value.tan_f1,
+      tanF2: value.tan_f2,
+      gamma: value.gamma,
+    );
+  }
+
+  TaiyinSolarBesselianPolynomial _readSolarBesselianPolynomial(
+    taiyin_solar_besselian_polynomial value,
+  ) {
+    return TaiyinSolarBesselianPolynomial(
+      referenceEpoch: JulianDate<TtScale>.fromDouble(value.t0_jd_tt),
+      spanHours: value.span_hours,
+      sampleStepHours: value.sample_step_hours,
+      degree: value.degree,
+      xCoefficients: _readBesselianCoefficients(value.x),
+      yCoefficients: _readBesselianCoefficients(value.y),
+      zetaCoefficients: _readBesselianCoefficients(value.zeta),
+      dDegreesCoefficients: _readBesselianCoefficients(value.d_deg),
+      muDegreesCoefficients: _readBesselianCoefficients(value.mu_deg),
+      l1Coefficients: _readBesselianCoefficients(value.l1),
+      l2Coefficients: _readBesselianCoefficients(value.l2),
+      f1Degrees: value.f1_deg,
+      f2Degrees: value.f2_deg,
+      tanF1: value.tan_f1,
+      tanF2: value.tan_f2,
+      center: _readSolarBesselianElements(value.center),
+      maxResidual: _readSolarBesselianElements(value.max_residual),
+    );
+  }
+
+  List<double> _readBesselianCoefficients(Array<Double> values) {
+    return [
+      for (
+        var index = 0;
+        index < TaiyinSolarBesselianPolynomial.coefficientCount;
+        index++
+      )
+        values[index],
+    ];
+  }
+
+  void _writeSolarBesselianPolynomial(
+    taiyin_solar_besselian_polynomial native,
+    TaiyinSolarBesselianPolynomial value,
+  ) {
+    native
+      ..t0_jd_tt = value.referenceEpoch.toDouble()
+      ..span_hours = value.spanHours
+      ..sample_step_hours = value.sampleStepHours
+      ..degree = value.degree
+      ..f1_deg = value.f1Degrees
+      ..f2_deg = value.f2Degrees
+      ..tan_f1 = value.tanF1
+      ..tan_f2 = value.tanF2;
+    for (
+      var index = 0;
+      index < TaiyinSolarBesselianPolynomial.coefficientCount;
+      index++
+    ) {
+      native.x[index] = value.xCoefficients[index];
+      native.y[index] = value.yCoefficients[index];
+      native.zeta[index] = value.zetaCoefficients[index];
+      native.d_deg[index] = value.dDegreesCoefficients[index];
+      native.mu_deg[index] = value.muDegreesCoefficients[index];
+      native.l1[index] = value.l1Coefficients[index];
+      native.l2[index] = value.l2Coefficients[index];
+    }
+  }
+
   int _solarSolveMask(
     Set<TaiyinPositionFlag> positionFlags,
     Set<TaiyinSolarEclipseSolveOption> options,
@@ -1360,7 +1752,55 @@ final class TaiyinEclipseApi {
     );
   }
 
+  int _solarRouteMask(
+    Set<TaiyinPositionFlag> positionFlags,
+    Set<TaiyinSolarEclipseRouteOption> options,
+  ) {
+    _requireSupportedPositionFlags(positionFlags);
+    return _mergeDisjointMasks(
+      _positionMask(positionFlags),
+      options.fold(0, (mask, option) => mask | option.mask),
+    );
+  }
+
   int _withSolarContacts(int mask) => mask | _solarEclipseIncludeContactsBit;
+
+  void _requireFinite(double value, String name) {
+    if (!value.isFinite) {
+      throw ArgumentError.value(value, name, 'must be finite');
+    }
+  }
+
+  void _requirePositiveFinite(double value, String name) {
+    if (!value.isFinite || value <= 0) {
+      throw ArgumentError.value(
+        value,
+        name,
+        'must be a positive finite number',
+      );
+    }
+  }
+
+  void _requireBesselianDegree(int degree) {
+    if (degree < 1 ||
+        degree >= TaiyinSolarBesselianPolynomial.coefficientCount) {
+      throw RangeError.range(
+        degree,
+        1,
+        TaiyinSolarBesselianPolynomial.coefficientCount - 1,
+        'degree',
+      );
+    }
+  }
+
+  void _requireRouteInterval<S extends TimeScale>(
+    JulianDate<S> start,
+    JulianDate<S> end,
+  ) {
+    if (end.compareTo(start) < 0) {
+      throw ArgumentError.value(end, 'end', 'must not be earlier than start');
+    }
+  }
 
   int _solarKindMask(Set<TaiyinEclipseKind> kinds) {
     const supported = {

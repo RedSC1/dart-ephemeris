@@ -265,6 +265,10 @@ void main() {
           kinds: {TaiyinEclipseKind.total},
           options: {TaiyinSolarEclipseSearchOption.lunarLimbCorrection},
         );
+        final route = context.eclipses.solarEclipseRouteRowAtUt1(
+          JulianDate<Ut1Scale>.fromDouble(2460409.262039739),
+          options: {TaiyinSolarEclipseRouteOption.lunarLimbCorrection},
+        );
 
         expect(runtime.hasLunarLimbModel, isTrue);
         expect(global.value.kinds, contains(TaiyinEclipseKind.total));
@@ -274,8 +278,180 @@ void main() {
           isNotNull,
         );
         expect(nextLocal.value.kinds, contains(TaiyinEclipseKind.total));
+        expect(route.value.hasRoute, isTrue);
       },
       skip: !nativeLibraryAvailable || !lunarLimbAvailable,
+    );
+
+    test(
+      'computes and evaluates solar Besselian elements and polynomials',
+      () {
+        final center = JulianDate<TtScale>.fromDouble(
+          2460409.262231433 + 69 / 86400,
+        );
+        final elements = context.eclipses.solarBesselianElementsAtTt(center);
+        final polynomial = context.eclipses.solarBesselianPolynomialAtTt(
+          center,
+          spanHours: 6,
+          sampleStepHours: 1,
+          degree: 4,
+        );
+        final evaluated = context.eclipses.evaluateSolarBesselianPolynomial(
+          polynomial.value,
+          0,
+        );
+
+        expect(elements.value.tHours, 0);
+        expect(elements.value.x, closeTo(0.158222771478, 1e-9));
+        expect(elements.value.y, closeTo(0.304493852574, 1e-9));
+        expect(elements.value.zeta, closeTo(56.410877306293, 1e-8));
+        expect(elements.value.dDegrees, closeTo(-7.590825680172, 1e-9));
+        expect(elements.value.muDegrees, closeTo(273.994309607730, 1e-8));
+        expect(elements.value.l1, closeTo(0.535736741366, 1e-9));
+        expect(elements.value.l2, closeTo(0.010590415175, 1e-9));
+        expect(
+          polynomial.value.referenceEpoch.toDouble(),
+          closeTo(center.toDouble(), 1e-12),
+        );
+        expect(polynomial.value.degree, 4);
+        expect(
+          polynomial.value.xCoefficients,
+          hasLength(TaiyinSolarBesselianPolynomial.coefficientCount),
+        );
+        expect(evaluated.x, closeTo(elements.value.x, 1e-8));
+        expect(evaluated.y, closeTo(elements.value.y, 1e-8));
+        expect(evaluated.l1, closeTo(elements.value.l1, 1e-8));
+        expect(evaluated.l2, closeTo(elements.value.l2, 1e-8));
+        expect(polynomial.value.maxResidual.x, lessThan(1e-7));
+        expect(polynomial.value.maxResidual.y, lessThan(1e-7));
+        expect(
+          () => context.eclipses.solarBesselianElementsAtTt(
+            center,
+            timeOffsetHours: double.nan,
+          ),
+          throwsArgumentError,
+        );
+        expect(
+          () => context.eclipses.solarBesselianPolynomialAtTt(
+            center,
+            spanHours: 0,
+            sampleStepHours: 1,
+          ),
+          throwsArgumentError,
+        );
+        expect(
+          () => context.eclipses.solarBesselianPolynomialAtTt(
+            center,
+            spanHours: 6,
+            sampleStepHours: 1,
+            degree: 8,
+          ),
+          throwsRangeError,
+        );
+        expect(
+          () => context.eclipses.evaluateSolarBesselianPolynomial(
+            polynomial.value,
+            double.infinity,
+          ),
+          throwsArgumentError,
+        );
+      },
+      skip: !nativeLibraryAvailable,
+    );
+
+    test(
+      'computes global solar-eclipse route rows and inclusive route samples',
+      () {
+        final centerUt = JulianDate<Ut1Scale>.fromDouble(2460409.262039739);
+        final centerTt = JulianDate<TtScale>.fromDouble(
+          2460409.262039739 + 69 / 86400,
+        );
+        final rowUt = context.eclipses.solarEclipseRouteRowAtUt1(centerUt);
+        final truePositionRow = context.eclipses.solarEclipseRouteRowAtUt1(
+          centerUt,
+          positionFlags: {TaiyinPositionFlag.truePosition},
+        );
+        final rowTt = context.eclipses.solarEclipseRouteRowAtTt(centerTt);
+        final routeUt = context.eclipses.solarEclipseRouteAtUt1(
+          JulianDate<Ut1Scale>.fromDouble(2460409.25),
+          JulianDate<Ut1Scale>.fromDouble(2460409.27),
+          stepMinutes: 10,
+          maxRows: 8,
+        );
+        final routeTt = context.eclipses.solarEclipseRouteAtTt(
+          JulianDate<TtScale>.fromDouble(2460409.25 + 69 / 86400),
+          JulianDate<TtScale>.fromDouble(2460409.27 + 69 / 86400),
+          stepMinutes: 10,
+          maxRows: 8,
+        );
+        final singleCoordinateRoute = context.eclipses.solarEclipseRouteAtUt1(
+          centerUt,
+          centerUt,
+          stepMinutes: 1,
+          maxRows: 2,
+        );
+
+        expect(rowUt.value.hasRoute, isTrue);
+        expect(rowUt.value.centerLine.intersectsEarth, isTrue);
+        expect(
+          rowUt.value.centerLine.latitudeDegrees,
+          closeTo(25.289608540, 1e-4),
+        );
+        expect(
+          rowUt.value.centerLine.longitudeDegrees,
+          closeTo(-104.147998749, 1e-4),
+        );
+        expect(rowUt.value.pathWidthKilometers, closeTo(197.862736, 5));
+        expect(rowUt.value.durationSeconds, closeTo(268.106442, 8));
+        expect(rowUt.value.northLimit.intersectsEarth, isTrue);
+        expect(rowUt.value.southLimit.intersectsEarth, isTrue);
+        expect(truePositionRow.value.hasRoute, isTrue);
+        expect(rowTt.value.hasRoute, isTrue);
+        expect(rowTt.value.centerLine.latitudeDegrees, isNotNull);
+        expect(routeUt.value, isNotEmpty);
+        for (final routeRow in routeUt.value) {
+          expect(routeRow.hasRoute, isTrue);
+        }
+        expect(routeTt.value, isNotEmpty);
+        expect(singleCoordinateRoute.value, hasLength(1));
+        expect(
+          routeTt.value.first.coordinateTt.toDouble(),
+          closeTo(2460409.25 + 69 / 86400, 1e-12),
+        );
+        expect(
+          () => context.eclipses.solarEclipseRouteAtUt1(
+            JulianDate<Ut1Scale>.fromDouble(2460409.25),
+            JulianDate<Ut1Scale>.fromDouble(2460409.27),
+            stepMinutes: 10,
+            maxRows: 1,
+          ),
+          throwsA(isA<TaiyinException>()),
+        );
+        expect(
+          () => context.eclipses.solarEclipseRouteAtUt1(
+            JulianDate<Ut1Scale>.fromDouble(2460409.27),
+            JulianDate<Ut1Scale>.fromDouble(2460409.25),
+            stepMinutes: 10,
+          ),
+          throwsArgumentError,
+        );
+        expect(
+          () => context.eclipses.solarEclipseRouteAtUt1(
+            JulianDate<Ut1Scale>.fromDouble(2460409.25),
+            JulianDate<Ut1Scale>.fromDouble(2460409.27),
+            stepMinutes: 0,
+          ),
+          throwsArgumentError,
+        );
+        expect(
+          () => context.eclipses.solarEclipseRouteRowAtUt1(
+            centerUt,
+            positionFlags: {TaiyinPositionFlag.xyz},
+          ),
+          throwsArgumentError,
+        );
+      },
+      skip: !nativeLibraryAvailable,
     );
 
     test(
