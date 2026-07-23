@@ -34,7 +34,7 @@ enum TaiyinNutationModel {
 
 /// Obliquity model used by Taiyin.
 ///
-/// ABI version 1 currently exposes one implementation.
+/// ABI version 2 currently exposes one implementation.
 enum TaiyinObliquityModel {
   iau2006(0);
 
@@ -108,7 +108,7 @@ enum TaiyinApparentFlag {
 
 /// Aberration implementation.
 ///
-/// ABI version 1 currently exposes one implementation.
+/// ABI version 2 currently exposes one implementation.
 enum TaiyinAberrationModel {
   annualRelativistic(0);
 
@@ -129,7 +129,7 @@ enum TaiyinDeflectionModel {
 
 /// Light-time implementation.
 ///
-/// ABI version 1 currently exposes one implementation.
+/// ABI version 2 currently exposes one implementation.
 enum TaiyinLightTimeMethod {
   iterative(0);
 
@@ -140,7 +140,7 @@ enum TaiyinLightTimeMethod {
 
 /// Shapiro-delay implementation.
 ///
-/// ABI version 1 currently exposes one implementation.
+/// ABI version 2 currently exposes one implementation.
 enum TaiyinShapiroDelayModel {
   standard(0);
 

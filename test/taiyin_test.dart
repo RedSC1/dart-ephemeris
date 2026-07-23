@@ -4,6 +4,7 @@ import 'dart:isolate';
 
 import 'package:ffi/ffi.dart';
 import 'package:taiyin/src/bindings/taiyin_bindings.g.dart';
+import 'package:taiyin/src/native_compatibility.dart';
 import 'package:taiyin/taiyin.dart';
 import 'package:test/test.dart';
 
@@ -200,7 +201,7 @@ void main() {
       });
 
       test('validates metadata and initializes the catalog', () {
-        expect(runtime.abiVersion, 1);
+        expect(runtime.abiVersion, taiyinSupportedAbiVersion);
         expect(runtime.libraryVersion, '1.0.0');
         expect(runtime.catalogSize, greaterThan(0));
         expect(

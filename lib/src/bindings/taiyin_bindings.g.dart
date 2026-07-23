@@ -4189,24 +4189,6 @@ class TaiyinBindings {
             void Function(ffi.Pointer<taiyin_equation_of_time_result>)
           >();
 
-  void taiyin_split_equation_of_time_result_init(
-    ffi.Pointer<taiyin_split_equation_of_time_result> value,
-  ) {
-    return _taiyin_split_equation_of_time_result_init(value);
-  }
-
-  late final _taiyin_split_equation_of_time_result_initPtr =
-      _lookup<
-        ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<taiyin_split_equation_of_time_result>)
-        >
-      >('taiyin_split_equation_of_time_result_init');
-  late final _taiyin_split_equation_of_time_result_init =
-      _taiyin_split_equation_of_time_result_initPtr
-          .asFunction<
-            void Function(ffi.Pointer<taiyin_split_equation_of_time_result>)
-          >();
-
   int taiyin_calc_equation_of_time_ut(
     ffi.Pointer<taiyin_context> context,
     double jd_ut,
@@ -4265,78 +4247,6 @@ class TaiyinBindings {
               ffi.Pointer<taiyin_context>,
               double,
               ffi.Pointer<taiyin_equation_of_time_result>,
-              ffi.Pointer<taiyin_ephemeris_diagnostic>,
-            )
-          >();
-
-  int taiyin_calc_equation_of_time_ut_split(
-    ffi.Pointer<taiyin_context> context,
-    ffi.Pointer<taiyin_split_julian_date> jd_ut,
-    ffi.Pointer<taiyin_split_equation_of_time_result> out,
-    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
-  ) {
-    return _taiyin_calc_equation_of_time_ut_split(
-      context,
-      jd_ut,
-      out,
-      diagnostic,
-    );
-  }
-
-  late final _taiyin_calc_equation_of_time_ut_splitPtr =
-      _lookup<
-        ffi.NativeFunction<
-          taiyin_status Function(
-            ffi.Pointer<taiyin_context>,
-            ffi.Pointer<taiyin_split_julian_date>,
-            ffi.Pointer<taiyin_split_equation_of_time_result>,
-            ffi.Pointer<taiyin_ephemeris_diagnostic>,
-          )
-        >
-      >('taiyin_calc_equation_of_time_ut_split');
-  late final _taiyin_calc_equation_of_time_ut_split =
-      _taiyin_calc_equation_of_time_ut_splitPtr
-          .asFunction<
-            int Function(
-              ffi.Pointer<taiyin_context>,
-              ffi.Pointer<taiyin_split_julian_date>,
-              ffi.Pointer<taiyin_split_equation_of_time_result>,
-              ffi.Pointer<taiyin_ephemeris_diagnostic>,
-            )
-          >();
-
-  int taiyin_calc_equation_of_time_tt_split(
-    ffi.Pointer<taiyin_context> context,
-    ffi.Pointer<taiyin_split_julian_date> jd_tt,
-    ffi.Pointer<taiyin_split_equation_of_time_result> out,
-    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
-  ) {
-    return _taiyin_calc_equation_of_time_tt_split(
-      context,
-      jd_tt,
-      out,
-      diagnostic,
-    );
-  }
-
-  late final _taiyin_calc_equation_of_time_tt_splitPtr =
-      _lookup<
-        ffi.NativeFunction<
-          taiyin_status Function(
-            ffi.Pointer<taiyin_context>,
-            ffi.Pointer<taiyin_split_julian_date>,
-            ffi.Pointer<taiyin_split_equation_of_time_result>,
-            ffi.Pointer<taiyin_ephemeris_diagnostic>,
-          )
-        >
-      >('taiyin_calc_equation_of_time_tt_split');
-  late final _taiyin_calc_equation_of_time_tt_split =
-      _taiyin_calc_equation_of_time_tt_splitPtr
-          .asFunction<
-            int Function(
-              ffi.Pointer<taiyin_context>,
-              ffi.Pointer<taiyin_split_julian_date>,
-              ffi.Pointer<taiyin_split_equation_of_time_result>,
               ffi.Pointer<taiyin_ephemeris_diagnostic>,
             )
           >();
@@ -4417,86 +4327,6 @@ class TaiyinBindings {
               double,
               double,
               ffi.Pointer<ffi.Double>,
-              ffi.Pointer<taiyin_ephemeris_diagnostic>,
-            )
-          >();
-
-  int taiyin_local_mean_to_apparent_solar_time_split(
-    ffi.Pointer<taiyin_context> context,
-    ffi.Pointer<taiyin_split_julian_date> jd_local_mean,
-    double longitude_rad,
-    ffi.Pointer<taiyin_split_julian_date> out_jd_local_apparent,
-    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
-  ) {
-    return _taiyin_local_mean_to_apparent_solar_time_split(
-      context,
-      jd_local_mean,
-      longitude_rad,
-      out_jd_local_apparent,
-      diagnostic,
-    );
-  }
-
-  late final _taiyin_local_mean_to_apparent_solar_time_splitPtr =
-      _lookup<
-        ffi.NativeFunction<
-          taiyin_status Function(
-            ffi.Pointer<taiyin_context>,
-            ffi.Pointer<taiyin_split_julian_date>,
-            ffi.Double,
-            ffi.Pointer<taiyin_split_julian_date>,
-            ffi.Pointer<taiyin_ephemeris_diagnostic>,
-          )
-        >
-      >('taiyin_local_mean_to_apparent_solar_time_split');
-  late final _taiyin_local_mean_to_apparent_solar_time_split =
-      _taiyin_local_mean_to_apparent_solar_time_splitPtr
-          .asFunction<
-            int Function(
-              ffi.Pointer<taiyin_context>,
-              ffi.Pointer<taiyin_split_julian_date>,
-              double,
-              ffi.Pointer<taiyin_split_julian_date>,
-              ffi.Pointer<taiyin_ephemeris_diagnostic>,
-            )
-          >();
-
-  int taiyin_local_apparent_to_mean_solar_time_split(
-    ffi.Pointer<taiyin_context> context,
-    ffi.Pointer<taiyin_split_julian_date> jd_local_apparent,
-    double longitude_rad,
-    ffi.Pointer<taiyin_split_julian_date> out_jd_local_mean,
-    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
-  ) {
-    return _taiyin_local_apparent_to_mean_solar_time_split(
-      context,
-      jd_local_apparent,
-      longitude_rad,
-      out_jd_local_mean,
-      diagnostic,
-    );
-  }
-
-  late final _taiyin_local_apparent_to_mean_solar_time_splitPtr =
-      _lookup<
-        ffi.NativeFunction<
-          taiyin_status Function(
-            ffi.Pointer<taiyin_context>,
-            ffi.Pointer<taiyin_split_julian_date>,
-            ffi.Double,
-            ffi.Pointer<taiyin_split_julian_date>,
-            ffi.Pointer<taiyin_ephemeris_diagnostic>,
-          )
-        >
-      >('taiyin_local_apparent_to_mean_solar_time_split');
-  late final _taiyin_local_apparent_to_mean_solar_time_split =
-      _taiyin_local_apparent_to_mean_solar_time_splitPtr
-          .asFunction<
-            int Function(
-              ffi.Pointer<taiyin_context>,
-              ffi.Pointer<taiyin_split_julian_date>,
-              double,
-              ffi.Pointer<taiyin_split_julian_date>,
               ffi.Pointer<taiyin_ephemeris_diagnostic>,
             )
           >();
@@ -11498,27 +11328,6 @@ final class taiyin_equation_of_time_result extends ffi.Struct {
 
   @ffi.Double()
   external double jd_tt;
-
-  @ffi.Double()
-  external double equation_days;
-
-  @ffi.Double()
-  external double equation_seconds;
-
-  @ffi.Double()
-  external double apparent_sun_right_ascension_rad;
-
-  @ffi.Double()
-  external double gast_rad;
-}
-
-final class taiyin_split_equation_of_time_result extends ffi.Struct {
-  @ffi.Uint32()
-  external int struct_size;
-
-  external taiyin_split_julian_date jd_ut;
-
-  external taiyin_split_julian_date jd_tt;
 
   @ffi.Double()
   external double equation_days;

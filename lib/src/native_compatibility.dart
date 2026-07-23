@@ -1,9 +1,8 @@
-const int taiyinSupportedAbiVersion = 1;
+const int taiyinSupportedAbiVersion = 2;
 const int taiyinSplitTimeCapability = 1 << 14;
 
-/// Symbols added while ABI 1 was still in development and required by the
-/// high-level APIs exposed by this package.
-const Set<String> taiyinRequiredAbi1Symbols = {
+/// Symbols required by the ABI-2 native baseline used by this package.
+const Set<String> taiyinRequiredAbi2Symbols = {
   'taiyin_get_library_codename',
   'taiyin_format_ephemeris_diagnostic',
   'taiyin_register_native_position_evaluator',
@@ -35,15 +34,10 @@ const Set<String> taiyinRequiredAbi1Symbols = {
   'taiyin_calc_body_phenomena_tt',
   'taiyin_calc_body_phenomena_ut',
   'taiyin_equation_of_time_result_init',
-  'taiyin_split_equation_of_time_result_init',
   'taiyin_calc_equation_of_time_ut',
   'taiyin_calc_equation_of_time_tt',
-  'taiyin_calc_equation_of_time_ut_split',
-  'taiyin_calc_equation_of_time_tt_split',
   'taiyin_local_mean_to_apparent_solar_time',
   'taiyin_local_apparent_to_mean_solar_time',
-  'taiyin_local_mean_to_apparent_solar_time_split',
-  'taiyin_local_apparent_to_mean_solar_time_split',
   'taiyin_star_catalog_add_tsc1',
   'taiyin_star_catalog_add_tsc1_memory',
   'taiyin_star_catalog_add_tsf1',
@@ -223,8 +217,7 @@ const Set<String> taiyinRequiredAbi1Symbols = {
 /// be tested without loading a platform-specific dynamic library.
 ///
 /// The Dart package exposes its split-date time service as a required part of
-/// every `TaiyinContext`, so it intentionally rejects otherwise-compatible
-/// intermediate ABI-1 builds that predate the capability marker.
+/// every `TaiyinContext`, so it requires the split-time capability.
 void validateTaiyinNativeCompatibility({
   required int abiVersion,
   required int capabilities,
@@ -243,11 +236,11 @@ void validateTaiyinNativeCompatibility({
   }
 }
 
-/// Rejects intermediate ABI-1 builds before generated bindings lazily look up
-/// a missing symbol.
+/// Rejects incomplete ABI-2 builds before generated bindings lazily look up a
+/// missing symbol.
 void validateTaiyinRequiredSymbols({
   required bool Function(String symbol) providesSymbol,
-  Set<String> requiredSymbols = taiyinRequiredAbi1Symbols,
+  Set<String> requiredSymbols = taiyinRequiredAbi2Symbols,
 }) {
   final missing = [
     for (final symbol in requiredSymbols)
@@ -255,7 +248,7 @@ void validateTaiyinRequiredSymbols({
   ];
   if (missing.isNotEmpty) {
     throw StateError(
-      'The loaded Taiyin ABI-1 library is missing symbols required by this '
+      'The loaded Taiyin ABI-2 library is missing symbols required by this '
       'package: ${missing.join(', ')}. Rebuild or update the native library.',
     );
   }

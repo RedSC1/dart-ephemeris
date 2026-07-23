@@ -631,10 +631,10 @@ present-epoch precision limit as the other physical calculation APIs.
 ## Solar time and body phenomena
 
 `context.solarTime` calculates the equation of time from UT1 or TT and converts
-between local mean and apparent solar time through the native split-Julian-date
-ABI. `LocalMeanSolarTime` and `LocalApparentSolarTime` carry both a typed split
-coordinate and its longitude, so conversions cannot use the wrong coordinate
-kind or a mismatched meridian:
+between local mean and apparent solar time through the native scalar-JD ABI.
+`LocalMeanSolarTime` and `LocalApparentSolarTime` carry both a typed coordinate
+and its longitude, so conversions cannot use the wrong coordinate kind or a
+mismatched meridian:
 
 ```dart
 final ut1 = JulianDate<Ut1Scale>.fromDouble(2460311.0);
@@ -649,6 +649,14 @@ final localApparent = context.solarTime.meanToApparent(localMean);
 print(equation.value.equationSeconds);
 print(localApparent.value.coordinate);
 ```
+
+Solar-time calculations have the same roughly 40-microsecond present-epoch
+precision boundary as the other physical calculation APIs. `JulianDate` keeps
+its split representation for Dart-side arithmetic and time-scale conversion,
+but it is quantized when calling this native calculation family. The limitation
+comes from native physical ephemeris and Earth-rotation/GAST evaluation, not
+from Dart's split-date bookkeeping; restoring a split wrapper alone cannot
+improve it.
 
 `context.phenomena` calculates phase angle, illuminated fraction, solar
 elongation, apparent diameter, and apparent magnitude for the Sun, Moon, and
@@ -756,11 +764,11 @@ native C ABI does not return partial observed values. Failed position-batch
 entries contain NaN coordinates and rates. Batch exceptions expose every
 available native failure through `TaiyinException.diagnostics`.
 
-This package requires an ABI-1 native library that reports
-`TaiyinCapability.splitTime` and exposes the late ABI-1 runtime, star,
-solar-time, and phenomena symbols. Intermediate ABI-1 builds are rejected
-during `Taiyin.open` or `TaiyinContext.attach` with a clear compatibility error
-instead of failing later during a lazy symbol lookup.
+This package requires an ABI-2 native library that reports
+`TaiyinCapability.splitTime` and exposes the required runtime, star,
+solar-time, and phenomena symbols. Incomplete ABI-2 builds are rejected during
+`Taiyin.open` or `TaiyinContext.attach` with a clear compatibility error instead
+of failing later during a lazy symbol lookup.
 
 The native engine is process-wide, so call `Taiyin.open` once. Calling it again
 currently replaces the global catalog, cache, EOP table, and lunar-limb model.

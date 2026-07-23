@@ -3,7 +3,7 @@ import 'package:test/test.dart';
 
 void main() {
   group('native compatibility', () {
-    test('accepts ABI 1 with split-time support', () {
+    test('accepts ABI 2 with split-time support', () {
       expect(
         () => validateTaiyinNativeCompatibility(
           abiVersion: taiyinSupportedAbiVersion,
@@ -13,7 +13,7 @@ void main() {
       );
     });
 
-    test('rejects an old ABI-1 library without split-time symbols', () {
+    test('rejects an ABI-2 library without split-time support', () {
       expect(
         () => validateTaiyinNativeCompatibility(
           abiVersion: taiyinSupportedAbiVersion,
@@ -29,10 +29,10 @@ void main() {
       );
     });
 
-    test('still rejects an unsupported ABI major first', () {
+    test('rejects the retired ABI-1 major first', () {
       expect(
         () => validateTaiyinNativeCompatibility(
-          abiVersion: taiyinSupportedAbiVersion + 1,
+          abiVersion: taiyinSupportedAbiVersion - 1,
           capabilities: taiyinSplitTimeCapability,
         ),
         throwsA(
@@ -45,16 +45,16 @@ void main() {
       );
     });
 
-    test('accepts a library that exposes every required ABI-1 symbol', () {
+    test('accepts a library that exposes every required ABI-2 symbol', () {
       expect(
         () => validateTaiyinRequiredSymbols(
-          providesSymbol: taiyinRequiredAbi1Symbols.contains,
+          providesSymbol: taiyinRequiredAbi2Symbols.contains,
         ),
         returnsNormally,
       );
     });
 
-    test('reports missing late ABI-1 symbols before lazy lookup', () {
+    test('reports missing ABI-2 symbols before lazy lookup', () {
       expect(
         () => validateTaiyinRequiredSymbols(
           providesSymbol: (symbol) => symbol != 'taiyin_get_library_codename',
@@ -102,22 +102,6 @@ void main() {
             (error) => error.message,
             'message',
             contains('taiyin_calc_body_phenomena_ut'),
-          ),
-        ),
-      );
-    });
-
-    test('reports missing split solar-time symbols before use', () {
-      expect(
-        () => validateTaiyinRequiredSymbols(
-          providesSymbol: (symbol) =>
-              symbol != 'taiyin_calc_equation_of_time_ut_split',
-        ),
-        throwsA(
-          isA<StateError>().having(
-            (error) => error.message,
-            'message',
-            contains('taiyin_calc_equation_of_time_ut_split'),
           ),
         ),
       );

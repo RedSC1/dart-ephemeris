@@ -4,6 +4,10 @@ typedef _SolarTimeStatusChecker =
     void Function(int status, TaiyinEphemerisDiagnostic? diagnostic);
 
 /// Equation-of-time calculations and local solar-time conversions.
+///
+/// These physical calculations use the native scalar-JD epoch route. A split
+/// [JulianDate] is intentionally quantized at the native calculation boundary;
+/// this API does not claim sub-double solar-time sensitivity.
 final class TaiyinSolarTimeApi {
   TaiyinSolarTimeApi._(
     this._bindings,
@@ -23,14 +27,13 @@ final class TaiyinSolarTimeApi {
   ) {
     _ensureOpen();
     return _equationOfTime(
-      ut1,
-      (input, output, diagnostic) =>
-          _bindings.taiyin_calc_equation_of_time_ut_split(
-            _context,
-            input,
-            output,
-            diagnostic,
-          ),
+      ut1.toDouble(),
+      (input, output, diagnostic) => _bindings.taiyin_calc_equation_of_time_ut(
+        _context,
+        input,
+        output,
+        diagnostic,
+      ),
     );
   }
 
@@ -40,14 +43,13 @@ final class TaiyinSolarTimeApi {
   ) {
     _ensureOpen();
     return _equationOfTime(
-      tt,
-      (input, output, diagnostic) =>
-          _bindings.taiyin_calc_equation_of_time_tt_split(
-            _context,
-            input,
-            output,
-            diagnostic,
-          ),
+      tt.toDouble(),
+      (input, output, diagnostic) => _bindings.taiyin_calc_equation_of_time_tt(
+        _context,
+        input,
+        output,
+        diagnostic,
+      ),
     );
   }
 
@@ -56,14 +58,10 @@ final class TaiyinSolarTimeApi {
     LocalMeanSolarTime localMean,
   ) {
     _ensureOpen();
-    return _convert<
-      LocalMeanSolarTimeScale,
-      LocalApparentSolarTimeScale,
-      LocalApparentSolarTime
-    >(
-      localMean.coordinate,
+    return _convert<LocalApparentSolarTimeScale, LocalApparentSolarTime>(
+      localMean.coordinate.toDouble(),
       (input, output, diagnostic) =>
-          _bindings.taiyin_local_mean_to_apparent_solar_time_split(
+          _bindings.taiyin_local_mean_to_apparent_solar_time(
             _context,
             input,
             localMean.longitudeRadians,
@@ -82,14 +80,10 @@ final class TaiyinSolarTimeApi {
     LocalApparentSolarTime localApparent,
   ) {
     _ensureOpen();
-    return _convert<
-      LocalApparentSolarTimeScale,
-      LocalMeanSolarTimeScale,
-      LocalMeanSolarTime
-    >(
-      localApparent.coordinate,
+    return _convert<LocalMeanSolarTimeScale, LocalMeanSolarTime>(
+      localApparent.coordinate.toDouble(),
       (input, output, diagnostic) =>
-          _bindings.taiyin_local_apparent_to_mean_solar_time_split(
+          _bindings.taiyin_local_apparent_to_mean_solar_time(
             _context,
             input,
             localApparent.longitudeRadians,
@@ -103,31 +97,29 @@ final class TaiyinSolarTimeApi {
     );
   }
 
-  TaiyinEphemerisResult<TaiyinEquationOfTime>
-  _equationOfTime<InputScale extends TimeScale>(
-    JulianDate<InputScale> input,
+  TaiyinEphemerisResult<TaiyinEquationOfTime> _equationOfTime(
+    double input,
     int Function(
-      Pointer<taiyin_split_julian_date>,
-      Pointer<taiyin_split_equation_of_time_result>,
+      double,
+      Pointer<taiyin_equation_of_time_result>,
       Pointer<taiyin_ephemeris_diagnostic>,
     )
     calculate,
   ) {
     return using((arena) {
-      final nativeInput = _writeJulianDate(arena, input);
-      final output = arena<taiyin_split_equation_of_time_result>();
+      final output = arena<taiyin_equation_of_time_result>();
       final diagnostic = arena<taiyin_ephemeris_diagnostic>();
       _bindings
-        ..taiyin_split_equation_of_time_result_init(output)
+        ..taiyin_equation_of_time_result_init(output)
         ..taiyin_ephemeris_diagnostic_init(diagnostic);
-      final status = calculate(nativeInput, output, diagnostic);
+      final status = calculate(input, output, diagnostic);
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
       final value = output.ref;
       return TaiyinEphemerisResult(
         value: TaiyinEquationOfTime(
-          ut1: _readJulianDate<Ut1Scale>(value.jd_ut),
-          tt: _readJulianDate<TtScale>(value.jd_tt),
+          ut1: JulianDate<Ut1Scale>.fromDouble(value.jd_ut),
+          tt: JulianDate<TtScale>.fromDouble(value.jd_tt),
           equationDays: value.equation_days,
           equationSeconds: value.equation_seconds,
           apparentSunRightAscensionRadians:
@@ -139,46 +131,27 @@ final class TaiyinSolarTimeApi {
     });
   }
 
-  TaiyinEphemerisResult<Output>
-  _convert<InputScale extends TimeScale, OutputScale extends TimeScale, Output>(
-    JulianDate<InputScale> input,
-    int Function(
-      Pointer<taiyin_split_julian_date>,
-      Pointer<taiyin_split_julian_date>,
-      Pointer<taiyin_ephemeris_diagnostic>,
-    )
+  /// Invokes a scalar native local-solar-time conversion.
+  ///
+  /// The callback writes one scalar Julian day through its `Pointer<Double>`
+  /// output, so the result is deliberately quantized at the native boundary.
+  TaiyinEphemerisResult<Output> _convert<OutputScale extends TimeScale, Output>(
+    double input,
+    int Function(double, Pointer<Double>, Pointer<taiyin_ephemeris_diagnostic>)
     convert,
     Output Function(JulianDate<OutputScale>) buildOutput,
   ) {
     return using((arena) {
-      final nativeInput = _writeJulianDate(arena, input);
-      final output = arena<taiyin_split_julian_date>();
+      final output = arena<Double>();
       final diagnostic = arena<taiyin_ephemeris_diagnostic>();
       _bindings.taiyin_ephemeris_diagnostic_init(diagnostic);
-      final status = convert(nativeInput, output, diagnostic);
+      final status = convert(input, output, diagnostic);
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
       return TaiyinEphemerisResult(
-        value: buildOutput(_readJulianDate<OutputScale>(output.ref)),
+        value: buildOutput(JulianDate<OutputScale>.fromDouble(output.value)),
         diagnostic: mappedDiagnostic,
       );
     });
-  }
-
-  Pointer<taiyin_split_julian_date> _writeJulianDate<Scale extends TimeScale>(
-    Allocator allocator,
-    JulianDate<Scale> value,
-  ) {
-    final native = allocator<taiyin_split_julian_date>();
-    native.ref
-      ..day_number = value.dayNumber
-      ..day_fraction = value.dayFraction;
-    return native;
-  }
-
-  JulianDate<Scale> _readJulianDate<Scale extends TimeScale>(
-    taiyin_split_julian_date value,
-  ) {
-    return JulianDate<Scale>.fromParts(value.day_number, value.day_fraction);
   }
 }

@@ -7,7 +7,7 @@ Codex review on PR #5.
 
 - [x] Include `taiyin/c/star.h` in the ffigen wrapper header.
 - [x] Generate all catalog, position, and observed-star functions.
-- [x] Eagerly probe late ABI-1 runtime and star symbols during library
+- [x] Eagerly probe required runtime and star symbols during library
   compatibility validation.
 
 ## Dart API

@@ -9,7 +9,7 @@ complete bindings, models, tests, and documentation.
 
 - [x] Include `solar_time.h` and `phenomena.h` in the ffigen wrapper.
 - [x] Generate both result structs and all eight C ABI functions.
-- [x] Probe all eight symbols during ABI-1 compatibility validation.
+- [x] Probe all eight symbols during native compatibility validation.
 
 ## Solar-time API
 

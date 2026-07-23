@@ -82,41 +82,6 @@ void main() {
         expect(roundTrip.diagnostic.status, 0);
       });
 
-      test(
-        'retains a split coordinate through a scalar-evaluated correction',
-        () {
-          final preciseUt1 = JulianDate<Ut1Scale>.fromParts(
-            2460311,
-            0.123456789012345,
-          );
-          const longitudeRadians = -1.23456789012345;
-
-          final localMean = LocalMeanSolarTime.fromUt1(
-            preciseUt1,
-            longitudeRadians: longitudeRadians,
-          );
-          final shiftedLocalMean = LocalMeanSolarTime.fromCoordinate(
-            localMean.coordinate.addNanoseconds(1),
-            longitudeRadians: longitudeRadians,
-          );
-          final apparent = context.solarTime.meanToApparent(localMean);
-          final shiftedApparent = context.solarTime.meanToApparent(
-            shiftedLocalMean,
-          );
-
-          expect(
-            localMean.toUt1().coordinateSecondsDifference(preciseUt1),
-            closeTo(0, 5e-12),
-          );
-          expect(
-            shiftedApparent.value.coordinate.coordinateSecondsDifference(
-              apparent.value.coordinate,
-            ),
-            closeTo(1e-9, 5e-12),
-          );
-        },
-      );
-
       test('rejects invalid longitude and use after close', () {
         final localMean = LocalMeanSolarTime.fromUt1(ut1, longitudeRadians: 0);
         expect(
