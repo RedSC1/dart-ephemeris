@@ -151,6 +151,20 @@ const Set<String> taiyinRequiredAbi1Symbols = {
   'taiyin_compute_lunar_star_occultation_where_ut',
   'taiyin_compute_lunar_body_occultation_where_ut',
   'taiyin_compute_lunar_body_occultation_where_with_radius_ut',
+  'taiyin_lunar_eclipse_result_tt_init',
+  'taiyin_lunar_eclipse_result_ut_init',
+  'taiyin_local_lunar_eclipse_result_tt_init',
+  'taiyin_local_lunar_eclipse_result_ut_init',
+  'taiyin_solve_lunar_eclipse_at_tt',
+  'taiyin_solve_lunar_eclipse_at_ut',
+  'taiyin_search_next_lunar_eclipse_tt',
+  'taiyin_search_next_lunar_eclipse_ut',
+  'taiyin_search_lunar_eclipses_tt',
+  'taiyin_search_lunar_eclipses_ut',
+  'taiyin_compute_local_lunar_eclipse_visibility_tt',
+  'taiyin_compute_local_lunar_eclipse_visibility_ut',
+  'taiyin_search_next_local_lunar_eclipse_tt',
+  'taiyin_search_next_local_lunar_eclipse_ut',
 };
 
 /// Validates the native metadata available before any optional symbol lookup.

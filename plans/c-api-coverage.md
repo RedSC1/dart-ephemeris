@@ -3,8 +3,8 @@
 Baseline: `taiyin-ephemeris/include/taiyin/c/*.h` on 2026-07-20.
 
 - Total callable C symbols: **317**
-- Included by the current Dart binding configuration: **261**
-- Remaining: **56**
+- Included by the current Dart binding configuration: **275**
+- Remaining: **42**
 
 `[x]` means the symbol is included in `ffigen.yaml` and its current Dart API
 block has landed. `[ ]` means it still needs a Dart binding/API decision. The
@@ -21,7 +21,7 @@ functions so ABI completeness can be tracked exactly.
   lunar-phase searches
 - [x] Heliacal visibility
 - [x] Lunar occultations
-- [ ] Lunar eclipses
+- [x] Lunar eclipses
 - [ ] Solar eclipse search and local circumstances
 - [ ] Solar Besselian elements, routes, curves, and map products
 - [ ] Remaining process-lifetime ayanamsha and house-system callbacks
@@ -33,9 +33,9 @@ The Dart `JulianDate` type preserves a split day number and day fraction, and
 time-scale conversions already use the native split-JD C ABI. Most calculation
 entry points still accept a single `double` Julian day, however. This includes
 the existing position, star, observed, phenomena, and orbital APIs as well as
-the remaining astrology, visibility, event, heliacal, occultation, and eclipse
-APIs. Their Dart wrappers therefore call `JulianDate.toDouble()` at the FFI
-boundary and cannot preserve the full split representation end to end.
+the astrology, visibility, event, heliacal, occultation, and eclipse API
+families. Their Dart wrappers therefore call `JulianDate.toDouble()` at the
+FFI boundary and cannot preserve the full split representation end to end.
 
 Do not add input-only `_split` calculation wrappers as an incremental shortcut.
 The former position/state experiment was reverted because it immediately merged
@@ -143,12 +143,12 @@ must remain available during that transition.
 - [x] `taiyin_context_disable_shapiro_delay`
 - [x] `taiyin_context_set_eclipse_models`
 
-## `eclipse.h` — 0/52
+## `eclipse.h` — 14/52
 
-- [ ] `taiyin_lunar_eclipse_result_tt_init`
-- [ ] `taiyin_lunar_eclipse_result_ut_init`
-- [ ] `taiyin_local_lunar_eclipse_result_tt_init`
-- [ ] `taiyin_local_lunar_eclipse_result_ut_init`
+- [x] `taiyin_lunar_eclipse_result_tt_init`
+- [x] `taiyin_lunar_eclipse_result_ut_init`
+- [x] `taiyin_local_lunar_eclipse_result_tt_init`
+- [x] `taiyin_local_lunar_eclipse_result_ut_init`
 - [ ] `taiyin_solar_eclipse_result_tt_init`
 - [ ] `taiyin_solar_eclipse_result_ut_init`
 - [ ] `taiyin_local_solar_eclipse_result_tt_init`
@@ -160,16 +160,16 @@ must remain available during that transition.
 - [ ] `taiyin_solar_eclipse_route_product_summary_init`
 - [ ] `taiyin_solar_besselian_elements_init`
 - [ ] `taiyin_solar_besselian_polynomial_init`
-- [ ] `taiyin_solve_lunar_eclipse_at_tt`
-- [ ] `taiyin_solve_lunar_eclipse_at_ut`
-- [ ] `taiyin_search_next_lunar_eclipse_tt`
-- [ ] `taiyin_search_next_lunar_eclipse_ut`
-- [ ] `taiyin_search_lunar_eclipses_tt`
-- [ ] `taiyin_search_lunar_eclipses_ut`
-- [ ] `taiyin_compute_local_lunar_eclipse_visibility_tt`
-- [ ] `taiyin_compute_local_lunar_eclipse_visibility_ut`
-- [ ] `taiyin_search_next_local_lunar_eclipse_tt`
-- [ ] `taiyin_search_next_local_lunar_eclipse_ut`
+- [x] `taiyin_solve_lunar_eclipse_at_tt`
+- [x] `taiyin_solve_lunar_eclipse_at_ut`
+- [x] `taiyin_search_next_lunar_eclipse_tt`
+- [x] `taiyin_search_next_lunar_eclipse_ut`
+- [x] `taiyin_search_lunar_eclipses_tt`
+- [x] `taiyin_search_lunar_eclipses_ut`
+- [x] `taiyin_compute_local_lunar_eclipse_visibility_tt`
+- [x] `taiyin_compute_local_lunar_eclipse_visibility_ut`
+- [x] `taiyin_search_next_local_lunar_eclipse_tt`
+- [x] `taiyin_search_next_local_lunar_eclipse_ut`
 - [ ] `taiyin_solve_solar_eclipse_at_tt`
 - [ ] `taiyin_solve_solar_eclipse_at_ut`
 - [ ] `taiyin_search_next_solar_eclipse_tt`

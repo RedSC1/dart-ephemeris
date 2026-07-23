@@ -229,5 +229,21 @@ void main() {
         ),
       );
     });
+
+    test('reports missing lunar-eclipse symbols before use', () {
+      expect(
+        () => validateTaiyinRequiredSymbols(
+          providesSymbol: (symbol) =>
+              symbol != 'taiyin_compute_local_lunar_eclipse_visibility_ut',
+        ),
+        throwsA(
+          isA<StateError>().having(
+            (error) => error.message,
+            'message',
+            contains('taiyin_compute_local_lunar_eclipse_visibility_ut'),
+          ),
+        ),
+      );
+    });
   });
 }
