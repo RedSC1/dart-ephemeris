@@ -291,9 +291,11 @@ functions:
     - taiyin_local_solar_eclipse_result_ut_init
     - taiyin_local_solar_eclipse_circumstances_tt_init
     - taiyin_local_solar_eclipse_circumstances_ut_init
+    - taiyin_local_solar_eclipse_boundary_init
     - taiyin_solar_besselian_elements_init
     - taiyin_solar_besselian_polynomial_init
     - taiyin_solar_eclipse_route_row_init
+    - taiyin_solar_eclipse_route_product_summary_init
     - taiyin_solve_solar_eclipse_at_tt
     - taiyin_solve_solar_eclipse_at_ut
     - taiyin_search_next_solar_eclipse_tt
@@ -313,6 +315,14 @@ functions:
     - taiyin_compute_solar_eclipse_route_row_ut
     - taiyin_compute_solar_eclipse_route_tt
     - taiyin_compute_solar_eclipse_route_ut
+    - taiyin_compute_solar_eclipse_route_curves_tt
+    - taiyin_compute_solar_eclipse_route_curves_ut
+    - taiyin_compute_solar_eclipse_route_product_tt
+    - taiyin_compute_solar_eclipse_route_product_ut
+    - taiyin_compute_solar_eclipse_route_map_product_tt
+    - taiyin_compute_solar_eclipse_route_map_product_ut
+    - taiyin_compute_local_solar_eclipse_boundary_tt
+    - taiyin_compute_local_solar_eclipse_boundary_ut
 structs:
   include:
     - taiyin_calendar_datetime
@@ -376,10 +386,14 @@ structs:
     - taiyin_local_solar_eclipse_result_ut
     - taiyin_local_solar_eclipse_circumstances_tt
     - taiyin_local_solar_eclipse_circumstances_ut
+    - taiyin_local_solar_eclipse_boundary
     - taiyin_solar_besselian_elements
     - taiyin_solar_besselian_polynomial
     - taiyin_solar_eclipse_path_point
     - taiyin_solar_eclipse_route_row
+    - taiyin_solar_eclipse_route_curve_point
+    - taiyin_solar_eclipse_route_product_point
+    - taiyin_solar_eclipse_route_product_summary
 enums:
   as-int:
     include:

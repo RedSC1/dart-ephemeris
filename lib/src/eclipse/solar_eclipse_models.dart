@@ -271,6 +271,234 @@ final class TaiyinSolarEclipseRouteRow {
       southLimit.intersectsEarth;
 }
 
+/// Identifies one curve in a global solar-eclipse map.
+///
+/// Points returned by a route-curve calculation are grouped by this value.
+enum TaiyinSolarEclipseRouteCurveKind {
+  partialBeginA(0),
+  partialBeginB(1),
+  partialEndA(2),
+  partialEndB(3),
+  sunriseMaximumA(4),
+  sunriseMaximumB(5),
+  sunsetMaximumA(6),
+  sunsetMaximumB(7),
+  centerLine(8),
+  penumbralNorth(9),
+  penumbralSouth(10),
+  coreNorth(11),
+  coreSouth(12),
+  halfMagnitudeNorth(13),
+  halfMagnitudeSouth(14),
+  umbraOutline(15),
+  penumbraOutline(16),
+  terminator(17),
+  coreBeginHorizon(18),
+  coreEndHorizon(19),
+  halfMagnitudeSunriseA(20),
+  halfMagnitudeSunriseB(21),
+  halfMagnitudeSunsetA(22),
+  halfMagnitudeSunsetB(23);
+
+  const TaiyinSolarEclipseRouteCurveKind(this.nativeIndex);
+
+  /// Numeric value used by the Taiyin C ABI.
+  final int nativeIndex;
+
+  static TaiyinSolarEclipseRouteCurveKind fromNativeIndex(int index) {
+    for (final value in values) {
+      if (value.nativeIndex == index) return value;
+    }
+    throw StateError('Native solar eclipse route returned curve kind $index');
+  }
+}
+
+/// One time-tagged geographic sample of a solar-eclipse map curve.
+final class TaiyinSolarEclipseRouteCurvePoint {
+  const TaiyinSolarEclipseRouteCurvePoint({
+    required this.coordinateTt,
+    required this.coordinateUt1,
+    required this.kind,
+    required this.latitudeDegrees,
+    required this.longitudeDegrees,
+  });
+
+  final JulianDate<TtScale> coordinateTt;
+  final JulianDate<Ut1Scale> coordinateUt1;
+  final TaiyinSolarEclipseRouteCurveKind kind;
+  final double latitudeDegrees;
+  final double longitudeDegrees;
+}
+
+/// Flags describing which layers are present in a solar-eclipse route product.
+enum TaiyinSolarEclipseRouteProductFlag {
+  hasCenterLine(1 << 0),
+  hasCoreLimits(1 << 1),
+  hasPenumbralLimits(1 << 2),
+  hasCorePolygon(1 << 3),
+  crossesAntimeridian(1 << 4),
+  hasHalfMagnitudeLimits(1 << 5),
+  hasPenumbralPolygon(1 << 6),
+  hasHalfMagnitudePolygon(1 << 7);
+
+  const TaiyinSolarEclipseRouteProductFlag(this.mask);
+
+  final int mask;
+
+  static Set<TaiyinSolarEclipseRouteProductFlag> fromMask(int mask) {
+    return Set.unmodifiable(values.where((value) => (mask & value.mask) != 0));
+  }
+}
+
+/// Role of a point within a polygonal solar-eclipse route product.
+enum TaiyinSolarEclipseRouteProductPointKind {
+  coreNorth(0),
+  coreSouth(1),
+  polygonClose(2),
+  penumbralNorth(3),
+  penumbralSouth(4),
+  halfMagnitudeNorth(5),
+  halfMagnitudeSouth(6),
+  coreBeginHorizon(7),
+  coreEndHorizon(8);
+
+  const TaiyinSolarEclipseRouteProductPointKind(this.nativeIndex);
+
+  final int nativeIndex;
+
+  static TaiyinSolarEclipseRouteProductPointKind fromNativeIndex(int index) {
+    for (final value in values) {
+      if (value.nativeIndex == index) return value;
+    }
+    throw StateError('Native solar eclipse route returned point kind $index');
+  }
+}
+
+/// One point in a closed eclipse-path polygon.
+///
+/// [longitudeDegrees] is normalized for conventional geographic display while
+/// [unwrappedLongitudeDegrees] preserves path continuity across the
+/// antimeridian.
+final class TaiyinSolarEclipseRouteProductPoint {
+  const TaiyinSolarEclipseRouteProductPoint({
+    required this.coordinateTt,
+    required this.coordinateUt1,
+    required this.kind,
+    required this.sourceCurveKind,
+    required this.latitudeDegrees,
+    required this.longitudeDegrees,
+    required this.unwrappedLongitudeDegrees,
+  });
+
+  final JulianDate<TtScale> coordinateTt;
+  final JulianDate<Ut1Scale> coordinateUt1;
+  final TaiyinSolarEclipseRouteProductPointKind kind;
+  final TaiyinSolarEclipseRouteCurveKind sourceCurveKind;
+  final double latitudeDegrees;
+  final double longitudeDegrees;
+  final double unwrappedLongitudeDegrees;
+}
+
+/// Metadata accompanying a solar-eclipse route product.
+final class TaiyinSolarEclipseRouteProductSummary {
+  TaiyinSolarEclipseRouteProductSummary({
+    required Set<TaiyinSolarEclipseRouteProductFlag> flags,
+    required this.curvePointCount,
+    required this.centerLineCount,
+    required this.coreNorthCount,
+    required this.coreSouthCount,
+    required this.coreBeginHorizonCount,
+    required this.coreEndHorizonCount,
+    required this.penumbralNorthCount,
+    required this.penumbralSouthCount,
+    required this.halfMagnitudeNorthCount,
+    required this.halfMagnitudeSouthCount,
+    required this.corePolygonPointCount,
+    required this.penumbralPolygonPointCount,
+    required this.halfMagnitudePolygonPointCount,
+    required this.polygonPointCount,
+    required this.minimumLatitudeDegrees,
+    required this.maximumLatitudeDegrees,
+    required this.minimumUnwrappedLongitudeDegrees,
+    required this.maximumUnwrappedLongitudeDegrees,
+  }) : flags = Set.unmodifiable(flags);
+
+  final Set<TaiyinSolarEclipseRouteProductFlag> flags;
+  final int curvePointCount;
+  final int centerLineCount;
+  final int coreNorthCount;
+  final int coreSouthCount;
+  final int coreBeginHorizonCount;
+  final int coreEndHorizonCount;
+  final int penumbralNorthCount;
+  final int penumbralSouthCount;
+  final int halfMagnitudeNorthCount;
+  final int halfMagnitudeSouthCount;
+  final int corePolygonPointCount;
+  final int penumbralPolygonPointCount;
+  final int halfMagnitudePolygonPointCount;
+  final int polygonPointCount;
+
+  /// Null when the native product contains no polygonal layers.
+  final double? minimumLatitudeDegrees;
+
+  /// Null when the native product contains no polygonal layers.
+  final double? maximumLatitudeDegrees;
+
+  /// Null when the native product contains no polygonal layers.
+  final double? minimumUnwrappedLongitudeDegrees;
+
+  /// Null when the native product contains no polygonal layers.
+  final double? maximumUnwrappedLongitudeDegrees;
+}
+
+/// Complete polygonal output for either the core path or all map layers.
+final class TaiyinSolarEclipseRouteProduct {
+  TaiyinSolarEclipseRouteProduct({
+    required Iterable<TaiyinSolarEclipseRouteProductPoint> points,
+    required this.summary,
+  }) : points = List.unmodifiable(points);
+
+  final List<TaiyinSolarEclipseRouteProductPoint> points;
+  final TaiyinSolarEclipseRouteProductSummary summary;
+}
+
+/// Local Earth-intersection boundaries of the solar shadow at one instant.
+///
+/// Every coordinate and [umbraWidthKilometers] is null when that particular
+/// shadow feature does not intersect Earth at the requested instant.
+final class TaiyinLocalSolarEclipseBoundary {
+  TaiyinLocalSolarEclipseBoundary({
+    required Set<TaiyinEclipseKind> centerKinds,
+    required this.centerLongitudeDegrees,
+    required this.centerLatitudeDegrees,
+    required this.umbraNorthLongitudeDegrees,
+    required this.umbraNorthLatitudeDegrees,
+    required this.umbraSouthLongitudeDegrees,
+    required this.umbraSouthLatitudeDegrees,
+    required this.penumbraNorthLongitudeDegrees,
+    required this.penumbraNorthLatitudeDegrees,
+    required this.penumbraSouthLongitudeDegrees,
+    required this.penumbraSouthLatitudeDegrees,
+    required this.umbraWidthKilometers,
+  }) : centerKinds = Set.unmodifiable(centerKinds);
+
+  final Set<TaiyinEclipseKind> centerKinds;
+  final double? centerLongitudeDegrees;
+  final double? centerLatitudeDegrees;
+  final double? umbraNorthLongitudeDegrees;
+  final double? umbraNorthLatitudeDegrees;
+  final double? umbraSouthLongitudeDegrees;
+  final double? umbraSouthLatitudeDegrees;
+  final double? penumbraNorthLongitudeDegrees;
+  final double? penumbraNorthLatitudeDegrees;
+  final double? penumbraSouthLongitudeDegrees;
+  final double? penumbraSouthLatitudeDegrees;
+  final double? umbraWidthKilometers;
+
+  bool get hasCentralPath => centerKinds.isNotEmpty;
+}
+
 /// Fundamental-plane quantities for a solar eclipse at one TT coordinate.
 ///
 /// [tHours] is the Besselian time offset associated with the coordinate. The

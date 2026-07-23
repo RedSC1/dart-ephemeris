@@ -590,5 +590,185 @@ void main() {
       },
       skip: !nativeLibraryAvailable,
     );
+
+    test(
+      'computes solar route curves, polygon products, and local boundaries',
+      () {
+        final centerUt = JulianDate<Ut1Scale>.fromDouble(2460409.262039739);
+        final centerTt = JulianDate<TtScale>.fromDouble(
+          centerUt.toDouble() + 69 / 86400,
+        );
+        final curvesUt = context.eclipses.solarEclipseRouteCurvesAtUt1(
+          centerUt,
+          routeSampleCount: 32,
+        );
+        final curvesTt = context.eclipses.solarEclipseRouteCurvesAtTt(
+          centerTt,
+          routeSampleCount: 32,
+        );
+        final coreProduct = context.eclipses.solarEclipseRouteProductAtUt1(
+          centerUt,
+          routeSampleCount: 32,
+        );
+        final coreProductTt = context.eclipses.solarEclipseRouteProductAtTt(
+          centerTt,
+          routeSampleCount: 32,
+        );
+        final mapProduct = context.eclipses.solarEclipseRouteMapProductAtTt(
+          centerTt,
+          routeSampleCount: 32,
+        );
+        final mapProductUt = context.eclipses.solarEclipseRouteMapProductAtUt1(
+          centerUt,
+          routeSampleCount: 32,
+        );
+        final boundaryUt = context.eclipses.localSolarEclipseBoundaryAtUt1(
+          centerUt,
+          longitudeDegrees: mazatlan.longitudeDegrees,
+          latitudeDegrees: mazatlan.latitudeDegrees,
+        );
+        final boundaryTt = context.eclipses.localSolarEclipseBoundaryAtTt(
+          centerTt,
+          longitudeDegrees: mazatlan.longitudeDegrees,
+          latitudeDegrees: mazatlan.latitudeDegrees,
+        );
+
+        expect(curvesUt.value, isNotEmpty);
+        expect(curvesTt.value, isNotEmpty);
+        expect(
+          curvesUt.value.map((point) => point.kind),
+          contains(TaiyinSolarEclipseRouteCurveKind.centerLine),
+        );
+        expect(
+          curvesUt.value.map((point) => point.kind),
+          contains(TaiyinSolarEclipseRouteCurveKind.penumbralNorth),
+        );
+        expect(
+          curvesUt.value.map((point) => point.kind),
+          contains(TaiyinSolarEclipseRouteCurveKind.coreNorth),
+        );
+        expect(
+          curvesUt.value.map((point) => point.kind),
+          contains(TaiyinSolarEclipseRouteCurveKind.halfMagnitudeNorth),
+        );
+        for (final point in curvesUt.value) {
+          expect(point.latitudeDegrees.isFinite, isTrue);
+          expect(point.longitudeDegrees.isFinite, isTrue);
+        }
+
+        expect(coreProduct.value.points, isNotEmpty);
+        expect(coreProductTt.value.points, isNotEmpty);
+        expect(
+          coreProduct.value.summary.flags,
+          contains(TaiyinSolarEclipseRouteProductFlag.hasCorePolygon),
+        );
+        expect(
+          coreProduct.value.summary.corePolygonPointCount,
+          coreProduct.value.points.length,
+        );
+        expect(
+          coreProduct.value.points.first.kind,
+          TaiyinSolarEclipseRouteProductPointKind.coreNorth,
+        );
+        expect(
+          coreProduct.value.points.last.kind,
+          TaiyinSolarEclipseRouteProductPointKind.polygonClose,
+        );
+        expect(
+          coreProduct.value.points.last.latitudeDegrees,
+          closeTo(coreProduct.value.points.first.latitudeDegrees, 1e-12),
+        );
+        expect(
+          coreProduct.value.summary.minimumLatitudeDegrees,
+          lessThan(coreProduct.value.summary.maximumLatitudeDegrees!),
+        );
+
+        expect(
+          mapProduct.value.summary.flags,
+          contains(TaiyinSolarEclipseRouteProductFlag.hasCorePolygon),
+        );
+        expect(
+          mapProduct.value.summary.flags,
+          contains(TaiyinSolarEclipseRouteProductFlag.hasPenumbralPolygon),
+        );
+        expect(
+          mapProduct.value.summary.flags,
+          contains(TaiyinSolarEclipseRouteProductFlag.hasHalfMagnitudePolygon),
+        );
+        expect(
+          mapProduct.value.summary.polygonPointCount,
+          mapProduct.value.points.length,
+        );
+        expect(
+          mapProduct.value.summary.polygonPointCount,
+          greaterThan(coreProduct.value.points.length),
+        );
+        expect(mapProductUt.value.points, isNotEmpty);
+        expect(
+          mapProductUt.value.summary.polygonPointCount,
+          mapProductUt.value.points.length,
+        );
+        expect(
+          mapProduct
+              .value
+              .points[mapProduct.value.summary.corePolygonPointCount]
+              .kind,
+          TaiyinSolarEclipseRouteProductPointKind.penumbralNorth,
+        );
+        expect(
+          mapProduct
+              .value
+              .points[mapProduct.value.summary.corePolygonPointCount +
+                  mapProduct.value.summary.penumbralPolygonPointCount]
+              .kind,
+          TaiyinSolarEclipseRouteProductPointKind.halfMagnitudeNorth,
+        );
+
+        expect(boundaryUt.value.centerKinds, contains(TaiyinEclipseKind.total));
+        expect(boundaryUt.value.centerLongitudeDegrees, isNotNull);
+        expect(boundaryUt.value.centerLatitudeDegrees, isNotNull);
+        expect(boundaryUt.value.umbraNorthLongitudeDegrees, isNotNull);
+        expect(boundaryUt.value.umbraSouthLongitudeDegrees, isNotNull);
+        expect(boundaryUt.value.penumbraNorthLongitudeDegrees, isNotNull);
+        expect(boundaryUt.value.penumbraSouthLongitudeDegrees, isNotNull);
+        expect(boundaryUt.value.umbraWidthKilometers, greaterThan(0));
+        expect(boundaryTt.value.centerKinds, contains(TaiyinEclipseKind.total));
+        expect(
+          boundaryTt.value.centerLongitudeDegrees,
+          closeTo(boundaryUt.value.centerLongitudeDegrees!, 0.002),
+        );
+
+        expect(
+          () => context.eclipses.solarEclipseRouteCurvesAtUt1(
+            centerUt,
+            routeSampleCount: 31,
+          ),
+          throwsRangeError,
+        );
+        expect(
+          () => context.eclipses.solarEclipseRouteProductAtUt1(
+            centerUt,
+            routeSampleCount: 4097,
+          ),
+          throwsRangeError,
+        );
+        expect(
+          () => context.eclipses.localSolarEclipseBoundaryAtUt1(
+            centerUt,
+            longitudeDegrees: double.nan,
+            latitudeDegrees: mazatlan.latitudeDegrees,
+          ),
+          throwsArgumentError,
+        );
+        expect(
+          () => context.eclipses.solarEclipseRouteMapProductAtUt1(
+            centerUt,
+            positionFlags: {TaiyinPositionFlag.xyz},
+          ),
+          throwsArgumentError,
+        );
+      },
+      skip: !nativeLibraryAvailable,
+    );
   });
 }
