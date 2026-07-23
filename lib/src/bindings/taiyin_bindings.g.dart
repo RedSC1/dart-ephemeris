@@ -7571,6 +7571,560 @@ class TaiyinBindings {
               ffi.Pointer<taiyin_ephemeris_diagnostic>,
             )
           >();
+
+  void taiyin_lunar_occultation_result_init(
+    ffi.Pointer<taiyin_lunar_occultation_result> value,
+  ) {
+    return _taiyin_lunar_occultation_result_init(value);
+  }
+
+  late final _taiyin_lunar_occultation_result_initPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<taiyin_lunar_occultation_result>)
+        >
+      >('taiyin_lunar_occultation_result_init');
+  late final _taiyin_lunar_occultation_result_init =
+      _taiyin_lunar_occultation_result_initPtr
+          .asFunction<
+            void Function(ffi.Pointer<taiyin_lunar_occultation_result>)
+          >();
+
+  void taiyin_lunar_occultation_local_visibility_init(
+    ffi.Pointer<taiyin_lunar_occultation_local_visibility> value,
+  ) {
+    return _taiyin_lunar_occultation_local_visibility_init(value);
+  }
+
+  late final _taiyin_lunar_occultation_local_visibility_initPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Pointer<taiyin_lunar_occultation_local_visibility>,
+          )
+        >
+      >('taiyin_lunar_occultation_local_visibility_init');
+  late final _taiyin_lunar_occultation_local_visibility_init =
+      _taiyin_lunar_occultation_local_visibility_initPtr
+          .asFunction<
+            void Function(
+              ffi.Pointer<taiyin_lunar_occultation_local_visibility>,
+            )
+          >();
+
+  void taiyin_lunar_occultation_where_result_init(
+    ffi.Pointer<taiyin_lunar_occultation_where_result> value,
+  ) {
+    return _taiyin_lunar_occultation_where_result_init(value);
+  }
+
+  late final _taiyin_lunar_occultation_where_result_initPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<taiyin_lunar_occultation_where_result>)
+        >
+      >('taiyin_lunar_occultation_where_result_init');
+  late final _taiyin_lunar_occultation_where_result_init =
+      _taiyin_lunar_occultation_where_result_initPtr
+          .asFunction<
+            void Function(ffi.Pointer<taiyin_lunar_occultation_where_result>)
+          >();
+
+  int taiyin_search_next_geocentric_lunar_star_occultation_ut(
+    ffi.Pointer<taiyin_context> context,
+    ffi.Pointer<ffi.Char> star_key,
+    double jd_start_ut,
+    int flags,
+    ffi.Pointer<taiyin_lunar_occultation_result> out,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_search_next_geocentric_lunar_star_occultation_ut(
+      context,
+      star_key,
+      jd_start_ut,
+      flags,
+      out,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_search_next_geocentric_lunar_star_occultation_utPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Double,
+            ffi.Uint64,
+            ffi.Pointer<taiyin_lunar_occultation_result>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_search_next_geocentric_lunar_star_occultation_ut');
+  late final _taiyin_search_next_geocentric_lunar_star_occultation_ut =
+      _taiyin_search_next_geocentric_lunar_star_occultation_utPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              ffi.Pointer<ffi.Char>,
+              double,
+              int,
+              ffi.Pointer<taiyin_lunar_occultation_result>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_search_next_local_lunar_star_occultation_ut(
+    ffi.Pointer<taiyin_context> context,
+    ffi.Pointer<ffi.Char> star_key,
+    double jd_start_ut,
+    int flags,
+    ffi.Pointer<taiyin_lunar_occultation_result> out,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_search_next_local_lunar_star_occultation_ut(
+      context,
+      star_key,
+      jd_start_ut,
+      flags,
+      out,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_search_next_local_lunar_star_occultation_utPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Double,
+            ffi.Uint64,
+            ffi.Pointer<taiyin_lunar_occultation_result>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_search_next_local_lunar_star_occultation_ut');
+  late final _taiyin_search_next_local_lunar_star_occultation_ut =
+      _taiyin_search_next_local_lunar_star_occultation_utPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              ffi.Pointer<ffi.Char>,
+              double,
+              int,
+              ffi.Pointer<taiyin_lunar_occultation_result>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_search_next_geocentric_lunar_body_occultation_ut(
+    ffi.Pointer<taiyin_context> context,
+    int body_id,
+    double jd_start_ut,
+    int flags,
+    ffi.Pointer<taiyin_lunar_occultation_result> out,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_search_next_geocentric_lunar_body_occultation_ut(
+      context,
+      body_id,
+      jd_start_ut,
+      flags,
+      out,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_search_next_geocentric_lunar_body_occultation_utPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Int32,
+            ffi.Double,
+            ffi.Uint64,
+            ffi.Pointer<taiyin_lunar_occultation_result>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_search_next_geocentric_lunar_body_occultation_ut');
+  late final _taiyin_search_next_geocentric_lunar_body_occultation_ut =
+      _taiyin_search_next_geocentric_lunar_body_occultation_utPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              int,
+              double,
+              int,
+              ffi.Pointer<taiyin_lunar_occultation_result>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_search_next_geocentric_lunar_body_occultation_with_radius_ut(
+    ffi.Pointer<taiyin_context> context,
+    int body_id,
+    double target_radius_km,
+    double jd_start_ut,
+    int flags,
+    ffi.Pointer<taiyin_lunar_occultation_result> out,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_search_next_geocentric_lunar_body_occultation_with_radius_ut(
+      context,
+      body_id,
+      target_radius_km,
+      jd_start_ut,
+      flags,
+      out,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_search_next_geocentric_lunar_body_occultation_with_radius_utPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Int32,
+            ffi.Double,
+            ffi.Double,
+            ffi.Uint64,
+            ffi.Pointer<taiyin_lunar_occultation_result>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_search_next_geocentric_lunar_body_occultation_with_radius_ut');
+  late final _taiyin_search_next_geocentric_lunar_body_occultation_with_radius_ut =
+      _taiyin_search_next_geocentric_lunar_body_occultation_with_radius_utPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              int,
+              double,
+              double,
+              int,
+              ffi.Pointer<taiyin_lunar_occultation_result>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_search_next_local_lunar_body_occultation_ut(
+    ffi.Pointer<taiyin_context> context,
+    int body_id,
+    double jd_start_ut,
+    int flags,
+    ffi.Pointer<taiyin_lunar_occultation_result> out,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_search_next_local_lunar_body_occultation_ut(
+      context,
+      body_id,
+      jd_start_ut,
+      flags,
+      out,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_search_next_local_lunar_body_occultation_utPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Int32,
+            ffi.Double,
+            ffi.Uint64,
+            ffi.Pointer<taiyin_lunar_occultation_result>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_search_next_local_lunar_body_occultation_ut');
+  late final _taiyin_search_next_local_lunar_body_occultation_ut =
+      _taiyin_search_next_local_lunar_body_occultation_utPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              int,
+              double,
+              int,
+              ffi.Pointer<taiyin_lunar_occultation_result>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_search_next_local_lunar_body_occultation_with_radius_ut(
+    ffi.Pointer<taiyin_context> context,
+    int body_id,
+    double target_radius_km,
+    double jd_start_ut,
+    int flags,
+    ffi.Pointer<taiyin_lunar_occultation_result> out,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_search_next_local_lunar_body_occultation_with_radius_ut(
+      context,
+      body_id,
+      target_radius_km,
+      jd_start_ut,
+      flags,
+      out,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_search_next_local_lunar_body_occultation_with_radius_utPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Int32,
+            ffi.Double,
+            ffi.Double,
+            ffi.Uint64,
+            ffi.Pointer<taiyin_lunar_occultation_result>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_search_next_local_lunar_body_occultation_with_radius_ut');
+  late final _taiyin_search_next_local_lunar_body_occultation_with_radius_ut =
+      _taiyin_search_next_local_lunar_body_occultation_with_radius_utPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              int,
+              double,
+              double,
+              int,
+              ffi.Pointer<taiyin_lunar_occultation_result>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_compute_lunar_star_occultation_local_visibility_ut(
+    ffi.Pointer<taiyin_context> context,
+    ffi.Pointer<ffi.Char> star_key,
+    ffi.Pointer<taiyin_lunar_occultation_result> occultation,
+    int visibility_flags,
+    ffi.Pointer<taiyin_lunar_occultation_local_visibility> out,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_compute_lunar_star_occultation_local_visibility_ut(
+      context,
+      star_key,
+      occultation,
+      visibility_flags,
+      out,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_compute_lunar_star_occultation_local_visibility_utPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<taiyin_lunar_occultation_result>,
+            ffi.Uint64,
+            ffi.Pointer<taiyin_lunar_occultation_local_visibility>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_compute_lunar_star_occultation_local_visibility_ut');
+  late final _taiyin_compute_lunar_star_occultation_local_visibility_ut =
+      _taiyin_compute_lunar_star_occultation_local_visibility_utPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<taiyin_lunar_occultation_result>,
+              int,
+              ffi.Pointer<taiyin_lunar_occultation_local_visibility>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_compute_lunar_body_occultation_local_visibility_ut(
+    ffi.Pointer<taiyin_context> context,
+    int body_id,
+    ffi.Pointer<taiyin_lunar_occultation_result> occultation,
+    int visibility_flags,
+    ffi.Pointer<taiyin_lunar_occultation_local_visibility> out,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_compute_lunar_body_occultation_local_visibility_ut(
+      context,
+      body_id,
+      occultation,
+      visibility_flags,
+      out,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_compute_lunar_body_occultation_local_visibility_utPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Int32,
+            ffi.Pointer<taiyin_lunar_occultation_result>,
+            ffi.Uint64,
+            ffi.Pointer<taiyin_lunar_occultation_local_visibility>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_compute_lunar_body_occultation_local_visibility_ut');
+  late final _taiyin_compute_lunar_body_occultation_local_visibility_ut =
+      _taiyin_compute_lunar_body_occultation_local_visibility_utPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              int,
+              ffi.Pointer<taiyin_lunar_occultation_result>,
+              int,
+              ffi.Pointer<taiyin_lunar_occultation_local_visibility>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_compute_lunar_star_occultation_where_ut(
+    ffi.Pointer<taiyin_context> context,
+    ffi.Pointer<ffi.Char> star_key,
+    ffi.Pointer<taiyin_lunar_occultation_result> occultation,
+    int flags,
+    ffi.Pointer<taiyin_lunar_occultation_where_result> out,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_compute_lunar_star_occultation_where_ut(
+      context,
+      star_key,
+      occultation,
+      flags,
+      out,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_compute_lunar_star_occultation_where_utPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<taiyin_lunar_occultation_result>,
+            ffi.Uint64,
+            ffi.Pointer<taiyin_lunar_occultation_where_result>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_compute_lunar_star_occultation_where_ut');
+  late final _taiyin_compute_lunar_star_occultation_where_ut =
+      _taiyin_compute_lunar_star_occultation_where_utPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<taiyin_lunar_occultation_result>,
+              int,
+              ffi.Pointer<taiyin_lunar_occultation_where_result>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_compute_lunar_body_occultation_where_ut(
+    ffi.Pointer<taiyin_context> context,
+    int body_id,
+    ffi.Pointer<taiyin_lunar_occultation_result> occultation,
+    int flags,
+    ffi.Pointer<taiyin_lunar_occultation_where_result> out,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_compute_lunar_body_occultation_where_ut(
+      context,
+      body_id,
+      occultation,
+      flags,
+      out,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_compute_lunar_body_occultation_where_utPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Int32,
+            ffi.Pointer<taiyin_lunar_occultation_result>,
+            ffi.Uint64,
+            ffi.Pointer<taiyin_lunar_occultation_where_result>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_compute_lunar_body_occultation_where_ut');
+  late final _taiyin_compute_lunar_body_occultation_where_ut =
+      _taiyin_compute_lunar_body_occultation_where_utPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              int,
+              ffi.Pointer<taiyin_lunar_occultation_result>,
+              int,
+              ffi.Pointer<taiyin_lunar_occultation_where_result>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_compute_lunar_body_occultation_where_with_radius_ut(
+    ffi.Pointer<taiyin_context> context,
+    int body_id,
+    double target_radius_km,
+    ffi.Pointer<taiyin_lunar_occultation_result> occultation,
+    int flags,
+    ffi.Pointer<taiyin_lunar_occultation_where_result> out,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_compute_lunar_body_occultation_where_with_radius_ut(
+      context,
+      body_id,
+      target_radius_km,
+      occultation,
+      flags,
+      out,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_compute_lunar_body_occultation_where_with_radius_utPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Int32,
+            ffi.Double,
+            ffi.Pointer<taiyin_lunar_occultation_result>,
+            ffi.Uint64,
+            ffi.Pointer<taiyin_lunar_occultation_where_result>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_compute_lunar_body_occultation_where_with_radius_ut');
+  late final _taiyin_compute_lunar_body_occultation_where_with_radius_ut =
+      _taiyin_compute_lunar_body_occultation_where_with_radius_utPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              int,
+              double,
+              ffi.Pointer<taiyin_lunar_occultation_result>,
+              int,
+              ffi.Pointer<taiyin_lunar_occultation_where_result>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
 }
 
 typedef __int8_t = ffi.SignedChar;
@@ -9300,3 +9854,352 @@ final class taiyin_local_solar_transit_result extends ffi.Struct {
   @ffi.Double()
   external double sunset_jd_ut;
 }
+
+sealed class taiyin_occultation_kind {
+  static const TAIYIN_C_OCCULTATION_KIND_NONE = 0;
+  static const TAIYIN_C_OCCULTATION_KIND_LUNAR_STAR = 1;
+  static const TAIYIN_C_OCCULTATION_KIND_LUNAR_BODY = 2;
+}
+
+sealed class taiyin_occultation_type_flags {
+  static const TAIYIN_C_OCCULTATION_TYPE_PARTIAL = 1;
+  static const TAIYIN_C_OCCULTATION_TYPE_TOTAL = 2;
+  static const TAIYIN_C_OCCULTATION_TYPE_ANNULAR = 4;
+  static const TAIYIN_C_OCCULTATION_TYPE_GRAZING = 8;
+  static const TAIYIN_C_OCCULTATION_TYPE_CENTRAL = 16;
+  static const TAIYIN_C_OCCULTATION_TYPE_NONCENTRAL = 32;
+  static const TAIYIN_C_OCCULTATION_TYPE_CENTRALITY_UNAVAILABLE = 64;
+}
+
+sealed class taiyin_occultation_visibility_sample_flags {
+  static const TAIYIN_C_OCCULTATION_SAMPLE_MOON_ABOVE_HORIZON = 1;
+  static const TAIYIN_C_OCCULTATION_SAMPLE_TARGET_ABOVE_HORIZON = 2;
+  static const TAIYIN_C_OCCULTATION_SAMPLE_SUN_BELOW_HORIZON = 4;
+}
+
+sealed class taiyin_occultation_visibility_flags {
+  static const TAIYIN_C_OCCULTATION_VISIBILITY_HAS_VISIBLE_SAMPLE = 1;
+  static const TAIYIN_C_OCCULTATION_VISIBILITY_MAXIMUM_VISIBLE = 2;
+  static const TAIYIN_C_OCCULTATION_VISIBILITY_HAS_DARK_SAMPLE = 4;
+  static const TAIYIN_C_OCCULTATION_VISIBILITY_MAXIMUM_DARK = 8;
+  static const TAIYIN_C_OCCULTATION_VISIBILITY_HAS_VISIBLE_INTERVAL = 16;
+  static const TAIYIN_C_OCCULTATION_VISIBILITY_HAS_DARK_INTERVAL = 32;
+}
+
+final class taiyin_lunar_occultation_phenomena extends ffi.Struct {
+  @ffi.Uint32()
+  external int struct_size;
+
+  @ffi.Double()
+  external double angular_distance_rad;
+
+  @ffi.Double()
+  external double diameter_ratio;
+
+  @ffi.Double()
+  external double magnitude;
+
+  @ffi.Double()
+  external double obscuration;
+
+  @ffi.Double()
+  external double occulted_fraction;
+}
+
+final class taiyin_lunar_occultation_result extends ffi.Struct {
+  @ffi.Uint32()
+  external int struct_size;
+
+  @ffi.Int32()
+  external int kind;
+
+  @ffi.Uint32()
+  external int type_flags;
+
+  @ffi.Double()
+  external double jd_ut;
+
+  @ffi.Double()
+  external double begin_jd_ut;
+
+  @ffi.Double()
+  external double end_jd_ut;
+
+  @ffi.Double()
+  external double first_contact_jd_ut;
+
+  @ffi.Double()
+  external double second_contact_jd_ut;
+
+  @ffi.Double()
+  external double third_contact_jd_ut;
+
+  @ffi.Double()
+  external double fourth_contact_jd_ut;
+
+  @ffi.Double()
+  external double separation_rad;
+
+  @ffi.Double()
+  external double moon_radius_rad;
+
+  @ffi.Double()
+  external double target_radius_rad;
+
+  @ffi.Double()
+  external double margin_rad;
+
+  external taiyin_lunar_occultation_phenomena phenomena;
+
+  @ffi.Double()
+  external double candidate_jd_ut;
+
+  @ffi.Double()
+  external double next_search_jd_ut;
+
+  @ffi.Int32()
+  external int candidate_count;
+
+  @ffi.Int32()
+  external int iteration_count;
+
+  @ffi.Int32()
+  external int evaluation_count;
+}
+
+final class taiyin_lunar_occultation_visibility_interval extends ffi.Struct {
+  @ffi.Uint32()
+  external int struct_size;
+
+  @ffi.Uint8()
+  external int valid;
+
+  @ffi.Array.multi([3])
+  external ffi.Array<ffi.Uint8> reserved;
+
+  @ffi.Double()
+  external double begin_jd_ut;
+
+  @ffi.Double()
+  external double end_jd_ut;
+}
+
+final class taiyin_lunar_occultation_visibility_sample extends ffi.Struct {
+  @ffi.Uint32()
+  external int struct_size;
+
+  @ffi.Uint8()
+  external int valid;
+
+  @ffi.Array.multi([3])
+  external ffi.Array<ffi.Uint8> reserved;
+
+  @ffi.Double()
+  external double jd_ut;
+
+  @ffi.Double()
+  external double moon_altitude_rad;
+
+  @ffi.Double()
+  external double moon_azimuth_rad;
+
+  @ffi.Double()
+  external double target_altitude_rad;
+
+  @ffi.Double()
+  external double target_azimuth_rad;
+
+  @ffi.Double()
+  external double sun_altitude_rad;
+
+  @ffi.Double()
+  external double sun_azimuth_rad;
+
+  @ffi.Uint32()
+  external int visibility_flags;
+}
+
+final class taiyin_lunar_occultation_local_visibility extends ffi.Struct {
+  @ffi.Uint32()
+  external int struct_size;
+
+  external taiyin_lunar_occultation_visibility_sample first_contact;
+
+  external taiyin_lunar_occultation_visibility_sample second_contact;
+
+  external taiyin_lunar_occultation_visibility_sample maximum;
+
+  external taiyin_lunar_occultation_visibility_sample third_contact;
+
+  external taiyin_lunar_occultation_visibility_sample fourth_contact;
+
+  @ffi.Double()
+  external double target_rise_jd_ut;
+
+  @ffi.Double()
+  external double target_set_jd_ut;
+
+  @ffi.Double()
+  external double visible_begin_jd_ut;
+
+  @ffi.Double()
+  external double visible_end_jd_ut;
+
+  @ffi.Double()
+  external double dark_visible_begin_jd_ut;
+
+  @ffi.Double()
+  external double dark_visible_end_jd_ut;
+
+  @ffi.Int32()
+  external int visible_interval_count;
+
+  @ffi.Array.multi([8])
+  external ffi.Array<taiyin_lunar_occultation_visibility_interval>
+  visible_intervals;
+
+  @ffi.Int32()
+  external int dark_visible_interval_count;
+
+  @ffi.Array.multi([8])
+  external ffi.Array<taiyin_lunar_occultation_visibility_interval>
+  dark_visible_intervals;
+
+  @ffi.Uint32()
+  external int visibility_flags;
+}
+
+final class taiyin_lunar_occultation_path_point extends ffi.Struct {
+  @ffi.Uint32()
+  external int struct_size;
+
+  @ffi.Uint8()
+  external int valid;
+
+  @ffi.Array.multi([3])
+  external ffi.Array<ffi.Uint8> reserved;
+
+  @ffi.Double()
+  external double jd_ut;
+
+  @ffi.Double()
+  external double longitude_deg;
+
+  @ffi.Double()
+  external double latitude_deg;
+
+  @ffi.Double()
+  external double height_m;
+}
+
+final class taiyin_lunar_occultation_where_result extends ffi.Struct {
+  @ffi.Uint32()
+  external int struct_size;
+
+  @ffi.Uint8()
+  external int center_line_hits_earth;
+
+  @ffi.Array.multi([3])
+  external ffi.Array<ffi.Uint8> reserved;
+
+  @ffi.Uint32()
+  external int type_flags;
+
+  @ffi.Double()
+  external double jd_ut;
+
+  @ffi.Double()
+  external double center_line_begin_jd_ut;
+
+  @ffi.Double()
+  external double center_line_end_jd_ut;
+
+  @ffi.Int32()
+  external int center_line_path_count;
+
+  @ffi.Array.multi([16])
+  external ffi.Array<taiyin_lunar_occultation_path_point> center_line_path;
+
+  @ffi.Double()
+  external double center_line_min_longitude_deg;
+
+  @ffi.Double()
+  external double center_line_max_longitude_deg;
+
+  @ffi.Double()
+  external double center_line_min_latitude_deg;
+
+  @ffi.Double()
+  external double center_line_max_latitude_deg;
+
+  @ffi.Double()
+  external double center_line_path_distance_km;
+
+  @ffi.Int32()
+  external int outer_limit_path_count;
+
+  @ffi.Array.multi([16])
+  external ffi.Array<taiyin_lunar_occultation_path_point> outer_north_path;
+
+  @ffi.Array.multi([16])
+  external ffi.Array<taiyin_lunar_occultation_path_point> outer_south_path;
+
+  @ffi.Double()
+  external double outer_limit_mean_width_km;
+
+  @ffi.Double()
+  external double outer_limit_max_width_km;
+
+  @ffi.Int32()
+  external int visible_region_polygon_count;
+
+  @ffi.Array.multi([32])
+  external ffi.Array<taiyin_lunar_occultation_path_point>
+  visible_region_polygon;
+
+  @ffi.Double()
+  external double visible_region_min_longitude_deg;
+
+  @ffi.Double()
+  external double visible_region_max_longitude_deg;
+
+  @ffi.Double()
+  external double visible_region_min_latitude_deg;
+
+  @ffi.Double()
+  external double visible_region_max_latitude_deg;
+
+  @ffi.Double()
+  external double longitude_deg;
+
+  @ffi.Double()
+  external double latitude_deg;
+
+  @ffi.Double()
+  external double height_m;
+
+  @ffi.Double()
+  external double separation_rad;
+
+  @ffi.Double()
+  external double moon_radius_rad;
+
+  @ffi.Double()
+  external double target_radius_rad;
+
+  @ffi.Double()
+  external double margin_rad;
+
+  external taiyin_lunar_occultation_phenomena phenomena;
+
+  external taiyin_lunar_occultation_visibility_sample local_sample;
+
+  @ffi.Uint32()
+  external int visibility_flags;
+}
+
+const int TAIYIN_C_OCCULTATION_WHERE_MAX_PATH_POINTS = 16;
+
+const int TAIYIN_C_OCCULTATION_WHERE_MAX_POLYGON_POINTS = 32;
+
+const int TAIYIN_C_OCCULTATION_MAX_VISIBILITY_INTERVALS = 8;

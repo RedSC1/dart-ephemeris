@@ -7,6 +7,7 @@ export 'src/context/context_models.dart';
 export 'src/events/event_models.dart';
 export 'src/heliacal/heliacal_models.dart';
 export 'src/observed/observed_models.dart';
+export 'src/occultation/occultation_models.dart';
 export 'src/orbital/orbital_models.dart';
 export 'src/phenomena/phenomena_models.dart';
 export 'src/position/position_api.dart';

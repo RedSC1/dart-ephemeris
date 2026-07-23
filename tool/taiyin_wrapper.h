@@ -15,5 +15,6 @@
 #include <taiyin/c/visibility.h>
 #include <taiyin/c/heliacal.h>
 #include <taiyin/c/events.h>
+#include <taiyin/c/occultation.h>
 
 #endif
