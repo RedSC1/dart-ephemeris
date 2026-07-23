@@ -16,5 +16,6 @@
 #include <taiyin/c/heliacal.h>
 #include <taiyin/c/events.h>
 #include <taiyin/c/occultation.h>
+#include <taiyin/c/eclipse.h>
 
 #endif

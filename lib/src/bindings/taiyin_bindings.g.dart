@@ -8125,6 +8125,514 @@ class TaiyinBindings {
               ffi.Pointer<taiyin_ephemeris_diagnostic>,
             )
           >();
+
+  void taiyin_lunar_eclipse_result_tt_init(
+    ffi.Pointer<taiyin_lunar_eclipse_result_tt> arg0,
+  ) {
+    return _taiyin_lunar_eclipse_result_tt_init(arg0);
+  }
+
+  late final _taiyin_lunar_eclipse_result_tt_initPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<taiyin_lunar_eclipse_result_tt>)
+        >
+      >('taiyin_lunar_eclipse_result_tt_init');
+  late final _taiyin_lunar_eclipse_result_tt_init =
+      _taiyin_lunar_eclipse_result_tt_initPtr
+          .asFunction<
+            void Function(ffi.Pointer<taiyin_lunar_eclipse_result_tt>)
+          >();
+
+  void taiyin_lunar_eclipse_result_ut_init(
+    ffi.Pointer<taiyin_lunar_eclipse_result_ut> arg0,
+  ) {
+    return _taiyin_lunar_eclipse_result_ut_init(arg0);
+  }
+
+  late final _taiyin_lunar_eclipse_result_ut_initPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<taiyin_lunar_eclipse_result_ut>)
+        >
+      >('taiyin_lunar_eclipse_result_ut_init');
+  late final _taiyin_lunar_eclipse_result_ut_init =
+      _taiyin_lunar_eclipse_result_ut_initPtr
+          .asFunction<
+            void Function(ffi.Pointer<taiyin_lunar_eclipse_result_ut>)
+          >();
+
+  void taiyin_local_lunar_eclipse_result_tt_init(
+    ffi.Pointer<taiyin_local_lunar_eclipse_result_tt> arg0,
+  ) {
+    return _taiyin_local_lunar_eclipse_result_tt_init(arg0);
+  }
+
+  late final _taiyin_local_lunar_eclipse_result_tt_initPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<taiyin_local_lunar_eclipse_result_tt>)
+        >
+      >('taiyin_local_lunar_eclipse_result_tt_init');
+  late final _taiyin_local_lunar_eclipse_result_tt_init =
+      _taiyin_local_lunar_eclipse_result_tt_initPtr
+          .asFunction<
+            void Function(ffi.Pointer<taiyin_local_lunar_eclipse_result_tt>)
+          >();
+
+  void taiyin_local_lunar_eclipse_result_ut_init(
+    ffi.Pointer<taiyin_local_lunar_eclipse_result_ut> arg0,
+  ) {
+    return _taiyin_local_lunar_eclipse_result_ut_init(arg0);
+  }
+
+  late final _taiyin_local_lunar_eclipse_result_ut_initPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<taiyin_local_lunar_eclipse_result_ut>)
+        >
+      >('taiyin_local_lunar_eclipse_result_ut_init');
+  late final _taiyin_local_lunar_eclipse_result_ut_init =
+      _taiyin_local_lunar_eclipse_result_ut_initPtr
+          .asFunction<
+            void Function(ffi.Pointer<taiyin_local_lunar_eclipse_result_ut>)
+          >();
+
+  int taiyin_solve_lunar_eclipse_at_tt(
+    ffi.Pointer<taiyin_context> arg0,
+    double arg1,
+    int arg2,
+    ffi.Pointer<taiyin_lunar_eclipse_result_tt> arg3,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> arg4,
+  ) {
+    return _taiyin_solve_lunar_eclipse_at_tt(arg0, arg1, arg2, arg3, arg4);
+  }
+
+  late final _taiyin_solve_lunar_eclipse_at_ttPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Double,
+            ffi.Uint64,
+            ffi.Pointer<taiyin_lunar_eclipse_result_tt>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_solve_lunar_eclipse_at_tt');
+  late final _taiyin_solve_lunar_eclipse_at_tt =
+      _taiyin_solve_lunar_eclipse_at_ttPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              double,
+              int,
+              ffi.Pointer<taiyin_lunar_eclipse_result_tt>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_solve_lunar_eclipse_at_ut(
+    ffi.Pointer<taiyin_context> arg0,
+    double arg1,
+    int arg2,
+    ffi.Pointer<taiyin_lunar_eclipse_result_ut> arg3,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> arg4,
+  ) {
+    return _taiyin_solve_lunar_eclipse_at_ut(arg0, arg1, arg2, arg3, arg4);
+  }
+
+  late final _taiyin_solve_lunar_eclipse_at_utPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Double,
+            ffi.Uint64,
+            ffi.Pointer<taiyin_lunar_eclipse_result_ut>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_solve_lunar_eclipse_at_ut');
+  late final _taiyin_solve_lunar_eclipse_at_ut =
+      _taiyin_solve_lunar_eclipse_at_utPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              double,
+              int,
+              ffi.Pointer<taiyin_lunar_eclipse_result_ut>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_search_next_lunar_eclipse_tt(
+    ffi.Pointer<taiyin_context> arg0,
+    double arg1,
+    int arg2,
+    int arg3,
+    ffi.Pointer<taiyin_lunar_eclipse_result_tt> arg4,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> arg5,
+  ) {
+    return _taiyin_search_next_lunar_eclipse_tt(
+      arg0,
+      arg1,
+      arg2,
+      arg3,
+      arg4,
+      arg5,
+    );
+  }
+
+  late final _taiyin_search_next_lunar_eclipse_ttPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Double,
+            ffi.Uint32,
+            ffi.Uint64,
+            ffi.Pointer<taiyin_lunar_eclipse_result_tt>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_search_next_lunar_eclipse_tt');
+  late final _taiyin_search_next_lunar_eclipse_tt =
+      _taiyin_search_next_lunar_eclipse_ttPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              double,
+              int,
+              int,
+              ffi.Pointer<taiyin_lunar_eclipse_result_tt>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_search_next_lunar_eclipse_ut(
+    ffi.Pointer<taiyin_context> arg0,
+    double arg1,
+    int arg2,
+    int arg3,
+    ffi.Pointer<taiyin_lunar_eclipse_result_ut> arg4,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> arg5,
+  ) {
+    return _taiyin_search_next_lunar_eclipse_ut(
+      arg0,
+      arg1,
+      arg2,
+      arg3,
+      arg4,
+      arg5,
+    );
+  }
+
+  late final _taiyin_search_next_lunar_eclipse_utPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Double,
+            ffi.Uint32,
+            ffi.Uint64,
+            ffi.Pointer<taiyin_lunar_eclipse_result_ut>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_search_next_lunar_eclipse_ut');
+  late final _taiyin_search_next_lunar_eclipse_ut =
+      _taiyin_search_next_lunar_eclipse_utPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              double,
+              int,
+              int,
+              ffi.Pointer<taiyin_lunar_eclipse_result_ut>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_search_lunar_eclipses_tt(
+    ffi.Pointer<taiyin_context> arg0,
+    double arg1,
+    double arg2,
+    int arg3,
+    int arg4,
+    ffi.Pointer<taiyin_lunar_eclipse_result_tt> arg5,
+    int arg6,
+    ffi.Pointer<ffi.Size> arg7,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> arg8,
+  ) {
+    return _taiyin_search_lunar_eclipses_tt(
+      arg0,
+      arg1,
+      arg2,
+      arg3,
+      arg4,
+      arg5,
+      arg6,
+      arg7,
+      arg8,
+    );
+  }
+
+  late final _taiyin_search_lunar_eclipses_ttPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Double,
+            ffi.Double,
+            ffi.Uint32,
+            ffi.Uint64,
+            ffi.Pointer<taiyin_lunar_eclipse_result_tt>,
+            ffi.Size,
+            ffi.Pointer<ffi.Size>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_search_lunar_eclipses_tt');
+  late final _taiyin_search_lunar_eclipses_tt =
+      _taiyin_search_lunar_eclipses_ttPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              double,
+              double,
+              int,
+              int,
+              ffi.Pointer<taiyin_lunar_eclipse_result_tt>,
+              int,
+              ffi.Pointer<ffi.Size>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_search_lunar_eclipses_ut(
+    ffi.Pointer<taiyin_context> arg0,
+    double arg1,
+    double arg2,
+    int arg3,
+    int arg4,
+    ffi.Pointer<taiyin_lunar_eclipse_result_ut> arg5,
+    int arg6,
+    ffi.Pointer<ffi.Size> arg7,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> arg8,
+  ) {
+    return _taiyin_search_lunar_eclipses_ut(
+      arg0,
+      arg1,
+      arg2,
+      arg3,
+      arg4,
+      arg5,
+      arg6,
+      arg7,
+      arg8,
+    );
+  }
+
+  late final _taiyin_search_lunar_eclipses_utPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Double,
+            ffi.Double,
+            ffi.Uint32,
+            ffi.Uint64,
+            ffi.Pointer<taiyin_lunar_eclipse_result_ut>,
+            ffi.Size,
+            ffi.Pointer<ffi.Size>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_search_lunar_eclipses_ut');
+  late final _taiyin_search_lunar_eclipses_ut =
+      _taiyin_search_lunar_eclipses_utPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              double,
+              double,
+              int,
+              int,
+              ffi.Pointer<taiyin_lunar_eclipse_result_ut>,
+              int,
+              ffi.Pointer<ffi.Size>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_compute_local_lunar_eclipse_visibility_tt(
+    ffi.Pointer<taiyin_context> arg0,
+    ffi.Pointer<taiyin_lunar_eclipse_result_tt> arg1,
+    int arg2,
+    ffi.Pointer<taiyin_local_lunar_eclipse_result_tt> arg3,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> arg4,
+  ) {
+    return _taiyin_compute_local_lunar_eclipse_visibility_tt(
+      arg0,
+      arg1,
+      arg2,
+      arg3,
+      arg4,
+    );
+  }
+
+  late final _taiyin_compute_local_lunar_eclipse_visibility_ttPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Pointer<taiyin_lunar_eclipse_result_tt>,
+            ffi.Uint64,
+            ffi.Pointer<taiyin_local_lunar_eclipse_result_tt>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_compute_local_lunar_eclipse_visibility_tt');
+  late final _taiyin_compute_local_lunar_eclipse_visibility_tt =
+      _taiyin_compute_local_lunar_eclipse_visibility_ttPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              ffi.Pointer<taiyin_lunar_eclipse_result_tt>,
+              int,
+              ffi.Pointer<taiyin_local_lunar_eclipse_result_tt>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_compute_local_lunar_eclipse_visibility_ut(
+    ffi.Pointer<taiyin_context> arg0,
+    ffi.Pointer<taiyin_lunar_eclipse_result_ut> arg1,
+    int arg2,
+    ffi.Pointer<taiyin_local_lunar_eclipse_result_ut> arg3,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> arg4,
+  ) {
+    return _taiyin_compute_local_lunar_eclipse_visibility_ut(
+      arg0,
+      arg1,
+      arg2,
+      arg3,
+      arg4,
+    );
+  }
+
+  late final _taiyin_compute_local_lunar_eclipse_visibility_utPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Pointer<taiyin_lunar_eclipse_result_ut>,
+            ffi.Uint64,
+            ffi.Pointer<taiyin_local_lunar_eclipse_result_ut>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_compute_local_lunar_eclipse_visibility_ut');
+  late final _taiyin_compute_local_lunar_eclipse_visibility_ut =
+      _taiyin_compute_local_lunar_eclipse_visibility_utPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              ffi.Pointer<taiyin_lunar_eclipse_result_ut>,
+              int,
+              ffi.Pointer<taiyin_local_lunar_eclipse_result_ut>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_search_next_local_lunar_eclipse_tt(
+    ffi.Pointer<taiyin_context> arg0,
+    double arg1,
+    int arg2,
+    int arg3,
+    ffi.Pointer<taiyin_local_lunar_eclipse_result_tt> arg4,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> arg5,
+  ) {
+    return _taiyin_search_next_local_lunar_eclipse_tt(
+      arg0,
+      arg1,
+      arg2,
+      arg3,
+      arg4,
+      arg5,
+    );
+  }
+
+  late final _taiyin_search_next_local_lunar_eclipse_ttPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Double,
+            ffi.Uint32,
+            ffi.Uint64,
+            ffi.Pointer<taiyin_local_lunar_eclipse_result_tt>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_search_next_local_lunar_eclipse_tt');
+  late final _taiyin_search_next_local_lunar_eclipse_tt =
+      _taiyin_search_next_local_lunar_eclipse_ttPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              double,
+              int,
+              int,
+              ffi.Pointer<taiyin_local_lunar_eclipse_result_tt>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_search_next_local_lunar_eclipse_ut(
+    ffi.Pointer<taiyin_context> arg0,
+    double arg1,
+    int arg2,
+    int arg3,
+    ffi.Pointer<taiyin_local_lunar_eclipse_result_ut> arg4,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> arg5,
+  ) {
+    return _taiyin_search_next_local_lunar_eclipse_ut(
+      arg0,
+      arg1,
+      arg2,
+      arg3,
+      arg4,
+      arg5,
+    );
+  }
+
+  late final _taiyin_search_next_local_lunar_eclipse_utPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Double,
+            ffi.Uint32,
+            ffi.Uint64,
+            ffi.Pointer<taiyin_local_lunar_eclipse_result_ut>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_search_next_local_lunar_eclipse_ut');
+  late final _taiyin_search_next_local_lunar_eclipse_ut =
+      _taiyin_search_next_local_lunar_eclipse_utPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              double,
+              int,
+              int,
+              ffi.Pointer<taiyin_local_lunar_eclipse_result_ut>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
 }
 
 typedef __int8_t = ffi.SignedChar;
@@ -10198,8 +10706,215 @@ final class taiyin_lunar_occultation_where_result extends ffi.Struct {
   external int visibility_flags;
 }
 
+sealed class taiyin_eclipse_kind_flags {
+  static const TAIYIN_C_ECLIPSE_NONE = 0;
+  static const TAIYIN_C_ECLIPSE_PENUMBRAL = 1;
+  static const TAIYIN_C_ECLIPSE_PARTIAL = 2;
+  static const TAIYIN_C_ECLIPSE_TOTAL = 4;
+  static const TAIYIN_C_ECLIPSE_ANNULAR = 8;
+  static const TAIYIN_C_ECLIPSE_HYBRID = 16;
+  static const TAIYIN_C_ECLIPSE_CENTRAL = 32;
+  static const TAIYIN_C_ECLIPSE_NONCENTRAL = 64;
+  static const TAIYIN_C_ECLIPSE_VISIBLE_AT_OBSERVER = 128;
+  static const TAIYIN_C_ECLIPSE_MAXIMUM_VISIBLE = 256;
+  static const TAIYIN_C_ECLIPSE_PARTIAL_BEGIN_VISIBLE = 512;
+  static const TAIYIN_C_ECLIPSE_TOTAL_BEGIN_VISIBLE = 1024;
+  static const TAIYIN_C_ECLIPSE_TOTAL_END_VISIBLE = 2048;
+  static const TAIYIN_C_ECLIPSE_PARTIAL_END_VISIBLE = 4096;
+  static const TAIYIN_C_ECLIPSE_PENUMBRAL_BEGIN_VISIBLE = 8192;
+  static const TAIYIN_C_ECLIPSE_PENUMBRAL_END_VISIBLE = 16384;
+  static const TAIYIN_C_ECLIPSE_OCCULTATION_BEGIN_IN_DAYLIGHT = 32768;
+  static const TAIYIN_C_ECLIPSE_OCCULTATION_END_IN_DAYLIGHT = 65536;
+}
+
+sealed class taiyin_solar_route_curve_kind {
+  static const TAIYIN_C_SOLAR_ROUTE_CURVE_PARTIAL_BEGIN_A = 0;
+  static const TAIYIN_C_SOLAR_ROUTE_CURVE_PARTIAL_BEGIN_B = 1;
+  static const TAIYIN_C_SOLAR_ROUTE_CURVE_PARTIAL_END_A = 2;
+  static const TAIYIN_C_SOLAR_ROUTE_CURVE_PARTIAL_END_B = 3;
+  static const TAIYIN_C_SOLAR_ROUTE_CURVE_SUNRISE_MAX_A = 4;
+  static const TAIYIN_C_SOLAR_ROUTE_CURVE_SUNRISE_MAX_B = 5;
+  static const TAIYIN_C_SOLAR_ROUTE_CURVE_SUNSET_MAX_A = 6;
+  static const TAIYIN_C_SOLAR_ROUTE_CURVE_SUNSET_MAX_B = 7;
+  static const TAIYIN_C_SOLAR_ROUTE_CURVE_CENTER_LINE = 8;
+  static const TAIYIN_C_SOLAR_ROUTE_CURVE_PENUMBRAL_NORTH = 9;
+  static const TAIYIN_C_SOLAR_ROUTE_CURVE_PENUMBRAL_SOUTH = 10;
+  static const TAIYIN_C_SOLAR_ROUTE_CURVE_CORE_NORTH = 11;
+  static const TAIYIN_C_SOLAR_ROUTE_CURVE_CORE_SOUTH = 12;
+  static const TAIYIN_C_SOLAR_ROUTE_CURVE_HALF_MAGNITUDE_NORTH = 13;
+  static const TAIYIN_C_SOLAR_ROUTE_CURVE_HALF_MAGNITUDE_SOUTH = 14;
+  static const TAIYIN_C_SOLAR_ROUTE_CURVE_UMBRA_OUTLINE = 15;
+  static const TAIYIN_C_SOLAR_ROUTE_CURVE_PENUMBRA_OUTLINE = 16;
+  static const TAIYIN_C_SOLAR_ROUTE_CURVE_TERMINATOR = 17;
+  static const TAIYIN_C_SOLAR_ROUTE_CURVE_CORE_BEGIN_HORIZON = 18;
+  static const TAIYIN_C_SOLAR_ROUTE_CURVE_CORE_END_HORIZON = 19;
+  static const TAIYIN_C_SOLAR_ROUTE_CURVE_HALF_MAGNITUDE_SUNRISE_A = 20;
+  static const TAIYIN_C_SOLAR_ROUTE_CURVE_HALF_MAGNITUDE_SUNRISE_B = 21;
+  static const TAIYIN_C_SOLAR_ROUTE_CURVE_HALF_MAGNITUDE_SUNSET_A = 22;
+  static const TAIYIN_C_SOLAR_ROUTE_CURVE_HALF_MAGNITUDE_SUNSET_B = 23;
+}
+
+sealed class taiyin_solar_route_product_flags {
+  static const TAIYIN_C_SOLAR_ROUTE_PRODUCT_HAS_CENTER_LINE = 1;
+  static const TAIYIN_C_SOLAR_ROUTE_PRODUCT_HAS_CORE_LIMITS = 2;
+  static const TAIYIN_C_SOLAR_ROUTE_PRODUCT_HAS_PENUMBRAL_LIMITS = 4;
+  static const TAIYIN_C_SOLAR_ROUTE_PRODUCT_HAS_CORE_POLYGON = 8;
+  static const TAIYIN_C_SOLAR_ROUTE_PRODUCT_CROSSES_ANTIMERIDIAN = 16;
+  static const TAIYIN_C_SOLAR_ROUTE_PRODUCT_HAS_HALF_MAGNITUDE_LIMITS = 32;
+  static const TAIYIN_C_SOLAR_ROUTE_PRODUCT_HAS_PENUMBRAL_POLYGON = 64;
+  static const TAIYIN_C_SOLAR_ROUTE_PRODUCT_HAS_HALF_MAGNITUDE_POLYGON = 128;
+}
+
+final class taiyin_lunar_eclipse_result_tt extends ffi.Struct {
+  @ffi.Uint32()
+  external int struct_size;
+
+  @ffi.Uint32()
+  external int kind;
+
+  @ffi.Double()
+  external double maximum_jd_tt;
+
+  @ffi.Double()
+  external double umbral_magnitude;
+
+  @ffi.Double()
+  external double penumbral_magnitude;
+
+  @ffi.Double()
+  external double axis_distance_rad;
+
+  @ffi.Double()
+  external double umbra_radius_rad;
+
+  @ffi.Double()
+  external double penumbra_radius_rad;
+
+  @ffi.Double()
+  external double moon_radius_rad;
+
+  @ffi.Array.multi([7])
+  external ffi.Array<ffi.Double> contact_jd_tt;
+}
+
+final class taiyin_lunar_eclipse_result_ut extends ffi.Struct {
+  @ffi.Uint32()
+  external int struct_size;
+
+  @ffi.Uint32()
+  external int kind;
+
+  @ffi.Double()
+  external double maximum_jd_ut;
+
+  @ffi.Double()
+  external double delta_t_seconds;
+
+  @ffi.Double()
+  external double umbral_magnitude;
+
+  @ffi.Double()
+  external double penumbral_magnitude;
+
+  @ffi.Double()
+  external double axis_distance_rad;
+
+  @ffi.Double()
+  external double umbra_radius_rad;
+
+  @ffi.Double()
+  external double penumbra_radius_rad;
+
+  @ffi.Double()
+  external double moon_radius_rad;
+
+  @ffi.Array.multi([7])
+  external ffi.Array<ffi.Double> contact_jd_ut;
+}
+
+final class taiyin_local_lunar_eclipse_result_tt extends ffi.Struct {
+  @ffi.Uint32()
+  external int struct_size;
+
+  @ffi.Uint32()
+  external int eclipse_kind;
+
+  @ffi.Uint32()
+  external int visibility_flags;
+
+  @ffi.Double()
+  external double maximum_jd_tt;
+
+  @ffi.Double()
+  external double umbral_magnitude;
+
+  @ffi.Double()
+  external double penumbral_magnitude;
+
+  @ffi.Array.multi([7])
+  external ffi.Array<ffi.Double> contact_jd_tt;
+
+  @ffi.Array.multi([7])
+  external ffi.Array<ffi.Double> contact_moon_altitude_deg;
+
+  @ffi.Array.multi([7])
+  external ffi.Array<ffi.Double> contact_moon_azimuth_deg;
+
+  @ffi.Double()
+  external double moonrise_jd_tt;
+
+  @ffi.Double()
+  external double moonset_jd_tt;
+}
+
+final class taiyin_local_lunar_eclipse_result_ut extends ffi.Struct {
+  @ffi.Uint32()
+  external int struct_size;
+
+  @ffi.Uint32()
+  external int eclipse_kind;
+
+  @ffi.Uint32()
+  external int visibility_flags;
+
+  @ffi.Double()
+  external double maximum_jd_ut;
+
+  @ffi.Double()
+  external double delta_t_seconds;
+
+  @ffi.Double()
+  external double umbral_magnitude;
+
+  @ffi.Double()
+  external double penumbral_magnitude;
+
+  @ffi.Array.multi([7])
+  external ffi.Array<ffi.Double> contact_jd_ut;
+
+  @ffi.Array.multi([7])
+  external ffi.Array<ffi.Double> contact_moon_altitude_deg;
+
+  @ffi.Array.multi([7])
+  external ffi.Array<ffi.Double> contact_moon_azimuth_deg;
+
+  @ffi.Double()
+  external double moonrise_jd_ut;
+
+  @ffi.Double()
+  external double moonset_jd_ut;
+}
+
 const int TAIYIN_C_OCCULTATION_WHERE_MAX_PATH_POINTS = 16;
 
 const int TAIYIN_C_OCCULTATION_WHERE_MAX_POLYGON_POINTS = 32;
 
 const int TAIYIN_C_OCCULTATION_MAX_VISIBILITY_INTERVALS = 8;
+
+const int TAIYIN_C_LUNAR_ECLIPSE_CONTACT_COUNT = 7;
+
+const int TAIYIN_C_SOLAR_ECLIPSE_CONTACT_COUNT = 5;
+
+const int TAIYIN_C_LOCAL_SOLAR_CONTACT_COUNT = 5;
+
+const int TAIYIN_C_SOLAR_BESSELIAN_COEFF_COUNT = 8;

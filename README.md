@@ -470,6 +470,42 @@ Occultation inputs and returned dates currently cross the C ABI as a scalar JD
 `double`, so they have the same roughly 40-microsecond present-epoch precision
 boundary as other physical calculations.
 
+## Lunar eclipses
+
+`context.eclipses` solves a selected lunar-eclipse lunation, searches for the
+next eclipse or a bounded sequence, and derives the contacts visible at the
+observer stored on the context. TT and UT1 routes retain their respective
+typed `JulianDate` coordinates.
+
+```dart
+final eclipse = context.eclipses.nextLunarAtUt1(
+  JulianDate<Ut1Scale>.fromDouble(2460926.0),
+  kinds: {TaiyinEclipseKind.total},
+  options: {TaiyinLunarEclipseSearchOption.includeContacts},
+);
+final local = context.eclipses.localLunarVisibilityAtUt1(
+  eclipse.value,
+  options: {TaiyinLocalLunarEclipseVisibilityOption.refraction},
+);
+
+print(eclipse.value.contacts[TaiyinLunarEclipseContact.greatest]);
+print(local.value.contacts[TaiyinLunarEclipseContact.greatest]);
+```
+
+An empty `kinds` filter accepts penumbral, partial, and total lunar eclipses.
+`solveLunarAtTt` and `solveLunarAtUt1` can legitimately return a no-eclipse
+lunation: then `hasEclipse` is false and the maximum/contact values are null.
+For a non-empty eclipse, local visibility requires the contact data produced
+by `includeContacts`; `nextLocalLunarAtTt` and `nextLocalLunarAtUt1` request
+it internally. Local calculations require an observer location, and
+refraction requires the usual atmosphere configuration or fallback policy.
+
+Use `excludePenumbral` to filter penumbral-only results, `backward` only for
+next-event searches, and `lunarLimbCorrection` only after loading a TLL1 lunar
+limb model through `Taiyin`. Eclipse inputs and outputs currently cross the C
+ABI as scalar Julian-date doubles, with the same roughly 40-microsecond
+present-epoch precision boundary as other physical calculations.
+
 ## Event searches
 
 `context.events` provides typed UT1 and TT searches for longitude crossings,
