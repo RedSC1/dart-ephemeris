@@ -2,8 +2,8 @@
 
 Baseline: `taiyin-ephemeris/include/taiyin/c/*.h` on 2026-07-20.
 
-- Total callable C symbols: **325**
-- Included by the current Dart binding configuration: **325**
+- Total callable C symbols: **320**
+- Included by the current Dart binding configuration: **320**
 - Remaining: **0**
 
 `[x]` means the symbol is included in `ffigen.yaml` and its current Dart API
@@ -34,9 +34,9 @@ so ABI completeness can be tracked exactly.
 The Dart `JulianDate` type preserves a split day number and day fraction, and
 time-scale conversions already use the native split-JD C ABI. Most calculation
 entry points still accept a single `double` Julian day, however. This includes
-the existing position, star, observed, phenomena, and orbital APIs as well as
-the astrology, visibility, event, heliacal, occultation, and eclipse API
-families. Their Dart wrappers therefore call `JulianDate.toDouble()` at the
+the existing position, star, observed, phenomena, orbital, and solar-time APIs
+as well as the astrology, visibility, event, heliacal, occultation, and eclipse
+API families. Their Dart wrappers therefore call `JulianDate.toDouble()` at the
 FFI boundary and cannot preserve the full split representation end to end.
 
 Do not add input-only `_split` calculation wrappers as an incremental shortcut.
@@ -328,18 +328,13 @@ must remain available during that transition.
 - [x] `taiyin_runtime_catalog_size`
 - [x] `taiyin_runtime_cache_entry_count`
 
-## `solar_time.h` — 10/10
+## `solar_time.h` — 5/5
 
 - [x] `taiyin_equation_of_time_result_init`
-- [x] `taiyin_split_equation_of_time_result_init`
 - [x] `taiyin_calc_equation_of_time_ut`
 - [x] `taiyin_calc_equation_of_time_tt`
-- [x] `taiyin_calc_equation_of_time_ut_split`
-- [x] `taiyin_calc_equation_of_time_tt_split`
 - [x] `taiyin_local_mean_to_apparent_solar_time`
 - [x] `taiyin_local_apparent_to_mean_solar_time`
-- [x] `taiyin_local_mean_to_apparent_solar_time_split`
-- [x] `taiyin_local_apparent_to_mean_solar_time_split`
 
 ## `star.h` — 16/16
 

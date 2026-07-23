@@ -20,13 +20,13 @@ final class LocalMeanSolarTime {
     required double longitudeRadians,
   }) : longitudeRadians = _requireSolarLongitude(longitudeRadians);
 
-  /// The split local-mean Julian-date coordinate.
+  /// The local-mean Julian-date coordinate.
   final JulianDate<LocalMeanSolarTimeScale> coordinate;
 
   /// East-positive geographic longitude in radians.
   final double longitudeRadians;
 
-  /// Recovers the UT1 coordinate without collapsing the split representation.
+  /// Recovers the UT1 coordinate.
   JulianDate<Ut1Scale> toUt1() {
     return JulianDate<Ut1Scale>.fromParts(
       coordinate.dayNumber,
@@ -42,14 +42,14 @@ final class LocalApparentSolarTime {
     required double longitudeRadians,
   }) : longitudeRadians = _requireSolarLongitude(longitudeRadians);
 
-  /// The split local-apparent Julian-date coordinate.
+  /// The local-apparent Julian-date coordinate.
   final JulianDate<LocalApparentSolarTimeScale> coordinate;
 
   /// East-positive geographic longitude in radians.
   final double longitudeRadians;
 }
 
-/// The equation of time and the native coordinates used to evaluate it.
+/// The equation of time and the scalar-native coordinates used to evaluate it.
 final class TaiyinEquationOfTime {
   const TaiyinEquationOfTime({
     required this.ut1,

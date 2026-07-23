@@ -631,10 +631,10 @@ present-epoch precision limit as the other physical calculation APIs.
 ## Solar time and body phenomena
 
 `context.solarTime` calculates the equation of time from UT1 or TT and converts
-between local mean and apparent solar time through the native split-Julian-date
-ABI. `LocalMeanSolarTime` and `LocalApparentSolarTime` carry both a typed split
-coordinate and its longitude, so conversions cannot use the wrong coordinate
-kind or a mismatched meridian:
+between local mean and apparent solar time through the native scalar-JD ABI.
+`LocalMeanSolarTime` and `LocalApparentSolarTime` carry both a typed coordinate
+and its longitude, so conversions cannot use the wrong coordinate kind or a
+mismatched meridian:
 
 ```dart
 final ut1 = JulianDate<Ut1Scale>.fromDouble(2460311.0);
@@ -649,6 +649,11 @@ final localApparent = context.solarTime.meanToApparent(localMean);
 print(equation.value.equationSeconds);
 print(localApparent.value.coordinate);
 ```
+
+Solar-time calculations have the same roughly 40-microsecond present-epoch
+precision boundary as the other physical calculation APIs. `JulianDate` keeps
+its split representation for Dart-side arithmetic and time-scale conversion,
+but it is quantized when calling this native calculation family.
 
 `context.phenomena` calculates phase angle, illuminated fraction, solar
 elongation, apparent diameter, and apparent magnitude for the Sun, Moon, and
