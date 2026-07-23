@@ -434,6 +434,46 @@ separate `positionFlags` set; only `truePosition`, `astrometric`,
 native outputs and have the same roughly 40-microsecond present-epoch precision
 boundary as other physical calculations.
 
+## Event searches
+
+`context.events` provides typed UT1 and TT searches for longitude crossings,
+stations, aspects, lunar phases, greatest elongation, minimum angular
+separation, and Mercury/Venus solar transits. The bounded searches require a
+positive maximum step and an explicit result capacity; `maxResults` defaults to
+16 and a too-small capacity is reported as a native error rather than silently
+truncating results.
+
+```dart
+final start = JulianDate<Ut1Scale>.fromDouble(2460380.5);
+final phases = context.events.lunarPhaseCrossingsAtUt1(
+  0, // new moon
+  start,
+  start.add(const Duration(days: 60)),
+  maxStepDays: 1,
+  maxResults: 4,
+);
+
+final transit = context.events.nextSolarTransitAtUt1(
+  TaiyinBody.mercury,
+  JulianDate<Ut1Scale>.fromDouble(2458799.0),
+);
+print(phases.value.map((date) => date.toDouble()));
+print(transit.value.greatest);
+```
+
+Pass ordinary coordinate-correction choices through `positionFlags`; each
+method rejects incompatible `xyz` and equatorial output requests before calling
+native code. `TaiyinEventSearchOption.reverse` is available only for the
+native searches that support reverse lookup. Local solar-transit methods use an
+explicit observer argument and can request `refraction` or `noRefraction`
+(never both). The event targets use `TaiyinTarget`, so custom native target IDs
+remain usable where the corresponding C ABI permits them.
+
+All event inputs and returned coordinates cross the current C ABI as a single
+JD `double`. Dart retains the split `JulianDate` representation away from that
+boundary, but event calculations have the same roughly 40-microsecond
+present-epoch precision limit as the other physical calculation APIs.
+
 ## Solar time and body phenomena
 
 `context.solarTime` calculates the equation of time from UT1 or TT and converts

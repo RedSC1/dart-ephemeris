@@ -6320,6 +6320,1257 @@ class TaiyinBindings {
               ffi.Pointer<taiyin_ephemeris_diagnostic>,
             )
           >();
+
+  void taiyin_greatest_elongation_result_init(
+    ffi.Pointer<taiyin_greatest_elongation_result> value,
+  ) {
+    return _taiyin_greatest_elongation_result_init(value);
+  }
+
+  late final _taiyin_greatest_elongation_result_initPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<taiyin_greatest_elongation_result>)
+        >
+      >('taiyin_greatest_elongation_result_init');
+  late final _taiyin_greatest_elongation_result_init =
+      _taiyin_greatest_elongation_result_initPtr
+          .asFunction<
+            void Function(ffi.Pointer<taiyin_greatest_elongation_result>)
+          >();
+
+  void taiyin_angular_separation_result_init(
+    ffi.Pointer<taiyin_angular_separation_result> value,
+  ) {
+    return _taiyin_angular_separation_result_init(value);
+  }
+
+  late final _taiyin_angular_separation_result_initPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<taiyin_angular_separation_result>)
+        >
+      >('taiyin_angular_separation_result_init');
+  late final _taiyin_angular_separation_result_init =
+      _taiyin_angular_separation_result_initPtr
+          .asFunction<
+            void Function(ffi.Pointer<taiyin_angular_separation_result>)
+          >();
+
+  void taiyin_solar_transit_result_init(
+    ffi.Pointer<taiyin_solar_transit_result> value,
+  ) {
+    return _taiyin_solar_transit_result_init(value);
+  }
+
+  late final _taiyin_solar_transit_result_initPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<taiyin_solar_transit_result>)
+        >
+      >('taiyin_solar_transit_result_init');
+  late final _taiyin_solar_transit_result_init =
+      _taiyin_solar_transit_result_initPtr
+          .asFunction<
+            void Function(ffi.Pointer<taiyin_solar_transit_result>)
+          >();
+
+  void taiyin_local_solar_transit_result_init(
+    ffi.Pointer<taiyin_local_solar_transit_result> value,
+  ) {
+    return _taiyin_local_solar_transit_result_init(value);
+  }
+
+  late final _taiyin_local_solar_transit_result_initPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<taiyin_local_solar_transit_result>)
+        >
+      >('taiyin_local_solar_transit_result_init');
+  late final _taiyin_local_solar_transit_result_init =
+      _taiyin_local_solar_transit_result_initPtr
+          .asFunction<
+            void Function(ffi.Pointer<taiyin_local_solar_transit_result>)
+          >();
+
+  double taiyin_recommended_longitude_search_step_days(int body_id) {
+    return _taiyin_recommended_longitude_search_step_days(body_id);
+  }
+
+  late final _taiyin_recommended_longitude_search_step_daysPtr =
+      _lookup<ffi.NativeFunction<ffi.Double Function(ffi.Int32)>>(
+        'taiyin_recommended_longitude_search_step_days',
+      );
+  late final _taiyin_recommended_longitude_search_step_days =
+      _taiyin_recommended_longitude_search_step_daysPtr
+          .asFunction<double Function(int)>();
+
+  double taiyin_recommended_aspect_search_step_days(
+    int body_a_id,
+    int body_b_id,
+  ) {
+    return _taiyin_recommended_aspect_search_step_days(body_a_id, body_b_id);
+  }
+
+  late final _taiyin_recommended_aspect_search_step_daysPtr =
+      _lookup<ffi.NativeFunction<ffi.Double Function(ffi.Int32, ffi.Int32)>>(
+        'taiyin_recommended_aspect_search_step_days',
+      );
+  late final _taiyin_recommended_aspect_search_step_days =
+      _taiyin_recommended_aspect_search_step_daysPtr
+          .asFunction<double Function(int, int)>();
+
+  int taiyin_search_solar_longitude_ut(
+    ffi.Pointer<taiyin_context> context,
+    double target_longitude_rad,
+    double estimate_jd_ut,
+    int flags,
+    ffi.Pointer<ffi.Double> out_jd_ut,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_search_solar_longitude_ut(
+      context,
+      target_longitude_rad,
+      estimate_jd_ut,
+      flags,
+      out_jd_ut,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_search_solar_longitude_utPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Double,
+            ffi.Double,
+            ffi.Uint64,
+            ffi.Pointer<ffi.Double>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_search_solar_longitude_ut');
+  late final _taiyin_search_solar_longitude_ut =
+      _taiyin_search_solar_longitude_utPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              double,
+              double,
+              int,
+              ffi.Pointer<ffi.Double>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_search_solar_longitude_tt(
+    ffi.Pointer<taiyin_context> context,
+    double target_longitude_rad,
+    double estimate_jd_tt,
+    int flags,
+    ffi.Pointer<ffi.Double> out_jd_tt,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_search_solar_longitude_tt(
+      context,
+      target_longitude_rad,
+      estimate_jd_tt,
+      flags,
+      out_jd_tt,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_search_solar_longitude_ttPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Double,
+            ffi.Double,
+            ffi.Uint64,
+            ffi.Pointer<ffi.Double>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_search_solar_longitude_tt');
+  late final _taiyin_search_solar_longitude_tt =
+      _taiyin_search_solar_longitude_ttPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              double,
+              double,
+              int,
+              ffi.Pointer<ffi.Double>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_search_moon_longitude_ut(
+    ffi.Pointer<taiyin_context> context,
+    double target_longitude_rad,
+    double estimate_jd_ut,
+    int flags,
+    ffi.Pointer<ffi.Double> out_jd_ut,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_search_moon_longitude_ut(
+      context,
+      target_longitude_rad,
+      estimate_jd_ut,
+      flags,
+      out_jd_ut,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_search_moon_longitude_utPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Double,
+            ffi.Double,
+            ffi.Uint64,
+            ffi.Pointer<ffi.Double>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_search_moon_longitude_ut');
+  late final _taiyin_search_moon_longitude_ut =
+      _taiyin_search_moon_longitude_utPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              double,
+              double,
+              int,
+              ffi.Pointer<ffi.Double>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_search_moon_longitude_tt(
+    ffi.Pointer<taiyin_context> context,
+    double target_longitude_rad,
+    double estimate_jd_tt,
+    int flags,
+    ffi.Pointer<ffi.Double> out_jd_tt,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_search_moon_longitude_tt(
+      context,
+      target_longitude_rad,
+      estimate_jd_tt,
+      flags,
+      out_jd_tt,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_search_moon_longitude_ttPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Double,
+            ffi.Double,
+            ffi.Uint64,
+            ffi.Pointer<ffi.Double>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_search_moon_longitude_tt');
+  late final _taiyin_search_moon_longitude_tt =
+      _taiyin_search_moon_longitude_ttPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              double,
+              double,
+              int,
+              ffi.Pointer<ffi.Double>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_search_body_longitude_crossings_ut(
+    ffi.Pointer<taiyin_context> context,
+    int body_id,
+    double target_longitude_rad,
+    double start_jd_ut,
+    double end_jd_ut,
+    double max_step_days,
+    int flags,
+    ffi.Pointer<ffi.Double> out_jd_ut,
+    int capacity,
+    ffi.Pointer<ffi.Size> out_count,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_search_body_longitude_crossings_ut(
+      context,
+      body_id,
+      target_longitude_rad,
+      start_jd_ut,
+      end_jd_ut,
+      max_step_days,
+      flags,
+      out_jd_ut,
+      capacity,
+      out_count,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_search_body_longitude_crossings_utPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Int32,
+            ffi.Double,
+            ffi.Double,
+            ffi.Double,
+            ffi.Double,
+            ffi.Uint64,
+            ffi.Pointer<ffi.Double>,
+            ffi.Size,
+            ffi.Pointer<ffi.Size>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_search_body_longitude_crossings_ut');
+  late final _taiyin_search_body_longitude_crossings_ut =
+      _taiyin_search_body_longitude_crossings_utPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              int,
+              double,
+              double,
+              double,
+              double,
+              int,
+              ffi.Pointer<ffi.Double>,
+              int,
+              ffi.Pointer<ffi.Size>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_search_body_longitude_crossings_tt(
+    ffi.Pointer<taiyin_context> context,
+    int body_id,
+    double target_longitude_rad,
+    double start_jd_tt,
+    double end_jd_tt,
+    double max_step_days,
+    int flags,
+    ffi.Pointer<ffi.Double> out_jd_tt,
+    int capacity,
+    ffi.Pointer<ffi.Size> out_count,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_search_body_longitude_crossings_tt(
+      context,
+      body_id,
+      target_longitude_rad,
+      start_jd_tt,
+      end_jd_tt,
+      max_step_days,
+      flags,
+      out_jd_tt,
+      capacity,
+      out_count,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_search_body_longitude_crossings_ttPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Int32,
+            ffi.Double,
+            ffi.Double,
+            ffi.Double,
+            ffi.Double,
+            ffi.Uint64,
+            ffi.Pointer<ffi.Double>,
+            ffi.Size,
+            ffi.Pointer<ffi.Size>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_search_body_longitude_crossings_tt');
+  late final _taiyin_search_body_longitude_crossings_tt =
+      _taiyin_search_body_longitude_crossings_ttPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              int,
+              double,
+              double,
+              double,
+              double,
+              int,
+              ffi.Pointer<ffi.Double>,
+              int,
+              ffi.Pointer<ffi.Size>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_search_body_longitude_stations_ut(
+    ffi.Pointer<taiyin_context> context,
+    int body_id,
+    double start_jd_ut,
+    double end_jd_ut,
+    double max_step_days,
+    int flags,
+    ffi.Pointer<ffi.Double> out_jd_ut,
+    ffi.Pointer<ffi.Double> out_longitude_rad,
+    int capacity,
+    ffi.Pointer<ffi.Size> out_count,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_search_body_longitude_stations_ut(
+      context,
+      body_id,
+      start_jd_ut,
+      end_jd_ut,
+      max_step_days,
+      flags,
+      out_jd_ut,
+      out_longitude_rad,
+      capacity,
+      out_count,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_search_body_longitude_stations_utPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Int32,
+            ffi.Double,
+            ffi.Double,
+            ffi.Double,
+            ffi.Uint64,
+            ffi.Pointer<ffi.Double>,
+            ffi.Pointer<ffi.Double>,
+            ffi.Size,
+            ffi.Pointer<ffi.Size>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_search_body_longitude_stations_ut');
+  late final _taiyin_search_body_longitude_stations_ut =
+      _taiyin_search_body_longitude_stations_utPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              int,
+              double,
+              double,
+              double,
+              int,
+              ffi.Pointer<ffi.Double>,
+              ffi.Pointer<ffi.Double>,
+              int,
+              ffi.Pointer<ffi.Size>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_search_body_longitude_stations_tt(
+    ffi.Pointer<taiyin_context> context,
+    int body_id,
+    double start_jd_tt,
+    double end_jd_tt,
+    double max_step_days,
+    int flags,
+    ffi.Pointer<ffi.Double> out_jd_tt,
+    ffi.Pointer<ffi.Double> out_longitude_rad,
+    int capacity,
+    ffi.Pointer<ffi.Size> out_count,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_search_body_longitude_stations_tt(
+      context,
+      body_id,
+      start_jd_tt,
+      end_jd_tt,
+      max_step_days,
+      flags,
+      out_jd_tt,
+      out_longitude_rad,
+      capacity,
+      out_count,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_search_body_longitude_stations_ttPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Int32,
+            ffi.Double,
+            ffi.Double,
+            ffi.Double,
+            ffi.Uint64,
+            ffi.Pointer<ffi.Double>,
+            ffi.Pointer<ffi.Double>,
+            ffi.Size,
+            ffi.Pointer<ffi.Size>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_search_body_longitude_stations_tt');
+  late final _taiyin_search_body_longitude_stations_tt =
+      _taiyin_search_body_longitude_stations_ttPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              int,
+              double,
+              double,
+              double,
+              int,
+              ffi.Pointer<ffi.Double>,
+              ffi.Pointer<ffi.Double>,
+              int,
+              ffi.Pointer<ffi.Size>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_search_body_aspect_crossings_ut(
+    ffi.Pointer<taiyin_context> context,
+    int body_a_id,
+    int body_b_id,
+    double aspect_rad,
+    double start_jd_ut,
+    double end_jd_ut,
+    double max_step_days,
+    int flags,
+    ffi.Pointer<ffi.Double> out_jd_ut,
+    int capacity,
+    ffi.Pointer<ffi.Size> out_count,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_search_body_aspect_crossings_ut(
+      context,
+      body_a_id,
+      body_b_id,
+      aspect_rad,
+      start_jd_ut,
+      end_jd_ut,
+      max_step_days,
+      flags,
+      out_jd_ut,
+      capacity,
+      out_count,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_search_body_aspect_crossings_utPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Int32,
+            ffi.Int32,
+            ffi.Double,
+            ffi.Double,
+            ffi.Double,
+            ffi.Double,
+            ffi.Uint64,
+            ffi.Pointer<ffi.Double>,
+            ffi.Size,
+            ffi.Pointer<ffi.Size>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_search_body_aspect_crossings_ut');
+  late final _taiyin_search_body_aspect_crossings_ut =
+      _taiyin_search_body_aspect_crossings_utPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              int,
+              int,
+              double,
+              double,
+              double,
+              double,
+              int,
+              ffi.Pointer<ffi.Double>,
+              int,
+              ffi.Pointer<ffi.Size>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_search_body_aspect_crossings_tt(
+    ffi.Pointer<taiyin_context> context,
+    int body_a_id,
+    int body_b_id,
+    double aspect_rad,
+    double start_jd_tt,
+    double end_jd_tt,
+    double max_step_days,
+    int flags,
+    ffi.Pointer<ffi.Double> out_jd_tt,
+    int capacity,
+    ffi.Pointer<ffi.Size> out_count,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_search_body_aspect_crossings_tt(
+      context,
+      body_a_id,
+      body_b_id,
+      aspect_rad,
+      start_jd_tt,
+      end_jd_tt,
+      max_step_days,
+      flags,
+      out_jd_tt,
+      capacity,
+      out_count,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_search_body_aspect_crossings_ttPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Int32,
+            ffi.Int32,
+            ffi.Double,
+            ffi.Double,
+            ffi.Double,
+            ffi.Double,
+            ffi.Uint64,
+            ffi.Pointer<ffi.Double>,
+            ffi.Size,
+            ffi.Pointer<ffi.Size>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_search_body_aspect_crossings_tt');
+  late final _taiyin_search_body_aspect_crossings_tt =
+      _taiyin_search_body_aspect_crossings_ttPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              int,
+              int,
+              double,
+              double,
+              double,
+              double,
+              int,
+              ffi.Pointer<ffi.Double>,
+              int,
+              ffi.Pointer<ffi.Size>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_search_body_exact_aspects_ut(
+    ffi.Pointer<taiyin_context> context,
+    int body_a_id,
+    int body_b_id,
+    ffi.Pointer<ffi.Double> aspect_separations_rad,
+    int aspect_count,
+    double start_jd_ut,
+    double end_jd_ut,
+    double max_step_days,
+    int flags,
+    ffi.Pointer<ffi.Double> out_jd_ut,
+    ffi.Pointer<ffi.Double> out_target_aspect_rad,
+    int capacity,
+    ffi.Pointer<ffi.Size> out_count,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_search_body_exact_aspects_ut(
+      context,
+      body_a_id,
+      body_b_id,
+      aspect_separations_rad,
+      aspect_count,
+      start_jd_ut,
+      end_jd_ut,
+      max_step_days,
+      flags,
+      out_jd_ut,
+      out_target_aspect_rad,
+      capacity,
+      out_count,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_search_body_exact_aspects_utPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Int32,
+            ffi.Int32,
+            ffi.Pointer<ffi.Double>,
+            ffi.Size,
+            ffi.Double,
+            ffi.Double,
+            ffi.Double,
+            ffi.Uint64,
+            ffi.Pointer<ffi.Double>,
+            ffi.Pointer<ffi.Double>,
+            ffi.Size,
+            ffi.Pointer<ffi.Size>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_search_body_exact_aspects_ut');
+  late final _taiyin_search_body_exact_aspects_ut =
+      _taiyin_search_body_exact_aspects_utPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              int,
+              int,
+              ffi.Pointer<ffi.Double>,
+              int,
+              double,
+              double,
+              double,
+              int,
+              ffi.Pointer<ffi.Double>,
+              ffi.Pointer<ffi.Double>,
+              int,
+              ffi.Pointer<ffi.Size>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_search_body_exact_aspects_tt(
+    ffi.Pointer<taiyin_context> context,
+    int body_a_id,
+    int body_b_id,
+    ffi.Pointer<ffi.Double> aspect_separations_rad,
+    int aspect_count,
+    double start_jd_tt,
+    double end_jd_tt,
+    double max_step_days,
+    int flags,
+    ffi.Pointer<ffi.Double> out_jd_tt,
+    ffi.Pointer<ffi.Double> out_target_aspect_rad,
+    int capacity,
+    ffi.Pointer<ffi.Size> out_count,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_search_body_exact_aspects_tt(
+      context,
+      body_a_id,
+      body_b_id,
+      aspect_separations_rad,
+      aspect_count,
+      start_jd_tt,
+      end_jd_tt,
+      max_step_days,
+      flags,
+      out_jd_tt,
+      out_target_aspect_rad,
+      capacity,
+      out_count,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_search_body_exact_aspects_ttPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Int32,
+            ffi.Int32,
+            ffi.Pointer<ffi.Double>,
+            ffi.Size,
+            ffi.Double,
+            ffi.Double,
+            ffi.Double,
+            ffi.Uint64,
+            ffi.Pointer<ffi.Double>,
+            ffi.Pointer<ffi.Double>,
+            ffi.Size,
+            ffi.Pointer<ffi.Size>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_search_body_exact_aspects_tt');
+  late final _taiyin_search_body_exact_aspects_tt =
+      _taiyin_search_body_exact_aspects_ttPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              int,
+              int,
+              ffi.Pointer<ffi.Double>,
+              int,
+              double,
+              double,
+              double,
+              int,
+              ffi.Pointer<ffi.Double>,
+              ffi.Pointer<ffi.Double>,
+              int,
+              ffi.Pointer<ffi.Size>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_search_greatest_elongation_ut(
+    ffi.Pointer<taiyin_context> context,
+    int body_id,
+    double start_jd_ut,
+    double end_jd_ut,
+    int flags,
+    ffi.Pointer<taiyin_greatest_elongation_result> out,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_search_greatest_elongation_ut(
+      context,
+      body_id,
+      start_jd_ut,
+      end_jd_ut,
+      flags,
+      out,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_search_greatest_elongation_utPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Int32,
+            ffi.Double,
+            ffi.Double,
+            ffi.Uint64,
+            ffi.Pointer<taiyin_greatest_elongation_result>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_search_greatest_elongation_ut');
+  late final _taiyin_search_greatest_elongation_ut =
+      _taiyin_search_greatest_elongation_utPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              int,
+              double,
+              double,
+              int,
+              ffi.Pointer<taiyin_greatest_elongation_result>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_search_minimum_angular_separation_ut(
+    ffi.Pointer<taiyin_context> context,
+    int body_a_id,
+    int body_b_id,
+    double start_jd_ut,
+    double end_jd_ut,
+    double max_step_days,
+    int flags,
+    ffi.Pointer<taiyin_angular_separation_result> out,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_search_minimum_angular_separation_ut(
+      context,
+      body_a_id,
+      body_b_id,
+      start_jd_ut,
+      end_jd_ut,
+      max_step_days,
+      flags,
+      out,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_search_minimum_angular_separation_utPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Int32,
+            ffi.Int32,
+            ffi.Double,
+            ffi.Double,
+            ffi.Double,
+            ffi.Uint64,
+            ffi.Pointer<taiyin_angular_separation_result>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_search_minimum_angular_separation_ut');
+  late final _taiyin_search_minimum_angular_separation_ut =
+      _taiyin_search_minimum_angular_separation_utPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              int,
+              int,
+              double,
+              double,
+              double,
+              int,
+              ffi.Pointer<taiyin_angular_separation_result>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_search_minimum_angular_separation_tt(
+    ffi.Pointer<taiyin_context> context,
+    int body_a_id,
+    int body_b_id,
+    double start_jd_tt,
+    double end_jd_tt,
+    double max_step_days,
+    int flags,
+    ffi.Pointer<taiyin_angular_separation_result> out,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_search_minimum_angular_separation_tt(
+      context,
+      body_a_id,
+      body_b_id,
+      start_jd_tt,
+      end_jd_tt,
+      max_step_days,
+      flags,
+      out,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_search_minimum_angular_separation_ttPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Int32,
+            ffi.Int32,
+            ffi.Double,
+            ffi.Double,
+            ffi.Double,
+            ffi.Uint64,
+            ffi.Pointer<taiyin_angular_separation_result>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_search_minimum_angular_separation_tt');
+  late final _taiyin_search_minimum_angular_separation_tt =
+      _taiyin_search_minimum_angular_separation_ttPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              int,
+              int,
+              double,
+              double,
+              double,
+              int,
+              ffi.Pointer<taiyin_angular_separation_result>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_search_next_solar_transit_ut(
+    ffi.Pointer<taiyin_context> context,
+    int body_id,
+    double jd_start_ut,
+    int flags,
+    ffi.Pointer<taiyin_solar_transit_result> out,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_search_next_solar_transit_ut(
+      context,
+      body_id,
+      jd_start_ut,
+      flags,
+      out,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_search_next_solar_transit_utPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Int32,
+            ffi.Double,
+            ffi.Uint64,
+            ffi.Pointer<taiyin_solar_transit_result>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_search_next_solar_transit_ut');
+  late final _taiyin_search_next_solar_transit_ut =
+      _taiyin_search_next_solar_transit_utPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              int,
+              double,
+              int,
+              ffi.Pointer<taiyin_solar_transit_result>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_compute_local_solar_transit_ut(
+    ffi.Pointer<taiyin_context> context,
+    ffi.Pointer<taiyin_solar_transit_result> global_transit,
+    double longitude_deg,
+    double latitude_deg,
+    double height_m,
+    int flags,
+    ffi.Pointer<taiyin_local_solar_transit_result> out,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_compute_local_solar_transit_ut(
+      context,
+      global_transit,
+      longitude_deg,
+      latitude_deg,
+      height_m,
+      flags,
+      out,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_compute_local_solar_transit_utPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Pointer<taiyin_solar_transit_result>,
+            ffi.Double,
+            ffi.Double,
+            ffi.Double,
+            ffi.Uint64,
+            ffi.Pointer<taiyin_local_solar_transit_result>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_compute_local_solar_transit_ut');
+  late final _taiyin_compute_local_solar_transit_ut =
+      _taiyin_compute_local_solar_transit_utPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              ffi.Pointer<taiyin_solar_transit_result>,
+              double,
+              double,
+              double,
+              int,
+              ffi.Pointer<taiyin_local_solar_transit_result>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_search_next_local_solar_transit_ut(
+    ffi.Pointer<taiyin_context> context,
+    int body_id,
+    double jd_start_ut,
+    double longitude_deg,
+    double latitude_deg,
+    double height_m,
+    int flags,
+    ffi.Pointer<taiyin_local_solar_transit_result> out,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_search_next_local_solar_transit_ut(
+      context,
+      body_id,
+      jd_start_ut,
+      longitude_deg,
+      latitude_deg,
+      height_m,
+      flags,
+      out,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_search_next_local_solar_transit_utPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Int32,
+            ffi.Double,
+            ffi.Double,
+            ffi.Double,
+            ffi.Double,
+            ffi.Uint64,
+            ffi.Pointer<taiyin_local_solar_transit_result>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_search_next_local_solar_transit_ut');
+  late final _taiyin_search_next_local_solar_transit_ut =
+      _taiyin_search_next_local_solar_transit_utPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              int,
+              double,
+              double,
+              double,
+              double,
+              int,
+              ffi.Pointer<taiyin_local_solar_transit_result>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_search_lunar_phase_crossings_ut(
+    ffi.Pointer<taiyin_context> context,
+    double phase_rad,
+    double start_jd_ut,
+    double end_jd_ut,
+    double max_step_days,
+    int flags,
+    ffi.Pointer<ffi.Double> out_jd_ut,
+    int capacity,
+    ffi.Pointer<ffi.Size> out_count,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_search_lunar_phase_crossings_ut(
+      context,
+      phase_rad,
+      start_jd_ut,
+      end_jd_ut,
+      max_step_days,
+      flags,
+      out_jd_ut,
+      capacity,
+      out_count,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_search_lunar_phase_crossings_utPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Double,
+            ffi.Double,
+            ffi.Double,
+            ffi.Double,
+            ffi.Uint64,
+            ffi.Pointer<ffi.Double>,
+            ffi.Size,
+            ffi.Pointer<ffi.Size>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_search_lunar_phase_crossings_ut');
+  late final _taiyin_search_lunar_phase_crossings_ut =
+      _taiyin_search_lunar_phase_crossings_utPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              double,
+              double,
+              double,
+              double,
+              int,
+              ffi.Pointer<ffi.Double>,
+              int,
+              ffi.Pointer<ffi.Size>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_search_lunar_phase_crossings_tt(
+    ffi.Pointer<taiyin_context> context,
+    double phase_rad,
+    double start_jd_tt,
+    double end_jd_tt,
+    double max_step_days,
+    int flags,
+    ffi.Pointer<ffi.Double> out_jd_tt,
+    int capacity,
+    ffi.Pointer<ffi.Size> out_count,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_search_lunar_phase_crossings_tt(
+      context,
+      phase_rad,
+      start_jd_tt,
+      end_jd_tt,
+      max_step_days,
+      flags,
+      out_jd_tt,
+      capacity,
+      out_count,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_search_lunar_phase_crossings_ttPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Double,
+            ffi.Double,
+            ffi.Double,
+            ffi.Double,
+            ffi.Uint64,
+            ffi.Pointer<ffi.Double>,
+            ffi.Size,
+            ffi.Pointer<ffi.Size>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_search_lunar_phase_crossings_tt');
+  late final _taiyin_search_lunar_phase_crossings_tt =
+      _taiyin_search_lunar_phase_crossings_ttPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              double,
+              double,
+              double,
+              double,
+              int,
+              ffi.Pointer<ffi.Double>,
+              int,
+              ffi.Pointer<ffi.Size>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
 }
 
 typedef __int8_t = ffi.SignedChar;
@@ -7910,4 +9161,142 @@ final class taiyin_heliacal_visibility_search_result extends ffi.Struct {
   external int visibility_evaluation_count;
 
   external taiyin_heliacal_visibility_result visibility;
+}
+
+sealed class taiyin_greatest_elongation_kind {
+  static const TAIYIN_GREATEST_ELONGATION_EASTERN = 1;
+  static const TAIYIN_GREATEST_ELONGATION_WESTERN = 2;
+}
+
+sealed class taiyin_solar_transit_kind {
+  static const TAIYIN_SOLAR_TRANSIT_PARTIAL = 1;
+  static const TAIYIN_SOLAR_TRANSIT_FULL_DISK = 2;
+}
+
+sealed class taiyin_solar_transit_visibility_flags {
+  static const TAIYIN_SOLAR_TRANSIT_VISIBLE_AT_OBSERVER = 256;
+  static const TAIYIN_SOLAR_TRANSIT_T1_VISIBLE = 512;
+  static const TAIYIN_SOLAR_TRANSIT_T2_VISIBLE = 1024;
+  static const TAIYIN_SOLAR_TRANSIT_GREATEST_VISIBLE = 2048;
+  static const TAIYIN_SOLAR_TRANSIT_T3_VISIBLE = 4096;
+  static const TAIYIN_SOLAR_TRANSIT_T4_VISIBLE = 8192;
+}
+
+final class taiyin_greatest_elongation_result extends ffi.Struct {
+  @ffi.Uint32()
+  external int struct_size;
+
+  @ffi.Double()
+  external double jd_ut;
+
+  @ffi.Double()
+  external double elongation_rad;
+
+  @ffi.Double()
+  external double relative_longitude_rad;
+
+  @ffi.Uint32()
+  external int kind;
+
+  @ffi.Int32()
+  external int body_id;
+
+  @ffi.Int32()
+  external int iteration_count;
+
+  @ffi.Int32()
+  external int evaluation_count;
+
+  external taiyin_body_phenomena phenomena;
+}
+
+final class taiyin_angular_separation_result extends ffi.Struct {
+  @ffi.Uint32()
+  external int struct_size;
+
+  @ffi.Double()
+  external double jd;
+
+  @ffi.Double()
+  external double separation_rad;
+
+  @ffi.Double()
+  external double separation_rate_rad_per_day;
+
+  @ffi.Int32()
+  external int body_a_id;
+
+  @ffi.Int32()
+  external int body_b_id;
+
+  @ffi.Int32()
+  external int iteration_count;
+
+  @ffi.Int32()
+  external int evaluation_count;
+}
+
+final class taiyin_solar_transit_result extends ffi.Struct {
+  @ffi.Uint32()
+  external int struct_size;
+
+  @ffi.Int32()
+  external int body_id;
+
+  @ffi.Uint32()
+  external int kind;
+
+  @ffi.Double()
+  external double greatest_jd_ut;
+
+  @ffi.Double()
+  external double minimum_separation_rad;
+
+  @ffi.Double()
+  external double sun_radius_rad;
+
+  @ffi.Double()
+  external double body_radius_rad;
+
+  @ffi.Double()
+  external double t1_jd_ut;
+
+  @ffi.Double()
+  external double t2_jd_ut;
+
+  @ffi.Double()
+  external double t3_jd_ut;
+
+  @ffi.Double()
+  external double t4_jd_ut;
+
+  @ffi.Int32()
+  external int iteration_count;
+
+  @ffi.Int32()
+  external int evaluation_count;
+}
+
+final class taiyin_local_solar_transit_result extends ffi.Struct {
+  @ffi.Uint32()
+  external int struct_size;
+
+  external taiyin_solar_transit_result global;
+
+  external taiyin_solar_transit_result topocentric;
+
+  @ffi.Uint32()
+  external int visibility_flags;
+
+  @ffi.Array.multi([5])
+  external ffi.Array<ffi.Double> contact_sun_altitude_deg;
+
+  @ffi.Array.multi([5])
+  external ffi.Array<ffi.Double> contact_sun_azimuth_deg;
+
+  @ffi.Double()
+  external double sunrise_jd_ut;
+
+  @ffi.Double()
+  external double sunset_jd_ut;
 }

@@ -8,6 +8,7 @@ import 'package:ffi/ffi.dart';
 import 'bindings/taiyin_bindings.g.dart';
 import 'astrology/astrology_models.dart';
 import 'context/context_models.dart';
+import 'events/event_models.dart';
 import 'heliacal/heliacal_models.dart';
 import 'interop/calendar.dart';
 import 'native_compatibility.dart';
@@ -25,6 +26,7 @@ import 'time/time_scale.dart';
 import 'visibility/visibility_models.dart';
 
 part 'context/context_api.dart';
+part 'events/event_api.dart';
 part 'heliacal/heliacal_api.dart';
 part 'astrology/astrology_api.dart';
 part 'observed/observed_api.dart';
@@ -200,6 +202,13 @@ final class TaiyinContext implements Finalizable {
         (status, diagnostic) =>
             _checkStatus(_bindings, status, diagnostic: diagnostic),
       );
+      events = TaiyinEventsApi._(
+        _bindings,
+        _context,
+        _ensureOpen,
+        (status, diagnostic) =>
+            _checkStatus(_bindings, status, diagnostic: diagnostic),
+      );
       stars = TaiyinStarApi._(
         _bindings,
         _context,
@@ -273,6 +282,7 @@ final class TaiyinContext implements Finalizable {
   late final TaiyinSolarTimeApi solarTime;
   late final TaiyinVisibilityApi visibility;
   late final TaiyinHeliacalApi heliacal;
+  late final TaiyinEventsApi events;
   late final TaiyinStarApi stars;
   bool _closed = false;
 
