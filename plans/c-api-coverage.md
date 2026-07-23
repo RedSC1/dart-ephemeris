@@ -48,7 +48,7 @@ uses an explicit scalar boundary for physical calculations today.
 An eventual migration is a native-core project, not an ABI façade project. It
 must define an internal split epoch, propagate it through evaluation and search
 algorithms, introduce split representations for time-bearing result fields, and
-only then add matching C ABI and Dart APIs. Existing ABI-1 `double` symbols
+only then add matching C ABI and Dart APIs. Existing scalar `double` symbols
 must remain available during that transition.
 
 - [ ] Inventory every calculation entry point that accepts one or more Julian

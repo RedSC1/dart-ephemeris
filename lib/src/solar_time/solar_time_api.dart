@@ -131,6 +131,10 @@ final class TaiyinSolarTimeApi {
     });
   }
 
+  /// Invokes a scalar native local-solar-time conversion.
+  ///
+  /// The callback writes one scalar Julian day through its `Pointer<Double>`
+  /// output, so the result is deliberately quantized at the native boundary.
   TaiyinEphemerisResult<Output> _convert<OutputScale extends TimeScale, Output>(
     double input,
     int Function(double, Pointer<Double>, Pointer<taiyin_ephemeris_diagnostic>)

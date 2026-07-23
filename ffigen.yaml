@@ -359,7 +359,6 @@ structs:
     - taiyin_body_node_search_result
     - taiyin_body_phenomena
     - taiyin_equation_of_time_result
-    - taiyin_split_equation_of_time_result
     - taiyin_sidereal_position
     - taiyin_sidereal_coordinates
     - taiyin_house_result

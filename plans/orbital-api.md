@@ -8,7 +8,7 @@ documentation.
 
 - [x] Include `orbital.h` in the ffigen wrapper.
 - [x] Generate all five result structs, four initializers, and eight operations.
-- [x] Probe all twelve callable symbols during ABI-1 compatibility validation.
+- [x] Probe all twelve callable symbols during native compatibility validation.
 
 ## Dart API
 
