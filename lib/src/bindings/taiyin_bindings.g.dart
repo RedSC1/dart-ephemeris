@@ -1491,6 +1491,86 @@ class TaiyinBindings {
             )
           >();
 
+  int taiyin_register_ayanamsha_model_with_token(
+    int model_id,
+    taiyin_ayanamsha_evaluator_fn evaluator,
+    int reference_precession_model_id,
+    ffi.Pointer<ffi.Void> user_data,
+    ffi.Pointer<ffi.Uint64> out_registration_token,
+  ) {
+    return _taiyin_register_ayanamsha_model_with_token(
+      model_id,
+      evaluator,
+      reference_precession_model_id,
+      user_data,
+      out_registration_token,
+    );
+  }
+
+  late final _taiyin_register_ayanamsha_model_with_tokenPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Int32,
+            taiyin_ayanamsha_evaluator_fn,
+            ffi.Int32,
+            ffi.Pointer<ffi.Void>,
+            ffi.Pointer<ffi.Uint64>,
+          )
+        >
+      >('taiyin_register_ayanamsha_model_with_token');
+  late final _taiyin_register_ayanamsha_model_with_token =
+      _taiyin_register_ayanamsha_model_with_tokenPtr
+          .asFunction<
+            int Function(
+              int,
+              taiyin_ayanamsha_evaluator_fn,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Uint64>,
+            )
+          >();
+
+  int taiyin_register_house_system_model_with_token(
+    int model_id,
+    taiyin_house_system_evaluator_fn evaluator,
+    int fallback_model_id,
+    ffi.Pointer<ffi.Void> user_data,
+    ffi.Pointer<ffi.Uint64> out_registration_token,
+  ) {
+    return _taiyin_register_house_system_model_with_token(
+      model_id,
+      evaluator,
+      fallback_model_id,
+      user_data,
+      out_registration_token,
+    );
+  }
+
+  late final _taiyin_register_house_system_model_with_tokenPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Int32,
+            taiyin_house_system_evaluator_fn,
+            ffi.Int32,
+            ffi.Pointer<ffi.Void>,
+            ffi.Pointer<ffi.Uint64>,
+          )
+        >
+      >('taiyin_register_house_system_model_with_token');
+  late final _taiyin_register_house_system_model_with_token =
+      _taiyin_register_house_system_model_with_tokenPtr
+          .asFunction<
+            int Function(
+              int,
+              taiyin_house_system_evaluator_fn,
+              int,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Uint64>,
+            )
+          >();
+
   int taiyin_unregister_ayanamsha_model(int model_id) {
     return _taiyin_unregister_ayanamsha_model(model_id);
   }
@@ -1512,6 +1592,42 @@ class TaiyinBindings {
       );
   late final _taiyin_unregister_house_system_model =
       _taiyin_unregister_house_system_modelPtr.asFunction<int Function(int)>();
+
+  int taiyin_unregister_ayanamsha_model_with_token(
+    int model_id,
+    int registration_token,
+  ) {
+    return _taiyin_unregister_ayanamsha_model_with_token(
+      model_id,
+      registration_token,
+    );
+  }
+
+  late final _taiyin_unregister_ayanamsha_model_with_tokenPtr =
+      _lookup<
+        ffi.NativeFunction<taiyin_status Function(ffi.Int32, ffi.Uint64)>
+      >('taiyin_unregister_ayanamsha_model_with_token');
+  late final _taiyin_unregister_ayanamsha_model_with_token =
+      _taiyin_unregister_ayanamsha_model_with_tokenPtr
+          .asFunction<int Function(int, int)>();
+
+  int taiyin_unregister_house_system_model_with_token(
+    int model_id,
+    int registration_token,
+  ) {
+    return _taiyin_unregister_house_system_model_with_token(
+      model_id,
+      registration_token,
+    );
+  }
+
+  late final _taiyin_unregister_house_system_model_with_tokenPtr =
+      _lookup<
+        ffi.NativeFunction<taiyin_status Function(ffi.Int32, ffi.Uint64)>
+      >('taiyin_unregister_house_system_model_with_token');
+  late final _taiyin_unregister_house_system_model_with_token =
+      _taiyin_unregister_house_system_model_with_tokenPtr
+          .asFunction<int Function(int, int)>();
 
   void taiyin_clear_ayanamsha_models() {
     return _taiyin_clear_ayanamsha_models();

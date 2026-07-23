@@ -159,13 +159,13 @@ void main() {
       expect(
         () => validateTaiyinRequiredSymbols(
           providesSymbol: (symbol) =>
-              symbol != 'taiyin_unregister_ayanamsha_model',
+              symbol != 'taiyin_unregister_ayanamsha_model_with_token',
         ),
         throwsA(
           isA<StateError>().having(
             (error) => error.message,
             'message',
-            contains('taiyin_unregister_ayanamsha_model'),
+            contains('taiyin_unregister_ayanamsha_model_with_token'),
           ),
         ),
       );

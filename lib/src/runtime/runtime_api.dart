@@ -167,7 +167,9 @@ final class Taiyin {
   /// evaluator and everything it captures must be transitively immutable.
   /// Callback exceptions become `TAIYIN_ERROR_INTERNAL`. Register and close
   /// models from the long-lived main isolate; those setup changes must not
-  /// overlap calculations in any isolate.
+  /// overlap calculations in any isolate. Reopening Taiyin resets the native
+  /// runtime and clears C-API callbacks; close any handle still retained by a
+  /// different isolate before discarding that isolate.
   TaiyinCustomAyanamshaRegistration registerCustomAyanamshaModel(
     int modelId, {
     required TaiyinCustomAyanamshaEvaluator evaluator,
@@ -197,7 +199,11 @@ final class Taiyin {
   /// Evaluators may be invoked by calculations in worker isolates, so the
   /// evaluator and everything it captures must be transitively immutable.
   /// Register and close models from the long-lived main isolate; those setup
-  /// changes must not overlap calculations in any isolate.
+  /// changes must not overlap calculations in any isolate. A fallback model
+  /// must be closed only after models that select it as their fallback are
+  /// closed. Reopening Taiyin resets the native runtime and clears C-API
+  /// callbacks; close any handle still retained by a different isolate before
+  /// discarding that isolate.
   TaiyinCustomHouseSystemRegistration registerCustomHouseSystemModel(
     int modelId, {
     required TaiyinCustomHouseSystemEvaluator evaluator,
@@ -219,7 +225,8 @@ final class Taiyin {
   /// Clears all C-API custom ayanamsha models and closes Dart-owned handles.
   ///
   /// Built-in and non-C-API native models are not affected. This setup-time
-  /// operation must not overlap calculations in any isolate.
+  /// operation must not overlap calculations in any isolate. Handles retained
+  /// in other isolates become stale but are safe to close later.
   void clearCustomAyanamshaModels() {
     final state = _nativeLibraryStateFor(_library);
     _bindings.taiyin_clear_ayanamsha_models();
@@ -229,7 +236,8 @@ final class Taiyin {
   /// Clears all C-API custom house systems and closes Dart-owned handles.
   ///
   /// Built-in and non-C-API native models are not affected. This setup-time
-  /// operation must not overlap calculations in any isolate.
+  /// operation must not overlap calculations in any isolate. Handles retained
+  /// in other isolates become stale but are safe to close later.
   void clearCustomHouseSystemModels() {
     final state = _nativeLibraryStateFor(_library);
     _bindings.taiyin_clear_house_system_models();

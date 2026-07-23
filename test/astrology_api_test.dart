@@ -8,6 +8,9 @@ import 'package:test/test.dart';
 double _customAyanamsha(TaiyinCustomAyanamshaRequest request) =>
     2 * math.pi + 0.123;
 
+double _throwingCustomAyanamsha(TaiyinCustomAyanamshaRequest request) =>
+    throw StateError('expected callback failure');
+
 List<double> _customHouseCusps(TaiyinCustomHouseSystemRequest request) {
   const offset = 0.01;
   final step = 2 * math.pi / 12;
@@ -46,6 +49,32 @@ Future<double> _calculateCustomAyanamshaInWorker(
   }
 }
 
+Future<double> _calculateCustomHouseInWorker(
+  String libraryPath,
+  int modelId,
+) async {
+  final receivePort = ReceivePort();
+  await Isolate.spawn(
+    _customHouseWorkerMain,
+    (receivePort.sendPort, libraryPath, modelId),
+    onError: receivePort.sendPort,
+    onExit: receivePort.sendPort,
+  );
+  try {
+    final message = await receivePort.first;
+    if (message is double) return message;
+    if (message case ['error', final String error, final String stackTrace]) {
+      throw StateError('Worker failed: $error\n$stackTrace');
+    }
+    if (message == null) {
+      throw StateError('Worker exited before returning a result.');
+    }
+    throw StateError('Worker returned an unexpected message: $message');
+  } finally {
+    receivePort.close();
+  }
+}
+
 void _customAyanamshaWorkerMain((SendPort, String, int) message) {
   final (sendPort, libraryPath, modelId) = message;
   TaiyinContext? context;
@@ -56,6 +85,25 @@ void _customAyanamshaWorkerMain((SendPort, String, int) message) {
       ayanamsha: TaiyinCustomAyanamshaModel(modelId),
     );
     sendPort.send(result);
+  } catch (error, stackTrace) {
+    sendPort.send(['error', '$error', '$stackTrace']);
+  } finally {
+    context?.close();
+  }
+}
+
+void _customHouseWorkerMain((SendPort, String, int) message) {
+  final (sendPort, libraryPath, modelId) = message;
+  TaiyinContext? context;
+  try {
+    context = TaiyinContext.attach(libraryPath: libraryPath);
+    final houses = context.astrology.housesFromArmc(
+      armcRadians: 1.0,
+      observerLatitudeRadians: 0.5,
+      trueObliquityRadians: 0.409,
+      system: TaiyinCustomHouseSystemModel(modelId),
+    );
+    sendPort.send(houses.cuspLongitudesRadians.first);
   } catch (error, stackTrace) {
     sendPort.send(['error', '$error', '$stackTrace']);
   } finally {
@@ -156,6 +204,13 @@ void main() {
             houses.cuspLongitudesRadians[0],
             closeTo((houses.ascendantRadians + 0.01) % (2 * math.pi), 1e-15),
           );
+          expect(
+            await _calculateCustomHouseInWorker(
+              libraryPath,
+              houseSystem.model.id,
+            ),
+            closeTo((houses.ascendantRadians + 0.01) % (2 * math.pi), 1e-15),
+          );
         } finally {
           houseSystem.close();
           ayanamsha.close();
@@ -186,6 +241,53 @@ void main() {
           ),
           throwsArgumentError,
         );
+      });
+
+      test('keeps a custom fallback callback alive until dependents close', () {
+        final fallback = runtime.registerCustomHouseSystemModel(
+          100105,
+          evaluator: _customHouseCusps,
+        );
+        final dependent = runtime.registerCustomHouseSystemModel(
+          100106,
+          evaluator: _invalidCustomHouseCusps,
+          fallback: fallback.model,
+        );
+        try {
+          expect(() => fallback.close(), throwsA(isA<TaiyinException>()));
+          expect(fallback.isClosed, isFalse);
+          dependent.close();
+          fallback.close();
+          fallback.close();
+          expect(dependent.isClosed, isTrue);
+          expect(fallback.isClosed, isTrue);
+        } finally {
+          dependent.close();
+          fallback.close();
+        }
+      });
+
+      test('returns a native failure when a custom evaluator throws', () {
+        final registration = runtime.registerCustomAyanamshaModel(
+          100107,
+          evaluator: _throwingCustomAyanamsha,
+        );
+        try {
+          expect(
+            () => context.astrology.ayanamshaAtTt(
+              tt,
+              ayanamsha: registration.model,
+            ),
+            throwsA(isA<TaiyinException>()),
+          );
+        } finally {
+          registration.close();
+        }
+      });
+
+      test('rejects invalid custom model identifiers', () {
+        expect(() => TaiyinCustomAyanamshaModel(9999), throwsArgumentError);
+        expect(() => TaiyinCustomHouseSystemModel(9999), throwsArgumentError);
       });
 
       test('clears custom models and applies a custom house fallback', () {

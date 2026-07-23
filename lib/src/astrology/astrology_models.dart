@@ -22,9 +22,12 @@ enum TaiyinAyanamsha implements TaiyinAyanamshaModel {
   final int id;
 }
 
-/// A process-wide custom ayanamsha model backed by a Dart evaluator.
+/// A process-wide custom ayanamsha model identifier.
 ///
-/// Obtain an instance from [Taiyin.registerCustomAyanamshaModel].
+/// Obtain an owned Dart-backed registration from
+/// [Taiyin.registerCustomAyanamshaModel]. Constructing this value directly is
+/// also useful in a worker isolate to refer to an already registered native
+/// model, but it does not register a callback or own its lifecycle.
 final class TaiyinCustomAyanamshaModel implements TaiyinAyanamshaModel {
   TaiyinCustomAyanamshaModel(int id) : id = _validateId(id);
 
@@ -145,9 +148,12 @@ enum TaiyinHouseSystem implements TaiyinHouseSystemModel {
   }
 }
 
-/// A process-wide custom house-system model backed by a Dart evaluator.
+/// A process-wide custom house-system model identifier.
 ///
-/// Obtain an instance from [Taiyin.registerCustomHouseSystemModel].
+/// Obtain an owned Dart-backed registration from
+/// [Taiyin.registerCustomHouseSystemModel]. Constructing this value directly
+/// only identifies an already registered native model; it does not register a
+/// callback or own its lifecycle.
 final class TaiyinCustomHouseSystemModel implements TaiyinHouseSystemModel {
   TaiyinCustomHouseSystemModel(int id) : id = _validateId(id);
 
@@ -495,8 +501,16 @@ final class TaiyinHouses {
   /// [TaiyinHouseResultFlag.speedUnavailable] is set.
   final List<double> cuspLongitudeRatesRadiansPerDay;
 
+  /// The requested system's ID as a built-in or custom type tag.
+  ///
+  /// A custom result only identifies an ID; it does not imply that this Dart
+  /// isolate owns or has registered that callback.
   TaiyinHouseSystemModel? get requestedSystem =>
       _houseSystemModelFromId(requestedSystemId);
+
+  /// The resolved system's ID as a built-in or custom type tag.
+  ///
+  /// See [requestedSystem] for the ownership semantics of custom IDs.
   TaiyinHouseSystemModel? get resolvedSystem =>
       _houseSystemModelFromId(resolvedSystemId);
 
