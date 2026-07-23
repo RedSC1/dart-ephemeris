@@ -92,10 +92,33 @@ typedef _SolarRouteRowsCalculation =
       Pointer<Size> count,
       Pointer<taiyin_ephemeris_diagnostic> diagnostic,
     );
+typedef _SolarRouteCurvesCalculation =
+    int Function(
+      Pointer<taiyin_solar_eclipse_route_curve_point> output,
+      int capacity,
+      Pointer<Size> count,
+      Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+    );
+typedef _SolarRouteProductCalculation =
+    int Function(
+      Pointer<taiyin_solar_eclipse_route_product_point> output,
+      int capacity,
+      Pointer<Size> count,
+      Pointer<taiyin_solar_eclipse_route_product_summary> summary,
+      Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+    );
+typedef _LocalSolarBoundaryCalculation =
+    int Function(
+      Pointer<taiyin_local_solar_eclipse_boundary> output,
+      Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+    );
 
 // Shared by the solve and search C ABI option families. Local solar results
 // always include contacts, regardless of the public option set supplied.
 const _solarEclipseIncludeContactsBit = 1 << 33;
+const _solarRouteDefaultSampleCount = 400;
+const _solarRouteMinimumSampleCount = 32;
+const _solarRouteMaximumSampleCount = 4096;
 
 /// Calculates and searches lunar eclipses.
 ///
@@ -1268,6 +1291,224 @@ final class TaiyinEclipseApi {
     });
   }
 
+  /// Computes the complete time-tagged solar-eclipse map curves near TT
+  /// [coordinate].
+  ///
+  /// [routeSampleCount] controls the sampling density for every curve and
+  /// must be between 32 and 4096. Points are grouped by curve kind.
+  TaiyinEphemerisResult<List<TaiyinSolarEclipseRouteCurvePoint>>
+  solarEclipseRouteCurvesAtTt(
+    JulianDate<TtScale> coordinate, {
+    int routeSampleCount = _solarRouteDefaultSampleCount,
+    Set<TaiyinPositionFlag> positionFlags = const {},
+    Set<TaiyinSolarEclipseRouteOption> options = const {},
+  }) {
+    _ensureOpen();
+    _requireRouteSampleCount(routeSampleCount);
+    final mask = _solarRouteMask(positionFlags, options);
+    return _solarRouteCurves((output, capacity, count, diagnostic) {
+      return _bindings.taiyin_compute_solar_eclipse_route_curves_tt(
+        _context,
+        coordinate.toDouble(),
+        mask,
+        routeSampleCount,
+        output,
+        capacity,
+        count,
+        diagnostic,
+      );
+    });
+  }
+
+  /// Computes the complete time-tagged solar-eclipse map curves near UT1
+  /// [coordinate].
+  TaiyinEphemerisResult<List<TaiyinSolarEclipseRouteCurvePoint>>
+  solarEclipseRouteCurvesAtUt1(
+    JulianDate<Ut1Scale> coordinate, {
+    int routeSampleCount = _solarRouteDefaultSampleCount,
+    Set<TaiyinPositionFlag> positionFlags = const {},
+    Set<TaiyinSolarEclipseRouteOption> options = const {},
+  }) {
+    _ensureOpen();
+    _requireRouteSampleCount(routeSampleCount);
+    final mask = _solarRouteMask(positionFlags, options);
+    return _solarRouteCurves((output, capacity, count, diagnostic) {
+      return _bindings.taiyin_compute_solar_eclipse_route_curves_ut(
+        _context,
+        coordinate.toDouble(),
+        mask,
+        routeSampleCount,
+        output,
+        capacity,
+        count,
+        diagnostic,
+      );
+    });
+  }
+
+  /// Builds the core-path polygon of the solar eclipse near TT [coordinate].
+  ///
+  /// Use [solarEclipseRouteMapProductAtTt] when penumbral and half-magnitude
+  /// polygons are also required.
+  TaiyinEphemerisResult<TaiyinSolarEclipseRouteProduct>
+  solarEclipseRouteProductAtTt(
+    JulianDate<TtScale> coordinate, {
+    int routeSampleCount = _solarRouteDefaultSampleCount,
+    Set<TaiyinPositionFlag> positionFlags = const {},
+    Set<TaiyinSolarEclipseRouteOption> options = const {},
+  }) {
+    _ensureOpen();
+    _requireRouteSampleCount(routeSampleCount);
+    final mask = _solarRouteMask(positionFlags, options);
+    return _solarRouteProduct((output, capacity, count, summary, diagnostic) {
+      return _bindings.taiyin_compute_solar_eclipse_route_product_tt(
+        _context,
+        coordinate.toDouble(),
+        mask,
+        routeSampleCount,
+        output,
+        capacity,
+        count,
+        summary,
+        diagnostic,
+      );
+    });
+  }
+
+  /// Builds the core-path polygon of the solar eclipse near UT1 [coordinate].
+  ///
+  /// Use [solarEclipseRouteMapProductAtUt1] when penumbral and half-magnitude
+  /// polygons are also required.
+  TaiyinEphemerisResult<TaiyinSolarEclipseRouteProduct>
+  solarEclipseRouteProductAtUt1(
+    JulianDate<Ut1Scale> coordinate, {
+    int routeSampleCount = _solarRouteDefaultSampleCount,
+    Set<TaiyinPositionFlag> positionFlags = const {},
+    Set<TaiyinSolarEclipseRouteOption> options = const {},
+  }) {
+    _ensureOpen();
+    _requireRouteSampleCount(routeSampleCount);
+    final mask = _solarRouteMask(positionFlags, options);
+    return _solarRouteProduct((output, capacity, count, summary, diagnostic) {
+      return _bindings.taiyin_compute_solar_eclipse_route_product_ut(
+        _context,
+        coordinate.toDouble(),
+        mask,
+        routeSampleCount,
+        output,
+        capacity,
+        count,
+        summary,
+        diagnostic,
+      );
+    });
+  }
+
+  /// Builds all available solar-eclipse map polygons near TT [coordinate].
+  ///
+  /// The returned point sequence contains the core, penumbral, and
+  /// half-magnitude polygons in that order when those layers exist.
+  TaiyinEphemerisResult<TaiyinSolarEclipseRouteProduct>
+  solarEclipseRouteMapProductAtTt(
+    JulianDate<TtScale> coordinate, {
+    int routeSampleCount = _solarRouteDefaultSampleCount,
+    Set<TaiyinPositionFlag> positionFlags = const {},
+    Set<TaiyinSolarEclipseRouteOption> options = const {},
+  }) {
+    _ensureOpen();
+    _requireRouteSampleCount(routeSampleCount);
+    final mask = _solarRouteMask(positionFlags, options);
+    return _solarRouteProduct((output, capacity, count, summary, diagnostic) {
+      return _bindings.taiyin_compute_solar_eclipse_route_map_product_tt(
+        _context,
+        coordinate.toDouble(),
+        mask,
+        routeSampleCount,
+        output,
+        capacity,
+        count,
+        summary,
+        diagnostic,
+      );
+    });
+  }
+
+  /// Builds all available solar-eclipse map polygons near UT1 [coordinate].
+  TaiyinEphemerisResult<TaiyinSolarEclipseRouteProduct>
+  solarEclipseRouteMapProductAtUt1(
+    JulianDate<Ut1Scale> coordinate, {
+    int routeSampleCount = _solarRouteDefaultSampleCount,
+    Set<TaiyinPositionFlag> positionFlags = const {},
+    Set<TaiyinSolarEclipseRouteOption> options = const {},
+  }) {
+    _ensureOpen();
+    _requireRouteSampleCount(routeSampleCount);
+    final mask = _solarRouteMask(positionFlags, options);
+    return _solarRouteProduct((output, capacity, count, summary, diagnostic) {
+      return _bindings.taiyin_compute_solar_eclipse_route_map_product_ut(
+        _context,
+        coordinate.toDouble(),
+        mask,
+        routeSampleCount,
+        output,
+        capacity,
+        count,
+        summary,
+        diagnostic,
+      );
+    });
+  }
+
+  /// Computes the local Earth intersections of the solar shadow at TT
+  /// [coordinate].
+  ///
+  /// [longitudeDegrees] and [latitudeDegrees] select the reference location
+  /// used to resolve the central-path kind; they do not need to match the
+  /// context observer.
+  TaiyinEphemerisResult<TaiyinLocalSolarEclipseBoundary>
+  localSolarEclipseBoundaryAtTt(
+    JulianDate<TtScale> coordinate, {
+    required double longitudeDegrees,
+    required double latitudeDegrees,
+  }) {
+    _ensureOpen();
+    _requireFinite(longitudeDegrees, 'longitudeDegrees');
+    _requireBoundaryLatitude(latitudeDegrees);
+    return _localSolarBoundary((output, diagnostic) {
+      return _bindings.taiyin_compute_local_solar_eclipse_boundary_tt(
+        _context,
+        coordinate.toDouble(),
+        longitudeDegrees,
+        latitudeDegrees,
+        output,
+        diagnostic,
+      );
+    });
+  }
+
+  /// Computes the local Earth intersections of the solar shadow at UT1
+  /// [coordinate].
+  TaiyinEphemerisResult<TaiyinLocalSolarEclipseBoundary>
+  localSolarEclipseBoundaryAtUt1(
+    JulianDate<Ut1Scale> coordinate, {
+    required double longitudeDegrees,
+    required double latitudeDegrees,
+  }) {
+    _ensureOpen();
+    _requireFinite(longitudeDegrees, 'longitudeDegrees');
+    _requireBoundaryLatitude(latitudeDegrees);
+    return _localSolarBoundary((output, diagnostic) {
+      return _bindings.taiyin_compute_local_solar_eclipse_boundary_ut(
+        _context,
+        coordinate.toDouble(),
+        longitudeDegrees,
+        latitudeDegrees,
+        output,
+        diagnostic,
+      );
+    });
+  }
+
   TaiyinEphemerisResult<TaiyinSolarEclipseResult<TtScale>> _solarTt(
     _SolarTtCalculation calculate,
   ) {
@@ -1398,6 +1639,137 @@ final class TaiyinEclipseApi {
           for (var index = 0; index < resultCount; index++)
             _readSolarEclipseRouteRow((output + index).ref),
         ]),
+        diagnostic: mappedDiagnostic,
+      );
+    });
+  }
+
+  TaiyinEphemerisResult<List<TaiyinSolarEclipseRouteCurvePoint>>
+  _solarRouteCurves(_SolarRouteCurvesCalculation calculate) {
+    return using((arena) {
+      final count = arena<Size>();
+      final diagnostic = arena<taiyin_ephemeris_diagnostic>();
+      _bindings.taiyin_ephemeris_diagnostic_init(diagnostic);
+      final countStatus = calculate(nullptr, 0, count, diagnostic);
+      final countDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
+      _checkStatus(countStatus, countDiagnostic);
+      final requiredCount = count.value;
+      if (requiredCount < 0) {
+        throw StateError(
+          'Native solar eclipse route returned a negative curve count',
+        );
+      }
+      if (requiredCount == 0) {
+        return TaiyinEphemerisResult(
+          value: const <TaiyinSolarEclipseRouteCurvePoint>[],
+          diagnostic: countDiagnostic,
+        );
+      }
+
+      final output = arena<taiyin_solar_eclipse_route_curve_point>(
+        requiredCount,
+      );
+      for (var index = 0; index < requiredCount; index++) {
+        output[index].struct_size = 0;
+      }
+      _bindings.taiyin_ephemeris_diagnostic_init(diagnostic);
+      final fillStatus = calculate(output, requiredCount, count, diagnostic);
+      final fillDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
+      _checkStatus(fillStatus, fillDiagnostic);
+      _requireExactNativeCount(
+        count.value,
+        requiredCount,
+        'solar eclipse route curve',
+      );
+      return TaiyinEphemerisResult(
+        value: List.unmodifiable([
+          for (var index = 0; index < requiredCount; index++)
+            _readSolarEclipseRouteCurvePoint(output[index]),
+        ]),
+        diagnostic: fillDiagnostic,
+      );
+    });
+  }
+
+  TaiyinEphemerisResult<TaiyinSolarEclipseRouteProduct> _solarRouteProduct(
+    _SolarRouteProductCalculation calculate,
+  ) {
+    return using((arena) {
+      final count = arena<Size>();
+      final summary = arena<taiyin_solar_eclipse_route_product_summary>();
+      final diagnostic = arena<taiyin_ephemeris_diagnostic>();
+      _bindings
+        ..taiyin_solar_eclipse_route_product_summary_init(summary)
+        ..taiyin_ephemeris_diagnostic_init(diagnostic);
+      final countStatus = calculate(nullptr, 0, count, summary, diagnostic);
+      final countDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
+      _checkStatus(countStatus, countDiagnostic);
+      final requiredCount = count.value;
+      if (requiredCount < 0) {
+        throw StateError(
+          'Native solar eclipse route returned a negative product count',
+        );
+      }
+      if (requiredCount == 0) {
+        return TaiyinEphemerisResult(
+          value: TaiyinSolarEclipseRouteProduct(
+            points: const <TaiyinSolarEclipseRouteProductPoint>[],
+            summary: _readSolarEclipseRouteProductSummary(summary.ref),
+          ),
+          diagnostic: countDiagnostic,
+        );
+      }
+
+      final output = arena<taiyin_solar_eclipse_route_product_point>(
+        requiredCount,
+      );
+      for (var index = 0; index < requiredCount; index++) {
+        output[index].struct_size = 0;
+      }
+      _bindings
+        ..taiyin_solar_eclipse_route_product_summary_init(summary)
+        ..taiyin_ephemeris_diagnostic_init(diagnostic);
+      final fillStatus = calculate(
+        output,
+        requiredCount,
+        count,
+        summary,
+        diagnostic,
+      );
+      final fillDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
+      _checkStatus(fillStatus, fillDiagnostic);
+      _requireExactNativeCount(
+        count.value,
+        requiredCount,
+        'solar eclipse route product',
+      );
+      return TaiyinEphemerisResult(
+        value: TaiyinSolarEclipseRouteProduct(
+          points: [
+            for (var index = 0; index < requiredCount; index++)
+              _readSolarEclipseRouteProductPoint(output[index]),
+          ],
+          summary: _readSolarEclipseRouteProductSummary(summary.ref),
+        ),
+        diagnostic: fillDiagnostic,
+      );
+    });
+  }
+
+  TaiyinEphemerisResult<TaiyinLocalSolarEclipseBoundary> _localSolarBoundary(
+    _LocalSolarBoundaryCalculation calculate,
+  ) {
+    return using((arena) {
+      final output = arena<taiyin_local_solar_eclipse_boundary>();
+      final diagnostic = arena<taiyin_ephemeris_diagnostic>();
+      _bindings
+        ..taiyin_local_solar_eclipse_boundary_init(output)
+        ..taiyin_ephemeris_diagnostic_init(diagnostic);
+      final status = calculate(output, diagnostic);
+      final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
+      _checkStatus(status, mappedDiagnostic);
+      return TaiyinEphemerisResult(
+        value: _readLocalSolarEclipseBoundary(output.ref),
         diagnostic: mappedDiagnostic,
       );
     });
@@ -1644,6 +2016,120 @@ final class TaiyinEclipseApi {
     );
   }
 
+  TaiyinSolarEclipseRouteCurvePoint _readSolarEclipseRouteCurvePoint(
+    taiyin_solar_eclipse_route_curve_point value,
+  ) {
+    return TaiyinSolarEclipseRouteCurvePoint(
+      coordinateTt: JulianDate<TtScale>.fromDouble(
+        _requireFiniteNativeRouteCoordinate(value.jd_tt, 'curve.jd_tt'),
+      ),
+      coordinateUt1: JulianDate<Ut1Scale>.fromDouble(
+        _requireFiniteNativeRouteCoordinate(value.jd_ut, 'curve.jd_ut'),
+      ),
+      kind: TaiyinSolarEclipseRouteCurveKind.fromNativeIndex(value.curve_kind),
+      latitudeDegrees: _requireFiniteNativeRouteCoordinate(
+        value.latitude_deg,
+        'curve.latitude_deg',
+      ),
+      longitudeDegrees: _requireFiniteNativeRouteCoordinate(
+        value.longitude_deg,
+        'curve.longitude_deg',
+      ),
+    );
+  }
+
+  TaiyinSolarEclipseRouteProductPoint _readSolarEclipseRouteProductPoint(
+    taiyin_solar_eclipse_route_product_point value,
+  ) {
+    return TaiyinSolarEclipseRouteProductPoint(
+      coordinateTt: JulianDate<TtScale>.fromDouble(
+        _requireFiniteNativeRouteCoordinate(value.jd_tt, 'product.jd_tt'),
+      ),
+      coordinateUt1: JulianDate<Ut1Scale>.fromDouble(
+        _requireFiniteNativeRouteCoordinate(value.jd_ut, 'product.jd_ut'),
+      ),
+      kind: TaiyinSolarEclipseRouteProductPointKind.fromNativeIndex(
+        value.point_kind,
+      ),
+      sourceCurveKind: TaiyinSolarEclipseRouteCurveKind.fromNativeIndex(
+        value.source_curve_kind,
+      ),
+      latitudeDegrees: _requireFiniteNativeRouteCoordinate(
+        value.latitude_deg,
+        'product.latitude_deg',
+      ),
+      longitudeDegrees: _requireFiniteNativeRouteCoordinate(
+        value.longitude_deg,
+        'product.longitude_deg',
+      ),
+      unwrappedLongitudeDegrees: _requireFiniteNativeRouteCoordinate(
+        value.unwrapped_longitude_deg,
+        'product.unwrapped_longitude_deg',
+      ),
+    );
+  }
+
+  TaiyinSolarEclipseRouteProductSummary _readSolarEclipseRouteProductSummary(
+    taiyin_solar_eclipse_route_product_summary value,
+  ) {
+    return TaiyinSolarEclipseRouteProductSummary(
+      flags: TaiyinSolarEclipseRouteProductFlag.fromMask(value.flags),
+      curvePointCount: value.curve_point_count,
+      centerLineCount: value.center_line_count,
+      coreNorthCount: value.core_north_count,
+      coreSouthCount: value.core_south_count,
+      coreBeginHorizonCount: value.core_begin_horizon_count,
+      coreEndHorizonCount: value.core_end_horizon_count,
+      penumbralNorthCount: value.penumbral_north_count,
+      penumbralSouthCount: value.penumbral_south_count,
+      halfMagnitudeNorthCount: value.half_magnitude_north_count,
+      halfMagnitudeSouthCount: value.half_magnitude_south_count,
+      corePolygonPointCount: value.core_polygon_point_count,
+      penumbralPolygonPointCount: value.penumbral_polygon_point_count,
+      halfMagnitudePolygonPointCount: value.half_magnitude_polygon_point_count,
+      polygonPointCount: value.polygon_point_count,
+      minimumLatitudeDegrees: _finiteOrNull(value.min_latitude_deg),
+      maximumLatitudeDegrees: _finiteOrNull(value.max_latitude_deg),
+      minimumUnwrappedLongitudeDegrees: _finiteOrNull(
+        value.min_unwrapped_longitude_deg,
+      ),
+      maximumUnwrappedLongitudeDegrees: _finiteOrNull(
+        value.max_unwrapped_longitude_deg,
+      ),
+    );
+  }
+
+  TaiyinLocalSolarEclipseBoundary _readLocalSolarEclipseBoundary(
+    taiyin_local_solar_eclipse_boundary value,
+  ) {
+    return TaiyinLocalSolarEclipseBoundary(
+      centerKinds: TaiyinEclipseKind.fromMask(value.center_kind),
+      centerLongitudeDegrees: _finiteOrNull(value.center_longitude_deg),
+      centerLatitudeDegrees: _finiteOrNull(value.center_latitude_deg),
+      umbraNorthLongitudeDegrees: _finiteOrNull(
+        value.umbra_north_longitude_deg,
+      ),
+      umbraNorthLatitudeDegrees: _finiteOrNull(value.umbra_north_latitude_deg),
+      umbraSouthLongitudeDegrees: _finiteOrNull(
+        value.umbra_south_longitude_deg,
+      ),
+      umbraSouthLatitudeDegrees: _finiteOrNull(value.umbra_south_latitude_deg),
+      penumbraNorthLongitudeDegrees: _finiteOrNull(
+        value.penumbra_north_longitude_deg,
+      ),
+      penumbraNorthLatitudeDegrees: _finiteOrNull(
+        value.penumbra_north_latitude_deg,
+      ),
+      penumbraSouthLongitudeDegrees: _finiteOrNull(
+        value.penumbra_south_longitude_deg,
+      ),
+      penumbraSouthLatitudeDegrees: _finiteOrNull(
+        value.penumbra_south_latitude_deg,
+      ),
+      umbraWidthKilometers: _finiteOrNull(value.umbra_width_km),
+    );
+  }
+
   TaiyinSolarBesselianElements _readSolarBesselianElements(
     taiyin_solar_besselian_elements value,
   ) {
@@ -1802,11 +2288,39 @@ final class TaiyinEclipseApi {
   double _requireFiniteNativeRouteCoordinate(double value, String name) {
     if (!value.isFinite) {
       throw StateError(
-        'Native solar eclipse route row returned non-finite $name after a '
-        'successful calculation',
+        'Native solar eclipse route calculation returned non-finite $name '
+        'after a successful calculation',
       );
     }
     return value;
+  }
+
+  void _requireBoundaryLatitude(double value) {
+    _requireFinite(value, 'latitudeDegrees');
+    if (value < -90 || value > 90) {
+      throw RangeError.range(value, -90, 90, 'latitudeDegrees');
+    }
+  }
+
+  void _requireRouteSampleCount(int value) {
+    if (value < _solarRouteMinimumSampleCount ||
+        value > _solarRouteMaximumSampleCount) {
+      throw RangeError.range(
+        value,
+        _solarRouteMinimumSampleCount,
+        _solarRouteMaximumSampleCount,
+        'routeSampleCount',
+      );
+    }
+  }
+
+  void _requireExactNativeCount(int actual, int expected, String noun) {
+    if (actual != expected) {
+      throw StateError(
+        'Native $noun fill returned count=$actual after reporting '
+        'count=$expected',
+      );
+    }
   }
 
   void _requirePositiveFinite(double value, String name) {

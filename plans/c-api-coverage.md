@@ -3,8 +3,8 @@
 Baseline: `taiyin-ephemeris/include/taiyin/c/*.h` on 2026-07-20.
 
 - Total callable C symbols: **317**
-- Included by the current Dart binding configuration: **303**
-- Remaining: **14**
+- Included by the current Dart binding configuration: **313**
+- Remaining: **4**
 
 `[x]` means the symbol is included in `ffigen.yaml` and its current Dart API
 block has landed. `[ ]` means it still needs a Dart binding/API decision. The
@@ -23,7 +23,7 @@ functions so ABI completeness can be tracked exactly.
 - [x] Lunar occultations
 - [x] Lunar eclipses
 - [x] Solar eclipse search and local circumstances
-- [ ] Solar Besselian elements, routes, curves, and map products
+- [x] Solar Besselian elements, routes, curves, and map products
 - [ ] Remaining process-lifetime ayanamsha and house-system callbacks
 - [ ] Diagnostic formatting helper
 
@@ -143,7 +143,7 @@ must remain available during that transition.
 - [x] `taiyin_context_disable_shapiro_delay`
 - [x] `taiyin_context_set_eclipse_models`
 
-## `eclipse.h` — 42/52
+## `eclipse.h` — 52/52
 
 - [x] `taiyin_lunar_eclipse_result_tt_init`
 - [x] `taiyin_lunar_eclipse_result_ut_init`
@@ -155,9 +155,9 @@ must remain available during that transition.
 - [x] `taiyin_local_solar_eclipse_result_ut_init`
 - [x] `taiyin_local_solar_eclipse_circumstances_tt_init`
 - [x] `taiyin_local_solar_eclipse_circumstances_ut_init`
-- [ ] `taiyin_local_solar_eclipse_boundary_init`
+- [x] `taiyin_local_solar_eclipse_boundary_init`
 - [x] `taiyin_solar_eclipse_route_row_init`
-- [ ] `taiyin_solar_eclipse_route_product_summary_init`
+- [x] `taiyin_solar_eclipse_route_product_summary_init`
 - [x] `taiyin_solar_besselian_elements_init`
 - [x] `taiyin_solar_besselian_polynomial_init`
 - [x] `taiyin_solve_lunar_eclipse_at_tt`
@@ -189,14 +189,14 @@ must remain available during that transition.
 - [x] `taiyin_compute_solar_eclipse_route_row_ut`
 - [x] `taiyin_compute_solar_eclipse_route_tt`
 - [x] `taiyin_compute_solar_eclipse_route_ut`
-- [ ] `taiyin_compute_solar_eclipse_route_curves_tt`
-- [ ] `taiyin_compute_solar_eclipse_route_curves_ut`
-- [ ] `taiyin_compute_solar_eclipse_route_product_tt`
-- [ ] `taiyin_compute_solar_eclipse_route_product_ut`
-- [ ] `taiyin_compute_solar_eclipse_route_map_product_tt`
-- [ ] `taiyin_compute_solar_eclipse_route_map_product_ut`
-- [ ] `taiyin_compute_local_solar_eclipse_boundary_tt`
-- [ ] `taiyin_compute_local_solar_eclipse_boundary_ut`
+- [x] `taiyin_compute_solar_eclipse_route_curves_tt`
+- [x] `taiyin_compute_solar_eclipse_route_curves_ut`
+- [x] `taiyin_compute_solar_eclipse_route_product_tt`
+- [x] `taiyin_compute_solar_eclipse_route_product_ut`
+- [x] `taiyin_compute_solar_eclipse_route_map_product_tt`
+- [x] `taiyin_compute_solar_eclipse_route_map_product_ut`
+- [x] `taiyin_compute_local_solar_eclipse_boundary_tt`
+- [x] `taiyin_compute_local_solar_eclipse_boundary_ut`
 
 ## `events.h` — 26/26
 

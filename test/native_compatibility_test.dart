@@ -282,13 +282,13 @@ void main() {
       expect(
         () => validateTaiyinRequiredSymbols(
           providesSymbol: (symbol) =>
-              symbol != 'taiyin_compute_solar_eclipse_route_ut',
+              symbol != 'taiyin_compute_solar_eclipse_route_map_product_ut',
         ),
         throwsA(
           isA<StateError>().having(
             (error) => error.message,
             'message',
-            contains('taiyin_compute_solar_eclipse_route_ut'),
+            contains('taiyin_compute_solar_eclipse_route_map_product_ut'),
           ),
         ),
       );
