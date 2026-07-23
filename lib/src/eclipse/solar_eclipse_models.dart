@@ -424,6 +424,11 @@ final class TaiyinSolarEclipseRouteProductSummary {
   }) : flags = Set.unmodifiable(flags);
 
   final Set<TaiyinSolarEclipseRouteProductFlag> flags;
+
+  /// Number of source route-curve samples used to construct this product.
+  ///
+  /// This diagnostic count does not necessarily equal the number of returned
+  /// [TaiyinSolarEclipseRouteProduct.points].
   final int curvePointCount;
   final int centerLineCount;
   final int coreNorthCount;
@@ -453,6 +458,11 @@ final class TaiyinSolarEclipseRouteProductSummary {
 }
 
 /// Complete polygonal output for either the core path or all map layers.
+///
+/// Map products concatenate up to three independently closed rings in this
+/// order: core, penumbral, then half-magnitude. Slice [points] using the
+/// three polygon-point counts in [summary]; every non-empty slice ends with a
+/// [TaiyinSolarEclipseRouteProductPointKind.polygonClose] point.
 final class TaiyinSolarEclipseRouteProduct {
   TaiyinSolarEclipseRouteProduct({
     required Iterable<TaiyinSolarEclipseRouteProductPoint> points,
@@ -496,6 +506,7 @@ final class TaiyinLocalSolarEclipseBoundary {
   final double? penumbraSouthLatitudeDegrees;
   final double? umbraWidthKilometers;
 
+  /// Whether the central shadow axis intersects Earth at this instant.
   bool get hasCentralPath => centerKinds.isNotEmpty;
 }
 

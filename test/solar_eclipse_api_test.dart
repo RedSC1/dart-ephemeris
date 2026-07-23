@@ -523,6 +523,37 @@ void main() {
         );
         expect(none.value.hasEclipse, isFalse);
         expect(none.value.maximum, isNull);
+        final emptyCoreProduct = context.eclipses.solarEclipseRouteProductAtTt(
+          JulianDate<TtScale>.fromDouble(2451550.0),
+          routeSampleCount: 32,
+        );
+        final emptyMapProduct = context.eclipses
+            .solarEclipseRouteMapProductAtTt(
+              JulianDate<TtScale>.fromDouble(2451550.0),
+              routeSampleCount: 32,
+            );
+        for (final product in [emptyCoreProduct.value, emptyMapProduct.value]) {
+          expect(product.points, isEmpty);
+          expect(product.summary.flags, isEmpty);
+          for (final count in [
+            product.summary.curvePointCount,
+            product.summary.centerLineCount,
+            product.summary.coreNorthCount,
+            product.summary.coreSouthCount,
+            product.summary.coreBeginHorizonCount,
+            product.summary.coreEndHorizonCount,
+            product.summary.penumbralNorthCount,
+            product.summary.penumbralSouthCount,
+            product.summary.halfMagnitudeNorthCount,
+            product.summary.halfMagnitudeSouthCount,
+            product.summary.corePolygonPointCount,
+            product.summary.penumbralPolygonPointCount,
+            product.summary.halfMagnitudePolygonPointCount,
+            product.summary.polygonPointCount,
+          ]) {
+            expect(count, 0);
+          }
+        }
         expect(
           () => context.eclipses.nextSolarAtUt1(
             JulianDate<Ut1Scale>.fromDouble(2460400.0),
@@ -622,6 +653,11 @@ void main() {
           centerUt,
           routeSampleCount: 32,
         );
+        final antimeridianMapProduct = context.eclipses
+            .solarEclipseRouteMapProductAtUt1(
+              JulianDate<Ut1Scale>.fromDouble(2451580.0342944735),
+              routeSampleCount: 32,
+            );
         final boundaryUt = context.eclipses.localSolarEclipseBoundaryAtUt1(
           centerUt,
           longitudeDegrees: mazatlan.longitudeDegrees,
@@ -678,8 +714,10 @@ void main() {
           coreProduct.value.points.last.latitudeDegrees,
           closeTo(coreProduct.value.points.first.latitudeDegrees, 1e-12),
         );
+        expect(coreProduct.value.summary.minimumLatitudeDegrees, isNotNull);
+        expect(coreProduct.value.summary.maximumLatitudeDegrees, isNotNull);
         expect(
-          coreProduct.value.summary.minimumLatitudeDegrees,
+          coreProduct.value.summary.minimumLatitudeDegrees!,
           lessThan(coreProduct.value.summary.maximumLatitudeDegrees!),
         );
 
@@ -707,6 +745,25 @@ void main() {
         expect(
           mapProductUt.value.summary.polygonPointCount,
           mapProductUt.value.points.length,
+        );
+        expect(
+          mapProductUt
+              .value
+              .points[mapProductUt.value.summary.corePolygonPointCount]
+              .kind,
+          TaiyinSolarEclipseRouteProductPointKind.penumbralNorth,
+        );
+        expect(
+          mapProductUt
+              .value
+              .points[mapProductUt.value.summary.corePolygonPointCount +
+                  mapProductUt.value.summary.penumbralPolygonPointCount]
+              .kind,
+          TaiyinSolarEclipseRouteProductPointKind.halfMagnitudeNorth,
+        );
+        expect(
+          antimeridianMapProduct.value.summary.flags,
+          contains(TaiyinSolarEclipseRouteProductFlag.crossesAntimeridian),
         );
         expect(
           mapProduct
@@ -759,6 +816,22 @@ void main() {
             latitudeDegrees: mazatlan.latitudeDegrees,
           ),
           throwsArgumentError,
+        );
+        expect(
+          () => context.eclipses.localSolarEclipseBoundaryAtTt(
+            centerTt,
+            longitudeDegrees: 0.0,
+            latitudeDegrees: 90.1,
+          ),
+          throwsRangeError,
+        );
+        expect(
+          () => context.eclipses.localSolarEclipseBoundaryAtUt1(
+            centerUt,
+            longitudeDegrees: 0.0,
+            latitudeDegrees: -90.1,
+          ),
+          throwsRangeError,
         );
         expect(
           () => context.eclipses.solarEclipseRouteMapProductAtUt1(

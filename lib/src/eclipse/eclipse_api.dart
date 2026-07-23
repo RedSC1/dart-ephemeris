@@ -1376,6 +1376,9 @@ final class TaiyinEclipseApi {
   }
 
   /// Builds the core-path polygon of the solar eclipse near UT1 [coordinate].
+  ///
+  /// Use [solarEclipseRouteMapProductAtUt1] when penumbral and half-magnitude
+  /// polygons are also required.
   TaiyinEphemerisResult<TaiyinSolarEclipseRouteProduct>
   solarEclipseRouteProductAtUt1(
     JulianDate<Ut1Scale> coordinate, {
@@ -1470,7 +1473,7 @@ final class TaiyinEclipseApi {
   }) {
     _ensureOpen();
     _requireFinite(longitudeDegrees, 'longitudeDegrees');
-    _requireFinite(latitudeDegrees, 'latitudeDegrees');
+    _requireBoundaryLatitude(latitudeDegrees);
     return _localSolarBoundary((output, diagnostic) {
       return _bindings.taiyin_compute_local_solar_eclipse_boundary_tt(
         _context,
@@ -1493,7 +1496,7 @@ final class TaiyinEclipseApi {
   }) {
     _ensureOpen();
     _requireFinite(longitudeDegrees, 'longitudeDegrees');
-    _requireFinite(latitudeDegrees, 'latitudeDegrees');
+    _requireBoundaryLatitude(latitudeDegrees);
     return _localSolarBoundary((output, diagnostic) {
       return _bindings.taiyin_compute_local_solar_eclipse_boundary_ut(
         _context,
@@ -2285,11 +2288,18 @@ final class TaiyinEclipseApi {
   double _requireFiniteNativeRouteCoordinate(double value, String name) {
     if (!value.isFinite) {
       throw StateError(
-        'Native solar eclipse route row returned non-finite $name after a '
-        'successful calculation',
+        'Native solar eclipse route calculation returned non-finite $name '
+        'after a successful calculation',
       );
     }
     return value;
+  }
+
+  void _requireBoundaryLatitude(double value) {
+    _requireFinite(value, 'latitudeDegrees');
+    if (value < -90 || value > 90) {
+      throw RangeError.range(value, -90, 90, 'latitudeDegrees');
+    }
   }
 
   void _requireRouteSampleCount(int value) {
