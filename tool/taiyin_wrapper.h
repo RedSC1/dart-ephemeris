@@ -13,5 +13,6 @@
 #include <taiyin/c/time.h>
 #include <taiyin/c/orbital.h>
 #include <taiyin/c/visibility.h>
+#include <taiyin/c/heliacal.h>
 
 #endif

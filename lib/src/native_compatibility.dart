@@ -104,6 +104,13 @@ const Set<String> taiyinRequiredAbi1Symbols = {
   'taiyin_search_star_rise_set_ut',
   'taiyin_search_star_rise_set_at_horizon_ut',
   'taiyin_search_star_transit_ut',
+  'taiyin_heliacal_visibility_conditions_init',
+  'taiyin_heliacal_visibility_result_init',
+  'taiyin_heliacal_visibility_search_result_init',
+  'taiyin_calc_body_heliacal_visibility_ut',
+  'taiyin_calc_star_heliacal_visibility_ut',
+  'taiyin_search_next_body_heliacal_visibility_ut',
+  'taiyin_search_next_star_heliacal_visibility_ut',
 };
 
 /// Validates the native metadata available before any optional symbol lookup.

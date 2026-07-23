@@ -3,8 +3,8 @@
 Baseline: `taiyin-ephemeris/include/taiyin/c/*.h` on 2026-07-20.
 
 - Total callable C symbols: **317**
-- Included by the current Dart binding configuration: **214**
-- Remaining: **103**
+- Included by the current Dart binding configuration: **221**
+- Remaining: **96**
 
 `[x]` means the symbol is included in `ffigen.yaml` and its current Dart API
 block has landed. `[ ]` means it still needs a Dart binding/API decision. The
@@ -19,7 +19,7 @@ functions so ABI completeness can be tracked exactly.
 - [x] Visibility: Sun, Moon, planet, and star rise/set/transit searches
 - [ ] Events: longitude, station, aspect, elongation, separation, transit, and
   lunar-phase searches
-- [ ] Heliacal visibility
+- [x] Heliacal visibility
 - [ ] Lunar occultations
 - [ ] Lunar eclipses
 - [ ] Solar eclipse search and local circumstances
@@ -227,15 +227,15 @@ must remain available during that transition.
 - [ ] `taiyin_search_lunar_phase_crossings_ut`
 - [ ] `taiyin_search_lunar_phase_crossings_tt`
 
-## `heliacal.h` — 0/7
+## `heliacal.h` — 7/7
 
-- [ ] `taiyin_heliacal_visibility_conditions_init`
-- [ ] `taiyin_heliacal_visibility_result_init`
-- [ ] `taiyin_heliacal_visibility_search_result_init`
-- [ ] `taiyin_calc_body_heliacal_visibility_ut`
-- [ ] `taiyin_calc_star_heliacal_visibility_ut`
-- [ ] `taiyin_search_next_body_heliacal_visibility_ut`
-- [ ] `taiyin_search_next_star_heliacal_visibility_ut`
+- [x] `taiyin_heliacal_visibility_conditions_init`
+- [x] `taiyin_heliacal_visibility_result_init`
+- [x] `taiyin_heliacal_visibility_search_result_init`
+- [x] `taiyin_calc_body_heliacal_visibility_ut`
+- [x] `taiyin_calc_star_heliacal_visibility_ut`
+- [x] `taiyin_search_next_body_heliacal_visibility_ut`
+- [x] `taiyin_search_next_star_heliacal_visibility_ut`
 
 ## `observed.h` — 3/3
 

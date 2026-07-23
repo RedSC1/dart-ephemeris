@@ -181,5 +181,21 @@ void main() {
         ),
       );
     });
+
+    test('reports missing heliacal symbols before use', () {
+      expect(
+        () => validateTaiyinRequiredSymbols(
+          providesSymbol: (symbol) =>
+              symbol != 'taiyin_search_next_star_heliacal_visibility_ut',
+        ),
+        throwsA(
+          isA<StateError>().having(
+            (error) => error.message,
+            'message',
+            contains('taiyin_search_next_star_heliacal_visibility_ut'),
+          ),
+        ),
+      );
+    });
   });
 }

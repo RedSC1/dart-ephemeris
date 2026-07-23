@@ -373,6 +373,67 @@ process-wide star catalog. Search result dates are scalar native outputs and
 therefore have the same roughly 40-microsecond present-epoch precision boundary
 as other physical calculations.
 
+## Heliacal visibility
+
+`context.heliacal` evaluates whether a planet or catalogued star can be seen
+in bright twilight, then searches for its next morning/evening first or last
+heliacal appearance. It uses the context's observer location and selected
+heliacal model (`schaefer1993` by default). A body target cannot be the Sun,
+Moon, Earth, or solar-system barycenter; star targets must be present in the
+process-wide catalog.
+
+```dart
+context.configuration
+  ..setGeocentricObserver(
+    observerId: TaiyinBody.earth.id,
+    centerId: TaiyinBody.earth.id,
+  )
+  ..setObserverLocation(
+    const TaiyinObserverLocation(
+      longitudeDegrees: 116.3833,
+      latitudeDegrees: 39.9167,
+    ),
+  )
+  ..setAtmospherePolicy({
+    TaiyinAtmospherePolicyFlag.allowStandardFallback,
+  })
+  ..useSolarDeflector()
+  ..setApparentConfig(
+    const TaiyinApparentConfig(
+      flags: {
+        TaiyinApparentFlag.spherical,
+        TaiyinApparentFlag.lightTime,
+        TaiyinApparentFlag.aberration,
+        TaiyinApparentFlag.gravitationalDeflection,
+      },
+      outputFrame: TaiyinApparentFrame.trueEclipticOfDate,
+    ),
+  )
+  ..setHeliacalVisibilityModel(TaiyinHeliacalVisibilityModel.schaefer1993);
+
+final event = context.heliacal.nextBodyEventAtUt1(
+  TaiyinBody.venus,
+  JulianDate<Ut1Scale>.fromDouble(2460758.7),
+  event: TaiyinHeliacalEventKind.morningFirst,
+  maxSearchDays: 5,
+  conditions: const TaiyinHeliacalVisibilityConditions(
+    extinctionMagnitudePerAirmass: 0.25,
+  ),
+);
+print(event.value.coordinate);
+```
+
+`conditions` values are optional: omit one to use the selected profile's
+calibrated or derived value; supplied values must be finite and strictly
+positive (the native model rejects zero extinction and zero brightness).
+`includeMoonlight` requests the model's moonlight
+term, while `strictMeteorology` requires complete explicit atmosphere and
+meteorological-range data rather than fallback. Position corrections use the
+separate `positionFlags` set; only `truePosition`, `astrometric`,
+`noAberration`, and `noGravitationalDeflection` apply. Event dates are scalar
+native outputs and have the same roughly 40-microsecond present-epoch precision
+boundary as other physical calculations.
+
 ## Solar time and body phenomena
 
 `context.solarTime` calculates the equation of time from UT1 or TT and converts

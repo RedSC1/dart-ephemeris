@@ -224,6 +224,13 @@ functions:
     - taiyin_search_star_rise_set_ut
     - taiyin_search_star_rise_set_at_horizon_ut
     - taiyin_search_star_transit_ut
+    - taiyin_heliacal_visibility_conditions_init
+    - taiyin_heliacal_visibility_result_init
+    - taiyin_heliacal_visibility_search_result_init
+    - taiyin_calc_body_heliacal_visibility_ut
+    - taiyin_calc_star_heliacal_visibility_ut
+    - taiyin_search_next_body_heliacal_visibility_ut
+    - taiyin_search_next_star_heliacal_visibility_ut
 structs:
   include:
     - taiyin_calendar_datetime
@@ -263,6 +270,9 @@ structs:
     - taiyin_visibility_event_result
     - taiyin_solar_rise_set_fast_result
     - taiyin_solar_transit_fast_result
+    - taiyin_heliacal_visibility_conditions
+    - taiyin_heliacal_visibility_result
+    - taiyin_heliacal_visibility_search_result
 enums:
   as-int:
     include:

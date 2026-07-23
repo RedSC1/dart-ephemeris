@@ -6056,6 +6056,270 @@ class TaiyinBindings {
           ffi.Pointer<taiyin_ephemeris_diagnostic>,
         )
       >();
+
+  void taiyin_heliacal_visibility_conditions_init(
+    ffi.Pointer<taiyin_heliacal_visibility_conditions> value,
+  ) {
+    return _taiyin_heliacal_visibility_conditions_init(value);
+  }
+
+  late final _taiyin_heliacal_visibility_conditions_initPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<taiyin_heliacal_visibility_conditions>)
+        >
+      >('taiyin_heliacal_visibility_conditions_init');
+  late final _taiyin_heliacal_visibility_conditions_init =
+      _taiyin_heliacal_visibility_conditions_initPtr
+          .asFunction<
+            void Function(ffi.Pointer<taiyin_heliacal_visibility_conditions>)
+          >();
+
+  void taiyin_heliacal_visibility_result_init(
+    ffi.Pointer<taiyin_heliacal_visibility_result> value,
+  ) {
+    return _taiyin_heliacal_visibility_result_init(value);
+  }
+
+  late final _taiyin_heliacal_visibility_result_initPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<taiyin_heliacal_visibility_result>)
+        >
+      >('taiyin_heliacal_visibility_result_init');
+  late final _taiyin_heliacal_visibility_result_init =
+      _taiyin_heliacal_visibility_result_initPtr
+          .asFunction<
+            void Function(ffi.Pointer<taiyin_heliacal_visibility_result>)
+          >();
+
+  void taiyin_heliacal_visibility_search_result_init(
+    ffi.Pointer<taiyin_heliacal_visibility_search_result> value,
+  ) {
+    return _taiyin_heliacal_visibility_search_result_init(value);
+  }
+
+  late final _taiyin_heliacal_visibility_search_result_initPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Pointer<taiyin_heliacal_visibility_search_result>,
+          )
+        >
+      >('taiyin_heliacal_visibility_search_result_init');
+  late final _taiyin_heliacal_visibility_search_result_init =
+      _taiyin_heliacal_visibility_search_result_initPtr
+          .asFunction<
+            void Function(ffi.Pointer<taiyin_heliacal_visibility_search_result>)
+          >();
+
+  int taiyin_calc_body_heliacal_visibility_ut(
+    ffi.Pointer<taiyin_context> context,
+    int body_id,
+    double jd_ut,
+    int flags,
+    ffi.Pointer<taiyin_heliacal_visibility_conditions> conditions,
+    ffi.Pointer<taiyin_heliacal_visibility_result> out,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_calc_body_heliacal_visibility_ut(
+      context,
+      body_id,
+      jd_ut,
+      flags,
+      conditions,
+      out,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_calc_body_heliacal_visibility_utPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Int32,
+            ffi.Double,
+            ffi.Uint64,
+            ffi.Pointer<taiyin_heliacal_visibility_conditions>,
+            ffi.Pointer<taiyin_heliacal_visibility_result>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_calc_body_heliacal_visibility_ut');
+  late final _taiyin_calc_body_heliacal_visibility_ut =
+      _taiyin_calc_body_heliacal_visibility_utPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              int,
+              double,
+              int,
+              ffi.Pointer<taiyin_heliacal_visibility_conditions>,
+              ffi.Pointer<taiyin_heliacal_visibility_result>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_calc_star_heliacal_visibility_ut(
+    ffi.Pointer<taiyin_context> context,
+    ffi.Pointer<ffi.Char> star_key,
+    double jd_ut,
+    int flags,
+    ffi.Pointer<taiyin_heliacal_visibility_conditions> conditions,
+    ffi.Pointer<taiyin_heliacal_visibility_result> out,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_calc_star_heliacal_visibility_ut(
+      context,
+      star_key,
+      jd_ut,
+      flags,
+      conditions,
+      out,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_calc_star_heliacal_visibility_utPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Double,
+            ffi.Uint64,
+            ffi.Pointer<taiyin_heliacal_visibility_conditions>,
+            ffi.Pointer<taiyin_heliacal_visibility_result>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_calc_star_heliacal_visibility_ut');
+  late final _taiyin_calc_star_heliacal_visibility_ut =
+      _taiyin_calc_star_heliacal_visibility_utPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              ffi.Pointer<ffi.Char>,
+              double,
+              int,
+              ffi.Pointer<taiyin_heliacal_visibility_conditions>,
+              ffi.Pointer<taiyin_heliacal_visibility_result>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_search_next_body_heliacal_visibility_ut(
+    ffi.Pointer<taiyin_context> context,
+    int body_id,
+    double jd_start_ut,
+    int event_kind,
+    double max_search_days,
+    int flags,
+    ffi.Pointer<taiyin_heliacal_visibility_conditions> conditions,
+    ffi.Pointer<taiyin_heliacal_visibility_search_result> out,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_search_next_body_heliacal_visibility_ut(
+      context,
+      body_id,
+      jd_start_ut,
+      event_kind,
+      max_search_days,
+      flags,
+      conditions,
+      out,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_search_next_body_heliacal_visibility_utPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Int32,
+            ffi.Double,
+            ffi.Int32,
+            ffi.Double,
+            ffi.Uint64,
+            ffi.Pointer<taiyin_heliacal_visibility_conditions>,
+            ffi.Pointer<taiyin_heliacal_visibility_search_result>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_search_next_body_heliacal_visibility_ut');
+  late final _taiyin_search_next_body_heliacal_visibility_ut =
+      _taiyin_search_next_body_heliacal_visibility_utPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              int,
+              double,
+              int,
+              double,
+              int,
+              ffi.Pointer<taiyin_heliacal_visibility_conditions>,
+              ffi.Pointer<taiyin_heliacal_visibility_search_result>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_search_next_star_heliacal_visibility_ut(
+    ffi.Pointer<taiyin_context> context,
+    ffi.Pointer<ffi.Char> star_key,
+    double jd_start_ut,
+    int event_kind,
+    double max_search_days,
+    int flags,
+    ffi.Pointer<taiyin_heliacal_visibility_conditions> conditions,
+    ffi.Pointer<taiyin_heliacal_visibility_search_result> out,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_search_next_star_heliacal_visibility_ut(
+      context,
+      star_key,
+      jd_start_ut,
+      event_kind,
+      max_search_days,
+      flags,
+      conditions,
+      out,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_search_next_star_heliacal_visibility_utPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Double,
+            ffi.Int32,
+            ffi.Double,
+            ffi.Uint64,
+            ffi.Pointer<taiyin_heliacal_visibility_conditions>,
+            ffi.Pointer<taiyin_heliacal_visibility_search_result>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_search_next_star_heliacal_visibility_ut');
+  late final _taiyin_search_next_star_heliacal_visibility_ut =
+      _taiyin_search_next_star_heliacal_visibility_utPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              ffi.Pointer<ffi.Char>,
+              double,
+              int,
+              double,
+              int,
+              ffi.Pointer<taiyin_heliacal_visibility_conditions>,
+              ffi.Pointer<taiyin_heliacal_visibility_search_result>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
 }
 
 typedef __int8_t = ffi.SignedChar;
@@ -7520,4 +7784,130 @@ final class taiyin_solar_transit_fast_result extends ffi.Struct {
 
   @ffi.Int32()
   external int refine_count;
+}
+
+sealed class taiyin_heliacal_event_kind {
+  static const TAIYIN_C_HELIACAL_EVENT_MORNING_FIRST = 1;
+  static const TAIYIN_C_HELIACAL_EVENT_MORNING_LAST = 2;
+  static const TAIYIN_C_HELIACAL_EVENT_EVENING_FIRST = 3;
+  static const TAIYIN_C_HELIACAL_EVENT_EVENING_LAST = 4;
+}
+
+final class taiyin_heliacal_visibility_conditions extends ffi.Struct {
+  @ffi.Uint32()
+  external int struct_size;
+
+  @ffi.Double()
+  external double extinction_mag_per_airmass;
+
+  @ffi.Double()
+  external double sky_brightness_nanolambert;
+
+  @ffi.Double()
+  external double night_sky_brightness_nanolambert;
+}
+
+final class taiyin_heliacal_visibility_result extends ffi.Struct {
+  @ffi.Uint32()
+  external int struct_size;
+
+  @ffi.Uint8()
+  external int visible;
+
+  @ffi.Array.multi([3])
+  external ffi.Array<ffi.Uint8> reserved;
+
+  @ffi.Int32()
+  external int model_id;
+
+  @ffi.Int32()
+  external int extinction_model_id;
+
+  @ffi.Int32()
+  external int twilight_model_id;
+
+  @ffi.Int32()
+  external int moonlight_model_id;
+
+  @ffi.Int32()
+  external int visual_threshold_model_id;
+
+  @ffi.Double()
+  external double target_magnitude;
+
+  @ffi.Double()
+  external double limiting_magnitude;
+
+  @ffi.Double()
+  external double target_altitude_rad;
+
+  @ffi.Double()
+  external double target_azimuth_rad;
+
+  @ffi.Double()
+  external double sun_altitude_rad;
+
+  @ffi.Double()
+  external double sun_azimuth_rad;
+
+  @ffi.Double()
+  external double target_sun_separation_rad;
+
+  @ffi.Double()
+  external double airmass;
+
+  @ffi.Double()
+  external double extinction_mag_per_airmass;
+
+  @ffi.Double()
+  external double extinction_mag;
+
+  @ffi.Double()
+  external double sky_brightness_nanolambert;
+
+  @ffi.Double()
+  external double moonlight_brightness_nanolambert;
+
+  @ffi.Double()
+  external double threshold_illuminance_footcandles;
+
+  @ffi.Double()
+  external double target_illuminance_footcandles;
+
+  @ffi.Double()
+  external double visibility_margin_magnitude;
+
+  @ffi.Double()
+  external double required_sun_altitude_rad;
+
+  @ffi.Double()
+  external double solar_depression_margin_rad;
+}
+
+final class taiyin_heliacal_visibility_search_result extends ffi.Struct {
+  @ffi.Uint32()
+  external int struct_size;
+
+  @ffi.Int32()
+  external int event_kind;
+
+  @ffi.Double()
+  external double jd_ut;
+
+  @ffi.Double()
+  external double window_start_jd_ut;
+
+  @ffi.Double()
+  external double window_end_jd_ut;
+
+  @ffi.Int32()
+  external int scanned_day_count;
+
+  @ffi.Int32()
+  external int sampled_window_count;
+
+  @ffi.Int32()
+  external int visibility_evaluation_count;
+
+  external taiyin_heliacal_visibility_result visibility;
 }
