@@ -506,6 +506,41 @@ limb model through `Taiyin`. Eclipse inputs and outputs currently cross the C
 ABI as scalar Julian-date doubles, with the same roughly 40-microsecond
 present-epoch precision boundary as other physical calculations.
 
+## Solar eclipses
+
+The same `context.eclipses` service also provides global and observer-local
+solar-eclipse APIs. Global methods solve or search the shadow path; local
+methods require an observer location configured on the context and return only
+the eclipse circumstances at that location.
+
+```dart
+final global = context.eclipses.nextSolarAtUt1(
+  JulianDate<Ut1Scale>.fromDouble(2460400.0),
+  kinds: {TaiyinEclipseKind.total},
+  options: {TaiyinSolarEclipseSearchOption.includeContacts},
+);
+final local = context.eclipses.nextLocalSolarAtUt1(
+  JulianDate<Ut1Scale>.fromDouble(2460400.0),
+  kinds: {TaiyinEclipseKind.total},
+);
+final geometry = context.eclipses.localSolarCircumstancesAtUt1(
+  local.value.maximum!,
+);
+
+print(global.value.contacts[TaiyinSolarEclipseContact.greatest]);
+print(local.value.contacts[TaiyinLocalSolarEclipseContact.greatest]);
+print(geometry.value.obscuration);
+```
+
+Global contacts are optional and use P1/C1/greatest/C4/P4 slots. Local solar
+contacts are a distinct C1/C2/C3/C4/greatest array, exposed by a separate enum.
+Local solve and next-search methods request those contacts internally. The
+returned kind can additionally contain `central` or `noncentral`; search
+filters accept only partial, total, annular, and hybrid eclipse types. As with
+lunar eclipses, these physical calculation times currently cross the C ABI as
+scalar Julian-date doubles, with the existing roughly 40-microsecond
+present-epoch precision boundary.
+
 ## Event searches
 
 `context.events` provides typed UT1 and TT searches for longitude crossings,

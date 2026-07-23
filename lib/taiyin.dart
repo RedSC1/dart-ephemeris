@@ -5,6 +5,7 @@ export 'src/taiyin.dart';
 export 'src/astrology/astrology_models.dart';
 export 'src/context/context_models.dart';
 export 'src/eclipse/lunar_eclipse_models.dart';
+export 'src/eclipse/solar_eclipse_models.dart';
 export 'src/events/event_models.dart';
 export 'src/heliacal/heliacal_models.dart';
 export 'src/observed/observed_models.dart';

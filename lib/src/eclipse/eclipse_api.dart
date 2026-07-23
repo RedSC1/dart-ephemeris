@@ -36,6 +36,50 @@ typedef _LocalLunarUtCalculation =
       Pointer<taiyin_local_lunar_eclipse_result_ut> output,
       Pointer<taiyin_ephemeris_diagnostic> diagnostic,
     );
+typedef _SolarTtCalculation =
+    int Function(
+      Pointer<taiyin_solar_eclipse_result_tt> output,
+      Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+    );
+typedef _SolarUtCalculation =
+    int Function(
+      Pointer<taiyin_solar_eclipse_result_ut> output,
+      Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+    );
+typedef _SolarTtArrayCalculation =
+    int Function(
+      Pointer<taiyin_solar_eclipse_result_tt> output,
+      int capacity,
+      Pointer<Size> count,
+      Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+    );
+typedef _SolarUtArrayCalculation =
+    int Function(
+      Pointer<taiyin_solar_eclipse_result_ut> output,
+      int capacity,
+      Pointer<Size> count,
+      Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+    );
+typedef _LocalSolarTtCalculation =
+    int Function(
+      Pointer<taiyin_local_solar_eclipse_result_tt> output,
+      Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+    );
+typedef _LocalSolarUtCalculation =
+    int Function(
+      Pointer<taiyin_local_solar_eclipse_result_ut> output,
+      Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+    );
+typedef _SolarCircumstancesTtCalculation =
+    int Function(
+      Pointer<taiyin_local_solar_eclipse_circumstances_tt> output,
+      Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+    );
+typedef _SolarCircumstancesUtCalculation =
+    int Function(
+      Pointer<taiyin_local_solar_eclipse_circumstances_ut> output,
+      Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+    );
 
 /// Calculates and searches lunar eclipses.
 ///
@@ -659,7 +703,7 @@ final class TaiyinEclipseApi {
       throw ArgumentError.value(
         flags,
         'positionFlags',
-        'lunar eclipses support only truePosition',
+        'eclipse APIs support only truePosition',
       );
     }
   }
@@ -700,7 +744,7 @@ final class TaiyinEclipseApi {
   int _validatedResultCount(int count, int capacity) {
     if (count < 0 || count > capacity) {
       throw StateError(
-        'Native lunar-eclipse search returned count=$count outside 0..$capacity',
+        'Native eclipse search returned count=$count outside 0..$capacity',
       );
     }
     return count;
@@ -715,4 +759,607 @@ final class TaiyinEclipseApi {
   }
 
   double? _finiteOrNull(double value) => value.isFinite ? value : null;
+
+  /// Solves the solar-eclipse lunation nearest [estimate].
+  TaiyinEphemerisResult<TaiyinSolarEclipseResult<TtScale>> solveSolarAtTt(
+    JulianDate<TtScale> estimate, {
+    Set<TaiyinPositionFlag> positionFlags = const {},
+    Set<TaiyinSolarEclipseSolveOption> options = const {},
+  }) {
+    _ensureOpen();
+    final mask = _solarSolveMask(positionFlags, options);
+    return _solarTt((output, diagnostic) {
+      return _bindings.taiyin_solve_solar_eclipse_at_tt(
+        _context,
+        estimate.toDouble(),
+        mask,
+        output,
+        diagnostic,
+      );
+    });
+  }
+
+  /// Solves the solar-eclipse lunation nearest [estimate].
+  TaiyinEphemerisResult<TaiyinSolarEclipseResult<Ut1Scale>> solveSolarAtUt1(
+    JulianDate<Ut1Scale> estimate, {
+    Set<TaiyinPositionFlag> positionFlags = const {},
+    Set<TaiyinSolarEclipseSolveOption> options = const {},
+  }) {
+    _ensureOpen();
+    final mask = _solarSolveMask(positionFlags, options);
+    return _solarUt((output, diagnostic) {
+      return _bindings.taiyin_solve_solar_eclipse_at_ut(
+        _context,
+        estimate.toDouble(),
+        mask,
+        output,
+        diagnostic,
+      );
+    });
+  }
+
+  /// Finds the next matching global solar eclipse from [start].
+  TaiyinEphemerisResult<TaiyinSolarEclipseResult<TtScale>> nextSolarAtTt(
+    JulianDate<TtScale> start, {
+    Set<TaiyinEclipseKind> kinds = const {},
+    Set<TaiyinPositionFlag> positionFlags = const {},
+    Set<TaiyinSolarEclipseSearchOption> options = const {},
+  }) {
+    _ensureOpen();
+    final mask = _solarSearchMask(positionFlags, options, allowBackward: true);
+    return _solarTt((output, diagnostic) {
+      return _bindings.taiyin_search_next_solar_eclipse_tt(
+        _context,
+        start.toDouble(),
+        _solarKindMask(kinds),
+        mask,
+        output,
+        diagnostic,
+      );
+    });
+  }
+
+  /// Finds the next matching global solar eclipse from [start].
+  ///
+  /// Pass [TaiyinSolarEclipseSearchOption.backward] to search backwards.
+  TaiyinEphemerisResult<TaiyinSolarEclipseResult<Ut1Scale>> nextSolarAtUt1(
+    JulianDate<Ut1Scale> start, {
+    Set<TaiyinEclipseKind> kinds = const {},
+    Set<TaiyinPositionFlag> positionFlags = const {},
+    Set<TaiyinSolarEclipseSearchOption> options = const {},
+  }) {
+    _ensureOpen();
+    final mask = _solarSearchMask(positionFlags, options, allowBackward: true);
+    return _solarUt((output, diagnostic) {
+      return _bindings.taiyin_search_next_solar_eclipse_ut(
+        _context,
+        start.toDouble(),
+        _solarKindMask(kinds),
+        mask,
+        output,
+        diagnostic,
+      );
+    });
+  }
+
+  /// Finds all matching solar eclipses in the positive-length,
+  /// endpoint-inclusive [start], [end] range.
+  TaiyinEphemerisResult<List<TaiyinSolarEclipseResult<TtScale>>>
+  solarEclipsesAtTt(
+    JulianDate<TtScale> start,
+    JulianDate<TtScale> end, {
+    int maxResults = 16,
+    Set<TaiyinEclipseKind> kinds = const {},
+    Set<TaiyinPositionFlag> positionFlags = const {},
+    Set<TaiyinSolarEclipseSearchOption> options = const {},
+  }) {
+    _ensureOpen();
+    _requireInterval(start, end);
+    _requireCapacity(maxResults);
+    final mask = _solarSearchMask(positionFlags, options, allowBackward: false);
+    return _solarTtArray(maxResults, (output, capacity, count, diagnostic) {
+      return _bindings.taiyin_search_solar_eclipses_tt(
+        _context,
+        start.toDouble(),
+        end.toDouble(),
+        _solarKindMask(kinds),
+        mask,
+        output,
+        capacity,
+        count,
+        diagnostic,
+      );
+    });
+  }
+
+  /// Finds all matching solar eclipses in the positive-length,
+  /// endpoint-inclusive [start], [end] range.
+  TaiyinEphemerisResult<List<TaiyinSolarEclipseResult<Ut1Scale>>>
+  solarEclipsesAtUt1(
+    JulianDate<Ut1Scale> start,
+    JulianDate<Ut1Scale> end, {
+    int maxResults = 16,
+    Set<TaiyinEclipseKind> kinds = const {},
+    Set<TaiyinPositionFlag> positionFlags = const {},
+    Set<TaiyinSolarEclipseSearchOption> options = const {},
+  }) {
+    _ensureOpen();
+    _requireInterval(start, end);
+    _requireCapacity(maxResults);
+    final mask = _solarSearchMask(positionFlags, options, allowBackward: false);
+    return _solarUtArray(maxResults, (output, capacity, count, diagnostic) {
+      return _bindings.taiyin_search_solar_eclipses_ut(
+        _context,
+        start.toDouble(),
+        end.toDouble(),
+        _solarKindMask(kinds),
+        mask,
+        output,
+        capacity,
+        count,
+        diagnostic,
+      );
+    });
+  }
+
+  /// Solves local solar-eclipse circumstances at the context observer.
+  ///
+  /// Contacts are always requested for this local result.
+  TaiyinEphemerisResult<TaiyinLocalSolarEclipseResult<TtScale>>
+  solveLocalSolarAtTt(
+    JulianDate<TtScale> estimate, {
+    Set<TaiyinPositionFlag> positionFlags = const {},
+    Set<TaiyinSolarEclipseSolveOption> options = const {},
+  }) {
+    _ensureOpen();
+    final mask = _withSolarContacts(_solarSolveMask(positionFlags, options));
+    return _localSolarTt((output, diagnostic) {
+      return _bindings.taiyin_solve_local_solar_eclipse_at_tt(
+        _context,
+        estimate.toDouble(),
+        mask,
+        output,
+        diagnostic,
+      );
+    });
+  }
+
+  /// Solves local solar-eclipse circumstances at the context observer.
+  ///
+  /// Contacts are always requested for this local result.
+  TaiyinEphemerisResult<TaiyinLocalSolarEclipseResult<Ut1Scale>>
+  solveLocalSolarAtUt1(
+    JulianDate<Ut1Scale> estimate, {
+    Set<TaiyinPositionFlag> positionFlags = const {},
+    Set<TaiyinSolarEclipseSolveOption> options = const {},
+  }) {
+    _ensureOpen();
+    final mask = _withSolarContacts(_solarSolveMask(positionFlags, options));
+    return _localSolarUt((output, diagnostic) {
+      return _bindings.taiyin_solve_local_solar_eclipse_at_ut(
+        _context,
+        estimate.toDouble(),
+        mask,
+        output,
+        diagnostic,
+      );
+    });
+  }
+
+  /// Finds the next solar eclipse visible at the context observer.
+  ///
+  /// Contacts are always requested. Pass
+  /// [TaiyinSolarEclipseSearchOption.backward] to search backwards.
+  TaiyinEphemerisResult<TaiyinLocalSolarEclipseResult<TtScale>>
+  nextLocalSolarAtTt(
+    JulianDate<TtScale> start, {
+    Set<TaiyinEclipseKind> kinds = const {},
+    Set<TaiyinPositionFlag> positionFlags = const {},
+    Set<TaiyinSolarEclipseSearchOption> options = const {},
+  }) {
+    _ensureOpen();
+    final mask = _withSolarContacts(
+      _solarSearchMask(positionFlags, options, allowBackward: true),
+    );
+    return _localSolarTt((output, diagnostic) {
+      return _bindings.taiyin_search_next_local_solar_eclipse_tt(
+        _context,
+        start.toDouble(),
+        _solarKindMask(kinds),
+        mask,
+        output,
+        diagnostic,
+      );
+    });
+  }
+
+  /// Finds the next solar eclipse visible at the context observer.
+  ///
+  /// Contacts are always requested. Pass
+  /// [TaiyinSolarEclipseSearchOption.backward] to search backwards.
+  TaiyinEphemerisResult<TaiyinLocalSolarEclipseResult<Ut1Scale>>
+  nextLocalSolarAtUt1(
+    JulianDate<Ut1Scale> start, {
+    Set<TaiyinEclipseKind> kinds = const {},
+    Set<TaiyinPositionFlag> positionFlags = const {},
+    Set<TaiyinSolarEclipseSearchOption> options = const {},
+  }) {
+    _ensureOpen();
+    final mask = _withSolarContacts(
+      _solarSearchMask(positionFlags, options, allowBackward: true),
+    );
+    return _localSolarUt((output, diagnostic) {
+      return _bindings.taiyin_search_next_local_solar_eclipse_ut(
+        _context,
+        start.toDouble(),
+        _solarKindMask(kinds),
+        mask,
+        output,
+        diagnostic,
+      );
+    });
+  }
+
+  /// Calculates instantaneous local solar-eclipse geometry at [coordinate].
+  TaiyinEphemerisResult<TaiyinLocalSolarEclipseCircumstances<TtScale>>
+  localSolarCircumstancesAtTt(JulianDate<TtScale> coordinate) {
+    _ensureOpen();
+    return _solarCircumstancesTt((output, diagnostic) {
+      return _bindings.taiyin_compute_local_solar_circumstances_tt(
+        _context,
+        coordinate.toDouble(),
+        output,
+        diagnostic,
+      );
+    });
+  }
+
+  /// Calculates instantaneous local solar-eclipse geometry at [coordinate].
+  TaiyinEphemerisResult<TaiyinLocalSolarEclipseCircumstances<Ut1Scale>>
+  localSolarCircumstancesAtUt1(JulianDate<Ut1Scale> coordinate) {
+    _ensureOpen();
+    return _solarCircumstancesUt((output, diagnostic) {
+      return _bindings.taiyin_compute_local_solar_circumstances_ut(
+        _context,
+        coordinate.toDouble(),
+        output,
+        diagnostic,
+      );
+    });
+  }
+
+  TaiyinEphemerisResult<TaiyinSolarEclipseResult<TtScale>> _solarTt(
+    _SolarTtCalculation calculate,
+  ) {
+    return using((arena) {
+      final output = arena<taiyin_solar_eclipse_result_tt>();
+      final diagnostic = arena<taiyin_ephemeris_diagnostic>();
+      _bindings
+        ..taiyin_solar_eclipse_result_tt_init(output)
+        ..taiyin_ephemeris_diagnostic_init(diagnostic);
+      final status = calculate(output, diagnostic);
+      final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
+      _checkStatus(status, mappedDiagnostic);
+      return TaiyinEphemerisResult(
+        value: _readSolarTt(output.ref),
+        diagnostic: mappedDiagnostic,
+      );
+    });
+  }
+
+  TaiyinEphemerisResult<TaiyinSolarEclipseResult<Ut1Scale>> _solarUt(
+    _SolarUtCalculation calculate,
+  ) {
+    return using((arena) {
+      final output = arena<taiyin_solar_eclipse_result_ut>();
+      final diagnostic = arena<taiyin_ephemeris_diagnostic>();
+      _bindings
+        ..taiyin_solar_eclipse_result_ut_init(output)
+        ..taiyin_ephemeris_diagnostic_init(diagnostic);
+      final status = calculate(output, diagnostic);
+      final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
+      _checkStatus(status, mappedDiagnostic);
+      return TaiyinEphemerisResult(
+        value: _readSolarUt(output.ref),
+        diagnostic: mappedDiagnostic,
+      );
+    });
+  }
+
+  TaiyinEphemerisResult<List<TaiyinSolarEclipseResult<TtScale>>> _solarTtArray(
+    int capacity,
+    _SolarTtArrayCalculation calculate,
+  ) {
+    return using((arena) {
+      final output = arena<taiyin_solar_eclipse_result_tt>(capacity);
+      final count = arena<Size>();
+      final diagnostic = arena<taiyin_ephemeris_diagnostic>();
+      for (var index = 0; index < capacity; index++) {
+        _bindings.taiyin_solar_eclipse_result_tt_init(output + index);
+      }
+      _bindings.taiyin_ephemeris_diagnostic_init(diagnostic);
+      final status = calculate(output, capacity, count, diagnostic);
+      final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
+      _checkStatus(status, mappedDiagnostic);
+      final resultCount = _validatedResultCount(count.value, capacity);
+      return TaiyinEphemerisResult(
+        value: List.unmodifiable([
+          for (var index = 0; index < resultCount; index++)
+            _readSolarTt((output + index).ref),
+        ]),
+        diagnostic: mappedDiagnostic,
+      );
+    });
+  }
+
+  TaiyinEphemerisResult<List<TaiyinSolarEclipseResult<Ut1Scale>>> _solarUtArray(
+    int capacity,
+    _SolarUtArrayCalculation calculate,
+  ) {
+    return using((arena) {
+      final output = arena<taiyin_solar_eclipse_result_ut>(capacity);
+      final count = arena<Size>();
+      final diagnostic = arena<taiyin_ephemeris_diagnostic>();
+      for (var index = 0; index < capacity; index++) {
+        _bindings.taiyin_solar_eclipse_result_ut_init(output + index);
+      }
+      _bindings.taiyin_ephemeris_diagnostic_init(diagnostic);
+      final status = calculate(output, capacity, count, diagnostic);
+      final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
+      _checkStatus(status, mappedDiagnostic);
+      final resultCount = _validatedResultCount(count.value, capacity);
+      return TaiyinEphemerisResult(
+        value: List.unmodifiable([
+          for (var index = 0; index < resultCount; index++)
+            _readSolarUt((output + index).ref),
+        ]),
+        diagnostic: mappedDiagnostic,
+      );
+    });
+  }
+
+  TaiyinEphemerisResult<TaiyinLocalSolarEclipseResult<TtScale>> _localSolarTt(
+    _LocalSolarTtCalculation calculate,
+  ) {
+    return using((arena) {
+      final output = arena<taiyin_local_solar_eclipse_result_tt>();
+      final diagnostic = arena<taiyin_ephemeris_diagnostic>();
+      _bindings
+        ..taiyin_local_solar_eclipse_result_tt_init(output)
+        ..taiyin_ephemeris_diagnostic_init(diagnostic);
+      final status = calculate(output, diagnostic);
+      final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
+      _checkStatus(status, mappedDiagnostic);
+      return TaiyinEphemerisResult(
+        value: _readLocalSolarTt(output.ref),
+        diagnostic: mappedDiagnostic,
+      );
+    });
+  }
+
+  TaiyinEphemerisResult<TaiyinLocalSolarEclipseResult<Ut1Scale>> _localSolarUt(
+    _LocalSolarUtCalculation calculate,
+  ) {
+    return using((arena) {
+      final output = arena<taiyin_local_solar_eclipse_result_ut>();
+      final diagnostic = arena<taiyin_ephemeris_diagnostic>();
+      _bindings
+        ..taiyin_local_solar_eclipse_result_ut_init(output)
+        ..taiyin_ephemeris_diagnostic_init(diagnostic);
+      final status = calculate(output, diagnostic);
+      final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
+      _checkStatus(status, mappedDiagnostic);
+      return TaiyinEphemerisResult(
+        value: _readLocalSolarUt(output.ref),
+        diagnostic: mappedDiagnostic,
+      );
+    });
+  }
+
+  TaiyinEphemerisResult<TaiyinLocalSolarEclipseCircumstances<TtScale>>
+  _solarCircumstancesTt(_SolarCircumstancesTtCalculation calculate) {
+    return using((arena) {
+      final output = arena<taiyin_local_solar_eclipse_circumstances_tt>();
+      final diagnostic = arena<taiyin_ephemeris_diagnostic>();
+      _bindings
+        ..taiyin_local_solar_eclipse_circumstances_tt_init(output)
+        ..taiyin_ephemeris_diagnostic_init(diagnostic);
+      final status = calculate(output, diagnostic);
+      final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
+      _checkStatus(status, mappedDiagnostic);
+      final value = output.ref;
+      return TaiyinEphemerisResult(
+        value: TaiyinLocalSolarEclipseCircumstances(
+          coordinate: JulianDate<TtScale>.fromDouble(value.jd_tt),
+          deltaTSeconds: null,
+          magnitude: value.magnitude,
+          obscuration: value.obscuration,
+          centerSeparationDegrees: value.center_separation_deg,
+          sunAngularRadiusDegrees: value.sun_angular_radius_deg,
+          moonAngularRadiusDegrees: value.moon_angular_radius_deg,
+          sunAltitudeDegrees: value.sun_altitude_deg,
+          sunAzimuthDegrees: value.sun_azimuth_deg,
+        ),
+        diagnostic: mappedDiagnostic,
+      );
+    });
+  }
+
+  TaiyinEphemerisResult<TaiyinLocalSolarEclipseCircumstances<Ut1Scale>>
+  _solarCircumstancesUt(_SolarCircumstancesUtCalculation calculate) {
+    return using((arena) {
+      final output = arena<taiyin_local_solar_eclipse_circumstances_ut>();
+      final diagnostic = arena<taiyin_ephemeris_diagnostic>();
+      _bindings
+        ..taiyin_local_solar_eclipse_circumstances_ut_init(output)
+        ..taiyin_ephemeris_diagnostic_init(diagnostic);
+      final status = calculate(output, diagnostic);
+      final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
+      _checkStatus(status, mappedDiagnostic);
+      final value = output.ref;
+      return TaiyinEphemerisResult(
+        value: TaiyinLocalSolarEclipseCircumstances(
+          coordinate: JulianDate<Ut1Scale>.fromDouble(value.jd_ut),
+          deltaTSeconds: _finiteOrNull(value.delta_t_seconds),
+          magnitude: value.magnitude,
+          obscuration: value.obscuration,
+          centerSeparationDegrees: value.center_separation_deg,
+          sunAngularRadiusDegrees: value.sun_angular_radius_deg,
+          moonAngularRadiusDegrees: value.moon_angular_radius_deg,
+          sunAltitudeDegrees: value.sun_altitude_deg,
+          sunAzimuthDegrees: value.sun_azimuth_deg,
+        ),
+        diagnostic: mappedDiagnostic,
+      );
+    });
+  }
+
+  TaiyinSolarEclipseResult<TtScale> _readSolarTt(
+    taiyin_solar_eclipse_result_tt value,
+  ) {
+    return TaiyinSolarEclipseResult(
+      kinds: TaiyinEclipseKind.fromMask(value.kind),
+      maximum: _ttOrNull(value.maximum_jd_tt),
+      deltaTSeconds: null,
+      axisDistanceKilometers: _finiteOrNull(value.axis_distance_km),
+      penumbraRadiusKilometers: _finiteOrNull(value.penumbra_radius_km),
+      coreRadiusKilometers: _finiteOrNull(value.core_radius_km),
+      penumbralMarginKilometers: _finiteOrNull(value.penumbral_margin_km),
+      centralMarginKilometers: _finiteOrNull(value.central_margin_km),
+      maximumLatitudeDegrees: _finiteOrNull(value.maximum_latitude_deg),
+      maximumLongitudeDegrees: _finiteOrNull(value.maximum_longitude_deg),
+      contacts: {
+        for (final contact in TaiyinSolarEclipseContact.values)
+          contact: _ttOrNull(value.contact_jd_tt[contact.nativeIndex]),
+      },
+    );
+  }
+
+  TaiyinSolarEclipseResult<Ut1Scale> _readSolarUt(
+    taiyin_solar_eclipse_result_ut value,
+  ) {
+    return TaiyinSolarEclipseResult(
+      kinds: TaiyinEclipseKind.fromMask(value.kind),
+      maximum: _ut1OrNull(value.maximum_jd_ut),
+      deltaTSeconds: _finiteOrNull(value.delta_t_seconds),
+      axisDistanceKilometers: _finiteOrNull(value.axis_distance_km),
+      penumbraRadiusKilometers: _finiteOrNull(value.penumbra_radius_km),
+      coreRadiusKilometers: _finiteOrNull(value.core_radius_km),
+      penumbralMarginKilometers: _finiteOrNull(value.penumbral_margin_km),
+      centralMarginKilometers: _finiteOrNull(value.central_margin_km),
+      maximumLatitudeDegrees: _finiteOrNull(value.maximum_latitude_deg),
+      maximumLongitudeDegrees: _finiteOrNull(value.maximum_longitude_deg),
+      contacts: {
+        for (final contact in TaiyinSolarEclipseContact.values)
+          contact: _ut1OrNull(value.contact_jd_ut[contact.nativeIndex]),
+      },
+    );
+  }
+
+  TaiyinLocalSolarEclipseResult<TtScale> _readLocalSolarTt(
+    taiyin_local_solar_eclipse_result_tt value,
+  ) {
+    return TaiyinLocalSolarEclipseResult(
+      kinds: TaiyinEclipseKind.fromMask(value.kind),
+      visibility: TaiyinLocalSolarEclipseVisibilityFlag.fromMask(value.kind),
+      maximum: _ttOrNull(value.maximum_jd_tt),
+      deltaTSeconds: null,
+      magnitude: _finiteOrNull(value.magnitude),
+      obscuration: _finiteOrNull(value.obscuration),
+      sunAltitudeDegrees: _finiteOrNull(value.sun_altitude_deg),
+      sunAzimuthDegrees: _finiteOrNull(value.sun_azimuth_deg),
+      contacts: {
+        for (final contact in TaiyinLocalSolarEclipseContact.values)
+          contact: _ttOrNull(value.contact_jd_tt[contact.nativeIndex]),
+      },
+      positionAngleC1Degrees: _finiteOrNull(value.position_angle_c1_deg),
+      positionAngleC4Degrees: _finiteOrNull(value.position_angle_c4_deg),
+      vertexAngleC1Degrees: _finiteOrNull(value.vertex_angle_c1_deg),
+      vertexAngleC4Degrees: _finiteOrNull(value.vertex_angle_c4_deg),
+      sunriseMagnitude: _finiteOrNull(value.sunrise_magnitude),
+      sunsetMagnitude: _finiteOrNull(value.sunset_magnitude),
+      durationSeconds: _finiteOrNull(value.duration_seconds),
+      moonSunRadiusRatio: _finiteOrNull(value.moon_sun_radius_ratio),
+    );
+  }
+
+  TaiyinLocalSolarEclipseResult<Ut1Scale> _readLocalSolarUt(
+    taiyin_local_solar_eclipse_result_ut value,
+  ) {
+    return TaiyinLocalSolarEclipseResult(
+      kinds: TaiyinEclipseKind.fromMask(value.kind),
+      visibility: TaiyinLocalSolarEclipseVisibilityFlag.fromMask(value.kind),
+      maximum: _ut1OrNull(value.maximum_jd_ut),
+      deltaTSeconds: _finiteOrNull(value.delta_t_seconds),
+      magnitude: _finiteOrNull(value.magnitude),
+      obscuration: _finiteOrNull(value.obscuration),
+      sunAltitudeDegrees: _finiteOrNull(value.sun_altitude_deg),
+      sunAzimuthDegrees: _finiteOrNull(value.sun_azimuth_deg),
+      contacts: {
+        for (final contact in TaiyinLocalSolarEclipseContact.values)
+          contact: _ut1OrNull(value.contact_jd_ut[contact.nativeIndex]),
+      },
+      positionAngleC1Degrees: _finiteOrNull(value.position_angle_c1_deg),
+      positionAngleC4Degrees: _finiteOrNull(value.position_angle_c4_deg),
+      vertexAngleC1Degrees: _finiteOrNull(value.vertex_angle_c1_deg),
+      vertexAngleC4Degrees: _finiteOrNull(value.vertex_angle_c4_deg),
+      sunriseMagnitude: _finiteOrNull(value.sunrise_magnitude),
+      sunsetMagnitude: _finiteOrNull(value.sunset_magnitude),
+      durationSeconds: _finiteOrNull(value.duration_seconds),
+      moonSunRadiusRatio: _finiteOrNull(value.moon_sun_radius_ratio),
+    );
+  }
+
+  int _solarSolveMask(
+    Set<TaiyinPositionFlag> positionFlags,
+    Set<TaiyinSolarEclipseSolveOption> options,
+  ) {
+    _requireSupportedPositionFlags(positionFlags);
+    return _mergeDisjointMasks(
+      _positionMask(positionFlags),
+      options.fold(0, (mask, option) => mask | option.mask),
+    );
+  }
+
+  int _solarSearchMask(
+    Set<TaiyinPositionFlag> positionFlags,
+    Set<TaiyinSolarEclipseSearchOption> options, {
+    required bool allowBackward,
+  }) {
+    _requireSupportedPositionFlags(positionFlags);
+    if (!allowBackward &&
+        options.contains(TaiyinSolarEclipseSearchOption.backward)) {
+      throw ArgumentError.value(
+        options,
+        'options',
+        'backward is only valid for next-eclipse searches',
+      );
+    }
+    return _mergeDisjointMasks(
+      _positionMask(positionFlags),
+      options.fold(0, (mask, option) => mask | option.mask),
+    );
+  }
+
+  int _withSolarContacts(int mask) =>
+      mask | TaiyinSolarEclipseSolveOption.includeContacts.mask;
+
+  int _solarKindMask(Set<TaiyinEclipseKind> kinds) {
+    const supported = {
+      TaiyinEclipseKind.partial,
+      TaiyinEclipseKind.total,
+      TaiyinEclipseKind.annular,
+      TaiyinEclipseKind.hybrid,
+    };
+    final unsupported = kinds.difference(supported);
+    if (unsupported.isNotEmpty) {
+      throw ArgumentError.value(
+        kinds,
+        'kinds',
+        'solar eclipses support only partial, total, annular, and hybrid '
+            'filters',
+      );
+    }
+    return _kindMask(kinds);
+  }
 }
