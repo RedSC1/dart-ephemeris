@@ -81,6 +81,10 @@ typedef _SolarCircumstancesUtCalculation =
       Pointer<taiyin_ephemeris_diagnostic> diagnostic,
     );
 
+// Shared by the solve and search C ABI option families. Local solar results
+// always include contacts, regardless of the public option set supplied.
+const _solarEclipseIncludeContactsBit = 1 << 33;
+
 /// Calculates and searches lunar eclipses.
 ///
 /// A local method samples the observer location already configured on the
@@ -904,6 +908,8 @@ final class TaiyinEclipseApi {
 
   /// Solves local solar-eclipse circumstances at the context observer.
   ///
+  /// A geographic observer location must be configured on the context.
+  ///
   /// Contacts are always requested for this local result.
   TaiyinEphemerisResult<TaiyinLocalSolarEclipseResult<TtScale>>
   solveLocalSolarAtTt(
@@ -926,6 +932,8 @@ final class TaiyinEclipseApi {
 
   /// Solves local solar-eclipse circumstances at the context observer.
   ///
+  /// A geographic observer location must be configured on the context.
+  ///
   /// Contacts are always requested for this local result.
   TaiyinEphemerisResult<TaiyinLocalSolarEclipseResult<Ut1Scale>>
   solveLocalSolarAtUt1(
@@ -947,6 +955,8 @@ final class TaiyinEclipseApi {
   }
 
   /// Finds the next solar eclipse visible at the context observer.
+  ///
+  /// A geographic observer location must be configured on the context.
   ///
   /// Contacts are always requested. Pass
   /// [TaiyinSolarEclipseSearchOption.backward] to search backwards.
@@ -975,6 +985,8 @@ final class TaiyinEclipseApi {
 
   /// Finds the next solar eclipse visible at the context observer.
   ///
+  /// A geographic observer location must be configured on the context.
+  ///
   /// Contacts are always requested. Pass
   /// [TaiyinSolarEclipseSearchOption.backward] to search backwards.
   TaiyinEphemerisResult<TaiyinLocalSolarEclipseResult<Ut1Scale>>
@@ -1001,6 +1013,8 @@ final class TaiyinEclipseApi {
   }
 
   /// Calculates instantaneous local solar-eclipse geometry at [coordinate].
+  ///
+  /// A geographic observer location must be configured on the context.
   TaiyinEphemerisResult<TaiyinLocalSolarEclipseCircumstances<TtScale>>
   localSolarCircumstancesAtTt(JulianDate<TtScale> coordinate) {
     _ensureOpen();
@@ -1015,6 +1029,8 @@ final class TaiyinEclipseApi {
   }
 
   /// Calculates instantaneous local solar-eclipse geometry at [coordinate].
+  ///
+  /// A geographic observer location must be configured on the context.
   TaiyinEphemerisResult<TaiyinLocalSolarEclipseCircumstances<Ut1Scale>>
   localSolarCircumstancesAtUt1(JulianDate<Ut1Scale> coordinate) {
     _ensureOpen();
@@ -1259,6 +1275,8 @@ final class TaiyinEclipseApi {
   TaiyinLocalSolarEclipseResult<TtScale> _readLocalSolarTt(
     taiyin_local_solar_eclipse_result_tt value,
   ) {
+    // The C ABI deliberately packs eclipse-kind bits (0--6) and local
+    // visibility bits (7--12) into this single field.
     return TaiyinLocalSolarEclipseResult(
       kinds: TaiyinEclipseKind.fromMask(value.kind),
       visibility: TaiyinLocalSolarEclipseVisibilityFlag.fromMask(value.kind),
@@ -1286,6 +1304,7 @@ final class TaiyinEclipseApi {
   TaiyinLocalSolarEclipseResult<Ut1Scale> _readLocalSolarUt(
     taiyin_local_solar_eclipse_result_ut value,
   ) {
+    // See [_readLocalSolarTt]: both masks are read from the packed C field.
     return TaiyinLocalSolarEclipseResult(
       kinds: TaiyinEclipseKind.fromMask(value.kind),
       visibility: TaiyinLocalSolarEclipseVisibilityFlag.fromMask(value.kind),
@@ -1341,8 +1360,7 @@ final class TaiyinEclipseApi {
     );
   }
 
-  int _withSolarContacts(int mask) =>
-      mask | TaiyinSolarEclipseSolveOption.includeContacts.mask;
+  int _withSolarContacts(int mask) => mask | _solarEclipseIncludeContactsBit;
 
   int _solarKindMask(Set<TaiyinEclipseKind> kinds) {
     const supported = {

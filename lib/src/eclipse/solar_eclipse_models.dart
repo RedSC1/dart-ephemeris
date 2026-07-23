@@ -63,6 +63,9 @@ enum TaiyinSolarEclipseSearchOption {
 }
 
 /// Local solar-eclipse visibility bits returned by the native C ABI.
+///
+/// Solar eclipses have no separate penumbral phase, so lunar-only penumbral
+/// begin and end visibility flags are intentionally not represented here.
 enum TaiyinLocalSolarEclipseVisibilityFlag {
   visibleAtObserver(1 << 7),
   maximumVisible(1 << 8),
