@@ -139,7 +139,8 @@ final class TaiyinEclipseApi {
     });
   }
 
-  /// Finds all matching lunar eclipses in the inclusive [start], [end] range.
+  /// Finds all matching lunar eclipses in the positive-length,
+  /// endpoint-inclusive [start], [end] range.
   ///
   /// Native code reports insufficient [maxResults] capacity as an error rather
   /// than silently dropping later eclipses.
@@ -172,7 +173,8 @@ final class TaiyinEclipseApi {
     });
   }
 
-  /// Finds all matching lunar eclipses in the inclusive [start], [end] range.
+  /// Finds all matching lunar eclipses in the positive-length,
+  /// endpoint-inclusive [start], [end] range.
   TaiyinEphemerisResult<List<TaiyinLunarEclipseResult<Ut1Scale>>>
   lunarEclipsesAtUt1(
     JulianDate<Ut1Scale> start,
@@ -624,12 +626,9 @@ final class TaiyinEclipseApi {
     return positionFlags.fold(0, (mask, flag) => mask | flag.mask);
   }
 
-  int _mergeDisjointMasks(int positionMask, int optionMask) {
-    assert(
-      (positionMask & optionMask) == 0,
-      'Position flags and eclipse options bit ranges overlap',
-    );
-    return positionMask | optionMask;
+  int _mergeDisjointMasks(int maskA, int maskB) {
+    assert((maskA & maskB) == 0, 'Eclipse mask fields overlap');
+    return maskA | maskB;
   }
 
   int _lunarKindMask(Set<TaiyinEclipseKind> kinds) {

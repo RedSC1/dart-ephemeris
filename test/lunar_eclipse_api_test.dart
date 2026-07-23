@@ -125,6 +125,14 @@ void main() {
         expect(rangeTt.value.first.kinds, contains(TaiyinEclipseKind.total));
         expect(rangeTt.value.last.kinds, contains(TaiyinEclipseKind.penumbral));
         expect(noPenumbral.value, hasLength(4));
+        expect(
+          () => context.eclipses.lunarEclipsesAtTt(
+            JulianDate<TtScale>.fromDouble(2451545.0),
+            JulianDate<TtScale>.fromDouble(2452275.0),
+            maxResults: 1,
+          ),
+          throwsA(isA<TaiyinException>()),
+        );
       },
       skip: !nativeLibraryAvailable,
     );
@@ -181,6 +189,7 @@ void main() {
           localSearchUt.value.maximum!.toDouble(),
           closeTo(global.value.maximum!.toDouble(), 1e-12),
         );
+        expect(localSearchUt.value.contacts[greatest], isNotNull);
         expect(
           localSearchTt.value.visibility,
           contains(TaiyinLocalLunarEclipseVisibilityFlag.maximumVisible),
@@ -212,6 +221,22 @@ void main() {
           () => context.eclipses.lunarEclipsesAtUt1(
             JulianDate<Ut1Scale>.fromDouble(2460927.0),
             JulianDate<Ut1Scale>.fromDouble(2460926.0),
+          ),
+          throwsArgumentError,
+        );
+        expect(
+          () => context.eclipses.lunarEclipsesAtUt1(
+            JulianDate<Ut1Scale>.fromDouble(2460926.0),
+            JulianDate<Ut1Scale>.fromDouble(2460927.0),
+            maxResults: 0,
+          ),
+          throwsRangeError,
+        );
+        expect(
+          () => context.eclipses.lunarEclipsesAtUt1(
+            JulianDate<Ut1Scale>.fromDouble(2460926.0),
+            JulianDate<Ut1Scale>.fromDouble(2460927.0),
+            options: {TaiyinLunarEclipseSearchOption.backward},
           ),
           throwsArgumentError,
         );
