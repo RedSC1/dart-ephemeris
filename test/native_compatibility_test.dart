@@ -213,5 +213,21 @@ void main() {
         ),
       );
     });
+
+    test('reports missing occultation symbols before use', () {
+      expect(
+        () => validateTaiyinRequiredSymbols(
+          providesSymbol: (symbol) =>
+              symbol != 'taiyin_compute_lunar_body_occultation_where_ut',
+        ),
+        throwsA(
+          isA<StateError>().having(
+            (error) => error.message,
+            'message',
+            contains('taiyin_compute_lunar_body_occultation_where_ut'),
+          ),
+        ),
+      );
+    });
   });
 }

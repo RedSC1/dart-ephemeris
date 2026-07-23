@@ -257,6 +257,20 @@ functions:
     - taiyin_search_next_local_solar_transit_ut
     - taiyin_search_lunar_phase_crossings_ut
     - taiyin_search_lunar_phase_crossings_tt
+    - taiyin_lunar_occultation_result_init
+    - taiyin_lunar_occultation_local_visibility_init
+    - taiyin_lunar_occultation_where_result_init
+    - taiyin_search_next_geocentric_lunar_star_occultation_ut
+    - taiyin_search_next_local_lunar_star_occultation_ut
+    - taiyin_search_next_geocentric_lunar_body_occultation_ut
+    - taiyin_search_next_geocentric_lunar_body_occultation_with_radius_ut
+    - taiyin_search_next_local_lunar_body_occultation_ut
+    - taiyin_search_next_local_lunar_body_occultation_with_radius_ut
+    - taiyin_compute_lunar_star_occultation_local_visibility_ut
+    - taiyin_compute_lunar_body_occultation_local_visibility_ut
+    - taiyin_compute_lunar_star_occultation_where_ut
+    - taiyin_compute_lunar_body_occultation_where_ut
+    - taiyin_compute_lunar_body_occultation_where_with_radius_ut
 structs:
   include:
     - taiyin_calendar_datetime
@@ -303,6 +317,13 @@ structs:
     - taiyin_angular_separation_result
     - taiyin_solar_transit_result
     - taiyin_local_solar_transit_result
+    - taiyin_lunar_occultation_phenomena
+    - taiyin_lunar_occultation_result
+    - taiyin_lunar_occultation_visibility_interval
+    - taiyin_lunar_occultation_visibility_sample
+    - taiyin_lunar_occultation_local_visibility
+    - taiyin_lunar_occultation_path_point
+    - taiyin_lunar_occultation_where_result
 enums:
   as-int:
     include:

@@ -434,6 +434,42 @@ separate `positionFlags` set; only `truePosition`, `astrometric`,
 native outputs and have the same roughly 40-microsecond present-epoch precision
 boundary as other physical calculations.
 
+## Lunar occultations
+
+`context.occultation` searches the next lunar occultation of a catalogued star
+or a solar-system/custom target. Local searches and local visibility samples
+use the geographic observer already configured on the context; star searches
+also require the star key to be present in the process-wide catalog.
+
+```dart
+final event = context.occultation.nextLocalStarAtUt1(
+  'antares',
+  JulianDate<Ut1Scale>.fromDouble(2460310.5),
+);
+final visibility = context.occultation.localStarVisibilityAtUt1(
+  'antares',
+  event.value,
+  options: {TaiyinOccultationVisibilityOption.refraction},
+);
+
+print(event.value.firstContact);
+print(visibility.value.visibleIntervals);
+```
+
+Use `nextGeocentricStarAtUt1` or `nextGeocentricBodyAtUt1` for geocentric
+searches. Body methods accept `targetRadiusKilometers`: omit it for the native
+physical disc, use zero for a point source, or supply a positive custom radius.
+Pass that same custom radius to `bodyWhereAtUt1` when deriving global paths.
+`starWhereAtUt1` and `bodyWhereAtUt1` expose the global maximum, center line,
+outer limits, and visible-region polygon as immutable lists capped by the
+native ABI's documented fixed capacities. Search type filters and the optional
+lunar-limb correction are `TaiyinOccultationSearchOption`s; the correction
+requires a global TLL1 lunar-limb model loaded through `Taiyin`.
+
+Occultation inputs and returned dates currently cross the C ABI as a scalar JD
+`double`, so they have the same roughly 40-microsecond present-epoch precision
+boundary as other physical calculations.
+
 ## Event searches
 
 `context.events` provides typed UT1 and TT searches for longitude crossings,

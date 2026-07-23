@@ -3,8 +3,8 @@
 Baseline: `taiyin-ephemeris/include/taiyin/c/*.h` on 2026-07-20.
 
 - Total callable C symbols: **317**
-- Included by the current Dart binding configuration: **247**
-- Remaining: **70**
+- Included by the current Dart binding configuration: **261**
+- Remaining: **56**
 
 `[x]` means the symbol is included in `ffigen.yaml` and its current Dart API
 block has landed. `[ ]` means it still needs a Dart binding/API decision. The
@@ -20,7 +20,7 @@ functions so ABI completeness can be tracked exactly.
 - [x] Events: longitude, station, aspect, elongation, separation, transit, and
   lunar-phase searches
 - [x] Heliacal visibility
-- [ ] Lunar occultations
+- [x] Lunar occultations
 - [ ] Lunar eclipses
 - [ ] Solar eclipse search and local circumstances
 - [ ] Solar Besselian elements, routes, curves, and map products
@@ -243,22 +243,22 @@ must remain available during that transition.
 - [x] `taiyin_calc_observed_bodies_ut`
 - [x] `taiyin_calc_observed_bodies_utc`
 
-## `occultation.h` — 0/14
+## `occultation.h` — 14/14
 
-- [ ] `taiyin_lunar_occultation_result_init`
-- [ ] `taiyin_lunar_occultation_local_visibility_init`
-- [ ] `taiyin_lunar_occultation_where_result_init`
-- [ ] `taiyin_search_next_geocentric_lunar_star_occultation_ut`
-- [ ] `taiyin_search_next_local_lunar_star_occultation_ut`
-- [ ] `taiyin_search_next_geocentric_lunar_body_occultation_ut`
-- [ ] `taiyin_search_next_geocentric_lunar_body_occultation_with_radius_ut`
-- [ ] `taiyin_search_next_local_lunar_body_occultation_ut`
-- [ ] `taiyin_search_next_local_lunar_body_occultation_with_radius_ut`
-- [ ] `taiyin_compute_lunar_star_occultation_local_visibility_ut`
-- [ ] `taiyin_compute_lunar_body_occultation_local_visibility_ut`
-- [ ] `taiyin_compute_lunar_star_occultation_where_ut`
-- [ ] `taiyin_compute_lunar_body_occultation_where_ut`
-- [ ] `taiyin_compute_lunar_body_occultation_where_with_radius_ut`
+- [x] `taiyin_lunar_occultation_result_init`
+- [x] `taiyin_lunar_occultation_local_visibility_init`
+- [x] `taiyin_lunar_occultation_where_result_init`
+- [x] `taiyin_search_next_geocentric_lunar_star_occultation_ut`
+- [x] `taiyin_search_next_local_lunar_star_occultation_ut`
+- [x] `taiyin_search_next_geocentric_lunar_body_occultation_ut`
+- [x] `taiyin_search_next_geocentric_lunar_body_occultation_with_radius_ut`
+- [x] `taiyin_search_next_local_lunar_body_occultation_ut`
+- [x] `taiyin_search_next_local_lunar_body_occultation_with_radius_ut`
+- [x] `taiyin_compute_lunar_star_occultation_local_visibility_ut`
+- [x] `taiyin_compute_lunar_body_occultation_local_visibility_ut`
+- [x] `taiyin_compute_lunar_star_occultation_where_ut`
+- [x] `taiyin_compute_lunar_body_occultation_where_ut`
+- [x] `taiyin_compute_lunar_body_occultation_where_with_radius_ut`
 
 ## `orbital.h` — 12/12
 
