@@ -9,6 +9,7 @@ import 'bindings/taiyin_bindings.g.dart';
 import 'astrology/astrology_models.dart';
 import 'context/context_models.dart';
 import 'eclipse/lunar_eclipse_models.dart';
+import 'eclipse/solar_eclipse_models.dart';
 import 'events/event_models.dart';
 import 'heliacal/heliacal_models.dart';
 import 'interop/calendar.dart';
