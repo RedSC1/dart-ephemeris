@@ -72,6 +72,26 @@ void main() {
       );
     });
 
+    test('reports missing diagnostic-format and astrology-target symbols', () {
+      for (final missingSymbol in [
+        'taiyin_format_ephemeris_diagnostic',
+        'taiyin_register_builtin_astrology_targets',
+      ]) {
+        expect(
+          () => validateTaiyinRequiredSymbols(
+            providesSymbol: (symbol) => symbol != missingSymbol,
+          ),
+          throwsA(
+            isA<StateError>().having(
+              (error) => error.message,
+              'message',
+              contains(missingSymbol),
+            ),
+          ),
+        );
+      }
+    });
+
     test('reports missing solar-time and phenomena symbols before use', () {
       expect(
         () => validateTaiyinRequiredSymbols(

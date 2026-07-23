@@ -14,6 +14,7 @@ functions:
     - taiyin_get_library_version
     - taiyin_get_library_codename
     - taiyin_get_capabilities
+    - taiyin_format_ephemeris_diagnostic
     - taiyin_status_name
     - taiyin_status_message
     - taiyin_status_category
@@ -196,6 +197,7 @@ functions:
     - taiyin_calc_house_position_from_longitude
     - taiyin_has_house_system_model
     - taiyin_has_ayanamsha_model
+    - taiyin_register_builtin_astrology_targets
     - taiyin_calc_lunar_true_node_tt
     - taiyin_calc_lunar_true_node_ut
     - taiyin_calc_lunar_mean_node_tt

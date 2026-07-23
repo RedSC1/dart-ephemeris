@@ -171,6 +171,62 @@ final class Taiyin {
     );
   }
 
+  /// Formats a structured native calculation diagnostic for logs or support.
+  ///
+  /// The result is the native library's stable, single-line representation.
+  /// It is intended for humans rather than as a serialization format.
+  String formatEphemerisDiagnostic(TaiyinEphemerisDiagnostic diagnostic) {
+    return using((arena) {
+      final nativeDiagnostic = arena<taiyin_ephemeris_diagnostic>();
+      _writeEphemerisDiagnostic(nativeDiagnostic, diagnostic);
+      final requiredSize = arena<Size>();
+      _checkStatus(
+        _bindings,
+        _bindings.taiyin_format_ephemeris_diagnostic(
+          nativeDiagnostic,
+          nullptr,
+          0,
+          requiredSize,
+        ),
+      );
+      if (requiredSize.value == 0) {
+        throw StateError(
+          'Native diagnostic formatter returned an empty required size.',
+        );
+      }
+      final output = arena<Char>(requiredSize.value);
+      // The native C ABI requires out_required_size on both formatting calls.
+      final outputRequiredSize = arena<Size>();
+      _checkStatus(
+        _bindings,
+        _bindings.taiyin_format_ephemeris_diagnostic(
+          nativeDiagnostic,
+          output,
+          requiredSize.value,
+          outputRequiredSize,
+        ),
+      );
+      return output.cast<Utf8>().toDartString();
+    });
+  }
+
+  /// Registers Taiyin's built-in node and Lilith targets for position routes.
+  ///
+  /// After registration, use [TaiyinAstrologyTarget] with a context's
+  /// position or state API. Calling this more than once is harmless. This is
+  /// a setup-time operation and must not overlap calculations in any isolate.
+  void registerBuiltinAstrologyTargets() {
+    if (!hasCapability(TaiyinCapability.astrology)) {
+      throw UnsupportedError(
+        'The loaded Taiyin library does not support astrology targets.',
+      );
+    }
+    _checkStatus(
+      _bindings,
+      _bindings.taiyin_register_builtin_astrology_targets(),
+    );
+  }
+
   /// Adds [path] to the global ephemeris source catalog.
   ///
   /// Discovery happens immediately. Existing contexts see the updated global
