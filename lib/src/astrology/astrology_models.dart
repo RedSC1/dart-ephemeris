@@ -15,6 +15,26 @@ enum TaiyinAyanamsha {
   final int id;
 }
 
+/// A native position target supplied by Taiyin's astrology extension.
+///
+/// Call [Taiyin.registerBuiltinAstrologyTargets] during setup before using one
+/// of these targets with a position or state calculation.
+enum TaiyinAstrologyTarget implements TaiyinTarget {
+  trueNode(-100001),
+  trueDescendingNode(-100002),
+  meanNode(-100003),
+  meanDescendingNode(-100004),
+  meanLilith(-100005),
+  osculatingLilith(-100006),
+  fittedLilith(-100007);
+
+  const TaiyinAstrologyTarget(this.id);
+
+  /// Stable identifier used by Taiyin's C ABI.
+  @override
+  final int id;
+}
+
 /// Relates a historical ayanamsha definition to the selected precession model.
 enum TaiyinSiderealPrecessionPolicy {
   compensateToReference(0),

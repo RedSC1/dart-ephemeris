@@ -432,6 +432,35 @@ String _readNativeString(Pointer<Char> value) {
   return value.cast<Utf8>().toDartString();
 }
 
+void _writeEphemerisDiagnostic(
+  Pointer<taiyin_ephemeris_diagnostic> output,
+  TaiyinEphemerisDiagnostic value,
+) {
+  output.ref
+    ..struct_size = sizeOf<taiyin_ephemeris_diagnostic>()
+    ..status = value.status
+    ..target_id = value.targetId
+    ..center_id = value.centerId
+    ..frame = value.rawFrameId
+    ..jd_tdb = value.julianDateTdb
+    ..candidate_count = value.candidateCount
+    ..attempted_method_id = value.attemptedMethodId
+    ..nearest_coverage_start = value.nearestCoverageStart
+    ..nearest_coverage_end = value.nearestCoverageEnd
+    ..component_target_id = value.componentTargetId
+    ..component_center_id = value.componentCenterId
+    ..component_method_id = value.componentMethodId
+    ..time_scale_route = value.rawTimeScaleRouteId
+    ..time_scale_fallback_reason = value.rawTimeScaleFallbackReasonId
+    ..time_scale_flags = value.timeScaleFlags.fold(
+      0,
+      (mask, flag) => mask | flag.mask,
+    )
+    ..tai_minus_utc_seconds = value.taiMinusUtcSeconds
+    ..dut1_seconds = value.dut1Seconds
+    ..delta_t_seconds = value.deltaTSeconds;
+}
+
 TaiyinEphemerisDiagnostic _readEphemerisDiagnostic(
   taiyin_ephemeris_diagnostic value,
 ) {

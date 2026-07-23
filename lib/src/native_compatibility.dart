@@ -5,6 +5,7 @@ const int taiyinSplitTimeCapability = 1 << 14;
 /// high-level APIs exposed by this package.
 const Set<String> taiyinRequiredAbi1Symbols = {
   'taiyin_get_library_codename',
+  'taiyin_format_ephemeris_diagnostic',
   'taiyin_register_native_position_evaluator',
   'taiyin_unregister_native_position_evaluator',
   'taiyin_clear_native_position_evaluators',
@@ -76,6 +77,7 @@ const Set<String> taiyinRequiredAbi1Symbols = {
   'taiyin_calc_house_position_from_longitude',
   'taiyin_has_house_system_model',
   'taiyin_has_ayanamsha_model',
+  'taiyin_register_builtin_astrology_targets',
   'taiyin_calc_lunar_true_node_tt',
   'taiyin_calc_lunar_true_node_ut',
   'taiyin_calc_lunar_mean_node_tt',

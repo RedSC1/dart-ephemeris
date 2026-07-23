@@ -113,6 +113,42 @@ class TaiyinBindings {
   late final _taiyin_get_capabilities = _taiyin_get_capabilitiesPtr
       .asFunction<int Function()>();
 
+  int taiyin_format_ephemeris_diagnostic(
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+    ffi.Pointer<ffi.Char> buffer,
+    int capacity,
+    ffi.Pointer<ffi.Size> out_required_size,
+  ) {
+    return _taiyin_format_ephemeris_diagnostic(
+      diagnostic,
+      buffer,
+      capacity,
+      out_required_size,
+    );
+  }
+
+  late final _taiyin_format_ephemeris_diagnosticPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Size,
+            ffi.Pointer<ffi.Size>,
+          )
+        >
+      >('taiyin_format_ephemeris_diagnostic');
+  late final _taiyin_format_ephemeris_diagnostic =
+      _taiyin_format_ephemeris_diagnosticPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+              ffi.Pointer<ffi.Char>,
+              int,
+              ffi.Pointer<ffi.Size>,
+            )
+          >();
+
   ffi.Pointer<ffi.Char> taiyin_status_name(int status) {
     return _taiyin_status_name(status);
   }
@@ -1746,6 +1782,18 @@ class TaiyinBindings {
               ffi.Pointer<taiyin_ephemeris_diagnostic>,
             )
           >();
+
+  int taiyin_register_builtin_astrology_targets() {
+    return _taiyin_register_builtin_astrology_targets();
+  }
+
+  late final _taiyin_register_builtin_astrology_targetsPtr =
+      _lookup<ffi.NativeFunction<taiyin_status Function()>>(
+        'taiyin_register_builtin_astrology_targets',
+      );
+  late final _taiyin_register_builtin_astrology_targets =
+      _taiyin_register_builtin_astrology_targetsPtr
+          .asFunction<int Function()>();
 
   void taiyin_observed_position_init(
     ffi.Pointer<taiyin_observed_position> value,

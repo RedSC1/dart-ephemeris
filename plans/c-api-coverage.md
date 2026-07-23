@@ -3,8 +3,8 @@
 Baseline: `taiyin-ephemeris/include/taiyin/c/*.h` on 2026-07-20.
 
 - Total callable C symbols: **317**
-- Included by the current Dart binding configuration: **313**
-- Remaining: **4**
+- Included by the current Dart binding configuration: **315**
+- Remaining: **2**
 
 `[x]` means the symbol is included in `ffigen.yaml` and its current Dart API
 block has landed. `[ ]` means it still needs a Dart binding/API decision. The
@@ -24,8 +24,10 @@ functions so ABI completeness can be tracked exactly.
 - [x] Lunar eclipses
 - [x] Solar eclipse search and local circumstances
 - [x] Solar Besselian elements, routes, curves, and map products
-- [ ] Remaining process-lifetime ayanamsha and house-system callbacks
-- [ ] Diagnostic formatting helper
+- [x] Diagnostic formatting helper
+- [x] Built-in astrology-target registration
+- [ ] Process-lifetime ayanamsha and house-system callbacks (requires native
+  lifecycle APIs before Dart callbacks can be safe)
 
 ## Cross-cutting technical debt: split-JD calculation ABI
 
@@ -57,7 +59,7 @@ must remain available during that transition.
 - [ ] Add C ABI and Dart APIs only for end-to-end-migrated families.
 - [ ] Apply the same policy to newly wrapped calculation families.
 
-## `astrology.h` — 27/30
+## `astrology.h` — 28/30
 
 - [x] `taiyin_sidereal_position_init`
 - [x] `taiyin_sidereal_coordinates_init`
@@ -88,9 +90,9 @@ must remain available during that transition.
 - [x] `taiyin_calc_lunar_osculating_apogee_ut`
 - [x] `taiyin_calc_lunar_fitted_apogee_tt`
 - [x] `taiyin_calc_lunar_fitted_apogee_ut`
-- [ ] `taiyin_register_builtin_astrology_targets`
+- [x] `taiyin_register_builtin_astrology_targets`
 
-## `base.h` — 10/11
+## `base.h` — 11/11
 
 - [x] `taiyin_cartesian_state_init`
 - [x] `taiyin_calendar_datetime_init`
@@ -99,7 +101,7 @@ must remain available during that transition.
 - [x] `taiyin_get_library_version`
 - [x] `taiyin_get_library_codename`
 - [x] `taiyin_get_capabilities`
-- [ ] `taiyin_format_ephemeris_diagnostic`
+- [x] `taiyin_format_ephemeris_diagnostic`
 - [x] `taiyin_status_name`
 - [x] `taiyin_status_message`
 - [x] `taiyin_status_category`

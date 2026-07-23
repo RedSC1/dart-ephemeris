@@ -42,8 +42,10 @@ Dart equivalent.
   event oracles.
   `astrology_api_test.dart` covers the direct lunar-node and lunar-apogee C ABI
   routes, their frame/definition semantics, nullable mean-apogee distance,
-  fitted-model extrapolation, and Dart-side flag contracts. Process-lifetime
-  astrology-target registration remains a separate unwrapped API.
+  fitted-model extrapolation, and Dart-side flag contracts. `runtime_api_test.dart`
+  covers registration of built-in astrology targets for ordinary position
+  routes; process-lifetime custom model callbacks remain intentionally
+  unwrapped until their native lifecycle API exists.
   The remaining public modules move over as their wrappers are added.
   Static-vs-shared linkage is a native build concern and shares the same Dart
   behavior tests.

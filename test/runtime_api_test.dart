@@ -38,6 +38,46 @@ void main() {
         expect(runtime.libraryCodename, 'Singularity');
       });
 
+      test('formats structured native diagnostics for logs', () {
+        final diagnostic = context.position
+            .atTt(
+              TaiyinBody.moon,
+              JulianDate<TtScale>.fromDouble(2460409.0),
+              flags: {TaiyinPositionFlag.xyz},
+            )
+            .diagnostic;
+
+        final formatted = runtime.formatEphemerisDiagnostic(diagnostic);
+
+        expect(formatted, contains('status=TAIYIN_STATUS_OK(0)'));
+        expect(formatted, contains('target=${TaiyinBody.moon.id}'));
+        expect(formatted, contains('jd_tdb='));
+      });
+
+      test(
+        'registers built-in astrology targets for position calculations',
+        () {
+          runtime
+            ..registerBuiltinAstrologyTargets()
+            ..registerBuiltinAstrologyTargets();
+
+          final position = context.position
+              .atTt(
+                TaiyinAstrologyTarget.trueNode,
+                JulianDate<TtScale>.fromDouble(2460409.0),
+                flags: {TaiyinPositionFlag.radians, TaiyinPositionFlag.speed},
+              )
+              .value;
+
+          expect(position.values[0].isFinite, isTrue);
+          expect(position.values[1], 0.0);
+          expect(position.values[2].isNaN, isTrue);
+          expect(position.values[3].isFinite, isTrue);
+          expect(position.values[4], 0.0);
+          expect(position.values[5].isNaN, isTrue);
+        },
+      );
+
       test('exposes catalog size and discovers a source path', () {
         final initialSize = runtime.catalogSize;
 
