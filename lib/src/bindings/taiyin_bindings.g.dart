@@ -8314,6 +8314,60 @@ class TaiyinBindings {
             )
           >();
 
+  void taiyin_solar_eclipse_route_row_init(
+    ffi.Pointer<taiyin_solar_eclipse_route_row> arg0,
+  ) {
+    return _taiyin_solar_eclipse_route_row_init(arg0);
+  }
+
+  late final _taiyin_solar_eclipse_route_row_initPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<taiyin_solar_eclipse_route_row>)
+        >
+      >('taiyin_solar_eclipse_route_row_init');
+  late final _taiyin_solar_eclipse_route_row_init =
+      _taiyin_solar_eclipse_route_row_initPtr
+          .asFunction<
+            void Function(ffi.Pointer<taiyin_solar_eclipse_route_row>)
+          >();
+
+  void taiyin_solar_besselian_elements_init(
+    ffi.Pointer<taiyin_solar_besselian_elements> arg0,
+  ) {
+    return _taiyin_solar_besselian_elements_init(arg0);
+  }
+
+  late final _taiyin_solar_besselian_elements_initPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<taiyin_solar_besselian_elements>)
+        >
+      >('taiyin_solar_besselian_elements_init');
+  late final _taiyin_solar_besselian_elements_init =
+      _taiyin_solar_besselian_elements_initPtr
+          .asFunction<
+            void Function(ffi.Pointer<taiyin_solar_besselian_elements>)
+          >();
+
+  void taiyin_solar_besselian_polynomial_init(
+    ffi.Pointer<taiyin_solar_besselian_polynomial> arg0,
+  ) {
+    return _taiyin_solar_besselian_polynomial_init(arg0);
+  }
+
+  late final _taiyin_solar_besselian_polynomial_initPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<taiyin_solar_besselian_polynomial>)
+        >
+      >('taiyin_solar_besselian_polynomial_init');
+  late final _taiyin_solar_besselian_polynomial_init =
+      _taiyin_solar_besselian_polynomial_initPtr
+          .asFunction<
+            void Function(ffi.Pointer<taiyin_solar_besselian_polynomial>)
+          >();
+
   int taiyin_solve_lunar_eclipse_at_tt(
     ffi.Pointer<taiyin_context> arg0,
     double arg1,
@@ -9244,6 +9298,314 @@ class TaiyinBindings {
               ffi.Pointer<taiyin_context>,
               double,
               ffi.Pointer<taiyin_local_solar_eclipse_circumstances_ut>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_compute_solar_besselian_elements_tt(
+    ffi.Pointer<taiyin_context> arg0,
+    double arg1,
+    double arg2,
+    ffi.Pointer<taiyin_solar_besselian_elements> arg3,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> arg4,
+  ) {
+    return _taiyin_compute_solar_besselian_elements_tt(
+      arg0,
+      arg1,
+      arg2,
+      arg3,
+      arg4,
+    );
+  }
+
+  late final _taiyin_compute_solar_besselian_elements_ttPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Double,
+            ffi.Double,
+            ffi.Pointer<taiyin_solar_besselian_elements>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_compute_solar_besselian_elements_tt');
+  late final _taiyin_compute_solar_besselian_elements_tt =
+      _taiyin_compute_solar_besselian_elements_ttPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              double,
+              double,
+              ffi.Pointer<taiyin_solar_besselian_elements>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_compute_solar_besselian_polynomial_tt(
+    ffi.Pointer<taiyin_context> arg0,
+    double arg1,
+    double arg2,
+    double arg3,
+    int arg4,
+    ffi.Pointer<taiyin_solar_besselian_polynomial> arg5,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> arg6,
+  ) {
+    return _taiyin_compute_solar_besselian_polynomial_tt(
+      arg0,
+      arg1,
+      arg2,
+      arg3,
+      arg4,
+      arg5,
+      arg6,
+    );
+  }
+
+  late final _taiyin_compute_solar_besselian_polynomial_ttPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Double,
+            ffi.Double,
+            ffi.Double,
+            ffi.Int32,
+            ffi.Pointer<taiyin_solar_besselian_polynomial>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_compute_solar_besselian_polynomial_tt');
+  late final _taiyin_compute_solar_besselian_polynomial_tt =
+      _taiyin_compute_solar_besselian_polynomial_ttPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              double,
+              double,
+              double,
+              int,
+              ffi.Pointer<taiyin_solar_besselian_polynomial>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_evaluate_solar_besselian_polynomial(
+    ffi.Pointer<taiyin_solar_besselian_polynomial> arg0,
+    double arg1,
+    ffi.Pointer<taiyin_solar_besselian_elements> arg2,
+  ) {
+    return _taiyin_evaluate_solar_besselian_polynomial(arg0, arg1, arg2);
+  }
+
+  late final _taiyin_evaluate_solar_besselian_polynomialPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_solar_besselian_polynomial>,
+            ffi.Double,
+            ffi.Pointer<taiyin_solar_besselian_elements>,
+          )
+        >
+      >('taiyin_evaluate_solar_besselian_polynomial');
+  late final _taiyin_evaluate_solar_besselian_polynomial =
+      _taiyin_evaluate_solar_besselian_polynomialPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_solar_besselian_polynomial>,
+              double,
+              ffi.Pointer<taiyin_solar_besselian_elements>,
+            )
+          >();
+
+  int taiyin_compute_solar_eclipse_route_row_tt(
+    ffi.Pointer<taiyin_context> arg0,
+    double arg1,
+    int arg2,
+    ffi.Pointer<taiyin_solar_eclipse_route_row> arg3,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> arg4,
+  ) {
+    return _taiyin_compute_solar_eclipse_route_row_tt(
+      arg0,
+      arg1,
+      arg2,
+      arg3,
+      arg4,
+    );
+  }
+
+  late final _taiyin_compute_solar_eclipse_route_row_ttPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Double,
+            ffi.Uint64,
+            ffi.Pointer<taiyin_solar_eclipse_route_row>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_compute_solar_eclipse_route_row_tt');
+  late final _taiyin_compute_solar_eclipse_route_row_tt =
+      _taiyin_compute_solar_eclipse_route_row_ttPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              double,
+              int,
+              ffi.Pointer<taiyin_solar_eclipse_route_row>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_compute_solar_eclipse_route_row_ut(
+    ffi.Pointer<taiyin_context> arg0,
+    double arg1,
+    int arg2,
+    ffi.Pointer<taiyin_solar_eclipse_route_row> arg3,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> arg4,
+  ) {
+    return _taiyin_compute_solar_eclipse_route_row_ut(
+      arg0,
+      arg1,
+      arg2,
+      arg3,
+      arg4,
+    );
+  }
+
+  late final _taiyin_compute_solar_eclipse_route_row_utPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Double,
+            ffi.Uint64,
+            ffi.Pointer<taiyin_solar_eclipse_route_row>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_compute_solar_eclipse_route_row_ut');
+  late final _taiyin_compute_solar_eclipse_route_row_ut =
+      _taiyin_compute_solar_eclipse_route_row_utPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              double,
+              int,
+              ffi.Pointer<taiyin_solar_eclipse_route_row>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_compute_solar_eclipse_route_tt(
+    ffi.Pointer<taiyin_context> arg0,
+    double arg1,
+    double arg2,
+    double arg3,
+    int arg4,
+    ffi.Pointer<taiyin_solar_eclipse_route_row> arg5,
+    int arg6,
+    ffi.Pointer<ffi.Size> arg7,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> arg8,
+  ) {
+    return _taiyin_compute_solar_eclipse_route_tt(
+      arg0,
+      arg1,
+      arg2,
+      arg3,
+      arg4,
+      arg5,
+      arg6,
+      arg7,
+      arg8,
+    );
+  }
+
+  late final _taiyin_compute_solar_eclipse_route_ttPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Double,
+            ffi.Double,
+            ffi.Double,
+            ffi.Uint64,
+            ffi.Pointer<taiyin_solar_eclipse_route_row>,
+            ffi.Size,
+            ffi.Pointer<ffi.Size>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_compute_solar_eclipse_route_tt');
+  late final _taiyin_compute_solar_eclipse_route_tt =
+      _taiyin_compute_solar_eclipse_route_ttPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              double,
+              double,
+              double,
+              int,
+              ffi.Pointer<taiyin_solar_eclipse_route_row>,
+              int,
+              ffi.Pointer<ffi.Size>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_compute_solar_eclipse_route_ut(
+    ffi.Pointer<taiyin_context> arg0,
+    double arg1,
+    double arg2,
+    double arg3,
+    int arg4,
+    ffi.Pointer<taiyin_solar_eclipse_route_row> arg5,
+    int arg6,
+    ffi.Pointer<ffi.Size> arg7,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> arg8,
+  ) {
+    return _taiyin_compute_solar_eclipse_route_ut(
+      arg0,
+      arg1,
+      arg2,
+      arg3,
+      arg4,
+      arg5,
+      arg6,
+      arg7,
+      arg8,
+    );
+  }
+
+  late final _taiyin_compute_solar_eclipse_route_utPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Double,
+            ffi.Double,
+            ffi.Double,
+            ffi.Uint64,
+            ffi.Pointer<taiyin_solar_eclipse_route_row>,
+            ffi.Size,
+            ffi.Pointer<ffi.Size>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_compute_solar_eclipse_route_ut');
+  late final _taiyin_compute_solar_eclipse_route_ut =
+      _taiyin_compute_solar_eclipse_route_utPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              double,
+              double,
+              double,
+              int,
+              ffi.Pointer<taiyin_solar_eclipse_route_row>,
+              int,
+              ffi.Pointer<ffi.Size>,
               ffi.Pointer<taiyin_ephemeris_diagnostic>,
             )
           >();
@@ -11754,6 +12116,167 @@ final class taiyin_local_solar_eclipse_result_ut extends ffi.Struct {
 
   @ffi.Double()
   external double moon_sun_radius_ratio;
+}
+
+final class taiyin_solar_eclipse_path_point extends ffi.Struct {
+  @ffi.Uint32()
+  external int struct_size;
+
+  @ffi.Double()
+  external double jd_tt;
+
+  @ffi.Double()
+  external double jd_ut;
+
+  @ffi.Double()
+  external double latitude_deg;
+
+  @ffi.Double()
+  external double longitude_deg;
+
+  @ffi.Double()
+  external double elevation_m;
+
+  @ffi.Double()
+  external double sun_altitude_deg;
+
+  @ffi.Double()
+  external double sun_azimuth_deg;
+}
+
+final class taiyin_solar_eclipse_route_row extends ffi.Struct {
+  @ffi.Uint32()
+  external int struct_size;
+
+  @ffi.Double()
+  external double jd_tt;
+
+  @ffi.Double()
+  external double jd_ut;
+
+  external taiyin_solar_eclipse_path_point center_line;
+
+  external taiyin_solar_eclipse_path_point penumbral_north_limit;
+
+  external taiyin_solar_eclipse_path_point penumbral_south_limit;
+
+  external taiyin_solar_eclipse_path_point north_limit;
+
+  external taiyin_solar_eclipse_path_point south_limit;
+
+  external taiyin_solar_eclipse_path_point half_magnitude_north_limit;
+
+  external taiyin_solar_eclipse_path_point half_magnitude_south_limit;
+
+  @ffi.Double()
+  external double path_width_km;
+
+  @ffi.Double()
+  external double duration_seconds;
+
+  @ffi.Double()
+  external double sun_altitude_deg;
+
+  @ffi.Double()
+  external double sun_azimuth_deg;
+}
+
+final class taiyin_solar_besselian_elements extends ffi.Struct {
+  @ffi.Uint32()
+  external int struct_size;
+
+  @ffi.Double()
+  external double t_hours;
+
+  @ffi.Double()
+  external double x;
+
+  @ffi.Double()
+  external double y;
+
+  @ffi.Double()
+  external double zeta;
+
+  @ffi.Double()
+  external double d_deg;
+
+  @ffi.Double()
+  external double mu_deg;
+
+  @ffi.Double()
+  external double l1;
+
+  @ffi.Double()
+  external double l2;
+
+  @ffi.Double()
+  external double f1_deg;
+
+  @ffi.Double()
+  external double f2_deg;
+
+  @ffi.Double()
+  external double tan_f1;
+
+  @ffi.Double()
+  external double tan_f2;
+
+  @ffi.Double()
+  external double gamma;
+}
+
+final class taiyin_solar_besselian_polynomial extends ffi.Struct {
+  @ffi.Uint32()
+  external int struct_size;
+
+  @ffi.Double()
+  external double t0_jd_tt;
+
+  @ffi.Double()
+  external double span_hours;
+
+  @ffi.Double()
+  external double sample_step_hours;
+
+  @ffi.Int32()
+  external int degree;
+
+  @ffi.Array.multi([8])
+  external ffi.Array<ffi.Double> x;
+
+  @ffi.Array.multi([8])
+  external ffi.Array<ffi.Double> y;
+
+  @ffi.Array.multi([8])
+  external ffi.Array<ffi.Double> zeta;
+
+  @ffi.Array.multi([8])
+  external ffi.Array<ffi.Double> d_deg;
+
+  @ffi.Array.multi([8])
+  external ffi.Array<ffi.Double> mu_deg;
+
+  @ffi.Array.multi([8])
+  external ffi.Array<ffi.Double> l1;
+
+  @ffi.Array.multi([8])
+  external ffi.Array<ffi.Double> l2;
+
+  @ffi.Double()
+  external double f1_deg;
+
+  @ffi.Double()
+  external double f2_deg;
+
+  @ffi.Double()
+  external double tan_f1;
+
+  @ffi.Double()
+  external double tan_f2;
+
+  external taiyin_solar_besselian_elements center;
+
+  external taiyin_solar_besselian_elements max_residual;
 }
 
 const int TAIYIN_C_OCCULTATION_WHERE_MAX_PATH_POINTS = 16;
