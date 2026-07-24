@@ -1022,15 +1022,15 @@ class TaiyinBindings {
   int taiyin_calc_ayanamsha_tt(
     ffi.Pointer<taiyin_context> context,
     int ayanamsha_id,
-    int precession_policy,
     double jd_tt,
+    int flags,
     ffi.Pointer<ffi.Double> out_ayanamsha_rad,
   ) {
     return _taiyin_calc_ayanamsha_tt(
       context,
       ayanamsha_id,
-      precession_policy,
       jd_tt,
+      flags,
       out_ayanamsha_rad,
     );
   }
@@ -1041,8 +1041,8 @@ class TaiyinBindings {
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
-            ffi.Int32,
             ffi.Double,
+            ffi.Uint64,
             ffi.Pointer<ffi.Double>,
           )
         >
@@ -1052,8 +1052,8 @@ class TaiyinBindings {
         int Function(
           ffi.Pointer<taiyin_context>,
           int,
-          int,
           double,
+          int,
           ffi.Pointer<ffi.Double>,
         )
       >();
@@ -1061,20 +1061,20 @@ class TaiyinBindings {
   int taiyin_calc_sidereal_position_tt(
     ffi.Pointer<taiyin_context> context,
     int ayanamsha_id,
-    int precession_policy,
     int body_id,
     double jd_tt,
-    int position_flags,
+    int flags,
+    double reference_epoch_jd,
     ffi.Pointer<taiyin_sidereal_position> out,
     ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
   ) {
     return _taiyin_calc_sidereal_position_tt(
       context,
       ayanamsha_id,
-      precession_policy,
       body_id,
       jd_tt,
-      position_flags,
+      flags,
+      reference_epoch_jd,
       out,
       diagnostic,
     );
@@ -1087,9 +1087,9 @@ class TaiyinBindings {
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
             ffi.Int32,
-            ffi.Int32,
             ffi.Double,
-            ffi.Uint32,
+            ffi.Uint64,
+            ffi.Double,
             ffi.Pointer<taiyin_sidereal_position>,
             ffi.Pointer<taiyin_ephemeris_diagnostic>,
           )
@@ -1102,9 +1102,9 @@ class TaiyinBindings {
               ffi.Pointer<taiyin_context>,
               int,
               int,
-              int,
               double,
               int,
+              double,
               ffi.Pointer<taiyin_sidereal_position>,
               ffi.Pointer<taiyin_ephemeris_diagnostic>,
             )
@@ -1113,20 +1113,20 @@ class TaiyinBindings {
   int taiyin_calc_sidereal_position_ut(
     ffi.Pointer<taiyin_context> context,
     int ayanamsha_id,
-    int precession_policy,
     int body_id,
     double jd_ut,
-    int position_flags,
+    int flags,
+    double reference_epoch_jd,
     ffi.Pointer<taiyin_sidereal_position> out,
     ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
   ) {
     return _taiyin_calc_sidereal_position_ut(
       context,
       ayanamsha_id,
-      precession_policy,
       body_id,
       jd_ut,
-      position_flags,
+      flags,
+      reference_epoch_jd,
       out,
       diagnostic,
     );
@@ -1139,9 +1139,9 @@ class TaiyinBindings {
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
             ffi.Int32,
-            ffi.Int32,
             ffi.Double,
-            ffi.Uint32,
+            ffi.Uint64,
+            ffi.Double,
             ffi.Pointer<taiyin_sidereal_position>,
             ffi.Pointer<taiyin_ephemeris_diagnostic>,
           )
@@ -1154,9 +1154,9 @@ class TaiyinBindings {
               ffi.Pointer<taiyin_context>,
               int,
               int,
-              int,
               double,
               int,
+              double,
               ffi.Pointer<taiyin_sidereal_position>,
               ffi.Pointer<taiyin_ephemeris_diagnostic>,
             )
@@ -1165,20 +1165,20 @@ class TaiyinBindings {
   int taiyin_calc_sidereal_coordinates_tt(
     ffi.Pointer<taiyin_context> context,
     int ayanamsha_id,
-    int precession_policy,
     int body_id,
     double jd_tt,
-    int position_flags,
+    int flags,
+    double reference_epoch_jd,
     ffi.Pointer<taiyin_sidereal_coordinates> out,
     ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
   ) {
     return _taiyin_calc_sidereal_coordinates_tt(
       context,
       ayanamsha_id,
-      precession_policy,
       body_id,
       jd_tt,
-      position_flags,
+      flags,
+      reference_epoch_jd,
       out,
       diagnostic,
     );
@@ -1191,9 +1191,9 @@ class TaiyinBindings {
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
             ffi.Int32,
-            ffi.Int32,
             ffi.Double,
-            ffi.Uint32,
+            ffi.Uint64,
+            ffi.Double,
             ffi.Pointer<taiyin_sidereal_coordinates>,
             ffi.Pointer<taiyin_ephemeris_diagnostic>,
           )
@@ -1206,9 +1206,9 @@ class TaiyinBindings {
               ffi.Pointer<taiyin_context>,
               int,
               int,
-              int,
               double,
               int,
+              double,
               ffi.Pointer<taiyin_sidereal_coordinates>,
               ffi.Pointer<taiyin_ephemeris_diagnostic>,
             )
@@ -1217,20 +1217,20 @@ class TaiyinBindings {
   int taiyin_calc_sidereal_coordinates_ut(
     ffi.Pointer<taiyin_context> context,
     int ayanamsha_id,
-    int precession_policy,
     int body_id,
     double jd_ut,
-    int position_flags,
+    int flags,
+    double reference_epoch_jd,
     ffi.Pointer<taiyin_sidereal_coordinates> out,
     ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
   ) {
     return _taiyin_calc_sidereal_coordinates_ut(
       context,
       ayanamsha_id,
-      precession_policy,
       body_id,
       jd_ut,
-      position_flags,
+      flags,
+      reference_epoch_jd,
       out,
       diagnostic,
     );
@@ -1243,9 +1243,9 @@ class TaiyinBindings {
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
             ffi.Int32,
-            ffi.Int32,
             ffi.Double,
-            ffi.Uint32,
+            ffi.Uint64,
+            ffi.Double,
             ffi.Pointer<taiyin_sidereal_coordinates>,
             ffi.Pointer<taiyin_ephemeris_diagnostic>,
           )
@@ -1258,9 +1258,9 @@ class TaiyinBindings {
               ffi.Pointer<taiyin_context>,
               int,
               int,
-              int,
               double,
               int,
+              double,
               ffi.Pointer<taiyin_sidereal_coordinates>,
               ffi.Pointer<taiyin_ephemeris_diagnostic>,
             )
@@ -10667,16 +10667,13 @@ sealed class taiyin_ayanamsha_id {
   static const TAIYIN_C_AYANAMSHA_TRUE_CHITRA = 27;
 }
 
-sealed class taiyin_sidereal_precession_policy {
-  static const TAIYIN_C_SIDEREAL_COMPENSATE_TO_REFERENCE = 0;
-  static const TAIYIN_C_SIDEREAL_RAW_REFERENCE_OFFSET = 1;
-  static const TAIYIN_C_SIDEREAL_USE_REFERENCE_PRECESSION = 2;
-}
-
 sealed class taiyin_sidereal_coordinate_frame {
   static const TAIYIN_C_SIDEREAL_FRAME_MEAN_ECLIPTIC_OF_DATE = 0;
   static const TAIYIN_C_SIDEREAL_FRAME_MEAN_EQUATOR_OF_DATE = 1;
   static const TAIYIN_C_SIDEREAL_FRAME_TRUE_EQUATOR_OF_DATE = 2;
+  static const TAIYIN_C_SIDEREAL_FRAME_FIXED_MEAN_ECLIPTIC_AT_EPOCH = 3;
+  static const TAIYIN_C_SIDEREAL_FRAME_SOLAR_SYSTEM_INVARIABLE = 4;
+  static const TAIYIN_C_SIDEREAL_FRAME_J2000_ECLIPTIC = 5;
 }
 
 sealed class taiyin_house_system_id {
@@ -10722,6 +10719,9 @@ sealed class taiyin_astrology_target_id {
 final class taiyin_sidereal_position extends ffi.Struct {
   @ffi.Uint32()
   external int struct_size;
+
+  @ffi.Int32()
+  external int coordinate_frame_id;
 
   @ffi.Double()
   external double tropical_longitude_rad;
