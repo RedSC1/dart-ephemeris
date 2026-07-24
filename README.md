@@ -168,9 +168,11 @@ frame. `noNutation` has no effect on the sidereal ecliptic path; on the
 equatorial path it selects the mean rather than true equator; ayanamsha and
 sidereal precession policy do not affect that path. `referencePlane` selects
 the ordinary ecliptic of date, fixed J2000 ecliptic, a fixed ecliptic at a
-typed TT/UT1 epoch, or the solar-system invariable plane. The latter two
-require `TaiyinSiderealReferenceEpoch.tt(...)` or `.ut1(...)`; fixed and
-invariable planes are full 3-D rotations, not longitude offsets. Request
+typed TT/UT1 epoch, or the solar-system invariable plane.
+`meanEclipticAtEpoch` and `solarSystemInvariable` require
+`TaiyinSiderealReferenceEpoch.tt(...)` or `.ut1(...)`; `meanEclipticJ2000`
+is fixed at J2000.0 and does not accept an epoch. Fixed and invariable planes
+are full 3-D rotations, not longitude offsets. Request
 `TaiyinPositionFlag.speed` to include rates. Time-based houses need an observer
 configured on the context, while `housesFromArmc` accepts
 explicit ARMC, latitude, and true obliquity. Returned house numbers are

@@ -28,6 +28,8 @@ typedef _LunarApsisCalculation =
     );
 typedef _HouseCalculation = int Function(Pointer<taiyin_house_result> output);
 
+const int _siderealReferenceEpochUt1Flag = 1 << 35;
+
 /// Sidereal coordinates and astrological house calculations.
 ///
 /// These physical calculations use the native scalar-JD epoch route. A split
@@ -821,15 +823,15 @@ final class TaiyinAstrologyApi {
   ) {
     if (referencePlane.requiresReferenceEpoch != (referenceEpoch != null)) {
       final requirement = referencePlane.requiresReferenceEpoch
-          ? 'requires a referenceEpoch'
-          : 'does not accept a referenceEpoch';
+          ? '${referencePlane.name} requires a referenceEpoch'
+          : '${referencePlane.name} does not accept a referenceEpoch';
       throw ArgumentError.value(referenceEpoch, 'referenceEpoch', requirement);
     }
     final nativeFlags =
         _flagMask(positionFlags) |
         precessionPolicy.nativeFlagMask |
         referencePlane.nativeFlagMask |
-        (referenceEpoch?.isUt1 == true ? 1 << 35 : 0);
+        (referenceEpoch?.isUt1 == true ? _siderealReferenceEpochUt1Flag : 0);
     return (
       flags: nativeFlags,
       referenceEpochJulianDate: referenceEpoch?.nativeJulianDate ?? double.nan,

@@ -578,6 +578,20 @@ void main() {
           referencePlane: TaiyinSiderealReferencePlane.meanEclipticJ2000,
           flags: {TaiyinPositionFlag.speed},
         );
+        final fixedPosition = context.astrology.siderealPositionAtTt(
+          TaiyinBody.sun,
+          tt,
+          referencePlane: TaiyinSiderealReferencePlane.meanEclipticAtEpoch,
+          referenceEpoch: j2000Epoch,
+          flags: {TaiyinPositionFlag.speed},
+        );
+        final invariablePosition = context.astrology.siderealPositionAtTt(
+          TaiyinBody.sun,
+          tt,
+          referencePlane: TaiyinSiderealReferencePlane.solarSystemInvariable,
+          referenceEpoch: j2000Epoch,
+          flags: {TaiyinPositionFlag.speed},
+        );
         final j2000Coordinates = context.astrology.siderealCoordinatesAtTt(
           TaiyinBody.sun,
           tt,
@@ -603,12 +617,45 @@ void main() {
           referencePlane: TaiyinSiderealReferencePlane.meanEclipticAtEpoch,
           referenceEpoch: ut1Epoch,
         );
+        final ut1FixedPosition = context.astrology.siderealPositionAtUt1(
+          TaiyinBody.sun,
+          ut1,
+          referencePlane: TaiyinSiderealReferencePlane.meanEclipticAtEpoch,
+          referenceEpoch: j2000Epoch,
+          flags: {TaiyinPositionFlag.speed},
+        );
+        final ut1FixedCoordinates = context.astrology.siderealCoordinatesAtUt1(
+          TaiyinBody.sun,
+          ut1,
+          referencePlane: TaiyinSiderealReferencePlane.meanEclipticAtEpoch,
+          referenceEpoch: ut1Epoch,
+          flags: {TaiyinPositionFlag.speed},
+        );
+        final rawFixed = context.astrology.siderealCoordinatesAtTt(
+          TaiyinBody.sun,
+          tt,
+          precessionPolicy: TaiyinSiderealPrecessionPolicy.rawReferenceOffset,
+          referencePlane: TaiyinSiderealReferencePlane.meanEclipticAtEpoch,
+          referenceEpoch: j2000Epoch,
+        );
         final equatorial = context.astrology.siderealCoordinatesAtTt(
           TaiyinBody.sun,
           tt,
           referencePlane: TaiyinSiderealReferencePlane.meanEclipticJ2000,
-          flags: {TaiyinPositionFlag.equatorial},
+          flags: {TaiyinPositionFlag.equatorial, TaiyinPositionFlag.speed},
         );
+        final equatorialWithIgnoredSiderealOptions = context.astrology
+            .siderealCoordinatesAtTt(
+              TaiyinBody.sun,
+              tt,
+              ayanamsha: TaiyinAyanamsha.lahiri,
+              precessionPolicy:
+                  TaiyinSiderealPrecessionPolicy.useReferencePrecession,
+              referencePlane:
+                  TaiyinSiderealReferencePlane.solarSystemInvariable,
+              referenceEpoch: j2000Epoch,
+              flags: {TaiyinPositionFlag.equatorial, TaiyinPositionFlag.speed},
+            );
 
         expect(
           j2000Position.value.coordinateFrame,
@@ -617,6 +664,14 @@ void main() {
         expect(
           j2000Coordinates.value.coordinateFrame,
           TaiyinSiderealCoordinateFrame.j2000Ecliptic,
+        );
+        expect(
+          fixedPosition.value.coordinateFrame,
+          TaiyinSiderealCoordinateFrame.fixedMeanEclipticAtEpoch,
+        );
+        expect(
+          invariablePosition.value.coordinateFrame,
+          TaiyinSiderealCoordinateFrame.solarSystemInvariable,
         );
         expect(
           fixedJ2000.value.coordinateFrame,
@@ -628,6 +683,14 @@ void main() {
         );
         expect(
           ut1Fixed.value.coordinateFrame,
+          TaiyinSiderealCoordinateFrame.fixedMeanEclipticAtEpoch,
+        );
+        expect(
+          ut1FixedPosition.value.coordinateFrame,
+          TaiyinSiderealCoordinateFrame.fixedMeanEclipticAtEpoch,
+        );
+        expect(
+          ut1FixedCoordinates.value.coordinateFrame,
           TaiyinSiderealCoordinateFrame.fixedMeanEclipticAtEpoch,
         );
         expect(
@@ -648,9 +711,44 @@ void main() {
           invariable.value.values.every((value) => value.isFinite),
           isTrue,
         );
+        expect(
+          fixedPosition.value.tropicalLongitudeRateRadiansPerDay.isFinite,
+          isTrue,
+        );
+        expect(
+          invariablePosition.value.unshiftedLongitudeRateRadiansPerDay.isFinite,
+          isTrue,
+        );
+        expect(
+          rawFixed.value.precessionPolicy,
+          TaiyinSiderealPrecessionPolicy.rawReferenceOffset,
+        );
+        expect(
+          rawFixed.value.coordinateFrame,
+          TaiyinSiderealCoordinateFrame.fixedMeanEclipticAtEpoch,
+        );
         expect(j2000Position.value.referenceEpoch, isNull);
-        expect(fixedJ2000.value.referenceEpoch, same(j2000Epoch));
-        expect(ut1Fixed.value.referenceEpoch, same(ut1Epoch));
+        expect(fixedPosition.value.referenceEpoch, equals(j2000Epoch));
+        expect(invariablePosition.value.referenceEpoch, equals(j2000Epoch));
+        expect(fixedJ2000.value.referenceEpoch, equals(j2000Epoch));
+        expect(ut1Fixed.value.referenceEpoch, equals(ut1Epoch));
+        expect(ut1FixedPosition.value.referenceEpoch, equals(j2000Epoch));
+        expect(ut1FixedCoordinates.value.referenceEpoch, equals(ut1Epoch));
+        expect(
+          j2000Epoch,
+          equals(
+            TaiyinSiderealReferenceEpoch.tt(
+              JulianDate<TtScale>.fromDouble(2451545.0),
+            ),
+          ),
+        );
+        expect(j2000Epoch.toString(), contains('JulianDate'));
+        expect(
+          equatorialWithIgnoredSiderealOptions.value.values,
+          orderedEquals(
+            equatorial.value.values.map((value) => closeTo(value, 1e-12)),
+          ),
+        );
 
         expect(
           () => context.astrology.siderealCoordinatesAtTt(

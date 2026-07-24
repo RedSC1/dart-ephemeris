@@ -161,6 +161,16 @@ final class TaiyinSiderealReferenceEpochTt
 
   @override
   bool get isUt1 => false;
+
+  @override
+  bool operator ==(Object other) =>
+      other is TaiyinSiderealReferenceEpochTt && other.coordinate == coordinate;
+
+  @override
+  int get hashCode => Object.hash(TaiyinSiderealReferenceEpochTt, coordinate);
+
+  @override
+  String toString() => 'TaiyinSiderealReferenceEpoch.tt($coordinate)';
 }
 
 /// A UT1 reference epoch for
@@ -177,6 +187,17 @@ final class TaiyinSiderealReferenceEpochUt1
 
   @override
   bool get isUt1 => true;
+
+  @override
+  bool operator ==(Object other) =>
+      other is TaiyinSiderealReferenceEpochUt1 &&
+      other.coordinate == coordinate;
+
+  @override
+  int get hashCode => Object.hash(TaiyinSiderealReferenceEpochUt1, coordinate);
+
+  @override
+  String toString() => 'TaiyinSiderealReferenceEpoch.ut1($coordinate)';
 }
 
 /// The output reference frame used by a generic sidereal-coordinate result.
@@ -361,6 +382,11 @@ final class TaiyinSiderealPosition {
   /// longitude.
   final double tropicalLongitudeRadians;
 
+  /// [tropicalLongitudeRadians] named by its frame-neutral meaning.
+  ///
+  /// Prefer this name when [coordinateFrame] is a fixed or invariable plane.
+  double get unshiftedLongitudeRadians => tropicalLongitudeRadians;
+
   /// Sidereal ecliptic longitude in radians.
   final double siderealLongitudeRadians;
 
@@ -370,12 +396,19 @@ final class TaiyinSiderealPosition {
   /// Distance in astronomical units.
   final double distanceAu;
 
-  /// Tropical ecliptic-longitude rate in radians per day.
+  /// Rate of [tropicalLongitudeRadians] in radians per day.
+  ///
+  /// On a fixed or invariable plane this is the rate of the unshifted
+  /// longitude on that plane, not a tropical ecliptic-of-date rate.
   ///
   /// This is `double.nan` unless [flags] contains
   /// [TaiyinPositionFlag.speed]. This result intentionally contains longitude
   /// rates only, not latitude or distance rates.
   final double tropicalLongitudeRateRadiansPerDay;
+
+  /// [tropicalLongitudeRateRadiansPerDay] named by its frame-neutral meaning.
+  double get unshiftedLongitudeRateRadiansPerDay =>
+      tropicalLongitudeRateRadiansPerDay;
 
   /// Sidereal ecliptic-longitude rate in radians per day.
   ///
