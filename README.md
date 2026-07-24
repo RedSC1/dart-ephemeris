@@ -162,11 +162,17 @@ houses. `siderealPositionAtTt`/`siderealPositionAtUt1` are the compact,
 ecliptic-spherical APIs: they always use radians and intentionally reject
 equatorial and Cartesian flags. Use `siderealCoordinatesAtTt` or
 `siderealCoordinatesAtUt1` when you need `equatorial`, `xyz`, or both. Their
-result explicitly reports a sidereal mean ecliptic-of-date frame, or—with
+result explicitly reports the selected sidereal ecliptic frame, or—with
 `equatorial`—a Swiss Ephemeris-compatible tropical mean/true equator-of-date
 frame. `noNutation` has no effect on the sidereal ecliptic path; on the
 equatorial path it selects the mean rather than true equator; ayanamsha and
-sidereal precession policy do not affect that path. Request
+sidereal precession policy do not affect that path. `referencePlane` selects
+the ordinary ecliptic of date, fixed J2000 ecliptic, a fixed ecliptic at a
+typed TT/UT1 epoch, or the solar-system invariable plane.
+`meanEclipticAtEpoch` and `solarSystemInvariable` require
+`TaiyinSiderealReferenceEpoch.tt(...)` or `.ut1(...)`; `meanEclipticJ2000`
+is fixed at J2000.0 and does not accept an epoch. Fixed and invariable planes
+are full 3-D rotations, not longitude offsets. Request
 `TaiyinPositionFlag.speed` to include rates. Time-based houses need an observer
 configured on the context, while `housesFromArmc` accepts
 explicit ARMC, latitude, and true obliquity. Returned house numbers are
@@ -193,6 +199,14 @@ final siderealMoon = context.astrology.siderealPositionAtTt(
   TaiyinBody.moon,
   JulianDate<TtScale>.fromDouble(2460409.0),
   ayanamsha: TaiyinAyanamsha.lahiri,
+);
+final fixedJ2000SiderealMoon = context.astrology.siderealCoordinatesAtTt(
+  TaiyinBody.moon,
+  JulianDate<TtScale>.fromDouble(2460409.0),
+  referencePlane: TaiyinSiderealReferencePlane.meanEclipticAtEpoch,
+  referenceEpoch: TaiyinSiderealReferenceEpoch.tt(
+    JulianDate<TtScale>.fromDouble(2451545.0),
+  ),
 );
 final siderealMoonRa = context.astrology.siderealCoordinatesAtTt(
   TaiyinBody.moon,

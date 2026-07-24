@@ -1,4 +1,6 @@
 import '../position/position_api.dart';
+import '../time/julian_date.dart';
+import '../time/time_scale.dart';
 
 /// An ayanamsha definition recognized by the process-wide native registry.
 abstract interface class TaiyinAyanamshaModel {
@@ -83,15 +85,119 @@ enum TaiyinAstrologyTarget implements TaiyinTarget {
 }
 
 /// Relates a historical ayanamsha definition to the selected precession model.
+///
+/// The native ABI encodes non-default policies as high-word sidereal flags.
 enum TaiyinSiderealPrecessionPolicy {
   compensateToReference(0),
-  rawReferenceOffset(1),
-  useReferencePrecession(2);
+  rawReferenceOffset(1 << 36),
+  useReferencePrecession(1 << 37);
 
-  const TaiyinSiderealPrecessionPolicy(this.id);
+  const TaiyinSiderealPrecessionPolicy(this.nativeFlagMask);
 
-  /// Stable identifier used by Taiyin's C ABI.
-  final int id;
+  /// High-word flag passed to Taiyin's C ABI.
+  final int nativeFlagMask;
+}
+
+/// The ecliptic reference plane requested for a sidereal calculation.
+///
+/// Equatorial sidereal-coordinate calls deliberately override this selection
+/// and return the tropical mean or true equator of date instead.
+enum TaiyinSiderealReferencePlane {
+  /// The ordinary sidereal zodiac on the mean ecliptic of the calculation date.
+  meanEclipticOfDate(0, false),
+
+  /// A mean ecliptic fixed at [TaiyinSiderealReferenceEpoch].
+  meanEclipticAtEpoch(1 << 32, true),
+
+  /// The solar-system invariable plane, oriented at a reference epoch.
+  solarSystemInvariable(1 << 33, true),
+
+  /// The fixed, non-nutated mean ecliptic of J2000.0.
+  meanEclipticJ2000(1 << 34, false);
+
+  const TaiyinSiderealReferencePlane(
+    this.nativeFlagMask,
+    this.requiresReferenceEpoch,
+  );
+
+  /// High-word flag passed to Taiyin's C ABI.
+  final int nativeFlagMask;
+
+  /// Whether this plane requires a finite [TaiyinSiderealReferenceEpoch].
+  final bool requiresReferenceEpoch;
+}
+
+/// A typed epoch that orients a fixed sidereal reference plane.
+///
+/// Use [TaiyinSiderealReferenceEpoch.tt] for a TT epoch or
+/// [TaiyinSiderealReferenceEpoch.ut1] for a UT1 epoch. The native ABI accepts
+/// a scalar JD, so the coordinate is quantized only at that call boundary.
+sealed class TaiyinSiderealReferenceEpoch {
+  const TaiyinSiderealReferenceEpoch._();
+
+  factory TaiyinSiderealReferenceEpoch.tt(JulianDate<TtScale> coordinate) =
+      TaiyinSiderealReferenceEpochTt;
+
+  factory TaiyinSiderealReferenceEpoch.ut1(JulianDate<Ut1Scale> coordinate) =
+      TaiyinSiderealReferenceEpochUt1;
+
+  /// Scalar Julian date passed to the native ABI.
+  double get nativeJulianDate;
+
+  /// Whether [nativeJulianDate] is expressed in UT1 rather than TT.
+  bool get isUt1;
+}
+
+/// A TT reference epoch for [TaiyinSiderealReferencePlane.meanEclipticAtEpoch]
+/// or [TaiyinSiderealReferencePlane.solarSystemInvariable].
+final class TaiyinSiderealReferenceEpochTt
+    extends TaiyinSiderealReferenceEpoch {
+  const TaiyinSiderealReferenceEpochTt(this.coordinate) : super._();
+
+  final JulianDate<TtScale> coordinate;
+
+  @override
+  double get nativeJulianDate => coordinate.toDouble();
+
+  @override
+  bool get isUt1 => false;
+
+  @override
+  bool operator ==(Object other) =>
+      other is TaiyinSiderealReferenceEpochTt && other.coordinate == coordinate;
+
+  @override
+  int get hashCode => Object.hash(TaiyinSiderealReferenceEpochTt, coordinate);
+
+  @override
+  String toString() => 'TaiyinSiderealReferenceEpoch.tt($coordinate)';
+}
+
+/// A UT1 reference epoch for
+/// [TaiyinSiderealReferencePlane.meanEclipticAtEpoch] or
+/// [TaiyinSiderealReferencePlane.solarSystemInvariable].
+final class TaiyinSiderealReferenceEpochUt1
+    extends TaiyinSiderealReferenceEpoch {
+  const TaiyinSiderealReferenceEpochUt1(this.coordinate) : super._();
+
+  final JulianDate<Ut1Scale> coordinate;
+
+  @override
+  double get nativeJulianDate => coordinate.toDouble();
+
+  @override
+  bool get isUt1 => true;
+
+  @override
+  bool operator ==(Object other) =>
+      other is TaiyinSiderealReferenceEpochUt1 &&
+      other.coordinate == coordinate;
+
+  @override
+  int get hashCode => Object.hash(TaiyinSiderealReferenceEpochUt1, coordinate);
+
+  @override
+  String toString() => 'TaiyinSiderealReferenceEpoch.ut1($coordinate)';
 }
 
 /// The output reference frame used by a generic sidereal-coordinate result.
@@ -103,6 +209,9 @@ enum TaiyinSiderealCoordinateFrame {
   meanEclipticOfDate(0),
   meanEquatorOfDate(1),
   trueEquatorOfDate(2),
+  fixedMeanEclipticAtEpoch(3),
+  solarSystemInvariable(4),
+  j2000Ecliptic(5),
   unknown(-1);
 
   const TaiyinSiderealCoordinateFrame(this.id);
@@ -232,12 +341,16 @@ enum TaiyinLunarApsisDefinition {
   }
 }
 
-/// Tropical and sidereal ecliptic coordinates for one target.
+/// Unshifted and sidereal ecliptic longitudes for one target.
 final class TaiyinSiderealPosition {
   TaiyinSiderealPosition({
     required this.target,
     required this.ayanamsha,
     required this.precessionPolicy,
+    required this.referencePlane,
+    required this.referenceEpoch,
+    required this.coordinateFrame,
+    required this.rawCoordinateFrameId,
     required this.tropicalLongitudeRadians,
     required this.siderealLongitudeRadians,
     required this.latitudeRadians,
@@ -251,8 +364,28 @@ final class TaiyinSiderealPosition {
   final TaiyinAyanamshaModel ayanamsha;
   final TaiyinSiderealPrecessionPolicy precessionPolicy;
 
-  /// Tropical ecliptic longitude in radians.
+  /// Requested ecliptic reference-plane policy.
+  final TaiyinSiderealReferencePlane referencePlane;
+
+  /// Epoch used to orient [referencePlane], when that plane requires one.
+  final TaiyinSiderealReferenceEpoch? referenceEpoch;
+
+  /// Ecliptic coordinate frame used by these longitudes.
+  final TaiyinSiderealCoordinateFrame coordinateFrame;
+
+  /// Raw native frame ID, retained when a newer native library adds a frame.
+  final int rawCoordinateFrameId;
+
+  /// Unshifted longitude in [coordinateFrame], in radians.
+  ///
+  /// On a fixed or invariable plane this is not tropical ecliptic-of-date
+  /// longitude.
   final double tropicalLongitudeRadians;
+
+  /// [tropicalLongitudeRadians] named by its frame-neutral meaning.
+  ///
+  /// Prefer this name when [coordinateFrame] is a fixed or invariable plane.
+  double get unshiftedLongitudeRadians => tropicalLongitudeRadians;
 
   /// Sidereal ecliptic longitude in radians.
   final double siderealLongitudeRadians;
@@ -263,12 +396,19 @@ final class TaiyinSiderealPosition {
   /// Distance in astronomical units.
   final double distanceAu;
 
-  /// Tropical ecliptic-longitude rate in radians per day.
+  /// Rate of [tropicalLongitudeRadians] in radians per day.
+  ///
+  /// On a fixed or invariable plane this is the rate of the unshifted
+  /// longitude on that plane, not a tropical ecliptic-of-date rate.
   ///
   /// This is `double.nan` unless [flags] contains
   /// [TaiyinPositionFlag.speed]. This result intentionally contains longitude
   /// rates only, not latitude or distance rates.
   final double tropicalLongitudeRateRadiansPerDay;
+
+  /// [tropicalLongitudeRateRadiansPerDay] named by its frame-neutral meaning.
+  double get unshiftedLongitudeRateRadiansPerDay =>
+      tropicalLongitudeRateRadiansPerDay;
 
   /// Sidereal ecliptic-longitude rate in radians per day.
   ///
@@ -284,7 +424,7 @@ final class TaiyinSiderealPosition {
   final Set<TaiyinPositionFlag> flags;
 }
 
-/// Generic sidereal coordinates in a sidereal ecliptic or tropical equatorial
+/// Generic sidereal coordinates in a selected ecliptic or tropical equatorial
 /// frame.
 ///
 /// [values] use the usual six-value position convention. Without
@@ -297,8 +437,8 @@ final class TaiyinSiderealPosition {
 /// the generic native-position convention; this differs from
 /// [TaiyinSiderealPosition], whose unavailable rate fields are `double.nan`.
 /// Without
-/// [TaiyinPositionFlag.equatorial], the frame is sidereal mean ecliptic of
-/// date. With it, the result follows Swiss Ephemeris-compatible behavior:
+/// [TaiyinPositionFlag.equatorial], the frame is selected by [referencePlane].
+/// With it, the result follows Swiss Ephemeris-compatible behavior:
 /// tropical mean equator of date with [TaiyinPositionFlag.noNutation], or
 /// tropical true equator of date without it.
 final class TaiyinSiderealCoordinates {
@@ -306,6 +446,8 @@ final class TaiyinSiderealCoordinates {
     required this.target,
     required this.ayanamsha,
     required this.precessionPolicy,
+    required this.referencePlane,
+    required this.referenceEpoch,
     required this.coordinateFrame,
     required this.rawCoordinateFrameId,
     required List<double> values,
@@ -320,6 +462,15 @@ final class TaiyinSiderealCoordinates {
   final TaiyinTarget target;
   final TaiyinAyanamshaModel ayanamsha;
   final TaiyinSiderealPrecessionPolicy precessionPolicy;
+
+  /// Requested ecliptic reference-plane policy.
+  ///
+  /// This is ignored by an equatorial output request; [coordinateFrame] always
+  /// identifies the frame actually returned by the native calculation.
+  final TaiyinSiderealReferencePlane referencePlane;
+
+  /// Epoch used to orient [referencePlane], when that plane requires one.
+  final TaiyinSiderealReferenceEpoch? referenceEpoch;
 
   /// Output coordinate frame used by these values.
   final TaiyinSiderealCoordinateFrame coordinateFrame;
