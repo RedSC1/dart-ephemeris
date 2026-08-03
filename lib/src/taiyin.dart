@@ -7,7 +7,9 @@ import 'package:ffi/ffi.dart';
 
 import 'bindings/taiyin_bindings.g.dart';
 import 'astrology/astrology_models.dart';
+import 'chinese_calendar/chinese_calendar_models.dart';
 import 'context/context_models.dart';
+import 'ganzhi/ganzhi_models.dart';
 import 'eclipse/lunar_eclipse_models.dart';
 import 'eclipse/solar_eclipse_models.dart';
 import 'events/event_models.dart';
@@ -29,8 +31,10 @@ import 'time/time_models.dart';
 import 'time/time_scale.dart';
 import 'visibility/visibility_models.dart';
 
+part 'chinese_calendar/chinese_calendar_api.dart';
 part 'context/context_api.dart';
 part 'eclipse/eclipse_api.dart';
+part 'ganzhi/ganzhi_api.dart';
 part 'events/event_api.dart';
 part 'occultation/occultation_api.dart';
 part 'heliacal/heliacal_api.dart';
@@ -135,6 +139,7 @@ final class TaiyinContext implements Finalizable {
     this._bindings,
     this._context,
     this._contextFinalizer,
+    this._nativeState,
   ) {
     var finalizerAttached = false;
     try {
@@ -245,6 +250,7 @@ final class TaiyinContext implements Finalizable {
         ),
         observed,
       );
+      ganzhi = TaiyinGanzhiApi._(_bindings, _nativeState.capabilities);
     } catch (_) {
       if (finalizerAttached) {
         _contextFinalizer.detach(this);
@@ -272,30 +278,35 @@ final class TaiyinContext implements Finalizable {
   /// reconfiguring the process-wide runtime.
   factory TaiyinContext.attachToDynamicLibrary(DynamicLibrary library) {
     final state = _nativeLibraryStateFor(library);
-    return TaiyinContext._create(
-      library,
-      state.bindings,
-      state.contextFinalizer,
-    );
+    return TaiyinContext._create(library, state);
   }
 
   factory TaiyinContext._create(
     DynamicLibrary library,
-    TaiyinBindings bindings,
-    NativeFinalizer contextFinalizer,
+    _TaiyinNativeLibraryState nativeState,
   ) {
     final context = using((arena) {
       final output = arena<Pointer<taiyin_context>>();
-      _checkStatus(bindings, bindings.taiyin_context_create(output));
+      _checkStatus(
+        nativeState.bindings,
+        nativeState.bindings.taiyin_context_create(output),
+      );
       return output.value;
     });
-    return TaiyinContext._(library, bindings, context, contextFinalizer);
+    return TaiyinContext._(
+      library,
+      nativeState.bindings,
+      context,
+      nativeState.contextFinalizer,
+      nativeState,
+    );
   }
 
   final DynamicLibrary _library;
   final TaiyinBindings _bindings;
   final Pointer<taiyin_context> _context;
   final NativeFinalizer _contextFinalizer;
+  final _TaiyinNativeLibraryState _nativeState;
   late final TaiyinContextConfiguration configuration;
   late final TaiyinTime time;
   late final TaiyinAstrologyApi astrology;
@@ -310,6 +321,8 @@ final class TaiyinContext implements Finalizable {
   late final TaiyinEclipseApi eclipses;
   late final TaiyinOccultationApi occultation;
   late final TaiyinStarApi stars;
+  late final TaiyinGanzhiApi ganzhi;
+  TaiyinChineseCalendarContext? _chineseCalendar;
   bool _closed = false;
 
   /// Creates an independent native context without reinitializing the runtime.
@@ -322,7 +335,35 @@ final class TaiyinContext implements Finalizable {
       _checkStatus(_bindings, _bindings.taiyin_context_clone(_context, output));
       return output.value;
     });
-    return TaiyinContext._(_library, _bindings, context, _contextFinalizer);
+    return TaiyinContext._(
+      _library,
+      _bindings,
+      context,
+      _contextFinalizer,
+      _nativeState,
+    );
+  }
+
+  /// A Chinese-calendar context using the default astronomical configuration.
+  ///
+  /// The first access creates and caches the native context; [close] releases
+  /// it together with the owning context.
+  TaiyinChineseCalendarContext get chineseCalendar =>
+      _chineseCalendar ??= createChineseCalendar();
+
+  /// Creates an independent Chinese-calendar context owned by the caller.
+  ///
+  /// Call [TaiyinChineseCalendarContext.close] when it is no longer needed.
+  TaiyinChineseCalendarContext createChineseCalendar({
+    TaiyinChineseCalendarConfig config = const TaiyinChineseCalendarConfig(),
+  }) {
+    _ensureOpen();
+    return TaiyinChineseCalendarContext._create(
+      _nativeState,
+      _bindings,
+      _context,
+      config,
+    );
   }
 
   /// Calculates a position at a TT Julian date.
@@ -347,6 +388,8 @@ final class TaiyinContext implements Finalizable {
   void close() {
     if (_closed) return;
     _closed = true;
+    // Destroy borrowed child contexts before the owning native context.
+    _chineseCalendar?.close();
     _contextFinalizer.detach(this);
     _bindings.taiyin_context_destroy(_context);
   }

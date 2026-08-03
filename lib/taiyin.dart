@@ -3,7 +3,9 @@ library;
 
 export 'src/taiyin.dart';
 export 'src/astrology/astrology_models.dart';
+export 'src/chinese_calendar/chinese_calendar_models.dart';
 export 'src/context/context_models.dart';
+export 'src/ganzhi/ganzhi_models.dart';
 export 'src/eclipse/lunar_eclipse_models.dart';
 export 'src/eclipse/solar_eclipse_models.dart';
 export 'src/events/event_models.dart';

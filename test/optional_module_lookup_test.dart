@@ -58,6 +58,17 @@ void main() {
         final runtime = Taiyin.open(libraryPath: baselineLibraryPath);
         final context = runtime.createContext();
         expect(context, isNotNull);
+        // The Chinese calendar is always built and works.
+        final year = context.chineseCalendar
+            .calcYearUt(JulianDate<Ut1Scale>.fromDouble(2460348.0))
+            .value;
+        expect(year.solarTermCount, 25);
+        // Ganzhi and BaZi are optional: the API must refuse before any symbol
+        // lookup on an extension-free library.
+        expect(
+          () => context.ganzhi.make(stemId: 0, branchId: 0),
+          throwsUnsupportedError,
+        );
         context.close();
       },
       skip: baselineLibraryAvailable
