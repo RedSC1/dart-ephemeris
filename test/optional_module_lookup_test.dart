@@ -69,6 +69,8 @@ void main() {
           () => context.ganzhi.make(stemId: 0, branchId: 0),
           throwsUnsupportedError,
         );
+        expect(() => context.bazi.calcLiunian(2024), throwsUnsupportedError);
+        expect(() => context.createBazi(), throwsUnsupportedError);
         context.close();
       },
       skip: baselineLibraryAvailable

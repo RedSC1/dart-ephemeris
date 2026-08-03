@@ -7,6 +7,7 @@ import 'package:ffi/ffi.dart';
 
 import 'bindings/taiyin_bindings.g.dart';
 import 'astrology/astrology_models.dart';
+import 'bazi/bazi_models.dart';
 import 'chinese_calendar/chinese_calendar_models.dart';
 import 'context/context_models.dart';
 import 'ganzhi/ganzhi_models.dart';
@@ -31,6 +32,7 @@ import 'time/time_models.dart';
 import 'time/time_scale.dart';
 import 'visibility/visibility_models.dart';
 
+part 'bazi/bazi_api.dart';
 part 'chinese_calendar/chinese_calendar_api.dart';
 part 'context/context_api.dart';
 part 'eclipse/eclipse_api.dart';
@@ -323,6 +325,7 @@ final class TaiyinContext implements Finalizable {
   late final TaiyinStarApi stars;
   late final TaiyinGanzhiApi ganzhi;
   TaiyinChineseCalendarContext? _chineseCalendar;
+  TaiyinBaziContext? _bazi;
   bool _closed = false;
 
   /// Creates an independent native context without reinitializing the runtime.
@@ -366,6 +369,22 @@ final class TaiyinContext implements Finalizable {
     );
   }
 
+  /// A BaZi context using the default astronomical configuration.
+  ///
+  /// The first access creates and caches the native context; [close] releases
+  /// it together with the owning context.
+  TaiyinBaziContext get bazi => _bazi ??= createBazi();
+
+  /// Creates an independent BaZi context owned by the caller.
+  ///
+  /// Call [TaiyinBaziContext.close] when it is no longer needed.
+  TaiyinBaziContext createBazi({
+    TaiyinBaziContextConfig config = const TaiyinBaziContextConfig(),
+  }) {
+    _ensureOpen();
+    return TaiyinBaziContext._create(_nativeState, _bindings, config);
+  }
+
   /// Calculates a position at a TT Julian date.
   TaiyinPosition positionTt(
     TaiyinTarget body,
@@ -390,6 +409,7 @@ final class TaiyinContext implements Finalizable {
     _closed = true;
     // Destroy borrowed child contexts before the owning native context.
     _chineseCalendar?.close();
+    _bazi?.close();
     _contextFinalizer.detach(this);
     _bindings.taiyin_context_destroy(_context);
   }
