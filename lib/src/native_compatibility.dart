@@ -1,8 +1,21 @@
-const int taiyinSupportedAbiVersion = 2;
+const int taiyinSupportedAbiVersion = 5;
 const int taiyinSplitTimeCapability = 1 << 14;
+const int taiyinChineseCalendarCapability = 1 << 15;
+const int taiyinBaziCapability = 1 << 16;
+const int taiyinGanzhiCalendarCapability = 1 << 17;
 
-/// Symbols required by the ABI-2 native baseline used by this package.
-const Set<String> taiyinRequiredAbi2Symbols = {
+/// Symbols required by the ABI-5 native baseline used by this package.
+///
+/// Chinese-calendar symbols are always built into `taiyin_c`, and the pure
+/// Ganzhi rule primitives (`make`, `advance`, `get_month`, `get_hour`,
+/// `get_nayin_*`, `four_pillars_init`) are always exported. BaZi symbols are
+/// intentionally excluded: they only exist when the library is built with
+/// `TAIYIN_BUILD_BAZI_EXTENSION=ON`. The extension-dependent Ganzhi entry
+/// points (`taiyin_ganzhi_calc_day_pillar` and
+/// `taiyin_chinese_calendar_calc_four_pillars_ut`) also only exist when the
+/// Ganzhi extension is on, so they are gated by capability in
+/// [taiyinGanzhiSymbols] instead of being required here.
+const Set<String> taiyinRequiredAbi5Symbols = {
   'taiyin_get_library_codename',
   'taiyin_format_ephemeris_diagnostic',
   'taiyin_register_native_position_evaluator',
@@ -209,6 +222,79 @@ const Set<String> taiyinRequiredAbi2Symbols = {
   'taiyin_compute_solar_eclipse_route_map_product_ut',
   'taiyin_compute_local_solar_eclipse_boundary_tt',
   'taiyin_compute_local_solar_eclipse_boundary_ut',
+  'taiyin_chinese_calendar_config_init',
+  'taiyin_chinese_calendar_config_init_utc_offset',
+  'taiyin_chinese_calendar_config_init_meridian',
+  'taiyin_solar_date_init',
+  'taiyin_lunar_date_init',
+  'taiyin_chinese_solar_term_event_init',
+  'taiyin_chinese_calendar_year_init',
+  'taiyin_chinese_calendar_context_create',
+  'taiyin_chinese_calendar_context_destroy',
+  'taiyin_chinese_calendar_calc_year_ut',
+  'taiyin_chinese_calendar_get_specific_jie_qi_ut',
+  'taiyin_chinese_calendar_get_prev_jie_qi_ut',
+  'taiyin_chinese_calendar_get_next_jie_qi_ut',
+  'taiyin_chinese_calendar_get_prev_jie_ut',
+  'taiyin_chinese_calendar_get_next_jie_ut',
+  'taiyin_chinese_calendar_get_prev_qi_ut',
+  'taiyin_chinese_calendar_get_next_qi_ut',
+  'taiyin_chinese_calendar_from_solar',
+  'taiyin_chinese_calendar_from_lunar',
+  'taiyin_chinese_calendar_get_month_days',
+  'taiyin_ganzhi_four_pillars_init',
+  'taiyin_ganzhi_make',
+  'taiyin_ganzhi_advance',
+  'taiyin_ganzhi_get_month',
+  'taiyin_ganzhi_get_hour',
+  'taiyin_ganzhi_get_nayin_element',
+  'taiyin_ganzhi_get_nayin_id',
+};
+
+/// Ganzhi symbols that only exist when the library is built with the Ganzhi
+/// extension. Unlike the pure rule primitives above, these are absent from a
+/// baseline build, so they are verified only when the library advertises the
+/// `ganzhiCalendar` capability.
+const Set<String> taiyinGanzhiSymbols = {
+  'taiyin_ganzhi_calc_day_pillar',
+  'taiyin_chinese_calendar_calc_four_pillars_ut',
+};
+
+/// BaZi symbols, verified only when the loaded library advertises the BaZi
+/// capability. The symbols do not exist in a build without
+/// `TAIYIN_BUILD_BAZI_EXTENSION=ON`, so they must never be looked up otherwise.
+const Set<String> taiyinBaziSymbols = {
+  'taiyin_bazi_context_config_init',
+  'taiyin_bazi_chart_init',
+  'taiyin_bazi_relation_init',
+  'taiyin_bazi_qiyun_result_init',
+  'taiyin_bazi_dayun_init',
+  'taiyin_bazi_xiaoyun_init',
+  'taiyin_bazi_renyuan_siling_segment_init',
+  'taiyin_bazi_renyuan_siling_result_init',
+  'taiyin_bazi_context_create',
+  'taiyin_bazi_context_destroy',
+  'taiyin_bazi_get_kong_wang',
+  'taiyin_bazi_get_ten_god',
+  'taiyin_bazi_get_hidden_stems',
+  'taiyin_bazi_calc_stem_relation',
+  'taiyin_bazi_calc_branch_relation',
+  'taiyin_bazi_calc_branch_triple_relation',
+  'taiyin_bazi_get_life_stage',
+  'taiyin_bazi_calc_chart',
+  'taiyin_bazi_calc_liunian',
+  'taiyin_bazi_calc_liuyue',
+  'taiyin_bazi_calc_liuri',
+  'taiyin_bazi_calc_liushi',
+  'taiyin_bazi_calc_xiaoyun',
+  'taiyin_bazi_fill_xiaoyun',
+  'taiyin_bazi_collect_chart_relations',
+  'taiyin_bazi_collect_target_shen_sha',
+  'taiyin_bazi_collect_target_shen_sha_with_gender',
+  'taiyin_bazi_calc_qiyun',
+  'taiyin_bazi_fill_dayun',
+  'taiyin_bazi_get_renyuan_siling_segments',
+  'taiyin_bazi_calc_renyuan_siling',
 };
 
 /// Validates the native metadata available before any optional symbol lookup.
@@ -216,8 +302,10 @@ const Set<String> taiyinRequiredAbi2Symbols = {
 /// This stays independent of generated bindings so compatibility behavior can
 /// be tested without loading a platform-specific dynamic library.
 ///
-/// The Dart package exposes its split-date time service as a required part of
-/// every `TaiyinContext`, so it requires the split-time capability.
+/// The Dart package exposes its split-date time service and its Chinese
+/// calendar as required parts of every `TaiyinContext`, so it requires both
+/// the split-time and the Chinese-calendar capabilities. BaZi and the Ganzhi
+/// calendar are optional modules selected by their own capability bits.
 void validateTaiyinNativeCompatibility({
   required int abiVersion,
   required int capabilities,
@@ -234,13 +322,19 @@ void validateTaiyinNativeCompatibility({
       'required by this package.',
     );
   }
+  if ((capabilities & taiyinChineseCalendarCapability) == 0) {
+    throw StateError(
+      'The loaded Taiyin library does not provide the Chinese-calendar '
+      'capability required by this package.',
+    );
+  }
 }
 
-/// Rejects incomplete ABI-2 builds before generated bindings lazily look up a
+/// Rejects incomplete ABI-5 builds before generated bindings lazily look up a
 /// missing symbol.
 void validateTaiyinRequiredSymbols({
   required bool Function(String symbol) providesSymbol,
-  Set<String> requiredSymbols = taiyinRequiredAbi2Symbols,
+  Set<String> requiredSymbols = taiyinRequiredAbi5Symbols,
 }) {
   final missing = [
     for (final symbol in requiredSymbols)
@@ -248,7 +342,7 @@ void validateTaiyinRequiredSymbols({
   ];
   if (missing.isNotEmpty) {
     throw StateError(
-      'The loaded Taiyin ABI-2 library is missing symbols required by this '
+      'The loaded Taiyin ABI-5 library is missing symbols required by this '
       'package: ${missing.join(', ')}. Rebuild or update the native library.',
     );
   }

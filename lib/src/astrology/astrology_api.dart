@@ -4,37 +4,43 @@ typedef _AstrologyStatusChecker =
     void Function(int status, TaiyinEphemerisDiagnostic? diagnostic);
 typedef _SiderealCalculation =
     int Function(
+      Arena arena,
       int flags,
       Pointer<taiyin_sidereal_position> output,
       Pointer<taiyin_ephemeris_diagnostic> diagnostic,
     );
 typedef _SiderealCoordinatesCalculation =
     int Function(
+      Arena arena,
       int flags,
       Pointer<taiyin_sidereal_coordinates> output,
       Pointer<taiyin_ephemeris_diagnostic> diagnostic,
     );
 typedef _LunarNodeCalculation =
     int Function(
+      Arena arena,
       int flags,
       Pointer<taiyin_lunar_node_position> output,
       Pointer<taiyin_ephemeris_diagnostic> diagnostic,
     );
 typedef _LunarApsisCalculation =
     int Function(
+      Arena arena,
       int flags,
       Pointer<taiyin_lunar_apsis_position> output,
       Pointer<taiyin_ephemeris_diagnostic> diagnostic,
     );
-typedef _HouseCalculation = int Function(Pointer<taiyin_house_result> output);
+typedef _HouseCalculation =
+    int Function(Arena arena, Pointer<taiyin_house_result> output);
 
 const int _siderealReferenceEpochUt1Flag = 1 << 35;
 
 /// Sidereal coordinates and astrological house calculations.
 ///
-/// These physical calculations use the native scalar-JD epoch route. A split
-/// [JulianDate] is intentionally quantized at the native calculation boundary;
-/// this API does not claim sub-double ephemeris sensitivity.
+/// Julian dates cross the native boundary as split `taiyin_split_julian_date`
+/// structs, preserving the full day-number/fraction precision. Sidereal
+/// reference epochs are likewise passed as split structs, or as a null pointer
+/// when the selected reference plane does not require one.
 final class TaiyinAstrologyApi {
   TaiyinAstrologyApi._(
     this._bindings,
@@ -62,7 +68,7 @@ final class TaiyinAstrologyApi {
         _bindings.taiyin_calc_ayanamsha_tt(
           _context,
           ayanamsha.id,
-          tt.toDouble(),
+          writeJulianDate(arena, tt),
           precessionPolicy.nativeFlagMask,
           output,
         ),
@@ -105,16 +111,17 @@ final class TaiyinAstrologyApi {
       referenceEpoch,
       resolvedFlags,
       resolvedCall.flags,
-      (mask, output, diagnostic) => _bindings.taiyin_calc_sidereal_position_tt(
-        _context,
-        ayanamsha.id,
-        target.id,
-        tt.toDouble(),
-        mask,
-        resolvedCall.referenceEpochJulianDate,
-        output,
-        diagnostic,
-      ),
+      (arena, mask, output, diagnostic) =>
+          _bindings.taiyin_calc_sidereal_position_tt(
+            _context,
+            ayanamsha.id,
+            target.id,
+            writeJulianDate(arena, tt),
+            mask,
+            _writeReferenceEpoch(arena, resolvedCall.referenceEpoch),
+            output,
+            diagnostic,
+          ),
     );
   }
 
@@ -148,16 +155,17 @@ final class TaiyinAstrologyApi {
       referenceEpoch,
       resolvedFlags,
       resolvedCall.flags,
-      (mask, output, diagnostic) => _bindings.taiyin_calc_sidereal_position_ut(
-        _context,
-        ayanamsha.id,
-        target.id,
-        ut1.toDouble(),
-        mask,
-        resolvedCall.referenceEpochJulianDate,
-        output,
-        diagnostic,
-      ),
+      (arena, mask, output, diagnostic) =>
+          _bindings.taiyin_calc_sidereal_position_ut(
+            _context,
+            ayanamsha.id,
+            target.id,
+            writeJulianDate(arena, ut1),
+            mask,
+            _writeReferenceEpoch(arena, resolvedCall.referenceEpoch),
+            output,
+            diagnostic,
+          ),
     );
   }
 
@@ -200,14 +208,14 @@ final class TaiyinAstrologyApi {
       referenceEpoch,
       resolvedFlags,
       resolvedCall.flags,
-      (mask, output, diagnostic) =>
+      (arena, mask, output, diagnostic) =>
           _bindings.taiyin_calc_sidereal_coordinates_tt(
             _context,
             ayanamsha.id,
             target.id,
-            tt.toDouble(),
+            writeJulianDate(arena, tt),
             mask,
-            resolvedCall.referenceEpochJulianDate,
+            _writeReferenceEpoch(arena, resolvedCall.referenceEpoch),
             output,
             diagnostic,
           ),
@@ -244,14 +252,14 @@ final class TaiyinAstrologyApi {
       referenceEpoch,
       resolvedFlags,
       resolvedCall.flags,
-      (mask, output, diagnostic) =>
+      (arena, mask, output, diagnostic) =>
           _bindings.taiyin_calc_sidereal_coordinates_ut(
             _context,
             ayanamsha.id,
             target.id,
-            ut1.toDouble(),
+            writeJulianDate(arena, ut1),
             mask,
-            resolvedCall.referenceEpochJulianDate,
+            _writeReferenceEpoch(arena, resolvedCall.referenceEpoch),
             output,
             diagnostic,
           ),
@@ -274,14 +282,15 @@ final class TaiyinAstrologyApi {
     return _lunarNode(
       kind,
       resolvedFlags,
-      (mask, output, diagnostic) => _bindings.taiyin_calc_lunar_true_node_tt(
-        _context,
-        tt.toDouble(),
-        kind.id,
-        mask,
-        output,
-        diagnostic,
-      ),
+      (arena, mask, output, diagnostic) =>
+          _bindings.taiyin_calc_lunar_true_node_tt(
+            _context,
+            writeJulianDate(arena, tt),
+            kind.id,
+            mask,
+            output,
+            diagnostic,
+          ),
     );
   }
 
@@ -298,14 +307,15 @@ final class TaiyinAstrologyApi {
     return _lunarNode(
       kind,
       resolvedFlags,
-      (mask, output, diagnostic) => _bindings.taiyin_calc_lunar_true_node_ut(
-        _context,
-        ut1.toDouble(),
-        kind.id,
-        mask,
-        output,
-        diagnostic,
-      ),
+      (arena, mask, output, diagnostic) =>
+          _bindings.taiyin_calc_lunar_true_node_ut(
+            _context,
+            writeJulianDate(arena, ut1),
+            kind.id,
+            mask,
+            output,
+            diagnostic,
+          ),
     );
   }
 
@@ -323,14 +333,15 @@ final class TaiyinAstrologyApi {
     return _lunarNode(
       kind,
       resolvedFlags,
-      (mask, output, diagnostic) => _bindings.taiyin_calc_lunar_mean_node_tt(
-        _context,
-        tt.toDouble(),
-        kind.id,
-        mask,
-        output,
-        diagnostic,
-      ),
+      (arena, mask, output, diagnostic) =>
+          _bindings.taiyin_calc_lunar_mean_node_tt(
+            _context,
+            writeJulianDate(arena, tt),
+            kind.id,
+            mask,
+            output,
+            diagnostic,
+          ),
     );
   }
 
@@ -347,14 +358,15 @@ final class TaiyinAstrologyApi {
     return _lunarNode(
       kind,
       resolvedFlags,
-      (mask, output, diagnostic) => _bindings.taiyin_calc_lunar_mean_node_ut(
-        _context,
-        ut1.toDouble(),
-        kind.id,
-        mask,
-        output,
-        diagnostic,
-      ),
+      (arena, mask, output, diagnostic) =>
+          _bindings.taiyin_calc_lunar_mean_node_ut(
+            _context,
+            writeJulianDate(arena, ut1),
+            kind.id,
+            mask,
+            output,
+            diagnostic,
+          ),
     );
   }
 
@@ -369,13 +381,14 @@ final class TaiyinAstrologyApi {
     _ensureOpen();
     return _lunarApsis(
       _lunarMeanFlags(flags, 'lunar mean apogee'),
-      (mask, output, diagnostic) => _bindings.taiyin_calc_lunar_mean_apogee_tt(
-        _context,
-        tt.toDouble(),
-        mask,
-        output,
-        diagnostic,
-      ),
+      (arena, mask, output, diagnostic) =>
+          _bindings.taiyin_calc_lunar_mean_apogee_tt(
+            _context,
+            writeJulianDate(arena, tt),
+            mask,
+            output,
+            diagnostic,
+          ),
     );
   }
 
@@ -389,13 +402,14 @@ final class TaiyinAstrologyApi {
     _ensureOpen();
     return _lunarApsis(
       _lunarMeanFlags(flags, 'lunar mean apogee'),
-      (mask, output, diagnostic) => _bindings.taiyin_calc_lunar_mean_apogee_ut(
-        _context,
-        ut1.toDouble(),
-        mask,
-        output,
-        diagnostic,
-      ),
+      (arena, mask, output, diagnostic) =>
+          _bindings.taiyin_calc_lunar_mean_apogee_ut(
+            _context,
+            writeJulianDate(arena, ut1),
+            mask,
+            output,
+            diagnostic,
+          ),
     );
   }
 
@@ -409,10 +423,10 @@ final class TaiyinAstrologyApi {
     _ensureOpen();
     return _lunarApsis(
       _lunarPhysicalFlags(flags, 'lunar osculating apogee'),
-      (mask, output, diagnostic) =>
+      (arena, mask, output, diagnostic) =>
           _bindings.taiyin_calc_lunar_osculating_apogee_tt(
             _context,
-            tt.toDouble(),
+            writeJulianDate(arena, tt),
             mask,
             output,
             diagnostic,
@@ -430,10 +444,10 @@ final class TaiyinAstrologyApi {
     _ensureOpen();
     return _lunarApsis(
       _lunarPhysicalFlags(flags, 'lunar osculating apogee'),
-      (mask, output, diagnostic) =>
+      (arena, mask, output, diagnostic) =>
           _bindings.taiyin_calc_lunar_osculating_apogee_ut(
             _context,
-            ut1.toDouble(),
+            writeJulianDate(arena, ut1),
             mask,
             output,
             diagnostic,
@@ -454,10 +468,10 @@ final class TaiyinAstrologyApi {
     _ensureOpen();
     return _lunarApsis(
       _lunarMeanFlags(flags, 'lunar fitted apogee'),
-      (mask, output, diagnostic) =>
+      (arena, mask, output, diagnostic) =>
           _bindings.taiyin_calc_lunar_fitted_apogee_tt(
             _context,
-            tt.toDouble(),
+            writeJulianDate(arena, tt),
             mask,
             output,
             diagnostic,
@@ -475,10 +489,10 @@ final class TaiyinAstrologyApi {
     _ensureOpen();
     return _lunarApsis(
       _lunarMeanFlags(flags, 'lunar fitted apogee'),
-      (mask, output, diagnostic) =>
+      (arena, mask, output, diagnostic) =>
           _bindings.taiyin_calc_lunar_fitted_apogee_ut(
             _context,
-            ut1.toDouble(),
+            writeJulianDate(arena, ut1),
             mask,
             output,
             diagnostic,
@@ -500,7 +514,7 @@ final class TaiyinAstrologyApi {
     _requireOpenLatitude(observerLatitudeRadians, 'observerLatitudeRadians');
     _requireOpenObliquity(trueObliquityRadians, 'trueObliquityRadians');
     return _houses(
-      (output) => _bindings.taiyin_calc_houses_from_armc(
+      (_, output) => _bindings.taiyin_calc_houses_from_armc(
         armcRadians,
         observerLatitudeRadians,
         trueObliquityRadians,
@@ -517,9 +531,9 @@ final class TaiyinAstrologyApi {
   }) {
     _ensureOpen();
     return _houses(
-      (output) => _bindings.taiyin_calc_houses_ut(
+      (arena, output) => _bindings.taiyin_calc_houses_ut(
         _context,
-        ut1.toDouble(),
+        writeJulianDate(arena, ut1),
         system.id,
         output,
       ),
@@ -533,9 +547,9 @@ final class TaiyinAstrologyApi {
   }) {
     _ensureOpen();
     return _houses(
-      (output) => _bindings.taiyin_calc_houses_tt(
+      (arena, output) => _bindings.taiyin_calc_houses_tt(
         _context,
-        tt.toDouble(),
+        writeJulianDate(arena, tt),
         system.id,
         output,
       ),
@@ -597,7 +611,7 @@ final class TaiyinAstrologyApi {
       _bindings
         ..taiyin_sidereal_position_init(output)
         ..taiyin_ephemeris_diagnostic_init(diagnostic);
-      final status = calculate(nativeFlags, output, diagnostic);
+      final status = calculate(arena, nativeFlags, output, diagnostic);
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
       final value = output.ref;
@@ -643,7 +657,7 @@ final class TaiyinAstrologyApi {
       _bindings
         ..taiyin_sidereal_coordinates_init(output)
         ..taiyin_ephemeris_diagnostic_init(diagnostic);
-      final status = calculate(nativeFlags, output, diagnostic);
+      final status = calculate(arena, nativeFlags, output, diagnostic);
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
       final value = output.ref;
@@ -681,7 +695,7 @@ final class TaiyinAstrologyApi {
       _bindings
         ..taiyin_lunar_node_position_init(output)
         ..taiyin_ephemeris_diagnostic_init(diagnostic);
-      final status = calculate(_flagMask(flags), output, diagnostic);
+      final status = calculate(arena, _flagMask(flags), output, diagnostic);
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
       final value = output.ref;
@@ -709,7 +723,7 @@ final class TaiyinAstrologyApi {
       _bindings
         ..taiyin_lunar_apsis_position_init(output)
         ..taiyin_ephemeris_diagnostic_init(diagnostic);
-      final status = calculate(_flagMask(flags), output, diagnostic);
+      final status = calculate(arena, _flagMask(flags), output, diagnostic);
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
       final value = output.ref;
@@ -737,7 +751,7 @@ final class TaiyinAstrologyApi {
     return using((arena) {
       final output = arena<taiyin_house_result>();
       _bindings.taiyin_house_result_init(output);
-      _checkStatus(calculate(output), null);
+      _checkStatus(calculate(arena, output), null);
       return _readHouses(output.ref);
     });
   }
@@ -815,7 +829,8 @@ final class TaiyinAstrologyApi {
     Set<TaiyinPositionFlag> flags,
   ) => Set.unmodifiable({...flags, TaiyinPositionFlag.radians});
 
-  ({int flags, double referenceEpochJulianDate}) _resolveSiderealCall(
+  ({int flags, TaiyinSiderealReferenceEpoch? referenceEpoch})
+  _resolveSiderealCall(
     Set<TaiyinPositionFlag> positionFlags,
     TaiyinSiderealPrecessionPolicy precessionPolicy,
     TaiyinSiderealReferencePlane referencePlane,
@@ -832,10 +847,31 @@ final class TaiyinAstrologyApi {
         precessionPolicy.nativeFlagMask |
         referencePlane.nativeFlagMask |
         (referenceEpoch?.isUt1 == true ? _siderealReferenceEpochUt1Flag : 0);
-    return (
-      flags: nativeFlags,
-      referenceEpochJulianDate: referenceEpoch?.nativeJulianDate ?? double.nan,
-    );
+    return (flags: nativeFlags, referenceEpoch: referenceEpoch);
+  }
+
+  /// Marshals a sidereal reference epoch into an arena-owned split-JD pointer.
+  ///
+  /// A null epoch (used when [TaiyinSiderealReferencePlane] does not require
+  /// one) is written as a null pointer, which the native ABI interprets as no
+  /// reference epoch.
+  Pointer<taiyin_split_julian_date> _writeReferenceEpoch(
+    Arena arena,
+    TaiyinSiderealReferenceEpoch? referenceEpoch,
+  ) {
+    if (referenceEpoch == null) {
+      return nullptr;
+    }
+    return switch (referenceEpoch) {
+      TaiyinSiderealReferenceEpochTt() => writeJulianDate<TtScale>(
+        arena,
+        referenceEpoch.coordinate,
+      ),
+      TaiyinSiderealReferenceEpochUt1() => writeJulianDate<Ut1Scale>(
+        arena,
+        referenceEpoch.coordinate,
+      ),
+    };
   }
 
   Set<TaiyinPositionFlag> _lunarPhysicalFlags(

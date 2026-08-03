@@ -1,14 +1,10 @@
-import 'dart:io';
 import 'dart:math' as math;
 
 import 'package:taiyin/taiyin.dart';
 import 'package:test/test.dart';
+import 'support/native_library.dart';
 
 void main() {
-  final libraryPath =
-      Platform.environment['TAIYIN_TEST_LIBRARY'] ??
-      '../taiyin-ephemeris/build-c-api-release/libtaiyin.dylib';
-  final nativeLibraryAvailable = File(libraryPath).existsSync();
   const majorBodiesPath =
       '../taiyin-ephemeris/data/ephemerides/opm2/major-bodies/600y';
 

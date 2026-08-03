@@ -13,6 +13,7 @@ import 'eclipse/solar_eclipse_models.dart';
 import 'events/event_models.dart';
 import 'heliacal/heliacal_models.dart';
 import 'interop/calendar.dart';
+import 'interop/julian_date.dart';
 import 'native_compatibility.dart';
 import 'observed/observed_models.dart';
 import 'occultation/occultation_models.dart';
@@ -60,7 +61,10 @@ enum TaiyinCapability {
   customTargets(1 << 11),
   customAyanamsha(1 << 12),
   customHouses(1 << 13),
-  splitTime(taiyinSplitTimeCapability);
+  splitTime(taiyinSplitTimeCapability),
+  chineseCalendar(taiyinChineseCalendarCapability),
+  bazi(taiyinBaziCapability),
+  ganzhiCalendar(taiyinGanzhiCalendarCapability);
 
   const TaiyinCapability(this.mask);
 
@@ -355,15 +359,39 @@ final class TaiyinContext implements Finalizable {
 }
 
 final class _TaiyinNativeLibraryState {
-  _TaiyinNativeLibraryState(this.bindings, this.contextFinalizer);
+  _TaiyinNativeLibraryState(
+    this.bindings,
+    this.contextFinalizer,
+    this.chineseCalendarFinalizer,
+    this.capabilities,
+    this._library,
+  );
 
   final TaiyinBindings bindings;
   final NativeFinalizer contextFinalizer;
+  final NativeFinalizer chineseCalendarFinalizer;
+  final int capabilities;
+  final DynamicLibrary _library;
   final Map<int, TaiyinCustomTargetRegistration> customTargetRegistrations = {};
   final Map<int, TaiyinCustomAyanamshaRegistration>
   customAyanamshaRegistrations = {};
   final Map<int, TaiyinCustomHouseSystemRegistration>
   customHouseSystemRegistrations = {};
+
+  NativeFinalizer? _baziFinalizer;
+
+  /// The BaZi context finalizer, created lazily and only after the BaZi
+  /// capability has been confirmed. The symbol does not exist in a build
+  /// without `TAIYIN_BUILD_BAZI_EXTENSION=ON`, so it must never be looked up
+  /// otherwise.
+  NativeFinalizer? get baziFinalizer {
+    if ((capabilities & taiyinBaziCapability) == 0) return null;
+    return _baziFinalizer ??= NativeFinalizer(
+      _library.lookup<NativeFunction<Void Function(Pointer<Void>)>>(
+        'taiyin_bazi_context_destroy',
+      ),
+    );
+  }
 }
 
 // NativeFinalizer itself must stay reachable until its attachments have run.
@@ -381,7 +409,9 @@ DynamicLibrary _openLibrary(String? libraryPath) {
 
 DynamicLibrary _openDefaultLibrary() {
   if (Platform.isIOS) return DynamicLibrary.process();
-  if (Platform.isWindows) return DynamicLibrary.open('taiyin.dll');
+  // Windows shared libraries are named by C ABI version; macOS and Linux build
+  // and install trees provide versionless symlinks.
+  if (Platform.isWindows) return DynamicLibrary.open('taiyin-5.dll');
   if (Platform.isMacOS) return DynamicLibrary.open('libtaiyin.dylib');
   return DynamicLibrary.open('libtaiyin.so');
 }
@@ -392,12 +422,35 @@ _TaiyinNativeLibraryState _nativeLibraryStateFor(DynamicLibrary library) {
   );
   return _nativeLibraryStates.putIfAbsent(destroy.address, () {
     final bindings = TaiyinBindings(library);
+    final capabilities = bindings.taiyin_get_capabilities();
     validateTaiyinNativeCompatibility(
       abiVersion: bindings.taiyin_get_c_abi_version(),
-      capabilities: bindings.taiyin_get_capabilities(),
+      capabilities: capabilities,
     );
     validateTaiyinRequiredSymbols(providesSymbol: library.providesSymbol);
-    return _TaiyinNativeLibraryState(bindings, NativeFinalizer(destroy));
+    if ((capabilities & taiyinGanzhiCalendarCapability) != 0) {
+      validateTaiyinRequiredSymbols(
+        providesSymbol: library.providesSymbol,
+        requiredSymbols: taiyinGanzhiSymbols,
+      );
+    }
+    if ((capabilities & taiyinBaziCapability) != 0) {
+      validateTaiyinRequiredSymbols(
+        providesSymbol: library.providesSymbol,
+        requiredSymbols: taiyinBaziSymbols,
+      );
+    }
+    return _TaiyinNativeLibraryState(
+      bindings,
+      NativeFinalizer(destroy),
+      NativeFinalizer(
+        library.lookup<NativeFunction<Void Function(Pointer<Void>)>>(
+          'taiyin_chinese_calendar_context_destroy',
+        ),
+      ),
+      capabilities,
+      library,
+    );
   });
 }
 
@@ -447,7 +500,8 @@ void _writeEphemerisDiagnostic(
     ..target_id = value.targetId
     ..center_id = value.centerId
     ..frame = value.rawFrameId
-    ..jd_tdb = value.julianDateTdb
+    ..jd_tdb.day_number = value.julianDateTdb.dayNumber
+    ..jd_tdb.day_fraction = value.julianDateTdb.dayFraction
     ..candidate_count = value.candidateCount
     ..attempted_method_id = value.attemptedMethodId
     ..nearest_coverage_start = value.nearestCoverageStart
@@ -480,7 +534,7 @@ TaiyinEphemerisDiagnostic _readEphemerisDiagnostic(
     centerId: value.center_id,
     frame: TaiyinApparentFrame.fromId(value.frame),
     rawFrameId: value.frame,
-    julianDateTdb: value.jd_tdb,
+    julianDateTdb: readJulianDate<TdbScale>(value.jd_tdb),
     candidateCount: value.candidate_count,
     attemptedMethodId: value.attempted_method_id,
     nearestCoverageStart: value.nearest_coverage_start,

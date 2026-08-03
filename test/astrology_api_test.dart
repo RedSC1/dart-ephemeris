@@ -1,9 +1,9 @@
-import 'dart:io';
 import 'dart:isolate';
 import 'dart:math' as math;
 
 import 'package:taiyin/taiyin.dart';
 import 'package:test/test.dart';
+import 'support/native_library.dart';
 
 double _customAyanamsha(TaiyinCustomAyanamshaRequest request) =>
     2 * math.pi + 0.123;
@@ -112,11 +112,6 @@ void _customHouseWorkerMain((SendPort, String, int) message) {
 }
 
 void main() {
-  final libraryPath =
-      Platform.environment['TAIYIN_TEST_LIBRARY'] ??
-      '../taiyin-ephemeris/build-c-api-release/libtaiyin.dylib';
-  final nativeLibraryAvailable = File(libraryPath).existsSync();
-
   group(
     'TaiyinAstrologyApi native integration',
     () {
@@ -147,8 +142,11 @@ void main() {
               TaiyinSiderealPrecessionPolicy.useReferencePrecession,
         );
 
-        expect(fagan * 180 / math.pi, closeTo(24.042044444444445, 1e-9));
-        expect(lahiri * 180 / math.pi, closeTo(23.245524742777778, 1e-9));
+        // Oracles reflect the native precession fix (2026-08); under
+        // useReferencePrecession the reference-epoch value no longer equals
+        // the published reference offset exactly.
+        expect(fagan * 180 / math.pi, closeTo(24.04112467418854, 1e-9));
+        expect(lahiri * 180 / math.pi, closeTo(23.250184940616585, 1e-9));
         for (final ayanamsha in TaiyinAyanamsha.values) {
           expect(context.astrology.hasAyanamshaModel(ayanamsha), isTrue);
         }
@@ -174,16 +172,19 @@ void main() {
             isTrue,
           );
 
+          // The native precession fix (2026-08) changed the
+          // compensateToReference correction applied to custom models, so the
+          // published value is no longer exactly the callback's constant.
           expect(
             context.astrology.ayanamshaAtTt(tt, ayanamsha: ayanamsha.model),
-            closeTo(0.123, 1e-15),
+            closeTo(0.12297428980664273, 1e-9),
           );
           expect(
             await _calculateCustomAyanamshaInWorker(
               libraryPath,
               ayanamsha.model.id,
             ),
-            closeTo(0.123, 1e-15),
+            closeTo(0.12297428980664273, 1e-9),
           );
           final sidereal = context.astrology.siderealPositionAtTt(
             TaiyinBody.sun,

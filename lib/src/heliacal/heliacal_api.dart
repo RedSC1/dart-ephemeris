@@ -20,8 +20,8 @@ typedef _HeliacalSearchCalculation =
 /// Heliacal visibility calculations and morning/evening event searches.
 ///
 /// Calculations use the observer location and heliacal-visibility model on the
-/// owning [TaiyinContext]. The native ABI accepts and returns scalar UT1 Julian
-/// dates; [JulianDate] keeps its split representation everywhere else in Dart.
+/// owning [TaiyinContext]. The native ABI accepts and returns split-JD UT1
+/// Julian dates, preserving full precision across the FFI boundary.
 final class TaiyinHeliacalApi {
   TaiyinHeliacalApi._(
     this._bindings,
@@ -52,11 +52,16 @@ final class TaiyinHeliacalApi {
     _requireBodyTarget(target);
     final mask = _heliacalMask(positionFlags, flags);
     _validateConditions(conditions);
-    return _calculate(conditions, (_, nativeConditions, output, diagnostic) {
+    return _calculate(conditions, (
+      arena,
+      nativeConditions,
+      output,
+      diagnostic,
+    ) {
       return _bindings.taiyin_calc_body_heliacal_visibility_ut(
         _context,
         target.id,
-        ut1.toDouble(),
+        writeJulianDate(arena, ut1),
         mask,
         nativeConditions,
         output,
@@ -88,7 +93,7 @@ final class TaiyinHeliacalApi {
       return _bindings.taiyin_calc_star_heliacal_visibility_ut(
         _context,
         nativeStarKey,
-        ut1.toDouble(),
+        writeJulianDate(arena, ut1),
         mask,
         nativeConditions,
         output,
@@ -115,11 +120,11 @@ final class TaiyinHeliacalApi {
     _requirePositiveFinite(maxSearchDays, 'maxSearchDays');
     final mask = _heliacalMask(positionFlags, flags);
     _validateConditions(conditions);
-    return _search(conditions, (_, nativeConditions, output, diagnostic) {
+    return _search(conditions, (arena, nativeConditions, output, diagnostic) {
       return _bindings.taiyin_search_next_body_heliacal_visibility_ut(
         _context,
         target.id,
-        start.toDouble(),
+        writeJulianDate(arena, start),
         event.id,
         maxSearchDays,
         mask,
@@ -153,7 +158,7 @@ final class TaiyinHeliacalApi {
       return _bindings.taiyin_search_next_star_heliacal_visibility_ut(
         _context,
         nativeStarKey,
-        start.toDouble(),
+        writeJulianDate(arena, start),
         event.id,
         maxSearchDays,
         mask,
@@ -203,11 +208,9 @@ final class TaiyinHeliacalApi {
       return TaiyinEphemerisResult(
         value: TaiyinHeliacalVisibilitySearchResult(
           event: TaiyinHeliacalEventKind.fromId(value.event_kind),
-          coordinate: JulianDate<Ut1Scale>.fromDouble(value.jd_ut),
-          windowStart: JulianDate<Ut1Scale>.fromDouble(
-            value.window_start_jd_ut,
-          ),
-          windowEnd: JulianDate<Ut1Scale>.fromDouble(value.window_end_jd_ut),
+          coordinate: readJulianDate<Ut1Scale>(value.jd_ut),
+          windowStart: readJulianDate<Ut1Scale>(value.window_start_jd_ut),
+          windowEnd: readJulianDate<Ut1Scale>(value.window_end_jd_ut),
           scannedDayCount: value.scanned_day_count,
           sampledWindowCount: value.sampled_window_count,
           visibilityEvaluationCount: value.visibility_evaluation_count,

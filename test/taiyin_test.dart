@@ -7,6 +7,7 @@ import 'package:taiyin/src/bindings/taiyin_bindings.g.dart';
 import 'package:taiyin/src/native_compatibility.dart';
 import 'package:taiyin/taiyin.dart';
 import 'package:test/test.dart';
+import 'support/native_library.dart';
 
 Future<List<double>> _calculateInWorker(
   String libraryPath,
@@ -115,8 +116,8 @@ void _customTargetWorkerMain((SendPort, String, int) message) {
 
 List<double> _customPositionEvaluator(TaiyinCustomTargetRequest request) => [
   request.target.id.toDouble(),
-  request.julianDateTdb,
-  request.julianDateTt,
+  request.julianDateTdb.toDouble(),
+  request.julianDateTt.toDouble(),
   request.hasFlag(TaiyinPositionFlag.xyz) ? 1.0 : 0.0,
   request.flags.contains(TaiyinPositionFlag.speed) ? 1.0 : 0.0,
   0.0,
@@ -179,10 +180,6 @@ List<double> _useSavedCustomRequestEvaluator(
 }
 
 void main() {
-  final libraryPath =
-      Platform.environment['TAIYIN_TEST_LIBRARY'] ??
-      '../taiyin-ephemeris/build-c-api-release/libtaiyin.dylib';
-  final nativeLibraryAvailable = File(libraryPath).existsSync();
   final nativeDataPath = '../taiyin-ephemeris/data';
 
   group(

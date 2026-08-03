@@ -2,6 +2,7 @@ part of '../taiyin.dart';
 
 typedef _ObservedCalculation =
     int Function(
+      Arena arena,
       Pointer<Int32> bodyIds,
       int bodyCount,
       int mask,
@@ -68,10 +69,10 @@ final class TaiyinObservedApi {
     return _calculate(
       bodies,
       flags,
-      (bodyIds, bodyCount, mask, output, diagnostics) =>
+      (arena, bodyIds, bodyCount, mask, output, diagnostics) =>
           _bindings.taiyin_calc_observed_bodies_ut(
             _context,
-            julianDate.toDouble(),
+            writeJulianDate(arena, julianDate),
             bodyIds,
             bodyCount,
             mask,
@@ -108,7 +109,7 @@ final class TaiyinObservedApi {
       return _calculate(
         bodies,
         flags,
-        (bodyIds, bodyCount, mask, output, diagnostics) =>
+        (arena, bodyIds, bodyCount, mask, output, diagnostics) =>
             _bindings.taiyin_calc_observed_bodies_utc(
               _context,
               calendar,
@@ -152,6 +153,7 @@ final class TaiyinObservedApi {
       }
 
       final status = calculate(
+        arena,
         bodyIds,
         bodies.length,
         mask,

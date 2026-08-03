@@ -34,14 +34,15 @@ final class TaiyinPhenomenaApi {
       body,
       origin,
       flags,
-      (mask, output, diagnostic) => _bindings.taiyin_calc_body_phenomena_tt(
-        _context,
-        body.id,
-        tt.toDouble(),
-        mask,
-        output,
-        diagnostic,
-      ),
+      (arena, mask, output, diagnostic) =>
+          _bindings.taiyin_calc_body_phenomena_tt(
+            _context,
+            body.id,
+            writeJulianDate(arena, tt),
+            mask,
+            output,
+            diagnostic,
+          ),
     );
   }
 
@@ -62,14 +63,15 @@ final class TaiyinPhenomenaApi {
       body,
       origin,
       flags,
-      (mask, output, diagnostic) => _bindings.taiyin_calc_body_phenomena_ut(
-        _context,
-        body.id,
-        ut1.toDouble(),
-        mask,
-        output,
-        diagnostic,
-      ),
+      (arena, mask, output, diagnostic) =>
+          _bindings.taiyin_calc_body_phenomena_ut(
+            _context,
+            body.id,
+            writeJulianDate(arena, ut1),
+            mask,
+            output,
+            diagnostic,
+          ),
     );
   }
 
@@ -78,6 +80,7 @@ final class TaiyinPhenomenaApi {
     TaiyinPhenomenaOrigin origin,
     Set<TaiyinPositionFlag> flags,
     int Function(
+      Arena arena,
       int,
       Pointer<taiyin_body_phenomena>,
       Pointer<taiyin_ephemeris_diagnostic>,
@@ -103,7 +106,7 @@ final class TaiyinPhenomenaApi {
       _bindings
         ..taiyin_body_phenomena_init(output)
         ..taiyin_ephemeris_diagnostic_init(diagnostic);
-      final status = calculate(mask, output, diagnostic);
+      final status = calculate(arena, mask, output, diagnostic);
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
       final value = output.ref;

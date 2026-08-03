@@ -4,16 +4,19 @@ typedef _VisibilityStatusChecker =
     void Function(int status, TaiyinEphemerisDiagnostic? diagnostic);
 typedef _VisibilityEventCalculation =
     int Function(
+      Arena arena,
       Pointer<taiyin_visibility_event_result> output,
       Pointer<taiyin_ephemeris_diagnostic> diagnostic,
     );
 typedef _SolarRiseSetFastCalculation =
     int Function(
+      Arena arena,
       Pointer<taiyin_solar_rise_set_fast_result> output,
       Pointer<taiyin_ephemeris_diagnostic> diagnostic,
     );
 typedef _SolarTransitFastCalculation =
     int Function(
+      Arena arena,
       Pointer<taiyin_solar_transit_fast_result> output,
       Pointer<taiyin_ephemeris_diagnostic> diagnostic,
     );
@@ -22,9 +25,8 @@ typedef _SolarTransitFastCalculation =
 ///
 /// Rise/set and transit searches use the observer location configured on the
 /// owning [TaiyinContext]. They require a finite, non-empty UT1 interval. The
-/// native ABI accepts scalar Julian dates, so input and returned event times
-/// cross a scalar-JD FFI boundary; [JulianDate] keeps its split representation
-/// everywhere else in Dart.
+/// native ABI accepts and returns split Julian dates end to end, so the
+/// [JulianDate] split representation crosses the FFI boundary intact.
 final class TaiyinVisibilityApi {
   TaiyinVisibilityApi._(
     this._bindings,
@@ -55,12 +57,12 @@ final class TaiyinVisibilityApi {
     _validateInterval(start, end);
     _validateHorizon(horizonAltitudeRadians);
     final mask = _visibilityMask(flags);
-    return _searchEvent(event, (output, diagnostic) {
+    return _searchEvent(event, (arena, output, diagnostic) {
       if (horizonAltitudeRadians == null) {
         return _bindings.taiyin_search_moon_rise_set_ut(
           _context,
-          start.toDouble(),
-          end.toDouble(),
+          writeJulianDate(arena, start),
+          writeJulianDate(arena, end),
           event.id,
           limb.id,
           mask,
@@ -70,8 +72,8 @@ final class TaiyinVisibilityApi {
       }
       return _bindings.taiyin_search_moon_rise_set_at_horizon_ut(
         _context,
-        start.toDouble(),
-        end.toDouble(),
+        writeJulianDate(arena, start),
+        writeJulianDate(arena, end),
         event.id,
         limb.id,
         horizonAltitudeRadians,
@@ -93,10 +95,10 @@ final class TaiyinVisibilityApi {
     _validateInterval(start, end);
     return _searchEvent(
       event,
-      (output, diagnostic) => _bindings.taiyin_search_moon_transit_ut(
+      (arena, output, diagnostic) => _bindings.taiyin_search_moon_transit_ut(
         _context,
-        start.toDouble(),
-        end.toDouble(),
+        writeJulianDate(arena, start),
+        writeJulianDate(arena, end),
         event.id,
         output,
         diagnostic,
@@ -123,13 +125,13 @@ final class TaiyinVisibilityApi {
     _validateInterval(start, end);
     _validateHorizon(horizonAltitudeRadians);
     final mask = _visibilityMask(flags, allowsFixedDiscSize: false);
-    return _searchEvent(event, (output, diagnostic) {
+    return _searchEvent(event, (arena, output, diagnostic) {
       if (horizonAltitudeRadians == null) {
         return _bindings.taiyin_search_planet_rise_set_ut(
           _context,
           body.id,
-          start.toDouble(),
-          end.toDouble(),
+          writeJulianDate(arena, start),
+          writeJulianDate(arena, end),
           event.id,
           limb.id,
           mask,
@@ -140,8 +142,8 @@ final class TaiyinVisibilityApi {
       return _bindings.taiyin_search_planet_rise_set_at_horizon_ut(
         _context,
         body.id,
-        start.toDouble(),
-        end.toDouble(),
+        writeJulianDate(arena, start),
+        writeJulianDate(arena, end),
         event.id,
         limb.id,
         horizonAltitudeRadians,
@@ -165,11 +167,11 @@ final class TaiyinVisibilityApi {
     _validateInterval(start, end);
     return _searchEvent(
       event,
-      (output, diagnostic) => _bindings.taiyin_search_planet_transit_ut(
+      (arena, output, diagnostic) => _bindings.taiyin_search_planet_transit_ut(
         _context,
         body.id,
-        start.toDouble(),
-        end.toDouble(),
+        writeJulianDate(arena, start),
+        writeJulianDate(arena, end),
         event.id,
         output,
         diagnostic,
@@ -194,12 +196,12 @@ final class TaiyinVisibilityApi {
     _validateInterval(start, end);
     _validateHorizon(horizonAltitudeRadians);
     final mask = _visibilityMask(flags);
-    return _searchEvent(event, (output, diagnostic) {
+    return _searchEvent(event, (arena, output, diagnostic) {
       if (horizonAltitudeRadians == null) {
         return _bindings.taiyin_search_solar_rise_set_ut(
           _context,
-          start.toDouble(),
-          end.toDouble(),
+          writeJulianDate(arena, start),
+          writeJulianDate(arena, end),
           event.id,
           limb.id,
           mask,
@@ -209,8 +211,8 @@ final class TaiyinVisibilityApi {
       }
       return _bindings.taiyin_search_solar_rise_set_at_horizon_ut(
         _context,
-        start.toDouble(),
-        end.toDouble(),
+        writeJulianDate(arena, start),
+        writeJulianDate(arena, end),
         event.id,
         limb.id,
         horizonAltitudeRadians,
@@ -236,10 +238,10 @@ final class TaiyinVisibilityApi {
     _validateInterval(start, end);
     return _searchEvent(
       event,
-      (output, diagnostic) => _bindings.taiyin_search_solar_twilight_ut(
+      (arena, output, diagnostic) => _bindings.taiyin_search_solar_twilight_ut(
         _context,
-        start.toDouble(),
-        end.toDouble(),
+        writeJulianDate(arena, start),
+        writeJulianDate(arena, end),
         event.id,
         twilight.id,
         output,
@@ -259,10 +261,10 @@ final class TaiyinVisibilityApi {
     _validateInterval(start, end);
     return _searchEvent(
       event,
-      (output, diagnostic) => _bindings.taiyin_search_solar_transit_ut(
+      (arena, output, diagnostic) => _bindings.taiyin_search_solar_transit_ut(
         _context,
-        start.toDouble(),
-        end.toDouble(),
+        writeJulianDate(arena, start),
+        writeJulianDate(arena, end),
         event.id,
         output,
         diagnostic,
@@ -282,10 +284,10 @@ final class TaiyinVisibilityApi {
     _ensureOpen();
     _validateObserver(observer);
     _requireFinite(horizonAltitudeRadians, 'horizonAltitudeRadians');
-    return _solarRiseSetFast((output, diagnostic) {
+    return _solarRiseSetFast((arena, output, diagnostic) {
       return _bindings.taiyin_compute_solar_rise_set_fast_tt(
         _context,
-        center.toDouble(),
+        writeJulianDate(arena, center),
         observer.longitudeDegrees,
         observer.latitudeDegrees,
         observer.heightMeters,
@@ -306,10 +308,10 @@ final class TaiyinVisibilityApi {
   ) {
     _ensureOpen();
     _validateObserver(observer);
-    return _solarTransitFast((output, diagnostic) {
+    return _solarTransitFast((arena, output, diagnostic) {
       return _bindings.taiyin_compute_solar_transit_fast_tt(
         _context,
-        center.toDouble(),
+        writeJulianDate(arena, center),
         observer.longitudeDegrees,
         observer.latitudeDegrees,
         observer.heightMeters,
@@ -339,13 +341,13 @@ final class TaiyinVisibilityApi {
     final mask = _visibilityMask(flags, allowsFixedDiscSize: false);
     return using((arena) {
       final nativeStarKey = starKey.toNativeUtf8(allocator: arena).cast<Char>();
-      return _searchEvent(event, (output, diagnostic) {
+      return _searchEvent(event, (searchArena, output, diagnostic) {
         if (horizonAltitudeRadians == null) {
           return _bindings.taiyin_search_star_rise_set_ut(
             _context,
             nativeStarKey,
-            start.toDouble(),
-            end.toDouble(),
+            writeJulianDate(searchArena, start),
+            writeJulianDate(searchArena, end),
             event.id,
             mask,
             output,
@@ -355,8 +357,8 @@ final class TaiyinVisibilityApi {
         return _bindings.taiyin_search_star_rise_set_at_horizon_ut(
           _context,
           nativeStarKey,
-          start.toDouble(),
-          end.toDouble(),
+          writeJulianDate(searchArena, start),
+          writeJulianDate(searchArena, end),
           event.id,
           horizonAltitudeRadians,
           mask,
@@ -382,15 +384,16 @@ final class TaiyinVisibilityApi {
       final nativeStarKey = starKey.toNativeUtf8(allocator: arena).cast<Char>();
       return _searchEvent(
         event,
-        (output, diagnostic) => _bindings.taiyin_search_star_transit_ut(
-          _context,
-          nativeStarKey,
-          start.toDouble(),
-          end.toDouble(),
-          event.id,
-          output,
-          diagnostic,
-        ),
+        (searchArena, output, diagnostic) =>
+            _bindings.taiyin_search_star_transit_ut(
+              _context,
+              nativeStarKey,
+              writeJulianDate(searchArena, start),
+              writeJulianDate(searchArena, end),
+              event.id,
+              output,
+              diagnostic,
+            ),
       );
     });
   }
@@ -405,7 +408,7 @@ final class TaiyinVisibilityApi {
       _bindings
         ..taiyin_visibility_event_result_init(output)
         ..taiyin_ephemeris_diagnostic_init(diagnostic);
-      final status = calculate(output, diagnostic);
+      final status = calculate(arena, output, diagnostic);
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
       final value = output.ref;
@@ -441,7 +444,7 @@ final class TaiyinVisibilityApi {
       _bindings
         ..taiyin_solar_rise_set_fast_result_init(output)
         ..taiyin_ephemeris_diagnostic_init(diagnostic);
-      final status = calculate(output, diagnostic);
+      final status = calculate(arena, output, diagnostic);
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
       final value = output.ref;
@@ -469,7 +472,7 @@ final class TaiyinVisibilityApi {
       _bindings
         ..taiyin_solar_transit_fast_result_init(output)
         ..taiyin_ephemeris_diagnostic_init(diagnostic);
-      final status = calculate(output, diagnostic);
+      final status = calculate(arena, output, diagnostic);
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
       final value = output.ref;
@@ -588,11 +591,11 @@ final class TaiyinVisibilityApi {
     }
   }
 
-  JulianDate<Ut1Scale>? _ut1OrNull(double value) {
-    return value.isFinite ? JulianDate<Ut1Scale>.fromDouble(value) : null;
+  JulianDate<Ut1Scale>? _ut1OrNull(taiyin_split_julian_date value) {
+    return value.day_fraction.isFinite ? readJulianDate<Ut1Scale>(value) : null;
   }
 
-  JulianDate<TtScale>? _ttOrNull(double value) {
-    return value.isFinite ? JulianDate<TtScale>.fromDouble(value) : null;
+  JulianDate<TtScale>? _ttOrNull(taiyin_split_julian_date value) {
+    return value.day_fraction.isFinite ? readJulianDate<TtScale>(value) : null;
   }
 }

@@ -4,6 +4,7 @@ import 'package:ffi/ffi.dart';
 
 import '../bindings/taiyin_bindings.g.dart';
 import '../interop/calendar.dart';
+import '../interop/julian_date.dart';
 import '../time/astro_date_time.dart';
 import '../time/julian_date.dart';
 import '../time/time_models.dart';
@@ -13,12 +14,14 @@ part 'position_models.dart';
 
 typedef _SinglePositionCalculation =
     int Function(
+      Arena arena,
       int mask,
       Pointer<Double> output,
       Pointer<taiyin_ephemeris_diagnostic> diagnostic,
     );
 typedef _BatchPositionCalculation =
     int Function(
+      Arena arena,
       Pointer<Int32> targetIds,
       int targetCount,
       int mask,
@@ -27,6 +30,7 @@ typedef _BatchPositionCalculation =
     );
 typedef _StateCalculation =
     int Function(
+      Arena arena,
       int mask,
       Pointer<taiyin_cartesian_state> output,
       Pointer<taiyin_ephemeris_diagnostic> diagnostic,
@@ -36,16 +40,12 @@ typedef _PositionStatusChecker =
 
 /// Position and Cartesian-state calculations backed by Taiyin.
 ///
-/// The current native calculation core accepts a scalar absolute Julian date.
-/// A [JulianDate] is therefore intentionally quantized at this boundary;
-/// split-JD precision remains available for calendar and time-scale operations.
-/// This will be replaced only when the native core, search algorithms, and
-/// time-bearing result types have a complete split-JD design.
-///
-/// Batch methods preserve one result and diagnostic per requested body when
-/// individual targets fail. Callers should inspect
-/// [TaiyinEphemerisDiagnostic.status] on every returned item. Failures that
-/// occur before native per-target diagnostics are available still throw.
+/// Julian dates cross the native boundary as split `taiyin_split_julian_date`
+/// structs, preserving the full day-number/fraction precision. Batch methods
+/// preserve one result and diagnostic per requested body when individual
+/// targets fail. Callers should inspect [TaiyinEphemerisDiagnostic.status] on
+/// every returned item. Failures that occur before native per-target
+/// diagnostics are available still throw.
 final class TaiyinPositionApi {
   /// Internal constructor used by an owning [TaiyinContext].
   TaiyinPositionApi.internal(
@@ -69,10 +69,10 @@ final class TaiyinPositionApi {
     _ensureOpen();
     return _position(
       flags,
-      (mask, output, diagnostic) => _bindings.taiyin_calc_position_tt(
+      (arena, mask, output, diagnostic) => _bindings.taiyin_calc_position_tt(
         _context,
         body.id,
-        julianDate.toDouble(),
+        writeJulianDate(arena, julianDate),
         mask,
         output,
         diagnostic,
@@ -89,10 +89,10 @@ final class TaiyinPositionApi {
     _ensureOpen();
     return _position(
       flags,
-      (mask, output, diagnostic) => _bindings.taiyin_calc_position_ut(
+      (arena, mask, output, diagnostic) => _bindings.taiyin_calc_position_ut(
         _context,
         body.id,
-        julianDate.toDouble(),
+        writeJulianDate(arena, julianDate),
         mask,
         output,
         diagnostic,
@@ -110,11 +110,11 @@ final class TaiyinPositionApi {
     _ensureOpen();
     return _position(
       flags,
-      (mask, output, diagnostic) => _bindings.taiyin_calc_position_tdb(
+      (arena, mask, output, diagnostic) => _bindings.taiyin_calc_position_tdb(
         _context,
         body.id,
-        tdb.toDouble(),
-        tt.toDouble(),
+        writeJulianDate(arena, tdb),
+        writeJulianDate(arena, tt),
         mask,
         output,
         diagnostic,
@@ -133,15 +133,16 @@ final class TaiyinPositionApi {
     _requireFinite(deltaTSeconds, 'deltaTSeconds');
     return _position(
       flags,
-      (mask, output, diagnostic) => _bindings.taiyin_calc_position_ut_delta_t(
-        _context,
-        body.id,
-        julianDate.toDouble(),
-        deltaTSeconds,
-        mask,
-        output,
-        diagnostic,
-      ),
+      (arena, mask, output, diagnostic) =>
+          _bindings.taiyin_calc_position_ut_delta_t(
+            _context,
+            body.id,
+            writeJulianDate(arena, julianDate),
+            deltaTSeconds,
+            mask,
+            output,
+            diagnostic,
+          ),
     );
   }
 
@@ -156,7 +157,7 @@ final class TaiyinPositionApi {
       final calendar = writeNativeCalendar(_bindings, arena, utc);
       return _position(
         flags,
-        (mask, output, diagnostic) => _bindings.taiyin_calc_position_utc(
+        (_, mask, output, diagnostic) => _bindings.taiyin_calc_position_utc(
           _context,
           body.id,
           calendar,
@@ -178,12 +179,12 @@ final class TaiyinPositionApi {
     return _positions(
       bodies,
       flags,
-      (targetIds, targetCount, mask, output, diagnostics) =>
+      (arena, targetIds, targetCount, mask, output, diagnostics) =>
           _bindings.taiyin_calc_positions_tt(
             _context,
             targetIds,
             targetCount,
-            julianDate.toDouble(),
+            writeJulianDate(arena, julianDate),
             mask,
             output,
             diagnostics,
@@ -201,12 +202,12 @@ final class TaiyinPositionApi {
     return _positions(
       bodies,
       flags,
-      (targetIds, targetCount, mask, output, diagnostics) =>
+      (arena, targetIds, targetCount, mask, output, diagnostics) =>
           _bindings.taiyin_calc_positions_ut(
             _context,
             targetIds,
             targetCount,
-            julianDate.toDouble(),
+            writeJulianDate(arena, julianDate),
             mask,
             output,
             diagnostics,
@@ -225,13 +226,13 @@ final class TaiyinPositionApi {
     return _positions(
       bodies,
       flags,
-      (targetIds, targetCount, mask, output, diagnostics) =>
+      (arena, targetIds, targetCount, mask, output, diagnostics) =>
           _bindings.taiyin_calc_positions_tdb(
             _context,
             targetIds,
             targetCount,
-            tdb.toDouble(),
-            tt.toDouble(),
+            writeJulianDate(arena, tdb),
+            writeJulianDate(arena, tt),
             mask,
             output,
             diagnostics,
@@ -251,12 +252,12 @@ final class TaiyinPositionApi {
     return _positions(
       bodies,
       flags,
-      (targetIds, targetCount, mask, output, diagnostics) =>
+      (arena, targetIds, targetCount, mask, output, diagnostics) =>
           _bindings.taiyin_calc_positions_ut_delta_t(
             _context,
             targetIds,
             targetCount,
-            julianDate.toDouble(),
+            writeJulianDate(arena, julianDate),
             deltaTSeconds,
             mask,
             output,
@@ -277,7 +278,7 @@ final class TaiyinPositionApi {
       return _positions(
         bodies,
         flags,
-        (targetIds, targetCount, mask, output, diagnostics) =>
+        (_, targetIds, targetCount, mask, output, diagnostics) =>
             _bindings.taiyin_calc_positions_utc(
               _context,
               targetIds,
@@ -304,10 +305,10 @@ final class TaiyinPositionApi {
     _ensureOpen();
     return _state(
       flags,
-      (mask, output, diagnostic) => _bindings.taiyin_calc_state_tt(
+      (arena, mask, output, diagnostic) => _bindings.taiyin_calc_state_tt(
         _context,
         body.id,
-        julianDate.toDouble(),
+        writeJulianDate(arena, julianDate),
         mask,
         output,
         diagnostic,
@@ -326,10 +327,10 @@ final class TaiyinPositionApi {
     _ensureOpen();
     return _state(
       flags,
-      (mask, output, diagnostic) => _bindings.taiyin_calc_state_ut(
+      (arena, mask, output, diagnostic) => _bindings.taiyin_calc_state_ut(
         _context,
         body.id,
-        julianDate.toDouble(),
+        writeJulianDate(arena, julianDate),
         mask,
         output,
         diagnostic,
@@ -349,11 +350,11 @@ final class TaiyinPositionApi {
     _ensureOpen();
     return _state(
       flags,
-      (mask, output, diagnostic) => _bindings.taiyin_calc_state_tdb(
+      (arena, mask, output, diagnostic) => _bindings.taiyin_calc_state_tdb(
         _context,
         body.id,
-        tdb.toDouble(),
-        tt.toDouble(),
+        writeJulianDate(arena, tdb),
+        writeJulianDate(arena, tt),
         mask,
         output,
         diagnostic,
@@ -374,15 +375,16 @@ final class TaiyinPositionApi {
     _requireFinite(deltaTSeconds, 'deltaTSeconds');
     return _state(
       flags,
-      (mask, output, diagnostic) => _bindings.taiyin_calc_state_ut_delta_t(
-        _context,
-        body.id,
-        julianDate.toDouble(),
-        deltaTSeconds,
-        mask,
-        output,
-        diagnostic,
-      ),
+      (arena, mask, output, diagnostic) =>
+          _bindings.taiyin_calc_state_ut_delta_t(
+            _context,
+            body.id,
+            writeJulianDate(arena, julianDate),
+            deltaTSeconds,
+            mask,
+            output,
+            diagnostic,
+          ),
     );
   }
 
@@ -399,7 +401,7 @@ final class TaiyinPositionApi {
       final calendar = writeNativeCalendar(_bindings, arena, utc);
       return _state(
         flags,
-        (mask, output, diagnostic) => _bindings.taiyin_calc_state_utc(
+        (_, mask, output, diagnostic) => _bindings.taiyin_calc_state_utc(
           _context,
           body.id,
           calendar,
@@ -421,7 +423,7 @@ final class TaiyinPositionApi {
       final output = arena<Double>(6);
       final diagnostic = arena<taiyin_ephemeris_diagnostic>();
       _bindings.taiyin_ephemeris_diagnostic_init(diagnostic);
-      final status = calculate(mask, output, diagnostic);
+      final status = calculate(arena, mask, output, diagnostic);
       final mappedDiagnostic = _readDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
       return TaiyinEphemerisResult(
@@ -450,6 +452,7 @@ final class TaiyinPositionApi {
         _bindings.taiyin_ephemeris_diagnostic_init(diagnostics + index);
       }
       final status = calculate(
+        arena,
         targetIds,
         bodies.length,
         mask,
@@ -485,7 +488,7 @@ final class TaiyinPositionApi {
       _bindings
         ..taiyin_cartesian_state_init(output)
         ..taiyin_ephemeris_diagnostic_init(diagnostic);
-      final status = calculate(mask, output, diagnostic);
+      final status = calculate(arena, mask, output, diagnostic);
       final mappedDiagnostic = _readDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
       final state = output.ref;
@@ -511,7 +514,7 @@ final class TaiyinPositionApi {
       centerId: value.center_id,
       frame: TaiyinApparentFrame.fromId(value.frame),
       rawFrameId: value.frame,
-      julianDateTdb: value.jd_tdb,
+      julianDateTdb: readJulianDate<TdbScale>(value.jd_tdb),
       candidateCount: value.candidate_count,
       attemptedMethodId: value.attempted_method_id,
       nearestCoverageStart: value.nearest_coverage_start,

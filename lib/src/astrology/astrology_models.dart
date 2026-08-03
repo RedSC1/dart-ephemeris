@@ -131,7 +131,8 @@ enum TaiyinSiderealReferencePlane {
 ///
 /// Use [TaiyinSiderealReferenceEpoch.tt] for a TT epoch or
 /// [TaiyinSiderealReferenceEpoch.ut1] for a UT1 epoch. The native ABI accepts
-/// a scalar JD, so the coordinate is quantized only at that call boundary.
+/// the epoch as a split-JD struct; when no reference plane is selected a null
+/// pointer is sent instead.
 sealed class TaiyinSiderealReferenceEpoch {
   const TaiyinSiderealReferenceEpoch._();
 
@@ -141,7 +142,7 @@ sealed class TaiyinSiderealReferenceEpoch {
   factory TaiyinSiderealReferenceEpoch.ut1(JulianDate<Ut1Scale> coordinate) =
       TaiyinSiderealReferenceEpochUt1;
 
-  /// Scalar Julian date passed to the native ABI.
+  /// Scalar Julian date equivalent of this epoch, for scalar consumers.
   double get nativeJulianDate;
 
   /// Whether [nativeJulianDate] is expressed in UT1 rather than TT.

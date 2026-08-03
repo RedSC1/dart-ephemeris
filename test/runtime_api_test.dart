@@ -1,14 +1,9 @@
-import 'dart:io';
-
 import 'package:taiyin/src/native_compatibility.dart';
 import 'package:taiyin/taiyin.dart';
 import 'package:test/test.dart';
+import 'support/native_library.dart';
 
 void main() {
-  final libraryPath =
-      Platform.environment['TAIYIN_TEST_LIBRARY'] ??
-      '../taiyin-ephemeris/build-c-api-release/libtaiyin.dylib';
-  final nativeLibraryAvailable = File(libraryPath).existsSync();
   final nativeDataPath = '../taiyin-ephemeris/data';
   final lunarLimbPath = '$nativeDataPath/lunar-limb/kaguya_lalt_16ppd.tll1';
 

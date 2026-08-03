@@ -2,12 +2,9 @@ import 'dart:io';
 
 import 'package:taiyin/taiyin.dart';
 import 'package:test/test.dart';
+import 'support/native_library.dart';
 
 void main() {
-  final libraryPath =
-      Platform.environment['TAIYIN_TEST_LIBRARY'] ??
-      '../taiyin-ephemeris/build-c-api-release/libtaiyin.dylib';
-  final nativeLibraryAvailable = File(libraryPath).existsSync();
   final opm2DataPath =
       Platform.environment['TAIYIN_OPM2_DATA_DIR'] ??
       '../taiyin-ephemeris/data/ephemerides/opm2/major-bodies/600y';

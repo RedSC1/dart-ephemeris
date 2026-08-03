@@ -98,8 +98,6 @@ enum TaiyinVisibilityFlag {
 /// A successful search need not find an event: [coordinate] is `null` for
 /// [TaiyinVisibilityAltitudeState.alwaysAbove],
 /// [TaiyinVisibilityAltitudeState.alwaysBelow], or a non-localizable result.
-/// The native ABI currently returns searched times as scalar Julian dates, so
-/// they cannot retain split-JD precision at the FFI boundary.
 final class TaiyinVisibilityEvent {
   const TaiyinVisibilityEvent({
     required this.requestedEvent,
@@ -142,9 +140,8 @@ final class TaiyinVisibilityEvent {
 
 /// Approximate solar rise and set times around a TT date.
 ///
-/// The native ABI returns scalar Julian dates, so [rise] and [set] cannot
-/// retain split-JD precision at the FFI boundary. They are `null` when the
-/// corresponding event does not occur near the requested date.
+/// [rise] and [set] are `null` when the corresponding event does not occur
+/// near the requested date.
 final class TaiyinSolarRiseSetFastResult {
   const TaiyinSolarRiseSetFastResult({
     required this.altitudeState,
@@ -162,9 +159,6 @@ final class TaiyinSolarRiseSetFastResult {
 }
 
 /// Approximate solar meridian transit near a TT date.
-///
-/// The native ABI returns [coordinate] as a scalar Julian date and therefore
-/// cannot preserve split-JD precision at this FFI boundary.
 final class TaiyinSolarTransitFastResult {
   const TaiyinSolarTransitFastResult({
     required this.coordinate,

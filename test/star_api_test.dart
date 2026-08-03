@@ -3,12 +3,9 @@ import 'dart:typed_data';
 
 import 'package:taiyin/taiyin.dart';
 import 'package:test/test.dart';
+import 'support/native_library.dart';
 
 void main() {
-  final libraryPath =
-      Platform.environment['TAIYIN_TEST_LIBRARY'] ??
-      '../taiyin-ephemeris/build-c-api-release/libtaiyin.dylib';
-  final nativeLibraryAvailable = File(libraryPath).existsSync();
   const nativeDataRoot = '../taiyin-ephemeris/data';
   const fixedCatalogPath =
       '$nativeDataRoot/stars/catalogs/stars-fixed-traditional.tsc1';
@@ -120,7 +117,7 @@ star.0.magnitude=5.5
           expect(result.value.values.every((value) => value.isFinite), isTrue);
           expect(result.value.isCartesian, isTrue);
           expect(result.diagnostic.status, 0);
-          expect(result.diagnostic.julianDateTdb.isFinite, isTrue);
+          expect(result.diagnostic.julianDateTdb.toDouble().isFinite, isTrue);
         }
       });
 

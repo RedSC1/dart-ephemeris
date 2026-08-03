@@ -2,6 +2,7 @@ part of '../taiyin.dart';
 
 typedef _SingleStarPositionCalculation =
     int Function(
+      Arena arena,
       Pointer<Char> starKey,
       int mask,
       Pointer<Double> output,
@@ -9,6 +10,7 @@ typedef _SingleStarPositionCalculation =
     );
 typedef _BatchStarPositionCalculation =
     int Function(
+      Arena arena,
       Pointer<Pointer<Char>> starKeys,
       int starCount,
       int mask,
@@ -133,12 +135,12 @@ final class TaiyinStarApi {
     return _position(
       starKey,
       flags,
-      (key, mask, output, diagnostic) =>
+      (arena, key, mask, output, diagnostic) =>
           _bindings.taiyin_calc_star_position_tdb(
             _context,
             key,
-            tdb.toDouble(),
-            tt.toDouble(),
+            writeJulianDate(arena, tdb),
+            writeJulianDate(arena, tt),
             mask,
             output,
             diagnostic,
@@ -156,14 +158,15 @@ final class TaiyinStarApi {
     return _position(
       starKey,
       flags,
-      (key, mask, output, diagnostic) => _bindings.taiyin_calc_star_position_tt(
-        _context,
-        key,
-        julianDate.toDouble(),
-        mask,
-        output,
-        diagnostic,
-      ),
+      (arena, key, mask, output, diagnostic) =>
+          _bindings.taiyin_calc_star_position_tt(
+            _context,
+            key,
+            writeJulianDate(arena, julianDate),
+            mask,
+            output,
+            diagnostic,
+          ),
     );
   }
 
@@ -177,14 +180,15 @@ final class TaiyinStarApi {
     return _position(
       starKey,
       flags,
-      (key, mask, output, diagnostic) => _bindings.taiyin_calc_star_position_ut(
-        _context,
-        key,
-        julianDate.toDouble(),
-        mask,
-        output,
-        diagnostic,
-      ),
+      (arena, key, mask, output, diagnostic) =>
+          _bindings.taiyin_calc_star_position_ut(
+            _context,
+            key,
+            writeJulianDate(arena, julianDate),
+            mask,
+            output,
+            diagnostic,
+          ),
     );
   }
 
@@ -200,11 +204,11 @@ final class TaiyinStarApi {
     return _position(
       starKey,
       flags,
-      (key, mask, output, diagnostic) =>
+      (arena, key, mask, output, diagnostic) =>
           _bindings.taiyin_calc_star_position_ut_delta_t(
             _context,
             key,
-            julianDate.toDouble(),
+            writeJulianDate(arena, julianDate),
             deltaTSeconds,
             mask,
             output,
@@ -224,13 +228,13 @@ final class TaiyinStarApi {
     return _positions(
       starKeys,
       flags,
-      (keys, count, mask, output, diagnostics) =>
+      (arena, keys, count, mask, output, diagnostics) =>
           _bindings.taiyin_calc_star_positions_tdb(
             _context,
             keys,
             count,
-            tdb.toDouble(),
-            tt.toDouble(),
+            writeJulianDate(arena, tdb),
+            writeJulianDate(arena, tt),
             mask,
             output,
             diagnostics,
@@ -248,12 +252,12 @@ final class TaiyinStarApi {
     return _positions(
       starKeys,
       flags,
-      (keys, count, mask, output, diagnostics) =>
+      (arena, keys, count, mask, output, diagnostics) =>
           _bindings.taiyin_calc_star_positions_tt(
             _context,
             keys,
             count,
-            julianDate.toDouble(),
+            writeJulianDate(arena, julianDate),
             mask,
             output,
             diagnostics,
@@ -271,12 +275,12 @@ final class TaiyinStarApi {
     return _positions(
       starKeys,
       flags,
-      (keys, count, mask, output, diagnostics) =>
+      (arena, keys, count, mask, output, diagnostics) =>
           _bindings.taiyin_calc_star_positions_ut(
             _context,
             keys,
             count,
-            julianDate.toDouble(),
+            writeJulianDate(arena, julianDate),
             mask,
             output,
             diagnostics,
@@ -296,12 +300,12 @@ final class TaiyinStarApi {
     return _positions(
       starKeys,
       flags,
-      (keys, count, mask, output, diagnostics) =>
+      (arena, keys, count, mask, output, diagnostics) =>
           _bindings.taiyin_calc_star_positions_ut_delta_t(
             _context,
             keys,
             count,
-            julianDate.toDouble(),
+            writeJulianDate(arena, julianDate),
             deltaTSeconds,
             mask,
             output,
@@ -331,7 +335,7 @@ final class TaiyinStarApi {
       final status = _bindings.taiyin_calc_observed_star_ut(
         _context,
         nativeKey,
-        julianDate.toDouble(),
+        writeJulianDate(arena, julianDate),
         mask,
         output,
         diagnostic,
@@ -370,7 +374,7 @@ final class TaiyinStarApi {
         _context,
         nativeKeys,
         starKeys.length,
-        julianDate.toDouble(),
+        writeJulianDate(arena, julianDate),
         mask,
         output,
         diagnostics,
@@ -423,7 +427,7 @@ final class TaiyinStarApi {
       final output = arena<Double>(6);
       final diagnostic = arena<taiyin_ephemeris_diagnostic>();
       _bindings.taiyin_ephemeris_diagnostic_init(diagnostic);
-      final status = calculate(nativeKey, mask, output, diagnostic);
+      final status = calculate(arena, nativeKey, mask, output, diagnostic);
       final mappedDiagnostic = _observedMapper._readObservedDiagnostic(
         diagnostic.ref,
       );
@@ -456,6 +460,7 @@ final class TaiyinStarApi {
         _bindings.taiyin_ephemeris_diagnostic_init(diagnostics + index);
       }
       final status = calculate(
+        arena,
         nativeKeys,
         starKeys.length,
         mask,

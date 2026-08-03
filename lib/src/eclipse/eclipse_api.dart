@@ -146,14 +146,17 @@ final class TaiyinEclipseApi {
   }) {
     _ensureOpen();
     final mask = _solveMask(positionFlags, options);
-    return _lunarTt((output, diagnostic) {
-      return _bindings.taiyin_solve_lunar_eclipse_at_tt(
-        _context,
-        estimate.toDouble(),
-        mask,
-        output,
-        diagnostic,
-      );
+    return using((arena) {
+      final estimateJd = writeJulianDate(arena, estimate);
+      return _lunarTt((output, diagnostic) {
+        return _bindings.taiyin_solve_lunar_eclipse_at_tt(
+          _context,
+          estimateJd,
+          mask,
+          output,
+          diagnostic,
+        );
+      });
     });
   }
 
@@ -165,14 +168,17 @@ final class TaiyinEclipseApi {
   }) {
     _ensureOpen();
     final mask = _solveMask(positionFlags, options);
-    return _lunarUt((output, diagnostic) {
-      return _bindings.taiyin_solve_lunar_eclipse_at_ut(
-        _context,
-        estimate.toDouble(),
-        mask,
-        output,
-        diagnostic,
-      );
+    return using((arena) {
+      final estimateJd = writeJulianDate(arena, estimate);
+      return _lunarUt((output, diagnostic) {
+        return _bindings.taiyin_solve_lunar_eclipse_at_ut(
+          _context,
+          estimateJd,
+          mask,
+          output,
+          diagnostic,
+        );
+      });
     });
   }
 
@@ -186,15 +192,18 @@ final class TaiyinEclipseApi {
     _ensureOpen();
     final kindMask = _lunarKindMask(kinds);
     final mask = _searchMask(positionFlags, options, allowBackward: true);
-    return _lunarTt((output, diagnostic) {
-      return _bindings.taiyin_search_next_lunar_eclipse_tt(
-        _context,
-        start.toDouble(),
-        kindMask,
-        mask,
-        output,
-        diagnostic,
-      );
+    return using((arena) {
+      final startJd = writeJulianDate(arena, start);
+      return _lunarTt((output, diagnostic) {
+        return _bindings.taiyin_search_next_lunar_eclipse_tt(
+          _context,
+          startJd,
+          kindMask,
+          mask,
+          output,
+          diagnostic,
+        );
+      });
     });
   }
 
@@ -210,15 +219,18 @@ final class TaiyinEclipseApi {
     _ensureOpen();
     final kindMask = _lunarKindMask(kinds);
     final mask = _searchMask(positionFlags, options, allowBackward: true);
-    return _lunarUt((output, diagnostic) {
-      return _bindings.taiyin_search_next_lunar_eclipse_ut(
-        _context,
-        start.toDouble(),
-        kindMask,
-        mask,
-        output,
-        diagnostic,
-      );
+    return using((arena) {
+      final startJd = writeJulianDate(arena, start);
+      return _lunarUt((output, diagnostic) {
+        return _bindings.taiyin_search_next_lunar_eclipse_ut(
+          _context,
+          startJd,
+          kindMask,
+          mask,
+          output,
+          diagnostic,
+        );
+      });
     });
   }
 
@@ -241,18 +253,22 @@ final class TaiyinEclipseApi {
     _requireCapacity(maxResults);
     final kindMask = _lunarKindMask(kinds);
     final mask = _searchMask(positionFlags, options, allowBackward: false);
-    return _lunarTtArray(maxResults, (output, capacity, count, diagnostic) {
-      return _bindings.taiyin_search_lunar_eclipses_tt(
-        _context,
-        start.toDouble(),
-        end.toDouble(),
-        kindMask,
-        mask,
-        output,
-        capacity,
-        count,
-        diagnostic,
-      );
+    return using((arena) {
+      final startJd = writeJulianDate(arena, start);
+      final endJd = writeJulianDate(arena, end);
+      return _lunarTtArray(maxResults, (output, capacity, count, diagnostic) {
+        return _bindings.taiyin_search_lunar_eclipses_tt(
+          _context,
+          startJd,
+          endJd,
+          kindMask,
+          mask,
+          output,
+          capacity,
+          count,
+          diagnostic,
+        );
+      });
     });
   }
 
@@ -272,18 +288,22 @@ final class TaiyinEclipseApi {
     _requireCapacity(maxResults);
     final kindMask = _lunarKindMask(kinds);
     final mask = _searchMask(positionFlags, options, allowBackward: false);
-    return _lunarUtArray(maxResults, (output, capacity, count, diagnostic) {
-      return _bindings.taiyin_search_lunar_eclipses_ut(
-        _context,
-        start.toDouble(),
-        end.toDouble(),
-        kindMask,
-        mask,
-        output,
-        capacity,
-        count,
-        diagnostic,
-      );
+    return using((arena) {
+      final startJd = writeJulianDate(arena, start);
+      final endJd = writeJulianDate(arena, end);
+      return _lunarUtArray(maxResults, (output, capacity, count, diagnostic) {
+        return _bindings.taiyin_search_lunar_eclipses_ut(
+          _context,
+          startJd,
+          endJd,
+          kindMask,
+          mask,
+          output,
+          capacity,
+          count,
+          diagnostic,
+        );
+      });
     });
   }
 
@@ -352,15 +372,18 @@ final class TaiyinEclipseApi {
       _searchMask(positionFlags, options, allowBackward: true),
       _localVisibilityMask(visibilityOptions),
     );
-    return _localLunarTt((output, diagnostic) {
-      return _bindings.taiyin_search_next_local_lunar_eclipse_tt(
-        _context,
-        start.toDouble(),
-        kindMask,
-        mask,
-        output,
-        diagnostic,
-      );
+    return using((arena) {
+      final startJd = writeJulianDate(arena, start);
+      return _localLunarTt((output, diagnostic) {
+        return _bindings.taiyin_search_next_local_lunar_eclipse_tt(
+          _context,
+          startJd,
+          kindMask,
+          mask,
+          output,
+          diagnostic,
+        );
+      });
     });
   }
 
@@ -380,15 +403,18 @@ final class TaiyinEclipseApi {
       _searchMask(positionFlags, options, allowBackward: true),
       _localVisibilityMask(visibilityOptions),
     );
-    return _localLunarUt((output, diagnostic) {
-      return _bindings.taiyin_search_next_local_lunar_eclipse_ut(
-        _context,
-        start.toDouble(),
-        kindMask,
-        mask,
-        output,
-        diagnostic,
-      );
+    return using((arena) {
+      final startJd = writeJulianDate(arena, start);
+      return _localLunarUt((output, diagnostic) {
+        return _bindings.taiyin_search_next_local_lunar_eclipse_ut(
+          _context,
+          startJd,
+          kindMask,
+          mask,
+          output,
+          diagnostic,
+        );
+      });
     });
   }
 
@@ -623,6 +649,37 @@ final class TaiyinEclipseApi {
     );
   }
 
+  /// Writes an optional Julian date into a split C ABI struct value, using the
+  /// native NaN day-fraction sentinel for the null case.
+  taiyin_split_julian_date _writeJdOrInvalid<S extends TimeScale>(
+    Arena arena,
+    JulianDate<S>? value,
+  ) {
+    if (value == null) {
+      final invalid = arena<taiyin_split_julian_date>();
+      invalid.ref
+        ..day_number = 0
+        ..day_fraction = double.nan;
+      return invalid.ref;
+    }
+    return writeJulianDate(arena, value).ref;
+  }
+
+  /// Returns a pointer to the final field of [struct] when that field is an
+  /// array of [elementCount] split Julian dates.
+  ///
+  /// dart:ffi exposes no `[]=` operator on `Array<Struct>`, so array elements
+  /// are populated through an indexed pointer derived from the struct layout.
+  Pointer<taiyin_split_julian_date> _lastJdArrayPointer<S extends Struct>(
+    Pointer<S> struct,
+    int structSize,
+    int elementCount,
+  ) {
+    final offset =
+        structSize - elementCount * sizeOf<taiyin_split_julian_date>();
+    return (struct.cast<Uint8>() + offset).cast<taiyin_split_julian_date>();
+  }
+
   Pointer<taiyin_lunar_eclipse_result_tt> _writeLunarTt(
     Arena arena,
     TaiyinLunarEclipseResult<TtScale> value,
@@ -631,16 +688,23 @@ final class TaiyinEclipseApi {
     _bindings.taiyin_lunar_eclipse_result_tt_init(output);
     output.ref
       ..kind = _kindMask(value.kinds)
-      ..maximum_jd_tt = value.maximum?.toDouble() ?? double.nan
+      ..maximum_jd_tt = _writeJdOrInvalid(arena, value.maximum)
       ..umbral_magnitude = value.umbralMagnitude ?? double.nan
       ..penumbral_magnitude = value.penumbralMagnitude ?? double.nan
       ..axis_distance_rad = value.axisDistanceRadians ?? double.nan
       ..umbra_radius_rad = value.umbraRadiusRadians ?? double.nan
       ..penumbra_radius_rad = value.penumbraRadiusRadians ?? double.nan
       ..moon_radius_rad = value.moonRadiusRadians ?? double.nan;
+    final contactJd = _lastJdArrayPointer(
+      output,
+      sizeOf<taiyin_lunar_eclipse_result_tt>(),
+      TaiyinLunarEclipseContact.values.length,
+    );
     for (final contact in TaiyinLunarEclipseContact.values) {
-      output.ref.contact_jd_tt[contact.nativeIndex] =
-          value.contacts[contact]?.toDouble() ?? double.nan;
+      contactJd[contact.nativeIndex] = _writeJdOrInvalid(
+        arena,
+        value.contacts[contact],
+      );
     }
     return output;
   }
@@ -653,7 +717,7 @@ final class TaiyinEclipseApi {
     _bindings.taiyin_lunar_eclipse_result_ut_init(output);
     output.ref
       ..kind = _kindMask(value.kinds)
-      ..maximum_jd_ut = value.maximum?.toDouble() ?? double.nan
+      ..maximum_jd_ut = _writeJdOrInvalid(arena, value.maximum)
       ..delta_t_seconds = value.deltaTSeconds ?? double.nan
       ..umbral_magnitude = value.umbralMagnitude ?? double.nan
       ..penumbral_magnitude = value.penumbralMagnitude ?? double.nan
@@ -661,9 +725,16 @@ final class TaiyinEclipseApi {
       ..umbra_radius_rad = value.umbraRadiusRadians ?? double.nan
       ..penumbra_radius_rad = value.penumbraRadiusRadians ?? double.nan
       ..moon_radius_rad = value.moonRadiusRadians ?? double.nan;
+    final contactJd = _lastJdArrayPointer(
+      output,
+      sizeOf<taiyin_lunar_eclipse_result_ut>(),
+      TaiyinLunarEclipseContact.values.length,
+    );
     for (final contact in TaiyinLunarEclipseContact.values) {
-      output.ref.contact_jd_ut[contact.nativeIndex] =
-          value.contacts[contact]?.toDouble() ?? double.nan;
+      contactJd[contact.nativeIndex] = _writeJdOrInvalid(
+        arena,
+        value.contacts[contact],
+      );
     }
     return output;
   }
@@ -789,12 +860,38 @@ final class TaiyinEclipseApi {
     return count;
   }
 
-  JulianDate<TtScale>? _ttOrNull(double value) {
-    return value.isFinite ? JulianDate<TtScale>.fromDouble(value) : null;
+  JulianDate<TtScale>? _ttOrNull(taiyin_split_julian_date value) {
+    return value.day_fraction.isFinite ? readJulianDate<TtScale>(value) : null;
   }
 
-  JulianDate<Ut1Scale>? _ut1OrNull(double value) {
-    return value.isFinite ? JulianDate<Ut1Scale>.fromDouble(value) : null;
+  JulianDate<Ut1Scale>? _ut1OrNull(taiyin_split_julian_date value) {
+    return value.day_fraction.isFinite ? readJulianDate<Ut1Scale>(value) : null;
+  }
+
+  JulianDate<TtScale> _requireTtRouteCoordinate(
+    taiyin_split_julian_date value,
+    String name,
+  ) {
+    if (!value.day_fraction.isFinite) {
+      throw StateError(
+        'Native solar eclipse route calculation returned non-finite $name '
+        'after a successful calculation',
+      );
+    }
+    return readJulianDate<TtScale>(value);
+  }
+
+  JulianDate<Ut1Scale> _requireUt1RouteCoordinate(
+    taiyin_split_julian_date value,
+    String name,
+  ) {
+    if (!value.day_fraction.isFinite) {
+      throw StateError(
+        'Native solar eclipse route calculation returned non-finite $name '
+        'after a successful calculation',
+      );
+    }
+    return readJulianDate<Ut1Scale>(value);
   }
 
   double? _finiteOrNull(double value) => value.isFinite ? value : null;
@@ -807,14 +904,17 @@ final class TaiyinEclipseApi {
   }) {
     _ensureOpen();
     final mask = _solarSolveMask(positionFlags, options);
-    return _solarTt((output, diagnostic) {
-      return _bindings.taiyin_solve_solar_eclipse_at_tt(
-        _context,
-        estimate.toDouble(),
-        mask,
-        output,
-        diagnostic,
-      );
+    return using((arena) {
+      final estimateJd = writeJulianDate(arena, estimate);
+      return _solarTt((output, diagnostic) {
+        return _bindings.taiyin_solve_solar_eclipse_at_tt(
+          _context,
+          estimateJd,
+          mask,
+          output,
+          diagnostic,
+        );
+      });
     });
   }
 
@@ -826,14 +926,17 @@ final class TaiyinEclipseApi {
   }) {
     _ensureOpen();
     final mask = _solarSolveMask(positionFlags, options);
-    return _solarUt((output, diagnostic) {
-      return _bindings.taiyin_solve_solar_eclipse_at_ut(
-        _context,
-        estimate.toDouble(),
-        mask,
-        output,
-        diagnostic,
-      );
+    return using((arena) {
+      final estimateJd = writeJulianDate(arena, estimate);
+      return _solarUt((output, diagnostic) {
+        return _bindings.taiyin_solve_solar_eclipse_at_ut(
+          _context,
+          estimateJd,
+          mask,
+          output,
+          diagnostic,
+        );
+      });
     });
   }
 
@@ -846,15 +949,18 @@ final class TaiyinEclipseApi {
   }) {
     _ensureOpen();
     final mask = _solarSearchMask(positionFlags, options, allowBackward: true);
-    return _solarTt((output, diagnostic) {
-      return _bindings.taiyin_search_next_solar_eclipse_tt(
-        _context,
-        start.toDouble(),
-        _solarKindMask(kinds),
-        mask,
-        output,
-        diagnostic,
-      );
+    return using((arena) {
+      final startJd = writeJulianDate(arena, start);
+      return _solarTt((output, diagnostic) {
+        return _bindings.taiyin_search_next_solar_eclipse_tt(
+          _context,
+          startJd,
+          _solarKindMask(kinds),
+          mask,
+          output,
+          diagnostic,
+        );
+      });
     });
   }
 
@@ -869,15 +975,18 @@ final class TaiyinEclipseApi {
   }) {
     _ensureOpen();
     final mask = _solarSearchMask(positionFlags, options, allowBackward: true);
-    return _solarUt((output, diagnostic) {
-      return _bindings.taiyin_search_next_solar_eclipse_ut(
-        _context,
-        start.toDouble(),
-        _solarKindMask(kinds),
-        mask,
-        output,
-        diagnostic,
-      );
+    return using((arena) {
+      final startJd = writeJulianDate(arena, start);
+      return _solarUt((output, diagnostic) {
+        return _bindings.taiyin_search_next_solar_eclipse_ut(
+          _context,
+          startJd,
+          _solarKindMask(kinds),
+          mask,
+          output,
+          diagnostic,
+        );
+      });
     });
   }
 
@@ -896,18 +1005,22 @@ final class TaiyinEclipseApi {
     _requireInterval(start, end);
     _requireCapacity(maxResults);
     final mask = _solarSearchMask(positionFlags, options, allowBackward: false);
-    return _solarTtArray(maxResults, (output, capacity, count, diagnostic) {
-      return _bindings.taiyin_search_solar_eclipses_tt(
-        _context,
-        start.toDouble(),
-        end.toDouble(),
-        _solarKindMask(kinds),
-        mask,
-        output,
-        capacity,
-        count,
-        diagnostic,
-      );
+    return using((arena) {
+      final startJd = writeJulianDate(arena, start);
+      final endJd = writeJulianDate(arena, end);
+      return _solarTtArray(maxResults, (output, capacity, count, diagnostic) {
+        return _bindings.taiyin_search_solar_eclipses_tt(
+          _context,
+          startJd,
+          endJd,
+          _solarKindMask(kinds),
+          mask,
+          output,
+          capacity,
+          count,
+          diagnostic,
+        );
+      });
     });
   }
 
@@ -926,18 +1039,22 @@ final class TaiyinEclipseApi {
     _requireInterval(start, end);
     _requireCapacity(maxResults);
     final mask = _solarSearchMask(positionFlags, options, allowBackward: false);
-    return _solarUtArray(maxResults, (output, capacity, count, diagnostic) {
-      return _bindings.taiyin_search_solar_eclipses_ut(
-        _context,
-        start.toDouble(),
-        end.toDouble(),
-        _solarKindMask(kinds),
-        mask,
-        output,
-        capacity,
-        count,
-        diagnostic,
-      );
+    return using((arena) {
+      final startJd = writeJulianDate(arena, start);
+      final endJd = writeJulianDate(arena, end);
+      return _solarUtArray(maxResults, (output, capacity, count, diagnostic) {
+        return _bindings.taiyin_search_solar_eclipses_ut(
+          _context,
+          startJd,
+          endJd,
+          _solarKindMask(kinds),
+          mask,
+          output,
+          capacity,
+          count,
+          diagnostic,
+        );
+      });
     });
   }
 
@@ -954,14 +1071,17 @@ final class TaiyinEclipseApi {
   }) {
     _ensureOpen();
     final mask = _withSolarContacts(_solarSolveMask(positionFlags, options));
-    return _localSolarTt((output, diagnostic) {
-      return _bindings.taiyin_solve_local_solar_eclipse_at_tt(
-        _context,
-        estimate.toDouble(),
-        mask,
-        output,
-        diagnostic,
-      );
+    return using((arena) {
+      final estimateJd = writeJulianDate(arena, estimate);
+      return _localSolarTt((output, diagnostic) {
+        return _bindings.taiyin_solve_local_solar_eclipse_at_tt(
+          _context,
+          estimateJd,
+          mask,
+          output,
+          diagnostic,
+        );
+      });
     });
   }
 
@@ -978,14 +1098,17 @@ final class TaiyinEclipseApi {
   }) {
     _ensureOpen();
     final mask = _withSolarContacts(_solarSolveMask(positionFlags, options));
-    return _localSolarUt((output, diagnostic) {
-      return _bindings.taiyin_solve_local_solar_eclipse_at_ut(
-        _context,
-        estimate.toDouble(),
-        mask,
-        output,
-        diagnostic,
-      );
+    return using((arena) {
+      final estimateJd = writeJulianDate(arena, estimate);
+      return _localSolarUt((output, diagnostic) {
+        return _bindings.taiyin_solve_local_solar_eclipse_at_ut(
+          _context,
+          estimateJd,
+          mask,
+          output,
+          diagnostic,
+        );
+      });
     });
   }
 
@@ -1006,15 +1129,18 @@ final class TaiyinEclipseApi {
     final mask = _withSolarContacts(
       _solarSearchMask(positionFlags, options, allowBackward: true),
     );
-    return _localSolarTt((output, diagnostic) {
-      return _bindings.taiyin_search_next_local_solar_eclipse_tt(
-        _context,
-        start.toDouble(),
-        _solarKindMask(kinds),
-        mask,
-        output,
-        diagnostic,
-      );
+    return using((arena) {
+      final startJd = writeJulianDate(arena, start);
+      return _localSolarTt((output, diagnostic) {
+        return _bindings.taiyin_search_next_local_solar_eclipse_tt(
+          _context,
+          startJd,
+          _solarKindMask(kinds),
+          mask,
+          output,
+          diagnostic,
+        );
+      });
     });
   }
 
@@ -1035,15 +1161,18 @@ final class TaiyinEclipseApi {
     final mask = _withSolarContacts(
       _solarSearchMask(positionFlags, options, allowBackward: true),
     );
-    return _localSolarUt((output, diagnostic) {
-      return _bindings.taiyin_search_next_local_solar_eclipse_ut(
-        _context,
-        start.toDouble(),
-        _solarKindMask(kinds),
-        mask,
-        output,
-        diagnostic,
-      );
+    return using((arena) {
+      final startJd = writeJulianDate(arena, start);
+      return _localSolarUt((output, diagnostic) {
+        return _bindings.taiyin_search_next_local_solar_eclipse_ut(
+          _context,
+          startJd,
+          _solarKindMask(kinds),
+          mask,
+          output,
+          diagnostic,
+        );
+      });
     });
   }
 
@@ -1053,13 +1182,16 @@ final class TaiyinEclipseApi {
   TaiyinEphemerisResult<TaiyinLocalSolarEclipseCircumstances<TtScale>>
   localSolarCircumstancesAtTt(JulianDate<TtScale> coordinate) {
     _ensureOpen();
-    return _solarCircumstancesTt((output, diagnostic) {
-      return _bindings.taiyin_compute_local_solar_circumstances_tt(
-        _context,
-        coordinate.toDouble(),
-        output,
-        diagnostic,
-      );
+    return using((arena) {
+      final coordinateJd = writeJulianDate(arena, coordinate);
+      return _solarCircumstancesTt((output, diagnostic) {
+        return _bindings.taiyin_compute_local_solar_circumstances_tt(
+          _context,
+          coordinateJd,
+          output,
+          diagnostic,
+        );
+      });
     });
   }
 
@@ -1069,13 +1201,16 @@ final class TaiyinEclipseApi {
   TaiyinEphemerisResult<TaiyinLocalSolarEclipseCircumstances<Ut1Scale>>
   localSolarCircumstancesAtUt1(JulianDate<Ut1Scale> coordinate) {
     _ensureOpen();
-    return _solarCircumstancesUt((output, diagnostic) {
-      return _bindings.taiyin_compute_local_solar_circumstances_ut(
-        _context,
-        coordinate.toDouble(),
-        output,
-        diagnostic,
-      );
+    return using((arena) {
+      final coordinateJd = writeJulianDate(arena, coordinate);
+      return _solarCircumstancesUt((output, diagnostic) {
+        return _bindings.taiyin_compute_local_solar_circumstances_ut(
+          _context,
+          coordinateJd,
+          output,
+          diagnostic,
+        );
+      });
     });
   }
 
@@ -1099,7 +1234,7 @@ final class TaiyinEclipseApi {
         ..taiyin_ephemeris_diagnostic_init(diagnostic);
       final status = _bindings.taiyin_compute_solar_besselian_elements_tt(
         _context,
-        coordinate.toDouble(),
+        writeJulianDate(arena, coordinate),
         timeOffsetHours,
         output,
         diagnostic,
@@ -1136,7 +1271,7 @@ final class TaiyinEclipseApi {
         ..taiyin_ephemeris_diagnostic_init(diagnostic);
       final status = _bindings.taiyin_compute_solar_besselian_polynomial_tt(
         _context,
-        coordinate.toDouble(),
+        writeJulianDate(arena, coordinate),
         spanHours,
         sampleStepHours,
         degree,
@@ -1167,7 +1302,7 @@ final class TaiyinEclipseApi {
       _bindings
         ..taiyin_solar_besselian_polynomial_init(nativePolynomial)
         ..taiyin_solar_besselian_elements_init(output);
-      _writeSolarBesselianPolynomial(nativePolynomial.ref, polynomial);
+      _writeSolarBesselianPolynomial(arena, nativePolynomial.ref, polynomial);
       _checkStatus(
         _bindings.taiyin_evaluate_solar_besselian_polynomial(
           nativePolynomial,
@@ -1191,14 +1326,17 @@ final class TaiyinEclipseApi {
   }) {
     _ensureOpen();
     final mask = _solarRouteMask(positionFlags, options);
-    return _solarRouteRow((output, diagnostic) {
-      return _bindings.taiyin_compute_solar_eclipse_route_row_tt(
-        _context,
-        coordinate.toDouble(),
-        mask,
-        output,
-        diagnostic,
-      );
+    return using((arena) {
+      final coordinateJd = writeJulianDate(arena, coordinate);
+      return _solarRouteRow((output, diagnostic) {
+        return _bindings.taiyin_compute_solar_eclipse_route_row_tt(
+          _context,
+          coordinateJd,
+          mask,
+          output,
+          diagnostic,
+        );
+      });
     });
   }
 
@@ -1213,14 +1351,17 @@ final class TaiyinEclipseApi {
   }) {
     _ensureOpen();
     final mask = _solarRouteMask(positionFlags, options);
-    return _solarRouteRow((output, diagnostic) {
-      return _bindings.taiyin_compute_solar_eclipse_route_row_ut(
-        _context,
-        coordinate.toDouble(),
-        mask,
-        output,
-        diagnostic,
-      );
+    return using((arena) {
+      final coordinateJd = writeJulianDate(arena, coordinate);
+      return _solarRouteRow((output, diagnostic) {
+        return _bindings.taiyin_compute_solar_eclipse_route_row_ut(
+          _context,
+          coordinateJd,
+          mask,
+          output,
+          diagnostic,
+        );
+      });
     });
   }
 
@@ -1242,18 +1383,22 @@ final class TaiyinEclipseApi {
     _requirePositiveFinite(stepMinutes, 'stepMinutes');
     _requireCapacity(maxRows, name: 'maxRows');
     final mask = _solarRouteMask(positionFlags, options);
-    return _solarRouteRows(maxRows, (output, capacity, count, diagnostic) {
-      return _bindings.taiyin_compute_solar_eclipse_route_tt(
-        _context,
-        start.toDouble(),
-        end.toDouble(),
-        stepMinutes,
-        mask,
-        output,
-        capacity,
-        count,
-        diagnostic,
-      );
+    return using((arena) {
+      final startJd = writeJulianDate(arena, start);
+      final endJd = writeJulianDate(arena, end);
+      return _solarRouteRows(maxRows, (output, capacity, count, diagnostic) {
+        return _bindings.taiyin_compute_solar_eclipse_route_tt(
+          _context,
+          startJd,
+          endJd,
+          stepMinutes,
+          mask,
+          output,
+          capacity,
+          count,
+          diagnostic,
+        );
+      });
     });
   }
 
@@ -1276,18 +1421,22 @@ final class TaiyinEclipseApi {
     _requirePositiveFinite(stepMinutes, 'stepMinutes');
     _requireCapacity(maxRows, name: 'maxRows');
     final mask = _solarRouteMask(positionFlags, options);
-    return _solarRouteRows(maxRows, (output, capacity, count, diagnostic) {
-      return _bindings.taiyin_compute_solar_eclipse_route_ut(
-        _context,
-        start.toDouble(),
-        end.toDouble(),
-        stepMinutes,
-        mask,
-        output,
-        capacity,
-        count,
-        diagnostic,
-      );
+    return using((arena) {
+      final startJd = writeJulianDate(arena, start);
+      final endJd = writeJulianDate(arena, end);
+      return _solarRouteRows(maxRows, (output, capacity, count, diagnostic) {
+        return _bindings.taiyin_compute_solar_eclipse_route_ut(
+          _context,
+          startJd,
+          endJd,
+          stepMinutes,
+          mask,
+          output,
+          capacity,
+          count,
+          diagnostic,
+        );
+      });
     });
   }
 
@@ -1306,17 +1455,20 @@ final class TaiyinEclipseApi {
     _ensureOpen();
     _requireRouteSampleCount(routeSampleCount);
     final mask = _solarRouteMask(positionFlags, options);
-    return _solarRouteCurves((output, capacity, count, diagnostic) {
-      return _bindings.taiyin_compute_solar_eclipse_route_curves_tt(
-        _context,
-        coordinate.toDouble(),
-        mask,
-        routeSampleCount,
-        output,
-        capacity,
-        count,
-        diagnostic,
-      );
+    return using((arena) {
+      final coordinateJd = writeJulianDate(arena, coordinate);
+      return _solarRouteCurves((output, capacity, count, diagnostic) {
+        return _bindings.taiyin_compute_solar_eclipse_route_curves_tt(
+          _context,
+          coordinateJd,
+          mask,
+          routeSampleCount,
+          output,
+          capacity,
+          count,
+          diagnostic,
+        );
+      });
     });
   }
 
@@ -1332,17 +1484,20 @@ final class TaiyinEclipseApi {
     _ensureOpen();
     _requireRouteSampleCount(routeSampleCount);
     final mask = _solarRouteMask(positionFlags, options);
-    return _solarRouteCurves((output, capacity, count, diagnostic) {
-      return _bindings.taiyin_compute_solar_eclipse_route_curves_ut(
-        _context,
-        coordinate.toDouble(),
-        mask,
-        routeSampleCount,
-        output,
-        capacity,
-        count,
-        diagnostic,
-      );
+    return using((arena) {
+      final coordinateJd = writeJulianDate(arena, coordinate);
+      return _solarRouteCurves((output, capacity, count, diagnostic) {
+        return _bindings.taiyin_compute_solar_eclipse_route_curves_ut(
+          _context,
+          coordinateJd,
+          mask,
+          routeSampleCount,
+          output,
+          capacity,
+          count,
+          diagnostic,
+        );
+      });
     });
   }
 
@@ -1360,18 +1515,21 @@ final class TaiyinEclipseApi {
     _ensureOpen();
     _requireRouteSampleCount(routeSampleCount);
     final mask = _solarRouteMask(positionFlags, options);
-    return _solarRouteProduct((output, capacity, count, summary, diagnostic) {
-      return _bindings.taiyin_compute_solar_eclipse_route_product_tt(
-        _context,
-        coordinate.toDouble(),
-        mask,
-        routeSampleCount,
-        output,
-        capacity,
-        count,
-        summary,
-        diagnostic,
-      );
+    return using((arena) {
+      final coordinateJd = writeJulianDate(arena, coordinate);
+      return _solarRouteProduct((output, capacity, count, summary, diagnostic) {
+        return _bindings.taiyin_compute_solar_eclipse_route_product_tt(
+          _context,
+          coordinateJd,
+          mask,
+          routeSampleCount,
+          output,
+          capacity,
+          count,
+          summary,
+          diagnostic,
+        );
+      });
     });
   }
 
@@ -1389,18 +1547,21 @@ final class TaiyinEclipseApi {
     _ensureOpen();
     _requireRouteSampleCount(routeSampleCount);
     final mask = _solarRouteMask(positionFlags, options);
-    return _solarRouteProduct((output, capacity, count, summary, diagnostic) {
-      return _bindings.taiyin_compute_solar_eclipse_route_product_ut(
-        _context,
-        coordinate.toDouble(),
-        mask,
-        routeSampleCount,
-        output,
-        capacity,
-        count,
-        summary,
-        diagnostic,
-      );
+    return using((arena) {
+      final coordinateJd = writeJulianDate(arena, coordinate);
+      return _solarRouteProduct((output, capacity, count, summary, diagnostic) {
+        return _bindings.taiyin_compute_solar_eclipse_route_product_ut(
+          _context,
+          coordinateJd,
+          mask,
+          routeSampleCount,
+          output,
+          capacity,
+          count,
+          summary,
+          diagnostic,
+        );
+      });
     });
   }
 
@@ -1418,18 +1579,21 @@ final class TaiyinEclipseApi {
     _ensureOpen();
     _requireRouteSampleCount(routeSampleCount);
     final mask = _solarRouteMask(positionFlags, options);
-    return _solarRouteProduct((output, capacity, count, summary, diagnostic) {
-      return _bindings.taiyin_compute_solar_eclipse_route_map_product_tt(
-        _context,
-        coordinate.toDouble(),
-        mask,
-        routeSampleCount,
-        output,
-        capacity,
-        count,
-        summary,
-        diagnostic,
-      );
+    return using((arena) {
+      final coordinateJd = writeJulianDate(arena, coordinate);
+      return _solarRouteProduct((output, capacity, count, summary, diagnostic) {
+        return _bindings.taiyin_compute_solar_eclipse_route_map_product_tt(
+          _context,
+          coordinateJd,
+          mask,
+          routeSampleCount,
+          output,
+          capacity,
+          count,
+          summary,
+          diagnostic,
+        );
+      });
     });
   }
 
@@ -1444,18 +1608,21 @@ final class TaiyinEclipseApi {
     _ensureOpen();
     _requireRouteSampleCount(routeSampleCount);
     final mask = _solarRouteMask(positionFlags, options);
-    return _solarRouteProduct((output, capacity, count, summary, diagnostic) {
-      return _bindings.taiyin_compute_solar_eclipse_route_map_product_ut(
-        _context,
-        coordinate.toDouble(),
-        mask,
-        routeSampleCount,
-        output,
-        capacity,
-        count,
-        summary,
-        diagnostic,
-      );
+    return using((arena) {
+      final coordinateJd = writeJulianDate(arena, coordinate);
+      return _solarRouteProduct((output, capacity, count, summary, diagnostic) {
+        return _bindings.taiyin_compute_solar_eclipse_route_map_product_ut(
+          _context,
+          coordinateJd,
+          mask,
+          routeSampleCount,
+          output,
+          capacity,
+          count,
+          summary,
+          diagnostic,
+        );
+      });
     });
   }
 
@@ -1474,15 +1641,18 @@ final class TaiyinEclipseApi {
     _ensureOpen();
     _requireFinite(longitudeDegrees, 'longitudeDegrees');
     _requireBoundaryLatitude(latitudeDegrees);
-    return _localSolarBoundary((output, diagnostic) {
-      return _bindings.taiyin_compute_local_solar_eclipse_boundary_tt(
-        _context,
-        coordinate.toDouble(),
-        longitudeDegrees,
-        latitudeDegrees,
-        output,
-        diagnostic,
-      );
+    return using((arena) {
+      final coordinateJd = writeJulianDate(arena, coordinate);
+      return _localSolarBoundary((output, diagnostic) {
+        return _bindings.taiyin_compute_local_solar_eclipse_boundary_tt(
+          _context,
+          coordinateJd,
+          longitudeDegrees,
+          latitudeDegrees,
+          output,
+          diagnostic,
+        );
+      });
     });
   }
 
@@ -1497,15 +1667,18 @@ final class TaiyinEclipseApi {
     _ensureOpen();
     _requireFinite(longitudeDegrees, 'longitudeDegrees');
     _requireBoundaryLatitude(latitudeDegrees);
-    return _localSolarBoundary((output, diagnostic) {
-      return _bindings.taiyin_compute_local_solar_eclipse_boundary_ut(
-        _context,
-        coordinate.toDouble(),
-        longitudeDegrees,
-        latitudeDegrees,
-        output,
-        diagnostic,
-      );
+    return using((arena) {
+      final coordinateJd = writeJulianDate(arena, coordinate);
+      return _localSolarBoundary((output, diagnostic) {
+        return _bindings.taiyin_compute_local_solar_eclipse_boundary_ut(
+          _context,
+          coordinateJd,
+          longitudeDegrees,
+          latitudeDegrees,
+          output,
+          diagnostic,
+        );
+      });
     });
   }
 
@@ -1827,7 +2000,7 @@ final class TaiyinEclipseApi {
       final value = output.ref;
       return TaiyinEphemerisResult(
         value: TaiyinLocalSolarEclipseCircumstances(
-          coordinate: JulianDate<TtScale>.fromDouble(value.jd_tt),
+          coordinate: readJulianDate<TtScale>(value.jd_tt),
           deltaTSeconds: null,
           magnitude: value.magnitude,
           obscuration: value.obscuration,
@@ -1856,7 +2029,7 @@ final class TaiyinEclipseApi {
       final value = output.ref;
       return TaiyinEphemerisResult(
         value: TaiyinLocalSolarEclipseCircumstances(
-          coordinate: JulianDate<Ut1Scale>.fromDouble(value.jd_ut),
+          coordinate: readJulianDate<Ut1Scale>(value.jd_ut),
           deltaTSeconds: _finiteOrNull(value.delta_t_seconds),
           magnitude: value.magnitude,
           obscuration: value.obscuration,
@@ -1974,12 +2147,8 @@ final class TaiyinEclipseApi {
     taiyin_solar_eclipse_route_row value,
   ) {
     return TaiyinSolarEclipseRouteRow(
-      coordinateTt: JulianDate<TtScale>.fromDouble(
-        _requireFiniteNativeRouteCoordinate(value.jd_tt, 'jd_tt'),
-      ),
-      coordinateUt1: JulianDate<Ut1Scale>.fromDouble(
-        _requireFiniteNativeRouteCoordinate(value.jd_ut, 'jd_ut'),
-      ),
+      coordinateTt: _requireTtRouteCoordinate(value.jd_tt, 'jd_tt'),
+      coordinateUt1: _requireUt1RouteCoordinate(value.jd_ut, 'jd_ut'),
       centerLine: _readSolarEclipseRoutePoint(value.center_line),
       penumbralNorthLimit: _readSolarEclipseRoutePoint(
         value.penumbral_north_limit,
@@ -2020,12 +2189,8 @@ final class TaiyinEclipseApi {
     taiyin_solar_eclipse_route_curve_point value,
   ) {
     return TaiyinSolarEclipseRouteCurvePoint(
-      coordinateTt: JulianDate<TtScale>.fromDouble(
-        _requireFiniteNativeRouteCoordinate(value.jd_tt, 'curve.jd_tt'),
-      ),
-      coordinateUt1: JulianDate<Ut1Scale>.fromDouble(
-        _requireFiniteNativeRouteCoordinate(value.jd_ut, 'curve.jd_ut'),
-      ),
+      coordinateTt: _requireTtRouteCoordinate(value.jd_tt, 'curve.jd_tt'),
+      coordinateUt1: _requireUt1RouteCoordinate(value.jd_ut, 'curve.jd_ut'),
       kind: TaiyinSolarEclipseRouteCurveKind.fromNativeIndex(value.curve_kind),
       latitudeDegrees: _requireFiniteNativeRouteCoordinate(
         value.latitude_deg,
@@ -2042,12 +2207,8 @@ final class TaiyinEclipseApi {
     taiyin_solar_eclipse_route_product_point value,
   ) {
     return TaiyinSolarEclipseRouteProductPoint(
-      coordinateTt: JulianDate<TtScale>.fromDouble(
-        _requireFiniteNativeRouteCoordinate(value.jd_tt, 'product.jd_tt'),
-      ),
-      coordinateUt1: JulianDate<Ut1Scale>.fromDouble(
-        _requireFiniteNativeRouteCoordinate(value.jd_ut, 'product.jd_ut'),
-      ),
+      coordinateTt: _requireTtRouteCoordinate(value.jd_tt, 'product.jd_tt'),
+      coordinateUt1: _requireUt1RouteCoordinate(value.jd_ut, 'product.jd_ut'),
       kind: TaiyinSolarEclipseRouteProductPointKind.fromNativeIndex(
         value.point_kind,
       ),
@@ -2154,7 +2315,7 @@ final class TaiyinEclipseApi {
     taiyin_solar_besselian_polynomial value,
   ) {
     return TaiyinSolarBesselianPolynomial(
-      referenceEpoch: JulianDate<TtScale>.fromDouble(value.t0_jd_tt),
+      referenceEpoch: readJulianDate<TtScale>(value.t0_jd_tt),
       spanHours: value.span_hours,
       sampleStepHours: value.sample_step_hours,
       degree: value.degree,
@@ -2186,11 +2347,12 @@ final class TaiyinEclipseApi {
   }
 
   void _writeSolarBesselianPolynomial(
+    Arena arena,
     taiyin_solar_besselian_polynomial native,
     TaiyinSolarBesselianPolynomial value,
   ) {
     native
-      ..t0_jd_tt = value.referenceEpoch.toDouble()
+      ..t0_jd_tt = writeJulianDate(arena, value.referenceEpoch).ref
       ..span_hours = value.spanHours
       ..sample_step_hours = value.sampleStepHours
       ..degree = value.degree

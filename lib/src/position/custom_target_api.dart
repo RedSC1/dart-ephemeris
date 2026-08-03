@@ -8,8 +8,8 @@ typedef _NativeCustomDependencyPosition =
     taiyin_status Function(
       Pointer<taiyin_context>,
       Int32,
-      Double,
-      Double,
+      Pointer<taiyin_split_julian_date>,
+      Pointer<taiyin_split_julian_date>,
       Uint32,
       Pointer<Double>,
       Pointer<taiyin_ephemeris_diagnostic>,
@@ -18,8 +18,8 @@ typedef _DartCustomDependencyPosition =
     int Function(
       Pointer<taiyin_context>,
       int,
-      double,
-      double,
+      Pointer<taiyin_split_julian_date>,
+      Pointer<taiyin_split_julian_date>,
       int,
       Pointer<Double>,
       Pointer<taiyin_ephemeris_diagnostic>,
@@ -52,8 +52,8 @@ final class TaiyinCustomTargetRequest {
        _scope = scope;
 
   final TaiyinCustomTarget target;
-  final double julianDateTdb;
-  final double julianDateTt;
+  final JulianDate<TdbScale> julianDateTdb;
+  final JulianDate<TtScale> julianDateTt;
   final int rawFlags;
   final Pointer<taiyin_context> _context;
   final Pointer<NativeFunction<_NativeCustomDependencyPosition>>
@@ -92,8 +92,8 @@ final class TaiyinCustomTargetRequest {
       final status = calculate(
         _context,
         dependency.id,
-        julianDateTdb,
-        julianDateTt,
+        writeJulianDate(arena, julianDateTdb),
+        writeJulianDate(arena, julianDateTt),
         mask,
         output,
         diagnostic,
@@ -268,8 +268,8 @@ _createCustomPositionCallable(
       >.isolateGroupBound((
         Pointer<taiyin_context> context,
         int callbackTargetId,
-        double jdTdb,
-        double jdTt,
+        Pointer<taiyin_split_julian_date> jdTdb,
+        Pointer<taiyin_split_julian_date> jdTt,
         int flags,
         Pointer<Double> output,
         Pointer<taiyin_ephemeris_diagnostic> diagnostic,
@@ -284,8 +284,8 @@ _createCustomPositionCallable(
           final values = frozenEvaluator(
             TaiyinCustomTargetRequest._(
               target: TaiyinCustomTarget(callbackTargetId),
-              julianDateTdb: jdTdb,
-              julianDateTt: jdTt,
+              julianDateTdb: readJulianDate<TdbScale>(jdTdb.ref),
+              julianDateTt: readJulianDate<TtScale>(jdTt.ref),
               rawFlags: flags,
               context: context,
               dependencyPosition:
@@ -300,7 +300,7 @@ _createCustomPositionCallable(
               diagnostic,
               _taiyinErrorInvalidArgument,
               callbackTargetId,
-              jdTdb,
+              readJulianDate<TdbScale>(jdTdb.ref),
             );
             return _taiyinErrorInvalidArgument;
           }
@@ -311,21 +311,26 @@ _createCustomPositionCallable(
             diagnostic,
             _taiyinStatusOk,
             callbackTargetId,
-            jdTdb,
+            readJulianDate<TdbScale>(jdTdb.ref),
           );
           return _taiyinStatusOk;
         } on TaiyinCustomEvaluatorFailure catch (error) {
           final status = error.status == 0
               ? _taiyinErrorInvalidArgument
               : error.status;
-          _finishCustomDiagnostic(diagnostic, status, callbackTargetId, jdTdb);
+          _finishCustomDiagnostic(
+            diagnostic,
+            status,
+            callbackTargetId,
+            readJulianDate<TdbScale>(jdTdb.ref),
+          );
           return status;
         } catch (_) {
           _finishCustomDiagnostic(
             diagnostic,
             _taiyinErrorInternal,
             callbackTargetId,
-            jdTdb,
+            readJulianDate<TdbScale>(jdTdb.ref),
           );
           return _taiyinErrorInternal;
         } finally {
@@ -348,8 +353,8 @@ _createCustomStateCallable(
       >.isolateGroupBound((
         Pointer<taiyin_context> context,
         int callbackTargetId,
-        double jdTdb,
-        double jdTt,
+        Pointer<taiyin_split_julian_date> jdTdb,
+        Pointer<taiyin_split_julian_date> jdTt,
         int flags,
         Pointer<taiyin_cartesian_state> output,
         Pointer<taiyin_ephemeris_diagnostic> diagnostic,
@@ -361,8 +366,8 @@ _createCustomStateCallable(
           final state = frozenEvaluator(
             TaiyinCustomTargetRequest._(
               target: TaiyinCustomTarget(callbackTargetId),
-              julianDateTdb: jdTdb,
-              julianDateTt: jdTt,
+              julianDateTdb: readJulianDate<TdbScale>(jdTdb.ref),
+              julianDateTt: readJulianDate<TtScale>(jdTt.ref),
               rawFlags: flags,
               context: context,
               dependencyPosition:
@@ -377,7 +382,7 @@ _createCustomStateCallable(
               diagnostic,
               _taiyinErrorInvalidArgument,
               callbackTargetId,
-              jdTdb,
+              readJulianDate<TdbScale>(jdTdb.ref),
             );
             return _taiyinErrorInvalidArgument;
           }
@@ -386,21 +391,26 @@ _createCustomStateCallable(
             diagnostic,
             _taiyinStatusOk,
             callbackTargetId,
-            jdTdb,
+            readJulianDate<TdbScale>(jdTdb.ref),
           );
           return _taiyinStatusOk;
         } on TaiyinCustomEvaluatorFailure catch (error) {
           final status = error.status == 0
               ? _taiyinErrorInvalidArgument
               : error.status;
-          _finishCustomDiagnostic(diagnostic, status, callbackTargetId, jdTdb);
+          _finishCustomDiagnostic(
+            diagnostic,
+            status,
+            callbackTargetId,
+            readJulianDate<TdbScale>(jdTdb.ref),
+          );
           return status;
         } catch (_) {
           _finishCustomDiagnostic(
             diagnostic,
             _taiyinErrorInternal,
             callbackTargetId,
-            jdTdb,
+            readJulianDate<TdbScale>(jdTdb.ref),
           );
           return _taiyinErrorInternal;
         } finally {
@@ -414,7 +424,7 @@ void _finishCustomDiagnostic(
   Pointer<taiyin_ephemeris_diagnostic> diagnostic,
   int status,
   int targetId,
-  double jdTdb,
+  JulianDate<TdbScale> jdTdb,
 ) {
   if (diagnostic == nullptr) return;
   diagnostic.ref
@@ -422,7 +432,8 @@ void _finishCustomDiagnostic(
     ..target_id = targetId
     ..center_id = -1
     ..frame = -1
-    ..jd_tdb = jdTdb;
+    ..jd_tdb.day_number = jdTdb.dayNumber
+    ..jd_tdb.day_fraction = jdTdb.dayFraction;
   diagnostic.ref
     ..attempted_method_id = -1
     ..component_target_id = -1

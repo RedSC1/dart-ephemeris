@@ -311,7 +311,7 @@ _createCustomAyanamshaCallable(TaiyinCustomAyanamshaEvaluator evaluator) {
     taiyin_ayanamsha_evaluator_fnFunction
   >.isolateGroupBound((
     Pointer<taiyin_context> context,
-    double jdTt,
+    Pointer<taiyin_split_julian_date> jdTt,
     int rawFlags,
     Pointer<Double> output,
     Pointer<Void> userData,
@@ -321,7 +321,7 @@ _createCustomAyanamshaCallable(TaiyinCustomAyanamshaEvaluator evaluator) {
     try {
       final value = frozenEvaluator(
         TaiyinCustomAyanamshaRequest._(
-          julianDateTt: JulianDate<TtScale>.fromDouble(jdTt),
+          julianDateTt: readJulianDate<TtScale>(jdTt.ref),
           rawFlags: rawFlags,
         ),
       );
