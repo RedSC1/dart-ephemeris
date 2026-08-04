@@ -1,14 +1,10 @@
-import 'dart:io';
 import 'dart:math' as math;
 
 import 'package:taiyin/taiyin.dart';
 import 'package:test/test.dart';
+import 'support/native_library.dart';
 
 void main() {
-  final libraryPath =
-      Platform.environment['TAIYIN_TEST_LIBRARY'] ??
-      '../taiyin-ephemeris/build-c-api-release/libtaiyin.dylib';
-  final nativeLibraryAvailable = File(libraryPath).existsSync();
   const degreesToRadians = math.pi / 180.0;
   // The frozen lunar model documents a 5.22 arcsecond held-out maximum.
   const semiAnalyticLunarAngleTolerance = (6 / 3600) * degreesToRadians;

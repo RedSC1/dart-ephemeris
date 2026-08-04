@@ -27,7 +27,7 @@ typedef _OccultationWhereCalculation =
 ///
 /// Local searches and local-visibility calculations use the observer already
 /// configured on the owning [TaiyinContext]. Native inputs and all returned
-/// dates cross the ABI as scalar UT1 Julian dates.
+/// dates cross the ABI as split UT1 Julian dates.
 final class TaiyinOccultationApi {
   TaiyinOccultationApi._(
     this._bindings,
@@ -65,7 +65,7 @@ final class TaiyinOccultationApi {
       return _bindings.taiyin_search_next_geocentric_lunar_star_occultation_ut(
         _context,
         nativeStarKey,
-        start.toDouble(),
+        writeJulianDate(arena, start),
         mask,
         output,
         diagnostic,
@@ -90,7 +90,7 @@ final class TaiyinOccultationApi {
       return _bindings.taiyin_search_next_local_lunar_star_occultation_ut(
         _context,
         nativeStarKey,
-        start.toDouble(),
+        writeJulianDate(arena, start),
         mask,
         output,
         diagnostic,
@@ -117,14 +117,14 @@ final class TaiyinOccultationApi {
       'targetRadiusKilometers',
     );
     final mask = _searchMask(positionFlags, options);
-    return _search((_, output, diagnostic) {
+    return _search((arena, output, diagnostic) {
       if (targetRadiusKilometers case final radius?) {
         return _bindings
             .taiyin_search_next_geocentric_lunar_body_occultation_with_radius_ut(
               _context,
               target.id,
               radius,
-              start.toDouble(),
+              writeJulianDate(arena, start),
               mask,
               output,
               diagnostic,
@@ -133,7 +133,7 @@ final class TaiyinOccultationApi {
       return _bindings.taiyin_search_next_geocentric_lunar_body_occultation_ut(
         _context,
         target.id,
-        start.toDouble(),
+        writeJulianDate(arena, start),
         mask,
         output,
         diagnostic,
@@ -160,14 +160,14 @@ final class TaiyinOccultationApi {
       'targetRadiusKilometers',
     );
     final mask = _searchMask(positionFlags, options);
-    return _search((_, output, diagnostic) {
+    return _search((arena, output, diagnostic) {
       if (targetRadiusKilometers case final radius?) {
         return _bindings
             .taiyin_search_next_local_lunar_body_occultation_with_radius_ut(
               _context,
               target.id,
               radius,
-              start.toDouble(),
+              writeJulianDate(arena, start),
               mask,
               output,
               diagnostic,
@@ -176,7 +176,7 @@ final class TaiyinOccultationApi {
       return _bindings.taiyin_search_next_local_lunar_body_occultation_ut(
         _context,
         target.id,
-        start.toDouble(),
+        writeJulianDate(arena, start),
         mask,
         output,
         diagnostic,
@@ -619,22 +619,22 @@ final class TaiyinOccultationApi {
     output.ref
       ..kind = value.kind.id
       ..type_flags = value.types.fold(0, (mask, type) => mask | type.mask)
-      ..jd_ut = value.coordinate.toDouble()
-      ..begin_jd_ut = value.begin?.toDouble() ?? double.nan
-      ..end_jd_ut = value.end?.toDouble() ?? double.nan
-      ..first_contact_jd_ut = value.firstContact?.toDouble() ?? double.nan
-      ..second_contact_jd_ut = value.secondContact?.toDouble() ?? double.nan
-      ..third_contact_jd_ut = value.thirdContact?.toDouble() ?? double.nan
-      ..fourth_contact_jd_ut = value.fourthContact?.toDouble() ?? double.nan
       ..separation_rad = value.separationRadians
       ..moon_radius_rad = value.moonRadiusRadians
       ..target_radius_rad = value.targetRadiusRadians
       ..margin_rad = value.marginRadians
-      ..candidate_jd_ut = value.candidate?.toDouble() ?? double.nan
-      ..next_search_jd_ut = value.nextSearch?.toDouble() ?? double.nan
       ..candidate_count = value.candidateCount
       ..iteration_count = value.iterationCount
       ..evaluation_count = value.evaluationCount;
+    _writeUt1(output.ref.jd_ut, value.coordinate);
+    _writeUt1(output.ref.begin_jd_ut, value.begin);
+    _writeUt1(output.ref.end_jd_ut, value.end);
+    _writeUt1(output.ref.first_contact_jd_ut, value.firstContact);
+    _writeUt1(output.ref.second_contact_jd_ut, value.secondContact);
+    _writeUt1(output.ref.third_contact_jd_ut, value.thirdContact);
+    _writeUt1(output.ref.fourth_contact_jd_ut, value.fourthContact);
+    _writeUt1(output.ref.candidate_jd_ut, value.candidate);
+    _writeUt1(output.ref.next_search_jd_ut, value.nextSearch);
     output.ref.phenomena
       ..angular_distance_rad =
           value.phenomena.angularDistanceRadians ?? double.nan
@@ -763,13 +763,22 @@ final class TaiyinOccultationApi {
     }
   }
 
-  JulianDate<Ut1Scale> _requiredUt1(double value, String name) {
+  JulianDate<Ut1Scale> _requiredUt1(
+    taiyin_split_julian_date value,
+    String name,
+  ) {
     return _ut1OrNull(value) ??
         (throw StateError('Native occultation result has no $name'));
   }
 
-  JulianDate<Ut1Scale>? _ut1OrNull(double value) {
-    return value.isFinite ? JulianDate<Ut1Scale>.fromDouble(value) : null;
+  JulianDate<Ut1Scale>? _ut1OrNull(taiyin_split_julian_date value) {
+    return value.day_fraction.isFinite ? readJulianDate<Ut1Scale>(value) : null;
+  }
+
+  void _writeUt1(taiyin_split_julian_date target, JulianDate<Ut1Scale>? value) {
+    target
+      ..day_number = value?.dayNumber ?? 0
+      ..day_fraction = value?.dayFraction ?? double.nan;
   }
 
   double? _finiteOrNull(double value) => value.isFinite ? value : null;

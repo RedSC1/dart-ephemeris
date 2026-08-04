@@ -36,13 +36,13 @@ final class TaiyinRuntimeOptions {
 /// process-wide native runtime. Call one of them once in the application's main
 /// isolate. Worker isolates must use [TaiyinContext.attach] instead.
 final class Taiyin {
-  Taiyin._(this._library, this._bindings, this._contextFinalizer) {
+  Taiyin._(this._library, this._bindings, this._nativeState) {
     starCatalog = TaiyinStarCatalog._(_bindings);
   }
 
   final DynamicLibrary _library;
   final TaiyinBindings _bindings;
-  final NativeFinalizer _contextFinalizer;
+  final _TaiyinNativeLibraryState _nativeState;
   late final TaiyinStarCatalog starCatalog;
 
   /// Opens Taiyin and performs process-wide native runtime setup.
@@ -71,12 +71,12 @@ final class Taiyin {
         _closeCustomHouseSystemRegistrationsAfterNativeClear(state);
       },
     );
-    return Taiyin._(library, state.bindings, state.contextFinalizer);
+    return Taiyin._(library, state.bindings, state);
   }
 
   /// Creates a new independent user calculation context.
   TaiyinContext createContext() {
-    return TaiyinContext._create(_library, _bindings, _contextFinalizer);
+    return TaiyinContext._create(_library, _nativeState);
   }
 
   /// The Taiyin C ABI version.

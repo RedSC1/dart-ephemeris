@@ -4,19 +4,22 @@ typedef _EventsStatusChecker =
     void Function(int status, TaiyinEphemerisDiagnostic? diagnostic);
 typedef _EventScalarCalculation =
     int Function(
-      Pointer<Double> output,
+      Arena arena,
+      Pointer<taiyin_split_julian_date> output,
       Pointer<taiyin_ephemeris_diagnostic> diagnostic,
     );
 typedef _EventDateArrayCalculation =
     int Function(
-      Pointer<Double> output,
+      Arena arena,
+      Pointer<taiyin_split_julian_date> output,
       int capacity,
       Pointer<Size> count,
       Pointer<taiyin_ephemeris_diagnostic> diagnostic,
     );
 typedef _EventPairArrayCalculation =
     int Function(
-      Pointer<Double> primary,
+      Arena arena,
+      Pointer<taiyin_split_julian_date> primary,
       Pointer<Double> secondary,
       int capacity,
       Pointer<Size> count,
@@ -26,9 +29,8 @@ typedef _EventPairArrayCalculation =
 /// Longitude, aspect, phase, elongation, separation, and solar-transit
 /// searches.
 ///
-/// All native event coordinates are scalar Julian dates. [JulianDate] remains
-/// split in Dart, but every input and returned event crosses that scalar-JD FFI
-/// boundary.
+/// All native event coordinates cross the FFI boundary as split Julian dates
+/// ([taiyin_split_julian_date]), keeping the low-order fraction intact.
 final class TaiyinEventsApi {
   TaiyinEventsApi._(
     this._bindings,
@@ -79,11 +81,11 @@ final class TaiyinEventsApi {
       options,
       allowedOptions: const {TaiyinEventSearchOption.reverse},
     );
-    return _scalar<Ut1Scale>((output, diagnostic) {
+    return _scalar<Ut1Scale>((arena, output, diagnostic) {
       return _bindings.taiyin_search_solar_longitude_ut(
         _context,
         targetLongitudeRadians,
-        estimate.toDouble(),
+        writeJulianDate(arena, estimate),
         mask,
         output,
         diagnostic,
@@ -105,11 +107,11 @@ final class TaiyinEventsApi {
       options,
       allowedOptions: const {TaiyinEventSearchOption.reverse},
     );
-    return _scalar<TtScale>((output, diagnostic) {
+    return _scalar<TtScale>((arena, output, diagnostic) {
       return _bindings.taiyin_search_solar_longitude_tt(
         _context,
         targetLongitudeRadians,
-        estimate.toDouble(),
+        writeJulianDate(arena, estimate),
         mask,
         output,
         diagnostic,
@@ -131,11 +133,11 @@ final class TaiyinEventsApi {
       options,
       allowedOptions: const {TaiyinEventSearchOption.reverse},
     );
-    return _scalar<Ut1Scale>((output, diagnostic) {
+    return _scalar<Ut1Scale>((arena, output, diagnostic) {
       return _bindings.taiyin_search_moon_longitude_ut(
         _context,
         targetLongitudeRadians,
-        estimate.toDouble(),
+        writeJulianDate(arena, estimate),
         mask,
         output,
         diagnostic,
@@ -157,11 +159,11 @@ final class TaiyinEventsApi {
       options,
       allowedOptions: const {TaiyinEventSearchOption.reverse},
     );
-    return _scalar<TtScale>((output, diagnostic) {
+    return _scalar<TtScale>((arena, output, diagnostic) {
       return _bindings.taiyin_search_moon_longitude_tt(
         _context,
         targetLongitudeRadians,
-        estimate.toDouble(),
+        writeJulianDate(arena, estimate),
         mask,
         output,
         diagnostic,
@@ -187,6 +189,7 @@ final class TaiyinEventsApi {
     _requireCapacity(maxResults);
     final mask = _eventMask(positionFlags, const {});
     return _dateArray<Ut1Scale>(maxResults, (
+      arena,
       output,
       capacity,
       count,
@@ -196,8 +199,8 @@ final class TaiyinEventsApi {
         _context,
         body.id,
         targetLongitudeRadians,
-        start.toDouble(),
-        end.toDouble(),
+        writeJulianDate(arena, start),
+        writeJulianDate(arena, end),
         maxStepDays,
         mask,
         output,
@@ -226,6 +229,7 @@ final class TaiyinEventsApi {
     _requireCapacity(maxResults);
     final mask = _eventMask(positionFlags, const {});
     return _dateArray<TtScale>(maxResults, (
+      arena,
       output,
       capacity,
       count,
@@ -235,8 +239,8 @@ final class TaiyinEventsApi {
         _context,
         body.id,
         targetLongitudeRadians,
-        start.toDouble(),
-        end.toDouble(),
+        writeJulianDate(arena, start),
+        writeJulianDate(arena, end),
         maxStepDays,
         mask,
         output,
@@ -265,12 +269,12 @@ final class TaiyinEventsApi {
     final mask = _eventMask(positionFlags, const {});
     return _pairArray<Ut1Scale, TaiyinLongitudeStation<Ut1Scale>>(
       maxResults,
-      (primary, secondary, capacity, count, diagnostic) {
+      (arena, primary, secondary, capacity, count, diagnostic) {
         return _bindings.taiyin_search_body_longitude_stations_ut(
           _context,
           body.id,
-          start.toDouble(),
-          end.toDouble(),
+          writeJulianDate(arena, start),
+          writeJulianDate(arena, end),
           maxStepDays,
           mask,
           primary,
@@ -281,7 +285,7 @@ final class TaiyinEventsApi {
         );
       },
       (coordinate, longitude) => TaiyinLongitudeStation(
-        coordinate: JulianDate<Ut1Scale>.fromDouble(coordinate),
+        coordinate: coordinate,
         longitudeRadians: longitude,
       ),
     );
@@ -305,12 +309,12 @@ final class TaiyinEventsApi {
     final mask = _eventMask(positionFlags, const {});
     return _pairArray<TtScale, TaiyinLongitudeStation<TtScale>>(
       maxResults,
-      (primary, secondary, capacity, count, diagnostic) {
+      (arena, primary, secondary, capacity, count, diagnostic) {
         return _bindings.taiyin_search_body_longitude_stations_tt(
           _context,
           body.id,
-          start.toDouble(),
-          end.toDouble(),
+          writeJulianDate(arena, start),
+          writeJulianDate(arena, end),
           maxStepDays,
           mask,
           primary,
@@ -321,7 +325,7 @@ final class TaiyinEventsApi {
         );
       },
       (coordinate, longitude) => TaiyinLongitudeStation(
-        coordinate: JulianDate<TtScale>.fromDouble(coordinate),
+        coordinate: coordinate,
         longitudeRadians: longitude,
       ),
     );
@@ -346,6 +350,7 @@ final class TaiyinEventsApi {
     _requireCapacity(maxResults);
     final mask = _eventMask(positionFlags, const {});
     return _dateArray<Ut1Scale>(maxResults, (
+      arena,
       output,
       capacity,
       count,
@@ -356,8 +361,8 @@ final class TaiyinEventsApi {
         bodyA.id,
         bodyB.id,
         aspectRadians,
-        start.toDouble(),
-        end.toDouble(),
+        writeJulianDate(arena, start),
+        writeJulianDate(arena, end),
         maxStepDays,
         mask,
         output,
@@ -387,6 +392,7 @@ final class TaiyinEventsApi {
     _requireCapacity(maxResults);
     final mask = _eventMask(positionFlags, const {});
     return _dateArray<TtScale>(maxResults, (
+      arena,
       output,
       capacity,
       count,
@@ -397,8 +403,8 @@ final class TaiyinEventsApi {
         bodyA.id,
         bodyB.id,
         aspectRadians,
-        start.toDouble(),
-        end.toDouble(),
+        writeJulianDate(arena, start),
+        writeJulianDate(arena, end),
         maxStepDays,
         mask,
         output,
@@ -433,6 +439,7 @@ final class TaiyinEventsApi {
       positionFlags: positionFlags,
       calculate:
           (
+            arena,
             aspects,
             aspectCount,
             output,
@@ -447,8 +454,8 @@ final class TaiyinEventsApi {
             bodyB.id,
             aspects,
             aspectCount,
-            start.toDouble(),
-            end.toDouble(),
+            writeJulianDate(arena, start),
+            writeJulianDate(arena, end),
             maxStepDays,
             mask,
             output,
@@ -483,6 +490,7 @@ final class TaiyinEventsApi {
       positionFlags: positionFlags,
       calculate:
           (
+            arena,
             aspects,
             aspectCount,
             output,
@@ -497,8 +505,8 @@ final class TaiyinEventsApi {
             bodyB.id,
             aspects,
             aspectCount,
-            start.toDouble(),
-            end.toDouble(),
+            writeJulianDate(arena, start),
+            writeJulianDate(arena, end),
             maxStepDays,
             mask,
             output,
@@ -530,8 +538,8 @@ final class TaiyinEventsApi {
       final status = _bindings.taiyin_search_greatest_elongation_ut(
         _context,
         body.id,
-        start.toDouble(),
-        end.toDouble(),
+        writeJulianDate(arena, start),
+        writeJulianDate(arena, end),
         mask,
         output,
         diagnostic,
@@ -542,7 +550,7 @@ final class TaiyinEventsApi {
       return TaiyinEphemerisResult(
         value: TaiyinGreatestElongationEvent(
           bodyId: value.body_id,
-          coordinate: JulianDate<Ut1Scale>.fromDouble(value.jd_ut),
+          coordinate: readJulianDate<Ut1Scale>(value.jd_ut),
           elongationRadians: value.elongation_rad,
           relativeLongitudeRadians: value.relative_longitude_rad,
           kind: TaiyinGreatestElongationKind.fromMask(value.kind),
@@ -582,13 +590,13 @@ final class TaiyinEventsApi {
       end,
       maxStepDays: maxStepDays,
       positionFlags: positionFlags,
-      calculate: (output, diagnostic, mask) =>
+      calculate: (arena, output, diagnostic, mask) =>
           _bindings.taiyin_search_minimum_angular_separation_ut(
             _context,
             bodyA.id,
             bodyB.id,
-            start.toDouble(),
-            end.toDouble(),
+            writeJulianDate(arena, start),
+            writeJulianDate(arena, end),
             maxStepDays,
             mask,
             output,
@@ -615,13 +623,13 @@ final class TaiyinEventsApi {
       end,
       maxStepDays: maxStepDays,
       positionFlags: positionFlags,
-      calculate: (output, diagnostic, mask) =>
+      calculate: (arena, output, diagnostic, mask) =>
           _bindings.taiyin_search_minimum_angular_separation_tt(
             _context,
             bodyA.id,
             bodyB.id,
-            start.toDouble(),
-            end.toDouble(),
+            writeJulianDate(arena, start),
+            writeJulianDate(arena, end),
             maxStepDays,
             mask,
             output,
@@ -645,11 +653,11 @@ final class TaiyinEventsApi {
       allowedOptions: const {TaiyinEventSearchOption.reverse},
       disallowTopocentric: true,
     );
-    return _solarTransit((output, diagnostic) {
+    return _solarTransit((arena, output, diagnostic) {
       return _bindings.taiyin_search_next_solar_transit_ut(
         _context,
         body.id,
-        start.toDouble(),
+        writeJulianDate(arena, start),
         mask,
         output,
         diagnostic,
@@ -678,7 +686,7 @@ final class TaiyinEventsApi {
     return using((arena) {
       final global = arena<taiyin_solar_transit_result>();
       _writeSolarTransit(global.ref, globalTransit);
-      return _localSolarTransit((output, diagnostic) {
+      return _localSolarTransit((arena, output, diagnostic) {
         return _bindings.taiyin_compute_local_solar_transit_ut(
           _context,
           global,
@@ -715,11 +723,11 @@ final class TaiyinEventsApi {
       },
       disallowTopocentric: true,
     );
-    return _localSolarTransit((output, diagnostic) {
+    return _localSolarTransit((arena, output, diagnostic) {
       return _bindings.taiyin_search_next_local_solar_transit_ut(
         _context,
         body.id,
-        start.toDouble(),
+        writeJulianDate(arena, start),
         observer.longitudeDegrees,
         observer.latitudeDegrees,
         observer.heightMeters,
@@ -746,6 +754,7 @@ final class TaiyinEventsApi {
     _requireCapacity(maxResults);
     final mask = _eventMask(positionFlags, const {});
     return _dateArray<Ut1Scale>(maxResults, (
+      arena,
       output,
       capacity,
       count,
@@ -754,8 +763,8 @@ final class TaiyinEventsApi {
       return _bindings.taiyin_search_lunar_phase_crossings_ut(
         _context,
         phaseRadians,
-        start.toDouble(),
-        end.toDouble(),
+        writeJulianDate(arena, start),
+        writeJulianDate(arena, end),
         maxStepDays,
         mask,
         output,
@@ -782,6 +791,7 @@ final class TaiyinEventsApi {
     _requireCapacity(maxResults);
     final mask = _eventMask(positionFlags, const {});
     return _dateArray<TtScale>(maxResults, (
+      arena,
       output,
       capacity,
       count,
@@ -790,8 +800,8 @@ final class TaiyinEventsApi {
       return _bindings.taiyin_search_lunar_phase_crossings_tt(
         _context,
         phaseRadians,
-        start.toDouble(),
-        end.toDouble(),
+        writeJulianDate(arena, start),
+        writeJulianDate(arena, end),
         maxStepDays,
         mask,
         output,
@@ -806,14 +816,14 @@ final class TaiyinEventsApi {
     _EventScalarCalculation calculate,
   ) {
     return using((arena) {
-      final output = arena<Double>();
+      final output = arena<taiyin_split_julian_date>();
       final diagnostic = arena<taiyin_ephemeris_diagnostic>();
       _bindings.taiyin_ephemeris_diagnostic_init(diagnostic);
-      final status = calculate(output, diagnostic);
+      final status = calculate(arena, output, diagnostic);
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
       return TaiyinEphemerisResult(
-        value: JulianDate<S>.fromDouble(output.value),
+        value: readJulianDate<S>(output.ref),
         diagnostic: mappedDiagnostic,
       );
     });
@@ -824,18 +834,18 @@ final class TaiyinEventsApi {
     _EventDateArrayCalculation calculate,
   ) {
     return using((arena) {
-      final output = arena<Double>(maxResults);
+      final output = arena<taiyin_split_julian_date>(maxResults);
       final count = arena<Size>();
       final diagnostic = arena<taiyin_ephemeris_diagnostic>();
       _bindings.taiyin_ephemeris_diagnostic_init(diagnostic);
-      final status = calculate(output, maxResults, count, diagnostic);
+      final status = calculate(arena, output, maxResults, count, diagnostic);
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
       final resultCount = _validatedResultCount(count.value, maxResults);
       final values = List<JulianDate<S>>.unmodifiable(
         List.generate(
           resultCount,
-          (index) => JulianDate<S>.fromDouble((output + index).value),
+          (index) => readJulianDate<S>((output + index).ref),
         ),
       );
       return TaiyinEphemerisResult(value: values, diagnostic: mappedDiagnostic);
@@ -845,15 +855,16 @@ final class TaiyinEventsApi {
   TaiyinEphemerisResult<List<T>> _pairArray<S extends TimeScale, T>(
     int maxResults,
     _EventPairArrayCalculation calculate,
-    T Function(double coordinate, double secondary) read,
+    T Function(JulianDate<S> coordinate, double secondary) read,
   ) {
     return using((arena) {
-      final primary = arena<Double>(maxResults);
+      final primary = arena<taiyin_split_julian_date>(maxResults);
       final secondary = arena<Double>(maxResults);
       final count = arena<Size>();
       final diagnostic = arena<taiyin_ephemeris_diagnostic>();
       _bindings.taiyin_ephemeris_diagnostic_init(diagnostic);
       final status = calculate(
+        arena,
         primary,
         secondary,
         maxResults,
@@ -866,7 +877,10 @@ final class TaiyinEventsApi {
       final values = List<T>.unmodifiable(
         List.generate(
           resultCount,
-          (index) => read((primary + index).value, (secondary + index).value),
+          (index) => read(
+            readJulianDate<S>((primary + index).ref),
+            (secondary + index).value,
+          ),
         ),
       );
       return TaiyinEphemerisResult(value: values, diagnostic: mappedDiagnostic);
@@ -884,9 +898,10 @@ final class TaiyinEventsApi {
     required int maxResults,
     required Set<TaiyinPositionFlag> positionFlags,
     required int Function(
+      Arena,
       Pointer<Double>,
       int,
-      Pointer<Double>,
+      Pointer<taiyin_split_julian_date>,
       Pointer<Double>,
       int,
       Pointer<Size>,
@@ -915,12 +930,13 @@ final class TaiyinEventsApi {
       for (var index = 0; index < aspectSeparationsRadians.length; index++) {
         (aspects + index).value = aspectSeparationsRadians[index];
       }
-      final output = arena<Double>(maxResults);
+      final output = arena<taiyin_split_julian_date>(maxResults);
       final outputAspects = arena<Double>(maxResults);
       final count = arena<Size>();
       final diagnostic = arena<taiyin_ephemeris_diagnostic>();
       _bindings.taiyin_ephemeris_diagnostic_init(diagnostic);
       final status = calculate(
+        arena,
         aspects,
         aspectSeparationsRadians.length,
         output,
@@ -937,7 +953,7 @@ final class TaiyinEventsApi {
         List.generate(
           resultCount,
           (index) => TaiyinExactAspectEvent(
-            coordinate: JulianDate<S>.fromDouble((output + index).value),
+            coordinate: readJulianDate<S>((output + index).ref),
             aspectRadians: (outputAspects + index).value,
           ),
         ),
@@ -955,6 +971,7 @@ final class TaiyinEventsApi {
     required double maxStepDays,
     required Set<TaiyinPositionFlag> positionFlags,
     required int Function(
+      Arena,
       Pointer<taiyin_angular_separation_result>,
       Pointer<taiyin_ephemeris_diagnostic>,
       int,
@@ -971,7 +988,7 @@ final class TaiyinEventsApi {
       _bindings
         ..taiyin_angular_separation_result_init(output)
         ..taiyin_ephemeris_diagnostic_init(diagnostic);
-      final status = calculate(output, diagnostic, mask);
+      final status = calculate(arena, output, diagnostic, mask);
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
       final value = output.ref;
@@ -979,7 +996,7 @@ final class TaiyinEventsApi {
         value: TaiyinMinimumAngularSeparationEvent<S>(
           bodyAId: value.body_a_id,
           bodyBId: value.body_b_id,
-          coordinate: JulianDate<S>.fromDouble(value.jd),
+          coordinate: readJulianDate<S>(value.jd),
           separationRadians: value.separation_rad,
           separationRateRadiansPerDay: value.separation_rate_rad_per_day,
           iterationCount: value.iteration_count,
@@ -992,6 +1009,7 @@ final class TaiyinEventsApi {
 
   TaiyinEphemerisResult<TaiyinSolarTransitEvent> _solarTransit(
     int Function(
+      Arena,
       Pointer<taiyin_solar_transit_result>,
       Pointer<taiyin_ephemeris_diagnostic>,
     )
@@ -1003,7 +1021,7 @@ final class TaiyinEventsApi {
       _bindings
         ..taiyin_solar_transit_result_init(output)
         ..taiyin_ephemeris_diagnostic_init(diagnostic);
-      final status = calculate(output, diagnostic);
+      final status = calculate(arena, output, diagnostic);
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
       return TaiyinEphemerisResult(
@@ -1015,6 +1033,7 @@ final class TaiyinEventsApi {
 
   TaiyinEphemerisResult<TaiyinLocalSolarTransitEvent> _localSolarTransit(
     int Function(
+      Arena,
       Pointer<taiyin_local_solar_transit_result>,
       Pointer<taiyin_ephemeris_diagnostic>,
     )
@@ -1026,7 +1045,7 @@ final class TaiyinEventsApi {
       _bindings
         ..taiyin_local_solar_transit_result_init(output)
         ..taiyin_ephemeris_diagnostic_init(diagnostic);
-      final status = calculate(output, diagnostic);
+      final status = calculate(arena, output, diagnostic);
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
       final value = output.ref;
@@ -1059,7 +1078,7 @@ final class TaiyinEventsApi {
       kinds: TaiyinSolarTransitKind.values
           .where((kind) => (value.kind & kind.mask) != 0)
           .toSet(),
-      greatest: JulianDate<Ut1Scale>.fromDouble(value.greatest_jd_ut),
+      greatest: readJulianDate<Ut1Scale>(value.greatest_jd_ut),
       minimumSeparationRadians: value.minimum_separation_rad,
       sunRadiusRadians: value.sun_radius_rad,
       bodyRadiusRadians: value.body_radius_rad,
@@ -1080,14 +1099,19 @@ final class TaiyinEventsApi {
       ..struct_size = sizeOf<taiyin_solar_transit_result>()
       ..body_id = value.bodyId
       ..kind = value.kinds.fold(0, (mask, kind) => mask | kind.mask)
-      ..greatest_jd_ut = value.greatest.toDouble()
+      ..greatest_jd_ut.day_number = value.greatest.dayNumber
+      ..greatest_jd_ut.day_fraction = value.greatest.dayFraction
       ..minimum_separation_rad = value.minimumSeparationRadians
       ..sun_radius_rad = value.sunRadiusRadians
       ..body_radius_rad = value.bodyRadiusRadians
-      ..t1_jd_ut = value.t1?.toDouble() ?? double.nan
-      ..t2_jd_ut = value.t2?.toDouble() ?? double.nan
-      ..t3_jd_ut = value.t3?.toDouble() ?? double.nan
-      ..t4_jd_ut = value.t4?.toDouble() ?? double.nan
+      ..t1_jd_ut.day_number = value.t1?.dayNumber ?? 0
+      ..t1_jd_ut.day_fraction = value.t1?.dayFraction ?? double.nan
+      ..t2_jd_ut.day_number = value.t2?.dayNumber ?? 0
+      ..t2_jd_ut.day_fraction = value.t2?.dayFraction ?? double.nan
+      ..t3_jd_ut.day_number = value.t3?.dayNumber ?? 0
+      ..t3_jd_ut.day_fraction = value.t3?.dayFraction ?? double.nan
+      ..t4_jd_ut.day_number = value.t4?.dayNumber ?? 0
+      ..t4_jd_ut.day_fraction = value.t4?.dayFraction ?? double.nan
       ..iteration_count = value.iterationCount
       ..evaluation_count = value.evaluationCount;
   }
@@ -1214,10 +1238,8 @@ final class TaiyinEventsApi {
     return nativeCount;
   }
 
-  JulianDate<Ut1Scale>? _ut1OrNull(double value) {
-    return value.isFinite && value > 0
-        ? JulianDate<Ut1Scale>.fromDouble(value)
-        : null;
+  JulianDate<Ut1Scale>? _ut1OrNull(taiyin_split_julian_date value) {
+    return value.day_fraction.isFinite ? readJulianDate<Ut1Scale>(value) : null;
   }
 
   double? _finiteOrNull(double value) => value.isFinite ? value : null;

@@ -17,5 +17,8 @@
 #include <taiyin/c/events.h>
 #include <taiyin/c/occultation.h>
 #include <taiyin/c/eclipse.h>
+#include <taiyin/c/chinese_calendar.h>
+#include <taiyin/c/chinese_calendar_ganzhi.h>
+#include <taiyin/c/bazi.h>
 
 #endif

@@ -3,17 +3,37 @@ import 'package:test/test.dart';
 
 void main() {
   group('native compatibility', () {
-    test('accepts ABI 2 with split-time support', () {
+    test('accepts ABI 5 with split-time and Chinese-calendar support', () {
       expect(
         () => validateTaiyinNativeCompatibility(
           abiVersion: taiyinSupportedAbiVersion,
-          capabilities: taiyinSplitTimeCapability,
+          capabilities:
+              taiyinSplitTimeCapability | taiyinChineseCalendarCapability,
         ),
         returnsNormally,
       );
     });
 
-    test('rejects an ABI-2 library without split-time support', () {
+    test(
+      'rejects an ABI-5 library without the Chinese-calendar capability',
+      () {
+        expect(
+          () => validateTaiyinNativeCompatibility(
+            abiVersion: taiyinSupportedAbiVersion,
+            capabilities: taiyinSplitTimeCapability,
+          ),
+          throwsA(
+            isA<StateError>().having(
+              (error) => error.message,
+              'message',
+              contains('Chinese-calendar capability'),
+            ),
+          ),
+        );
+      },
+    );
+
+    test('rejects an ABI-5 library without split-time support', () {
       expect(
         () => validateTaiyinNativeCompatibility(
           abiVersion: taiyinSupportedAbiVersion,
@@ -29,11 +49,12 @@ void main() {
       );
     });
 
-    test('rejects the retired ABI-1 major first', () {
+    test('rejects the retired ABI-4 major first', () {
       expect(
         () => validateTaiyinNativeCompatibility(
           abiVersion: taiyinSupportedAbiVersion - 1,
-          capabilities: taiyinSplitTimeCapability,
+          capabilities:
+              taiyinSplitTimeCapability | taiyinChineseCalendarCapability,
         ),
         throwsA(
           isA<StateError>().having(
@@ -45,16 +66,103 @@ void main() {
       );
     });
 
-    test('accepts a library that exposes every required ABI-2 symbol', () {
+    test('accepts a library that exposes every required ABI-5 symbol', () {
       expect(
         () => validateTaiyinRequiredSymbols(
-          providesSymbol: taiyinRequiredAbi2Symbols.contains,
+          providesSymbol: taiyinRequiredAbi5Symbols.contains,
         ),
         returnsNormally,
       );
     });
 
-    test('reports missing ABI-2 symbols before lazy lookup', () {
+    test(
+      'accepts a library without BaZi symbols when the set is not required',
+      () {
+        // BaZi is an optional module: symbols are required only when the loaded
+        // library advertises the BaZi capability.
+        expect(
+          () => validateTaiyinRequiredSymbols(
+            providesSymbol: (symbol) => !symbol.startsWith('taiyin_bazi_'),
+          ),
+          returnsNormally,
+        );
+      },
+    );
+
+    test(
+      'reports incomplete BaZi symbols when the extension is advertised',
+      () {
+        expect(
+          () => validateTaiyinRequiredSymbols(
+            providesSymbol: (symbol) =>
+                !symbol.startsWith('taiyin_bazi_') ||
+                symbol != 'taiyin_bazi_context_create',
+            requiredSymbols: taiyinBaziSymbols,
+          ),
+          throwsA(
+            isA<StateError>().having(
+              (error) => error.message,
+              'message',
+              contains('taiyin_bazi_context_create'),
+            ),
+          ),
+        );
+      },
+    );
+
+    test('reports missing Chinese-calendar symbols before use', () {
+      expect(
+        () => validateTaiyinRequiredSymbols(
+          providesSymbol: (symbol) =>
+              symbol != 'taiyin_chinese_calendar_calc_year_ut',
+        ),
+        throwsA(
+          isA<StateError>().having(
+            (error) => error.message,
+            'message',
+            contains('taiyin_chinese_calendar_calc_year_ut'),
+          ),
+        ),
+      );
+    });
+
+    test('reports missing Ganzhi rule primitives before use', () {
+      expect(
+        () => validateTaiyinRequiredSymbols(
+          providesSymbol: (symbol) => symbol != 'taiyin_ganzhi_make',
+        ),
+        throwsA(
+          isA<StateError>().having(
+            (error) => error.message,
+            'message',
+            contains('taiyin_ganzhi_make'),
+          ),
+        ),
+      );
+    });
+
+    test(
+      'reports missing four-pillars Ganzhi symbol from the required set',
+      () {
+        // calc_four_pillars_ut is always exported (it returns UNSUPPORTED when
+        // the extension is off), so it belongs to the required baseline.
+        expect(
+          () => validateTaiyinRequiredSymbols(
+            providesSymbol: (symbol) =>
+                symbol != 'taiyin_chinese_calendar_calc_four_pillars_ut',
+          ),
+          throwsA(
+            isA<StateError>().having(
+              (error) => error.message,
+              'message',
+              contains('taiyin_chinese_calendar_calc_four_pillars_ut'),
+            ),
+          ),
+        );
+      },
+    );
+
+    test('reports missing ABI-5 symbols before lazy lookup', () {
       expect(
         () => validateTaiyinRequiredSymbols(
           providesSymbol: (symbol) => symbol != 'taiyin_get_library_codename',

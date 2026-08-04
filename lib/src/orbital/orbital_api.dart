@@ -31,11 +31,11 @@ final class TaiyinOrbitalApi {
       body,
       referenceFrame,
       allowBarycenterApproximation,
-      (output, diagnostic, flags) =>
+      (arena, output, diagnostic, flags) =>
           _bindings.taiyin_calc_body_osculating_orbit_tt(
             _context,
             body.id,
-            tt.toDouble(),
+            writeJulianDate(arena, tt),
             referenceFrame.id,
             flags,
             output,
@@ -56,11 +56,11 @@ final class TaiyinOrbitalApi {
       body,
       referenceFrame,
       allowBarycenterApproximation,
-      (output, diagnostic, flags) =>
+      (arena, output, diagnostic, flags) =>
           _bindings.taiyin_calc_body_osculating_orbit_ut(
             _context,
             body.id,
-            ut1.toDouble(),
+            writeJulianDate(arena, ut1),
             referenceFrame.id,
             flags,
             output,
@@ -81,11 +81,11 @@ final class TaiyinOrbitalApi {
       body,
       referenceFrame,
       allowBarycenterApproximation,
-      (output, diagnostic, flags) =>
+      (arena, output, diagnostic, flags) =>
           _bindings.taiyin_calc_body_orbit_reference_points_tt(
             _context,
             body.id,
-            tt.toDouble(),
+            writeJulianDate(arena, tt),
             referenceFrame.id,
             flags,
             output,
@@ -106,11 +106,11 @@ final class TaiyinOrbitalApi {
       body,
       referenceFrame,
       allowBarycenterApproximation,
-      (output, diagnostic, flags) =>
+      (arena, output, diagnostic, flags) =>
           _bindings.taiyin_calc_body_orbit_reference_points_ut(
             _context,
             body.id,
-            ut1.toDouble(),
+            writeJulianDate(arena, ut1),
             referenceFrame.id,
             flags,
             output,
@@ -134,15 +134,16 @@ final class TaiyinOrbitalApi {
       kind,
       direction,
       allowBarycenterApproximation,
-      (output, diagnostic, flags) => _bindings.taiyin_search_next_body_apsis_tt(
-        _context,
-        body.id,
-        kind.id,
-        start.toDouble(),
-        flags,
-        output,
-        diagnostic,
-      ),
+      (arena, output, diagnostic, flags) =>
+          _bindings.taiyin_search_next_body_apsis_tt(
+            _context,
+            body.id,
+            kind.id,
+            writeJulianDate(arena, start),
+            flags,
+            output,
+            diagnostic,
+          ),
     );
   }
 
@@ -161,15 +162,16 @@ final class TaiyinOrbitalApi {
       kind,
       direction,
       allowBarycenterApproximation,
-      (output, diagnostic, flags) => _bindings.taiyin_search_next_body_apsis_ut(
-        _context,
-        body.id,
-        kind.id,
-        start.toDouble(),
-        flags,
-        output,
-        diagnostic,
-      ),
+      (arena, output, diagnostic, flags) =>
+          _bindings.taiyin_search_next_body_apsis_ut(
+            _context,
+            body.id,
+            kind.id,
+            writeJulianDate(arena, start),
+            flags,
+            output,
+            diagnostic,
+          ),
     );
   }
 
@@ -190,12 +192,12 @@ final class TaiyinOrbitalApi {
       referenceFrame,
       direction,
       allowBarycenterApproximation,
-      (output, diagnostic, flags) =>
+      (arena, output, diagnostic, flags) =>
           _bindings.taiyin_search_next_body_plane_node_tt(
             _context,
             body.id,
             kind.id,
-            start.toDouble(),
+            writeJulianDate(arena, start),
             referenceFrame.id,
             flags,
             output,
@@ -221,12 +223,12 @@ final class TaiyinOrbitalApi {
       referenceFrame,
       direction,
       allowBarycenterApproximation,
-      (output, diagnostic, flags) =>
+      (arena, output, diagnostic, flags) =>
           _bindings.taiyin_search_next_body_plane_node_ut(
             _context,
             body.id,
             kind.id,
-            start.toDouble(),
+            writeJulianDate(arena, start),
             referenceFrame.id,
             flags,
             output,
@@ -240,6 +242,7 @@ final class TaiyinOrbitalApi {
     TaiyinApparentFrame referenceFrame,
     bool allowBarycenterApproximation,
     int Function(
+      Arena,
       Pointer<taiyin_body_osculating_orbit>,
       Pointer<taiyin_ephemeris_diagnostic>,
       int,
@@ -255,6 +258,7 @@ final class TaiyinOrbitalApi {
         ..taiyin_body_osculating_orbit_init(output)
         ..taiyin_ephemeris_diagnostic_init(diagnostic);
       final status = calculate(
+        arena,
         output,
         diagnostic,
         _flags(allowBarycenterApproximation),
@@ -295,6 +299,7 @@ final class TaiyinOrbitalApi {
     TaiyinApparentFrame referenceFrame,
     bool allowBarycenterApproximation,
     int Function(
+      Arena,
       Pointer<taiyin_body_orbit_reference_points>,
       Pointer<taiyin_ephemeris_diagnostic>,
       int,
@@ -310,6 +315,7 @@ final class TaiyinOrbitalApi {
         ..taiyin_body_orbit_reference_points_init(output)
         ..taiyin_ephemeris_diagnostic_init(diagnostic);
       final status = calculate(
+        arena,
         output,
         diagnostic,
         _flags(allowBarycenterApproximation),
@@ -344,6 +350,7 @@ final class TaiyinOrbitalApi {
     TaiyinOrbitalSearchDirection direction,
     bool allowBarycenterApproximation,
     int Function(
+      Arena,
       Pointer<taiyin_body_apsis_search_result>,
       Pointer<taiyin_ephemeris_diagnostic>,
       int,
@@ -358,6 +365,7 @@ final class TaiyinOrbitalApi {
         ..taiyin_body_apsis_search_result_init(output)
         ..taiyin_ephemeris_diagnostic_init(diagnostic);
       final status = search(
+        arena,
         output,
         diagnostic,
         _flags(allowBarycenterApproximation, direction: direction),
@@ -370,7 +378,7 @@ final class TaiyinOrbitalApi {
           body: _bodyFromId(value.body_id),
           center: _bodyFromId(value.center_id),
           kind: TaiyinApsisKind.fromId(value.kind),
-          coordinate: JulianDate<Scale>.fromDouble(value.jd),
+          coordinate: readJulianDate<Scale>(value.jd),
           distanceAu: value.distance_au,
           radialVelocityAuPerDay: value.radial_velocity_au_per_day,
           iterationCount: value.iteration_count,
@@ -391,6 +399,7 @@ final class TaiyinOrbitalApi {
     TaiyinOrbitalSearchDirection direction,
     bool allowBarycenterApproximation,
     int Function(
+      Arena,
       Pointer<taiyin_body_node_search_result>,
       Pointer<taiyin_ephemeris_diagnostic>,
       int,
@@ -406,6 +415,7 @@ final class TaiyinOrbitalApi {
         ..taiyin_body_node_search_result_init(output)
         ..taiyin_ephemeris_diagnostic_init(diagnostic);
       final status = search(
+        arena,
         output,
         diagnostic,
         _flags(allowBarycenterApproximation, direction: direction),
@@ -420,7 +430,7 @@ final class TaiyinOrbitalApi {
           referenceFrame: TaiyinApparentFrame.fromId(value.reference_frame_id),
           rawReferenceFrameId: value.reference_frame_id,
           kind: TaiyinPlaneNodeKind.fromId(value.kind),
-          coordinate: JulianDate<Scale>.fromDouble(value.jd),
+          coordinate: readJulianDate<Scale>(value.jd),
           referencePlaneAngleRadians: value.reference_plane_angle_rad,
           distanceAu: value.distance_au,
           iterationCount: value.iteration_count,

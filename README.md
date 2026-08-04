@@ -95,9 +95,10 @@ final tt = calendar.toJulianDate<TtScale>();
 `JulianDate<S>` stores an integer day and a normalized fractional day. Its time
 scale is part of the Dart type, so a `JulianDate<Ut1Scale>` cannot be passed to
 `positionTt`. `toJulianDate<S>()` interprets the calendar fields in that scale;
-it does not perform UTC/TAI/TT conversion. Time conversion uses the split-date
-C ABI. Position and state entry points currently accept a scalar Julian date
-upstream, so those calls merge the two parts at the final FFI boundary.
+it does not perform UTC/TAI/TT conversion. The split representation crosses
+the FFI boundary end to end: the ABI-5 native entry points use
+`taiyin_split_julian_date` for every calculation time, so the Dart value is
+never merged to a scalar `double` mid-calculation.
 
 Use the context-owned time service for actual scale conversion:
 
@@ -778,11 +779,19 @@ native C ABI does not return partial observed values. Failed position-batch
 entries contain NaN coordinates and rates. Batch exceptions expose every
 available native failure through `TaiyinException.diagnostics`.
 
-This package requires an ABI-2 native library that reports
-`TaiyinCapability.splitTime` and exposes the required runtime, star,
-solar-time, and phenomena symbols. Incomplete ABI-2 builds are rejected during
-`Taiyin.open` or `TaiyinContext.attach` with a clear compatibility error instead
-of failing later during a lazy symbol lookup.
+This package requires an ABI-5 native library that reports the
+`TaiyinCapability.splitTime` and `TaiyinCapability.chineseCalendar`
+capabilities and exposes the required runtime, star, solar-time, phenomena,
+Chinese-calendar, and Ganzhi-rule symbols. Incomplete ABI-5 builds are rejected
+during `Taiyin.open` or `TaiyinContext.attach` with a clear compatibility error
+instead of failing later during a lazy symbol lookup.
+
+The Ganzhi extension (`TAIYIN_BUILD_GANZHI_CALENDAR_EXTENSION`) and the BaZi
+extension (`TAIYIN_BUILD_BAZI_EXTENSION`) are **optional modules**. Their Dart
+APIs (`context.ganzhi`, `context.bazi`) check the corresponding capability bit
+and throw `UnsupportedError` when the loaded library was built without them, so
+a smaller extension-free library still loads and works for the core and
+Chinese-calendar modules.
 
 The native engine is process-wide, so call `Taiyin.open` once. Calling it again
 currently replaces the global catalog, cache, EOP table, and lunar-limb model.
@@ -803,6 +812,59 @@ try {
 }
 ```
 
+## Chinese calendar, Ganzhi, and BaZi
+
+The Chinese-calendar module is always built into `taiyin_c` and provides
+winter-solstice-based lunar years, solar terms, and solar/lunar conversion.
+`context.chineseCalendar` returns a cached context using the default
+astronomical profile; `context.createChineseCalendar(config)` creates a
+caller-owned context:
+
+```dart
+final lunar = context.chineseCalendar
+    .fromSolar(const TaiyinSolarDate(year: 2024, month: 2, day: 10));
+print(lunar.value); // 2024-01-01 (甲辰正月初一)
+
+final year = context.chineseCalendar
+    .calcYearUt(JulianDate<Ut1Scale>.fromDouble(2460348.0));
+print(year.value.solarTermCount); // 25
+
+final pillars = context.chineseCalendar.fourPillars(
+  instantUtc: JulianDate<UtcScale>.fromDouble(2460351.0),
+  virtualTime: AstroDateTime(2024, 2, 10, 12),
+);
+print(pillars.value.year); // 甲辰
+```
+
+The Ganzhi and BaZi modules are **optional extensions**. When the loaded
+library advertises their capabilities, `context.ganzhi` and `context.bazi`
+work; otherwise they throw `UnsupportedError` without touching any symbol:
+
+```dart
+// Requires TAIYIN_BUILD_GANZHI_CALENDAR_EXTENSION.
+final day = context.ganzhi.dayPillar(AstroDateTime(2024, 2, 10));
+
+// Requires TAIYIN_BUILD_BAZI_EXTENSION.
+final bazi = context.bazi;
+final chart = bazi.calcChart(pillars.value); // returns TaiyinBaziChart
+final qiyun = bazi.calcQiyun(
+  birthJdUt: JulianDate<Ut1Scale>.fromDouble(2460351.0),
+  birthCivilTime: AstroDateTime(2024, 2, 10, 12),
+  chart: chart,
+  gender: TaiyinBaziGender.male,
+  calendar: context.chineseCalendar,
+);
+final dayun = bazi.fillDayun(
+  birthCivilTime: AstroDateTime(2024, 2, 10, 12),
+  chart: chart,
+  qiyun: qiyun.value, // calcQiyun returns TaiyinEphemerisResult
+  requestedCount: 5,
+);
+```
+
+BaZi `calcQiyun` and `calcRenyuanSiling` additionally require a
+`TaiyinChineseCalendarContext`, which you pass explicitly.
+
 ## Regenerate bindings
 
 The development layout assumes `taiyin-dart` and `taiyin-ephemeris` are sibling
@@ -817,11 +879,14 @@ dart test
 ```
 
 Native integration tests use
-`../taiyin-ephemeris/build-c-api-release/libtaiyin.dylib` by default. Override
-it when necessary:
+`../taiyin-ephemeris/build-bazi/libtaiyin.dylib` (ABI-5, BaZi and Ganzhi on)
+by default, and the extension-free baseline
+`../taiyin-ephemeris/build-review-off/libtaiyin.dylib` for optional-module
+gating tests. Override them when necessary:
 
 ```sh
 TAIYIN_TEST_LIBRARY=/path/to/libtaiyin.dylib dart test
+TAIYIN_BASELINE_LIBRARY=/path/to/baseline/libtaiyin.dylib dart test
 ```
 
 The upstream C++ project currently registers 74 CTest suites. Their public
@@ -837,7 +902,7 @@ surprising setup. For applications, bundle one native library per target:
 
 - macOS: `libtaiyin.dylib`
 - Linux/Android: `libtaiyin.so`
-- Windows: `taiyin.dll`
+- Windows: `taiyin-5.dll` (named by C ABI version)
 - iOS: statically link Taiyin and use `DynamicLibrary.process()`
 
 A package intended for `pub.dev` should add a Dart build hook that builds or

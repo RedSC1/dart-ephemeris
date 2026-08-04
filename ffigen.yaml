@@ -6,6 +6,7 @@ headers:
     - tool/taiyin_wrapper.h
 compiler-opts:
   - -I../taiyin-ephemeris/include
+  - -I../taiyin-ephemeris/bazi_astrology/include
 functions:
   rename:
     taiyin_status_category: taiyin_status_category_of
@@ -330,6 +331,69 @@ functions:
     - taiyin_compute_solar_eclipse_route_map_product_ut
     - taiyin_compute_local_solar_eclipse_boundary_tt
     - taiyin_compute_local_solar_eclipse_boundary_ut
+    # Chinese calendar (always built)
+    - taiyin_chinese_calendar_config_init
+    - taiyin_chinese_calendar_config_init_utc_offset
+    - taiyin_chinese_calendar_config_init_meridian
+    - taiyin_solar_date_init
+    - taiyin_lunar_date_init
+    - taiyin_chinese_solar_term_event_init
+    - taiyin_chinese_calendar_year_init
+    - taiyin_chinese_calendar_context_create
+    - taiyin_chinese_calendar_context_destroy
+    - taiyin_chinese_calendar_calc_year_ut
+    - taiyin_chinese_calendar_get_specific_jie_qi_ut
+    - taiyin_chinese_calendar_get_prev_jie_qi_ut
+    - taiyin_chinese_calendar_get_next_jie_qi_ut
+    - taiyin_chinese_calendar_get_prev_jie_ut
+    - taiyin_chinese_calendar_get_next_jie_ut
+    - taiyin_chinese_calendar_get_prev_qi_ut
+    - taiyin_chinese_calendar_get_next_qi_ut
+    - taiyin_chinese_calendar_from_solar
+    - taiyin_chinese_calendar_from_lunar
+    - taiyin_chinese_calendar_get_month_days
+    # Ganzhi (symbols always exported; optional extension)
+    - taiyin_ganzhi_four_pillars_init
+    - taiyin_ganzhi_make
+    - taiyin_ganzhi_advance
+    - taiyin_ganzhi_get_month
+    - taiyin_ganzhi_get_hour
+    - taiyin_ganzhi_calc_day_pillar
+    - taiyin_ganzhi_get_nayin_element
+    - taiyin_ganzhi_get_nayin_id
+    - taiyin_chinese_calendar_calc_four_pillars_ut
+    # BaZi (optional extension; symbols absent when not built)
+    - taiyin_bazi_context_config_init
+    - taiyin_bazi_chart_init
+    - taiyin_bazi_relation_init
+    - taiyin_bazi_qiyun_result_init
+    - taiyin_bazi_dayun_init
+    - taiyin_bazi_xiaoyun_init
+    - taiyin_bazi_renyuan_siling_segment_init
+    - taiyin_bazi_renyuan_siling_result_init
+    - taiyin_bazi_context_create
+    - taiyin_bazi_context_destroy
+    - taiyin_bazi_get_kong_wang
+    - taiyin_bazi_get_ten_god
+    - taiyin_bazi_get_hidden_stems
+    - taiyin_bazi_calc_stem_relation
+    - taiyin_bazi_calc_branch_relation
+    - taiyin_bazi_calc_branch_triple_relation
+    - taiyin_bazi_get_life_stage
+    - taiyin_bazi_calc_chart
+    - taiyin_bazi_calc_liunian
+    - taiyin_bazi_calc_liuyue
+    - taiyin_bazi_calc_liuri
+    - taiyin_bazi_calc_liushi
+    - taiyin_bazi_calc_xiaoyun
+    - taiyin_bazi_fill_xiaoyun
+    - taiyin_bazi_collect_chart_relations
+    - taiyin_bazi_collect_target_shen_sha
+    - taiyin_bazi_collect_target_shen_sha_with_gender
+    - taiyin_bazi_calc_qiyun
+    - taiyin_bazi_fill_dayun
+    - taiyin_bazi_get_renyuan_siling_segments
+    - taiyin_bazi_calc_renyuan_siling
 structs:
   include:
     - taiyin_calendar_datetime
@@ -400,6 +464,25 @@ structs:
     - taiyin_solar_eclipse_route_curve_point
     - taiyin_solar_eclipse_route_product_point
     - taiyin_solar_eclipse_route_product_summary
+    # Chinese calendar
+    - taiyin_chinese_calendar_config
+    - taiyin_solar_date
+    - taiyin_lunar_date
+    - taiyin_chinese_solar_term_event
+    - taiyin_chinese_new_moon_event
+    - taiyin_chinese_calendar_month
+    - taiyin_chinese_calendar_year
+    # Ganzhi
+    - taiyin_ganzhi_four_pillars
+    # BaZi
+    - taiyin_bazi_context_config
+    - taiyin_bazi_chart
+    - taiyin_bazi_relation
+    - taiyin_bazi_qiyun_result
+    - taiyin_bazi_dayun
+    - taiyin_bazi_xiaoyun
+    - taiyin_bazi_renyuan_siling_segment
+    - taiyin_bazi_renyuan_siling_result
 enums:
   as-int:
     include:

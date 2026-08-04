@@ -1,16 +1,10 @@
-import 'dart:io';
-
 import 'package:taiyin/taiyin.dart';
 import 'package:test/test.dart';
+import '../support/native_library.dart';
 
 /// Black-box port of the public time behavior in
 /// taiyin-ephemeris/tests/test_time_angle_interpolation.cpp.
 void main() {
-  final libraryPath =
-      Platform.environment['TAIYIN_TEST_LIBRARY'] ??
-      '../taiyin-ephemeris/build-c-api-release/libtaiyin.dylib';
-  final nativeLibraryAvailable = File(libraryPath).existsSync();
-
   group(
     'ported: time_angle_interpolation',
     () {

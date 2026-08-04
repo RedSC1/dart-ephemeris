@@ -7,12 +7,16 @@ import 'package:ffi/ffi.dart';
 
 import 'bindings/taiyin_bindings.g.dart';
 import 'astrology/astrology_models.dart';
+import 'bazi/bazi_models.dart';
+import 'chinese_calendar/chinese_calendar_models.dart';
 import 'context/context_models.dart';
+import 'ganzhi/ganzhi_models.dart';
 import 'eclipse/lunar_eclipse_models.dart';
 import 'eclipse/solar_eclipse_models.dart';
 import 'events/event_models.dart';
 import 'heliacal/heliacal_models.dart';
 import 'interop/calendar.dart';
+import 'interop/julian_date.dart';
 import 'native_compatibility.dart';
 import 'observed/observed_models.dart';
 import 'occultation/occultation_models.dart';
@@ -28,8 +32,11 @@ import 'time/time_models.dart';
 import 'time/time_scale.dart';
 import 'visibility/visibility_models.dart';
 
+part 'bazi/bazi_api.dart';
+part 'chinese_calendar/chinese_calendar_api.dart';
 part 'context/context_api.dart';
 part 'eclipse/eclipse_api.dart';
+part 'ganzhi/ganzhi_api.dart';
 part 'events/event_api.dart';
 part 'occultation/occultation_api.dart';
 part 'heliacal/heliacal_api.dart';
@@ -60,7 +67,10 @@ enum TaiyinCapability {
   customTargets(1 << 11),
   customAyanamsha(1 << 12),
   customHouses(1 << 13),
-  splitTime(taiyinSplitTimeCapability);
+  splitTime(taiyinSplitTimeCapability),
+  chineseCalendar(taiyinChineseCalendarCapability),
+  bazi(taiyinBaziCapability),
+  ganzhiCalendar(taiyinGanzhiCalendarCapability);
 
   const TaiyinCapability(this.mask);
 
@@ -131,6 +141,7 @@ final class TaiyinContext implements Finalizable {
     this._bindings,
     this._context,
     this._contextFinalizer,
+    this._nativeState,
   ) {
     var finalizerAttached = false;
     try {
@@ -241,6 +252,7 @@ final class TaiyinContext implements Finalizable {
         ),
         observed,
       );
+      ganzhi = TaiyinGanzhiApi._(_bindings, _nativeState.capabilities);
     } catch (_) {
       if (finalizerAttached) {
         _contextFinalizer.detach(this);
@@ -268,30 +280,35 @@ final class TaiyinContext implements Finalizable {
   /// reconfiguring the process-wide runtime.
   factory TaiyinContext.attachToDynamicLibrary(DynamicLibrary library) {
     final state = _nativeLibraryStateFor(library);
-    return TaiyinContext._create(
-      library,
-      state.bindings,
-      state.contextFinalizer,
-    );
+    return TaiyinContext._create(library, state);
   }
 
   factory TaiyinContext._create(
     DynamicLibrary library,
-    TaiyinBindings bindings,
-    NativeFinalizer contextFinalizer,
+    _TaiyinNativeLibraryState nativeState,
   ) {
     final context = using((arena) {
       final output = arena<Pointer<taiyin_context>>();
-      _checkStatus(bindings, bindings.taiyin_context_create(output));
+      _checkStatus(
+        nativeState.bindings,
+        nativeState.bindings.taiyin_context_create(output),
+      );
       return output.value;
     });
-    return TaiyinContext._(library, bindings, context, contextFinalizer);
+    return TaiyinContext._(
+      library,
+      nativeState.bindings,
+      context,
+      nativeState.contextFinalizer,
+      nativeState,
+    );
   }
 
   final DynamicLibrary _library;
   final TaiyinBindings _bindings;
   final Pointer<taiyin_context> _context;
   final NativeFinalizer _contextFinalizer;
+  final _TaiyinNativeLibraryState _nativeState;
   late final TaiyinContextConfiguration configuration;
   late final TaiyinTime time;
   late final TaiyinAstrologyApi astrology;
@@ -306,6 +323,13 @@ final class TaiyinContext implements Finalizable {
   late final TaiyinEclipseApi eclipses;
   late final TaiyinOccultationApi occultation;
   late final TaiyinStarApi stars;
+  late final TaiyinGanzhiApi ganzhi;
+  TaiyinChineseCalendarContext? _chineseCalendar;
+
+  /// Every calendar context created from this context, tracked so closing the
+  /// owner invalidates caller-created children that borrow its native state.
+  final Set<TaiyinChineseCalendarContext> _calendarChildren = {};
+  TaiyinBaziContext? _bazi;
   bool _closed = false;
 
   /// Creates an independent native context without reinitializing the runtime.
@@ -318,7 +342,63 @@ final class TaiyinContext implements Finalizable {
       _checkStatus(_bindings, _bindings.taiyin_context_clone(_context, output));
       return output.value;
     });
-    return TaiyinContext._(_library, _bindings, context, _contextFinalizer);
+    return TaiyinContext._(
+      _library,
+      _bindings,
+      context,
+      _contextFinalizer,
+      _nativeState,
+    );
+  }
+
+  /// A Chinese-calendar context using the default astronomical configuration.
+  ///
+  /// The first access creates and caches the native context; [close] releases
+  /// it together with the owning context. A cache entry closed by the caller
+  /// is replaced on the next access.
+  TaiyinChineseCalendarContext get chineseCalendar {
+    final cached = _chineseCalendar;
+    if (cached != null && !cached.isClosed) return cached;
+    return _chineseCalendar = createChineseCalendar();
+  }
+
+  /// Creates an independent Chinese-calendar context owned by the caller.
+  ///
+  /// Call [TaiyinChineseCalendarContext.close] when it is no longer needed.
+  TaiyinChineseCalendarContext createChineseCalendar({
+    TaiyinChineseCalendarConfig config = const TaiyinChineseCalendarConfig(),
+  }) {
+    _ensureOpen();
+    final child = TaiyinChineseCalendarContext._create(
+      _nativeState,
+      _bindings,
+      _context,
+      config,
+      this,
+    );
+    _calendarChildren.add(child);
+    return child;
+  }
+
+  /// A BaZi context using the default astronomical configuration.
+  ///
+  /// The first access creates and caches the native context; [close] releases
+  /// it together with the owning context. A cache entry closed by the caller
+  /// is replaced on the next access.
+  TaiyinBaziContext get bazi {
+    final cached = _bazi;
+    if (cached != null && !cached.isClosed) return cached;
+    return _bazi = createBazi();
+  }
+
+  /// Creates an independent BaZi context owned by the caller.
+  ///
+  /// Call [TaiyinBaziContext.close] when it is no longer needed.
+  TaiyinBaziContext createBazi({
+    TaiyinBaziContextConfig config = const TaiyinBaziContextConfig(),
+  }) {
+    _ensureOpen();
+    return TaiyinBaziContext._create(_nativeState, _bindings, config);
   }
 
   /// Calculates a position at a TT Julian date.
@@ -343,6 +423,12 @@ final class TaiyinContext implements Finalizable {
   void close() {
     if (_closed) return;
     _closed = true;
+    // Destroy borrowed child contexts before the owning native context.
+    for (final child in List.of(_calendarChildren)) {
+      child.close();
+    }
+    _calendarChildren.clear();
+    _bazi?.close();
     _contextFinalizer.detach(this);
     _bindings.taiyin_context_destroy(_context);
   }
@@ -355,15 +441,39 @@ final class TaiyinContext implements Finalizable {
 }
 
 final class _TaiyinNativeLibraryState {
-  _TaiyinNativeLibraryState(this.bindings, this.contextFinalizer);
+  _TaiyinNativeLibraryState(
+    this.bindings,
+    this.contextFinalizer,
+    this.chineseCalendarFinalizer,
+    this.capabilities,
+    this._library,
+  );
 
   final TaiyinBindings bindings;
   final NativeFinalizer contextFinalizer;
+  final NativeFinalizer chineseCalendarFinalizer;
+  final int capabilities;
+  final DynamicLibrary _library;
   final Map<int, TaiyinCustomTargetRegistration> customTargetRegistrations = {};
   final Map<int, TaiyinCustomAyanamshaRegistration>
   customAyanamshaRegistrations = {};
   final Map<int, TaiyinCustomHouseSystemRegistration>
   customHouseSystemRegistrations = {};
+
+  NativeFinalizer? _baziFinalizer;
+
+  /// The BaZi context finalizer, created lazily and only after the BaZi
+  /// capability has been confirmed. The symbol does not exist in a build
+  /// without `TAIYIN_BUILD_BAZI_EXTENSION=ON`, so it must never be looked up
+  /// otherwise.
+  NativeFinalizer? get baziFinalizer {
+    if ((capabilities & taiyinBaziCapability) == 0) return null;
+    return _baziFinalizer ??= NativeFinalizer(
+      _library.lookup<NativeFunction<Void Function(Pointer<Void>)>>(
+        'taiyin_bazi_context_destroy',
+      ),
+    );
+  }
 }
 
 // NativeFinalizer itself must stay reachable until its attachments have run.
@@ -381,7 +491,9 @@ DynamicLibrary _openLibrary(String? libraryPath) {
 
 DynamicLibrary _openDefaultLibrary() {
   if (Platform.isIOS) return DynamicLibrary.process();
-  if (Platform.isWindows) return DynamicLibrary.open('taiyin.dll');
+  // Windows shared libraries are named by C ABI version; macOS and Linux build
+  // and install trees provide versionless symlinks.
+  if (Platform.isWindows) return DynamicLibrary.open('taiyin-5.dll');
   if (Platform.isMacOS) return DynamicLibrary.open('libtaiyin.dylib');
   return DynamicLibrary.open('libtaiyin.so');
 }
@@ -392,12 +504,29 @@ _TaiyinNativeLibraryState _nativeLibraryStateFor(DynamicLibrary library) {
   );
   return _nativeLibraryStates.putIfAbsent(destroy.address, () {
     final bindings = TaiyinBindings(library);
+    final capabilities = bindings.taiyin_get_capabilities();
     validateTaiyinNativeCompatibility(
       abiVersion: bindings.taiyin_get_c_abi_version(),
-      capabilities: bindings.taiyin_get_capabilities(),
+      capabilities: capabilities,
     );
     validateTaiyinRequiredSymbols(providesSymbol: library.providesSymbol);
-    return _TaiyinNativeLibraryState(bindings, NativeFinalizer(destroy));
+    if ((capabilities & taiyinBaziCapability) != 0) {
+      validateTaiyinRequiredSymbols(
+        providesSymbol: library.providesSymbol,
+        requiredSymbols: taiyinBaziSymbols,
+      );
+    }
+    return _TaiyinNativeLibraryState(
+      bindings,
+      NativeFinalizer(destroy),
+      NativeFinalizer(
+        library.lookup<NativeFunction<Void Function(Pointer<Void>)>>(
+          'taiyin_chinese_calendar_context_destroy',
+        ),
+      ),
+      capabilities,
+      library,
+    );
   });
 }
 
@@ -447,7 +576,8 @@ void _writeEphemerisDiagnostic(
     ..target_id = value.targetId
     ..center_id = value.centerId
     ..frame = value.rawFrameId
-    ..jd_tdb = value.julianDateTdb
+    ..jd_tdb.day_number = value.julianDateTdb.dayNumber
+    ..jd_tdb.day_fraction = value.julianDateTdb.dayFraction
     ..candidate_count = value.candidateCount
     ..attempted_method_id = value.attemptedMethodId
     ..nearest_coverage_start = value.nearestCoverageStart
@@ -480,7 +610,7 @@ TaiyinEphemerisDiagnostic _readEphemerisDiagnostic(
     centerId: value.center_id,
     frame: TaiyinApparentFrame.fromId(value.frame),
     rawFrameId: value.frame,
-    julianDateTdb: value.jd_tdb,
+    julianDateTdb: readJulianDate<TdbScale>(value.jd_tdb),
     candidateCount: value.candidate_count,
     attemptedMethodId: value.attempted_method_id,
     nearestCoverageStart: value.nearest_coverage_start,

@@ -191,7 +191,7 @@ final class TaiyinEphemerisDiagnostic {
   final int centerId;
   final TaiyinApparentFrame frame;
   final int rawFrameId;
-  final double julianDateTdb;
+  final JulianDate<TdbScale> julianDateTdb;
   final int candidateCount;
   final int attemptedMethodId;
   final double nearestCoverageStart;

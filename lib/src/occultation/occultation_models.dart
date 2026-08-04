@@ -123,7 +123,7 @@ final class TaiyinLunarOccultationPhenomena {
 
 /// A geocentric or local lunar occultation found by a native search.
 ///
-/// All dates are scalar native UT1 Julian dates; a missing contact maps from
+/// All dates are split native UT1 Julian dates; a missing contact maps from
 /// the native non-finite sentinel to `null`.
 final class TaiyinLunarOccultationResult {
   TaiyinLunarOccultationResult({

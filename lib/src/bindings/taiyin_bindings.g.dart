@@ -510,8 +510,8 @@ class TaiyinBindings {
   int taiyin_context_set_simple_topocentric_observer(
     ffi.Pointer<taiyin_context> context,
     ffi.Pointer<taiyin_observer_location> location,
-    double jd_ut1,
-    double jd_tt,
+    ffi.Pointer<taiyin_split_julian_date> jd_ut1,
+    ffi.Pointer<taiyin_split_julian_date> jd_tt,
   ) {
     return _taiyin_context_set_simple_topocentric_observer(
       context,
@@ -527,8 +527,8 @@ class TaiyinBindings {
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<taiyin_observer_location>,
-            ffi.Double,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
+            ffi.Pointer<taiyin_split_julian_date>,
           )
         >
       >('taiyin_context_set_simple_topocentric_observer');
@@ -538,16 +538,16 @@ class TaiyinBindings {
             int Function(
               ffi.Pointer<taiyin_context>,
               ffi.Pointer<taiyin_observer_location>,
-              double,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
+              ffi.Pointer<taiyin_split_julian_date>,
             )
           >();
 
   int taiyin_context_set_precise_topocentric_observer(
     ffi.Pointer<taiyin_context> context,
     ffi.Pointer<taiyin_observer_location> location,
-    double jd_utc,
-    double jd_tt,
+    ffi.Pointer<taiyin_split_julian_date> jd_utc,
+    ffi.Pointer<taiyin_split_julian_date> jd_tt,
   ) {
     return _taiyin_context_set_precise_topocentric_observer(
       context,
@@ -563,8 +563,8 @@ class TaiyinBindings {
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<taiyin_observer_location>,
-            ffi.Double,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
+            ffi.Pointer<taiyin_split_julian_date>,
           )
         >
       >('taiyin_context_set_precise_topocentric_observer');
@@ -574,8 +574,8 @@ class TaiyinBindings {
             int Function(
               ffi.Pointer<taiyin_context>,
               ffi.Pointer<taiyin_observer_location>,
-              double,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
+              ffi.Pointer<taiyin_split_julian_date>,
             )
           >();
 
@@ -1022,7 +1022,7 @@ class TaiyinBindings {
   int taiyin_calc_ayanamsha_tt(
     ffi.Pointer<taiyin_context> context,
     int ayanamsha_id,
-    double jd_tt,
+    ffi.Pointer<taiyin_split_julian_date> jd_tt,
     int flags,
     ffi.Pointer<ffi.Double> out_ayanamsha_rad,
   ) {
@@ -1041,7 +1041,7 @@ class TaiyinBindings {
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint64,
             ffi.Pointer<ffi.Double>,
           )
@@ -1052,7 +1052,7 @@ class TaiyinBindings {
         int Function(
           ffi.Pointer<taiyin_context>,
           int,
-          double,
+          ffi.Pointer<taiyin_split_julian_date>,
           int,
           ffi.Pointer<ffi.Double>,
         )
@@ -1062,9 +1062,9 @@ class TaiyinBindings {
     ffi.Pointer<taiyin_context> context,
     int ayanamsha_id,
     int body_id,
-    double jd_tt,
+    ffi.Pointer<taiyin_split_julian_date> jd_tt,
     int flags,
-    double reference_epoch_jd,
+    ffi.Pointer<taiyin_split_julian_date> reference_epoch_jd,
     ffi.Pointer<taiyin_sidereal_position> out,
     ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
   ) {
@@ -1087,9 +1087,9 @@ class TaiyinBindings {
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
             ffi.Int32,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint64,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Pointer<taiyin_sidereal_position>,
             ffi.Pointer<taiyin_ephemeris_diagnostic>,
           )
@@ -1102,9 +1102,9 @@ class TaiyinBindings {
               ffi.Pointer<taiyin_context>,
               int,
               int,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
               int,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
               ffi.Pointer<taiyin_sidereal_position>,
               ffi.Pointer<taiyin_ephemeris_diagnostic>,
             )
@@ -1114,9 +1114,9 @@ class TaiyinBindings {
     ffi.Pointer<taiyin_context> context,
     int ayanamsha_id,
     int body_id,
-    double jd_ut,
+    ffi.Pointer<taiyin_split_julian_date> jd_ut,
     int flags,
-    double reference_epoch_jd,
+    ffi.Pointer<taiyin_split_julian_date> reference_epoch_jd,
     ffi.Pointer<taiyin_sidereal_position> out,
     ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
   ) {
@@ -1139,9 +1139,9 @@ class TaiyinBindings {
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
             ffi.Int32,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint64,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Pointer<taiyin_sidereal_position>,
             ffi.Pointer<taiyin_ephemeris_diagnostic>,
           )
@@ -1154,9 +1154,9 @@ class TaiyinBindings {
               ffi.Pointer<taiyin_context>,
               int,
               int,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
               int,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
               ffi.Pointer<taiyin_sidereal_position>,
               ffi.Pointer<taiyin_ephemeris_diagnostic>,
             )
@@ -1166,9 +1166,9 @@ class TaiyinBindings {
     ffi.Pointer<taiyin_context> context,
     int ayanamsha_id,
     int body_id,
-    double jd_tt,
+    ffi.Pointer<taiyin_split_julian_date> jd_tt,
     int flags,
-    double reference_epoch_jd,
+    ffi.Pointer<taiyin_split_julian_date> reference_epoch_jd,
     ffi.Pointer<taiyin_sidereal_coordinates> out,
     ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
   ) {
@@ -1191,9 +1191,9 @@ class TaiyinBindings {
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
             ffi.Int32,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint64,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Pointer<taiyin_sidereal_coordinates>,
             ffi.Pointer<taiyin_ephemeris_diagnostic>,
           )
@@ -1206,9 +1206,9 @@ class TaiyinBindings {
               ffi.Pointer<taiyin_context>,
               int,
               int,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
               int,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
               ffi.Pointer<taiyin_sidereal_coordinates>,
               ffi.Pointer<taiyin_ephemeris_diagnostic>,
             )
@@ -1218,9 +1218,9 @@ class TaiyinBindings {
     ffi.Pointer<taiyin_context> context,
     int ayanamsha_id,
     int body_id,
-    double jd_ut,
+    ffi.Pointer<taiyin_split_julian_date> jd_ut,
     int flags,
-    double reference_epoch_jd,
+    ffi.Pointer<taiyin_split_julian_date> reference_epoch_jd,
     ffi.Pointer<taiyin_sidereal_coordinates> out,
     ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
   ) {
@@ -1243,9 +1243,9 @@ class TaiyinBindings {
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
             ffi.Int32,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint64,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Pointer<taiyin_sidereal_coordinates>,
             ffi.Pointer<taiyin_ephemeris_diagnostic>,
           )
@@ -1258,9 +1258,9 @@ class TaiyinBindings {
               ffi.Pointer<taiyin_context>,
               int,
               int,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
               int,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
               ffi.Pointer<taiyin_sidereal_coordinates>,
               ffi.Pointer<taiyin_ephemeris_diagnostic>,
             )
@@ -1307,7 +1307,7 @@ class TaiyinBindings {
 
   int taiyin_calc_houses_ut(
     ffi.Pointer<taiyin_context> context,
-    double jd_ut,
+    ffi.Pointer<taiyin_split_julian_date> jd_ut,
     int house_system_id,
     ffi.Pointer<taiyin_house_result> out,
   ) {
@@ -1319,7 +1319,7 @@ class TaiyinBindings {
         ffi.NativeFunction<
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Int32,
             ffi.Pointer<taiyin_house_result>,
           )
@@ -1329,7 +1329,7 @@ class TaiyinBindings {
       .asFunction<
         int Function(
           ffi.Pointer<taiyin_context>,
-          double,
+          ffi.Pointer<taiyin_split_julian_date>,
           int,
           ffi.Pointer<taiyin_house_result>,
         )
@@ -1337,7 +1337,7 @@ class TaiyinBindings {
 
   int taiyin_calc_houses_tt(
     ffi.Pointer<taiyin_context> context,
-    double jd_tt,
+    ffi.Pointer<taiyin_split_julian_date> jd_tt,
     int house_system_id,
     ffi.Pointer<taiyin_house_result> out,
   ) {
@@ -1349,7 +1349,7 @@ class TaiyinBindings {
         ffi.NativeFunction<
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Int32,
             ffi.Pointer<taiyin_house_result>,
           )
@@ -1359,7 +1359,7 @@ class TaiyinBindings {
       .asFunction<
         int Function(
           ffi.Pointer<taiyin_context>,
-          double,
+          ffi.Pointer<taiyin_split_julian_date>,
           int,
           ffi.Pointer<taiyin_house_result>,
         )
@@ -1653,7 +1653,7 @@ class TaiyinBindings {
 
   int taiyin_calc_lunar_true_node_tt(
     ffi.Pointer<taiyin_context> arg0,
-    double arg1,
+    ffi.Pointer<taiyin_split_julian_date> arg1,
     int arg2,
     int arg3,
     ffi.Pointer<taiyin_lunar_node_position> arg4,
@@ -1667,7 +1667,7 @@ class TaiyinBindings {
         ffi.NativeFunction<
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Int32,
             ffi.Uint32,
             ffi.Pointer<taiyin_lunar_node_position>,
@@ -1680,7 +1680,7 @@ class TaiyinBindings {
           .asFunction<
             int Function(
               ffi.Pointer<taiyin_context>,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
               int,
               int,
               ffi.Pointer<taiyin_lunar_node_position>,
@@ -1690,7 +1690,7 @@ class TaiyinBindings {
 
   int taiyin_calc_lunar_true_node_ut(
     ffi.Pointer<taiyin_context> arg0,
-    double arg1,
+    ffi.Pointer<taiyin_split_julian_date> arg1,
     int arg2,
     int arg3,
     ffi.Pointer<taiyin_lunar_node_position> arg4,
@@ -1704,7 +1704,7 @@ class TaiyinBindings {
         ffi.NativeFunction<
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Int32,
             ffi.Uint32,
             ffi.Pointer<taiyin_lunar_node_position>,
@@ -1717,7 +1717,7 @@ class TaiyinBindings {
           .asFunction<
             int Function(
               ffi.Pointer<taiyin_context>,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
               int,
               int,
               ffi.Pointer<taiyin_lunar_node_position>,
@@ -1727,7 +1727,7 @@ class TaiyinBindings {
 
   int taiyin_calc_lunar_mean_node_tt(
     ffi.Pointer<taiyin_context> arg0,
-    double arg1,
+    ffi.Pointer<taiyin_split_julian_date> arg1,
     int arg2,
     int arg3,
     ffi.Pointer<taiyin_lunar_node_position> arg4,
@@ -1741,7 +1741,7 @@ class TaiyinBindings {
         ffi.NativeFunction<
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Int32,
             ffi.Uint32,
             ffi.Pointer<taiyin_lunar_node_position>,
@@ -1754,7 +1754,7 @@ class TaiyinBindings {
           .asFunction<
             int Function(
               ffi.Pointer<taiyin_context>,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
               int,
               int,
               ffi.Pointer<taiyin_lunar_node_position>,
@@ -1764,7 +1764,7 @@ class TaiyinBindings {
 
   int taiyin_calc_lunar_mean_node_ut(
     ffi.Pointer<taiyin_context> arg0,
-    double arg1,
+    ffi.Pointer<taiyin_split_julian_date> arg1,
     int arg2,
     int arg3,
     ffi.Pointer<taiyin_lunar_node_position> arg4,
@@ -1778,7 +1778,7 @@ class TaiyinBindings {
         ffi.NativeFunction<
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Int32,
             ffi.Uint32,
             ffi.Pointer<taiyin_lunar_node_position>,
@@ -1791,7 +1791,7 @@ class TaiyinBindings {
           .asFunction<
             int Function(
               ffi.Pointer<taiyin_context>,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
               int,
               int,
               ffi.Pointer<taiyin_lunar_node_position>,
@@ -1801,7 +1801,7 @@ class TaiyinBindings {
 
   int taiyin_calc_lunar_mean_apogee_tt(
     ffi.Pointer<taiyin_context> arg0,
-    double arg1,
+    ffi.Pointer<taiyin_split_julian_date> arg1,
     int arg2,
     ffi.Pointer<taiyin_lunar_apsis_position> arg3,
     ffi.Pointer<taiyin_ephemeris_diagnostic> arg4,
@@ -1814,7 +1814,7 @@ class TaiyinBindings {
         ffi.NativeFunction<
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint32,
             ffi.Pointer<taiyin_lunar_apsis_position>,
             ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -1826,7 +1826,7 @@ class TaiyinBindings {
           .asFunction<
             int Function(
               ffi.Pointer<taiyin_context>,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
               int,
               ffi.Pointer<taiyin_lunar_apsis_position>,
               ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -1835,7 +1835,7 @@ class TaiyinBindings {
 
   int taiyin_calc_lunar_mean_apogee_ut(
     ffi.Pointer<taiyin_context> arg0,
-    double arg1,
+    ffi.Pointer<taiyin_split_julian_date> arg1,
     int arg2,
     ffi.Pointer<taiyin_lunar_apsis_position> arg3,
     ffi.Pointer<taiyin_ephemeris_diagnostic> arg4,
@@ -1848,7 +1848,7 @@ class TaiyinBindings {
         ffi.NativeFunction<
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint32,
             ffi.Pointer<taiyin_lunar_apsis_position>,
             ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -1860,7 +1860,7 @@ class TaiyinBindings {
           .asFunction<
             int Function(
               ffi.Pointer<taiyin_context>,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
               int,
               ffi.Pointer<taiyin_lunar_apsis_position>,
               ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -1869,7 +1869,7 @@ class TaiyinBindings {
 
   int taiyin_calc_lunar_osculating_apogee_tt(
     ffi.Pointer<taiyin_context> arg0,
-    double arg1,
+    ffi.Pointer<taiyin_split_julian_date> arg1,
     int arg2,
     ffi.Pointer<taiyin_lunar_apsis_position> arg3,
     ffi.Pointer<taiyin_ephemeris_diagnostic> arg4,
@@ -1888,7 +1888,7 @@ class TaiyinBindings {
         ffi.NativeFunction<
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint32,
             ffi.Pointer<taiyin_lunar_apsis_position>,
             ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -1900,7 +1900,7 @@ class TaiyinBindings {
           .asFunction<
             int Function(
               ffi.Pointer<taiyin_context>,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
               int,
               ffi.Pointer<taiyin_lunar_apsis_position>,
               ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -1909,7 +1909,7 @@ class TaiyinBindings {
 
   int taiyin_calc_lunar_osculating_apogee_ut(
     ffi.Pointer<taiyin_context> arg0,
-    double arg1,
+    ffi.Pointer<taiyin_split_julian_date> arg1,
     int arg2,
     ffi.Pointer<taiyin_lunar_apsis_position> arg3,
     ffi.Pointer<taiyin_ephemeris_diagnostic> arg4,
@@ -1928,7 +1928,7 @@ class TaiyinBindings {
         ffi.NativeFunction<
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint32,
             ffi.Pointer<taiyin_lunar_apsis_position>,
             ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -1940,7 +1940,7 @@ class TaiyinBindings {
           .asFunction<
             int Function(
               ffi.Pointer<taiyin_context>,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
               int,
               ffi.Pointer<taiyin_lunar_apsis_position>,
               ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -1949,7 +1949,7 @@ class TaiyinBindings {
 
   int taiyin_calc_lunar_fitted_apogee_tt(
     ffi.Pointer<taiyin_context> arg0,
-    double arg1,
+    ffi.Pointer<taiyin_split_julian_date> arg1,
     int arg2,
     ffi.Pointer<taiyin_lunar_apsis_position> arg3,
     ffi.Pointer<taiyin_ephemeris_diagnostic> arg4,
@@ -1962,7 +1962,7 @@ class TaiyinBindings {
         ffi.NativeFunction<
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint32,
             ffi.Pointer<taiyin_lunar_apsis_position>,
             ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -1974,7 +1974,7 @@ class TaiyinBindings {
           .asFunction<
             int Function(
               ffi.Pointer<taiyin_context>,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
               int,
               ffi.Pointer<taiyin_lunar_apsis_position>,
               ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -1983,7 +1983,7 @@ class TaiyinBindings {
 
   int taiyin_calc_lunar_fitted_apogee_ut(
     ffi.Pointer<taiyin_context> arg0,
-    double arg1,
+    ffi.Pointer<taiyin_split_julian_date> arg1,
     int arg2,
     ffi.Pointer<taiyin_lunar_apsis_position> arg3,
     ffi.Pointer<taiyin_ephemeris_diagnostic> arg4,
@@ -1996,7 +1996,7 @@ class TaiyinBindings {
         ffi.NativeFunction<
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint32,
             ffi.Pointer<taiyin_lunar_apsis_position>,
             ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -2008,7 +2008,7 @@ class TaiyinBindings {
           .asFunction<
             int Function(
               ffi.Pointer<taiyin_context>,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
               int,
               ffi.Pointer<taiyin_lunar_apsis_position>,
               ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -2044,7 +2044,7 @@ class TaiyinBindings {
 
   int taiyin_calc_observed_bodies_ut(
     ffi.Pointer<taiyin_context> context,
-    double jd_ut,
+    ffi.Pointer<taiyin_split_julian_date> jd_ut,
     ffi.Pointer<ffi.Int32> body_ids,
     int body_count,
     int flags,
@@ -2067,7 +2067,7 @@ class TaiyinBindings {
         ffi.NativeFunction<
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Pointer<ffi.Int32>,
             ffi.Size,
             ffi.Uint64,
@@ -2081,7 +2081,7 @@ class TaiyinBindings {
           .asFunction<
             int Function(
               ffi.Pointer<taiyin_context>,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
               ffi.Pointer<ffi.Int32>,
               int,
               int,
@@ -2154,7 +2154,7 @@ class TaiyinBindings {
   int taiyin_calc_body_phenomena_tt(
     ffi.Pointer<taiyin_context> context,
     int body_id,
-    double jd_tt,
+    ffi.Pointer<taiyin_split_julian_date> jd_tt,
     int flags,
     ffi.Pointer<taiyin_body_phenomena> out,
     ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
@@ -2175,7 +2175,7 @@ class TaiyinBindings {
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint64,
             ffi.Pointer<taiyin_body_phenomena>,
             ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -2187,7 +2187,7 @@ class TaiyinBindings {
         int Function(
           ffi.Pointer<taiyin_context>,
           int,
-          double,
+          ffi.Pointer<taiyin_split_julian_date>,
           int,
           ffi.Pointer<taiyin_body_phenomena>,
           ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -2197,7 +2197,7 @@ class TaiyinBindings {
   int taiyin_calc_body_phenomena_ut(
     ffi.Pointer<taiyin_context> context,
     int body_id,
-    double jd_ut,
+    ffi.Pointer<taiyin_split_julian_date> jd_ut,
     int flags,
     ffi.Pointer<taiyin_body_phenomena> out,
     ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
@@ -2218,7 +2218,7 @@ class TaiyinBindings {
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint64,
             ffi.Pointer<taiyin_body_phenomena>,
             ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -2230,7 +2230,7 @@ class TaiyinBindings {
         int Function(
           ffi.Pointer<taiyin_context>,
           int,
-          double,
+          ffi.Pointer<taiyin_split_julian_date>,
           int,
           ffi.Pointer<taiyin_body_phenomena>,
           ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -2299,8 +2299,8 @@ class TaiyinBindings {
   int taiyin_calc_position_tdb(
     ffi.Pointer<taiyin_context> context,
     int target_id,
-    double jd_tdb,
-    double jd_tt,
+    ffi.Pointer<taiyin_split_julian_date> jd_tdb,
+    ffi.Pointer<taiyin_split_julian_date> jd_tt,
     int flags,
     ffi.Pointer<ffi.Double> out_position,
     ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
@@ -2322,8 +2322,8 @@ class TaiyinBindings {
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
-            ffi.Double,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint32,
             ffi.Pointer<ffi.Double>,
             ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -2335,8 +2335,8 @@ class TaiyinBindings {
         int Function(
           ffi.Pointer<taiyin_context>,
           int,
-          double,
-          double,
+          ffi.Pointer<taiyin_split_julian_date>,
+          ffi.Pointer<taiyin_split_julian_date>,
           int,
           ffi.Pointer<ffi.Double>,
           ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -2346,7 +2346,7 @@ class TaiyinBindings {
   int taiyin_calc_position_tt(
     ffi.Pointer<taiyin_context> context,
     int target_id,
-    double jd_tt,
+    ffi.Pointer<taiyin_split_julian_date> jd_tt,
     int flags,
     ffi.Pointer<ffi.Double> out_position,
     ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
@@ -2367,7 +2367,7 @@ class TaiyinBindings {
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint32,
             ffi.Pointer<ffi.Double>,
             ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -2379,7 +2379,7 @@ class TaiyinBindings {
         int Function(
           ffi.Pointer<taiyin_context>,
           int,
-          double,
+          ffi.Pointer<taiyin_split_julian_date>,
           int,
           ffi.Pointer<ffi.Double>,
           ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -2389,7 +2389,7 @@ class TaiyinBindings {
   int taiyin_calc_position_ut(
     ffi.Pointer<taiyin_context> context,
     int target_id,
-    double jd_ut,
+    ffi.Pointer<taiyin_split_julian_date> jd_ut,
     int flags,
     ffi.Pointer<ffi.Double> out_position,
     ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
@@ -2410,7 +2410,7 @@ class TaiyinBindings {
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint32,
             ffi.Pointer<ffi.Double>,
             ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -2422,7 +2422,7 @@ class TaiyinBindings {
         int Function(
           ffi.Pointer<taiyin_context>,
           int,
-          double,
+          ffi.Pointer<taiyin_split_julian_date>,
           int,
           ffi.Pointer<ffi.Double>,
           ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -2432,7 +2432,7 @@ class TaiyinBindings {
   int taiyin_calc_position_ut_delta_t(
     ffi.Pointer<taiyin_context> context,
     int target_id,
-    double jd_ut1,
+    ffi.Pointer<taiyin_split_julian_date> jd_ut1,
     double delta_t_seconds,
     int flags,
     ffi.Pointer<ffi.Double> out_position,
@@ -2455,7 +2455,7 @@ class TaiyinBindings {
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Double,
             ffi.Uint32,
             ffi.Pointer<ffi.Double>,
@@ -2469,7 +2469,7 @@ class TaiyinBindings {
             int Function(
               ffi.Pointer<taiyin_context>,
               int,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
               double,
               int,
               ffi.Pointer<ffi.Double>,
@@ -2524,7 +2524,7 @@ class TaiyinBindings {
     ffi.Pointer<taiyin_context> context,
     ffi.Pointer<ffi.Int32> target_ids,
     int target_count,
-    double jd_ut,
+    ffi.Pointer<taiyin_split_julian_date> jd_ut,
     int flags,
     ffi.Pointer<ffi.Double> out_positions,
     ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostics,
@@ -2547,7 +2547,7 @@ class TaiyinBindings {
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<ffi.Int32>,
             ffi.Size,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint32,
             ffi.Pointer<ffi.Double>,
             ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -2560,7 +2560,7 @@ class TaiyinBindings {
           ffi.Pointer<taiyin_context>,
           ffi.Pointer<ffi.Int32>,
           int,
-          double,
+          ffi.Pointer<taiyin_split_julian_date>,
           int,
           ffi.Pointer<ffi.Double>,
           ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -2571,8 +2571,8 @@ class TaiyinBindings {
     ffi.Pointer<taiyin_context> context,
     ffi.Pointer<ffi.Int32> target_ids,
     int target_count,
-    double jd_tdb,
-    double jd_tt,
+    ffi.Pointer<taiyin_split_julian_date> jd_tdb,
+    ffi.Pointer<taiyin_split_julian_date> jd_tt,
     int flags,
     ffi.Pointer<ffi.Double> out_positions,
     ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostics,
@@ -2596,8 +2596,8 @@ class TaiyinBindings {
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<ffi.Int32>,
             ffi.Size,
-            ffi.Double,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint32,
             ffi.Pointer<ffi.Double>,
             ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -2610,8 +2610,8 @@ class TaiyinBindings {
           ffi.Pointer<taiyin_context>,
           ffi.Pointer<ffi.Int32>,
           int,
-          double,
-          double,
+          ffi.Pointer<taiyin_split_julian_date>,
+          ffi.Pointer<taiyin_split_julian_date>,
           int,
           ffi.Pointer<ffi.Double>,
           ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -2622,7 +2622,7 @@ class TaiyinBindings {
     ffi.Pointer<taiyin_context> context,
     ffi.Pointer<ffi.Int32> target_ids,
     int target_count,
-    double jd_tt,
+    ffi.Pointer<taiyin_split_julian_date> jd_tt,
     int flags,
     ffi.Pointer<ffi.Double> out_positions,
     ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostics,
@@ -2645,7 +2645,7 @@ class TaiyinBindings {
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<ffi.Int32>,
             ffi.Size,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint32,
             ffi.Pointer<ffi.Double>,
             ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -2658,7 +2658,7 @@ class TaiyinBindings {
           ffi.Pointer<taiyin_context>,
           ffi.Pointer<ffi.Int32>,
           int,
-          double,
+          ffi.Pointer<taiyin_split_julian_date>,
           int,
           ffi.Pointer<ffi.Double>,
           ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -2669,7 +2669,7 @@ class TaiyinBindings {
     ffi.Pointer<taiyin_context> context,
     ffi.Pointer<ffi.Int32> target_ids,
     int target_count,
-    double jd_ut1,
+    ffi.Pointer<taiyin_split_julian_date> jd_ut1,
     double delta_t_seconds,
     int flags,
     ffi.Pointer<ffi.Double> out_positions,
@@ -2694,7 +2694,7 @@ class TaiyinBindings {
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<ffi.Int32>,
             ffi.Size,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Double,
             ffi.Uint32,
             ffi.Pointer<ffi.Double>,
@@ -2709,7 +2709,7 @@ class TaiyinBindings {
               ffi.Pointer<taiyin_context>,
               ffi.Pointer<ffi.Int32>,
               int,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
               double,
               int,
               ffi.Pointer<ffi.Double>,
@@ -2767,8 +2767,8 @@ class TaiyinBindings {
   int taiyin_calc_state_tdb(
     ffi.Pointer<taiyin_context> context,
     int target_id,
-    double jd_tdb,
-    double jd_tt,
+    ffi.Pointer<taiyin_split_julian_date> jd_tdb,
+    ffi.Pointer<taiyin_split_julian_date> jd_tt,
     int flags,
     ffi.Pointer<taiyin_cartesian_state> out_state,
     ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
@@ -2790,8 +2790,8 @@ class TaiyinBindings {
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
-            ffi.Double,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint32,
             ffi.Pointer<taiyin_cartesian_state>,
             ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -2803,8 +2803,8 @@ class TaiyinBindings {
         int Function(
           ffi.Pointer<taiyin_context>,
           int,
-          double,
-          double,
+          ffi.Pointer<taiyin_split_julian_date>,
+          ffi.Pointer<taiyin_split_julian_date>,
           int,
           ffi.Pointer<taiyin_cartesian_state>,
           ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -2814,7 +2814,7 @@ class TaiyinBindings {
   int taiyin_calc_state_tt(
     ffi.Pointer<taiyin_context> context,
     int target_id,
-    double jd_tt,
+    ffi.Pointer<taiyin_split_julian_date> jd_tt,
     int flags,
     ffi.Pointer<taiyin_cartesian_state> out_state,
     ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
@@ -2835,7 +2835,7 @@ class TaiyinBindings {
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint32,
             ffi.Pointer<taiyin_cartesian_state>,
             ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -2847,7 +2847,7 @@ class TaiyinBindings {
         int Function(
           ffi.Pointer<taiyin_context>,
           int,
-          double,
+          ffi.Pointer<taiyin_split_julian_date>,
           int,
           ffi.Pointer<taiyin_cartesian_state>,
           ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -2857,7 +2857,7 @@ class TaiyinBindings {
   int taiyin_calc_state_ut(
     ffi.Pointer<taiyin_context> context,
     int target_id,
-    double jd_ut,
+    ffi.Pointer<taiyin_split_julian_date> jd_ut,
     int flags,
     ffi.Pointer<taiyin_cartesian_state> out_state,
     ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
@@ -2878,7 +2878,7 @@ class TaiyinBindings {
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint32,
             ffi.Pointer<taiyin_cartesian_state>,
             ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -2890,7 +2890,7 @@ class TaiyinBindings {
         int Function(
           ffi.Pointer<taiyin_context>,
           int,
-          double,
+          ffi.Pointer<taiyin_split_julian_date>,
           int,
           ffi.Pointer<taiyin_cartesian_state>,
           ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -2900,7 +2900,7 @@ class TaiyinBindings {
   int taiyin_calc_state_ut_delta_t(
     ffi.Pointer<taiyin_context> context,
     int target_id,
-    double jd_ut1,
+    ffi.Pointer<taiyin_split_julian_date> jd_ut1,
     double delta_t_seconds,
     int flags,
     ffi.Pointer<taiyin_cartesian_state> out_state,
@@ -2923,7 +2923,7 @@ class TaiyinBindings {
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Double,
             ffi.Uint32,
             ffi.Pointer<taiyin_cartesian_state>,
@@ -2936,7 +2936,7 @@ class TaiyinBindings {
         int Function(
           ffi.Pointer<taiyin_context>,
           int,
-          double,
+          ffi.Pointer<taiyin_split_julian_date>,
           double,
           int,
           ffi.Pointer<taiyin_cartesian_state>,
@@ -4191,7 +4191,7 @@ class TaiyinBindings {
 
   int taiyin_calc_equation_of_time_ut(
     ffi.Pointer<taiyin_context> context,
-    double jd_ut,
+    ffi.Pointer<taiyin_split_julian_date> jd_ut,
     ffi.Pointer<taiyin_equation_of_time_result> out,
     ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
   ) {
@@ -4203,7 +4203,7 @@ class TaiyinBindings {
         ffi.NativeFunction<
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Pointer<taiyin_equation_of_time_result>,
             ffi.Pointer<taiyin_ephemeris_diagnostic>,
           )
@@ -4214,7 +4214,7 @@ class TaiyinBindings {
           .asFunction<
             int Function(
               ffi.Pointer<taiyin_context>,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
               ffi.Pointer<taiyin_equation_of_time_result>,
               ffi.Pointer<taiyin_ephemeris_diagnostic>,
             )
@@ -4222,7 +4222,7 @@ class TaiyinBindings {
 
   int taiyin_calc_equation_of_time_tt(
     ffi.Pointer<taiyin_context> context,
-    double jd_tt,
+    ffi.Pointer<taiyin_split_julian_date> jd_tt,
     ffi.Pointer<taiyin_equation_of_time_result> out,
     ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
   ) {
@@ -4234,7 +4234,7 @@ class TaiyinBindings {
         ffi.NativeFunction<
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Pointer<taiyin_equation_of_time_result>,
             ffi.Pointer<taiyin_ephemeris_diagnostic>,
           )
@@ -4245,7 +4245,7 @@ class TaiyinBindings {
           .asFunction<
             int Function(
               ffi.Pointer<taiyin_context>,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
               ffi.Pointer<taiyin_equation_of_time_result>,
               ffi.Pointer<taiyin_ephemeris_diagnostic>,
             )
@@ -4253,9 +4253,9 @@ class TaiyinBindings {
 
   int taiyin_local_mean_to_apparent_solar_time(
     ffi.Pointer<taiyin_context> context,
-    double jd_local_mean,
+    ffi.Pointer<taiyin_split_julian_date> jd_local_mean,
     double longitude_rad,
-    ffi.Pointer<ffi.Double> out_jd_local_apparent,
+    ffi.Pointer<taiyin_split_julian_date> out_jd_local_apparent,
     ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
   ) {
     return _taiyin_local_mean_to_apparent_solar_time(
@@ -4272,9 +4272,9 @@ class TaiyinBindings {
         ffi.NativeFunction<
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Double,
-            ffi.Double,
-            ffi.Pointer<ffi.Double>,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Pointer<taiyin_ephemeris_diagnostic>,
           )
         >
@@ -4284,18 +4284,18 @@ class TaiyinBindings {
           .asFunction<
             int Function(
               ffi.Pointer<taiyin_context>,
+              ffi.Pointer<taiyin_split_julian_date>,
               double,
-              double,
-              ffi.Pointer<ffi.Double>,
+              ffi.Pointer<taiyin_split_julian_date>,
               ffi.Pointer<taiyin_ephemeris_diagnostic>,
             )
           >();
 
   int taiyin_local_apparent_to_mean_solar_time(
     ffi.Pointer<taiyin_context> context,
-    double jd_local_apparent,
+    ffi.Pointer<taiyin_split_julian_date> jd_local_apparent,
     double longitude_rad,
-    ffi.Pointer<ffi.Double> out_jd_local_mean,
+    ffi.Pointer<taiyin_split_julian_date> out_jd_local_mean,
     ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
   ) {
     return _taiyin_local_apparent_to_mean_solar_time(
@@ -4312,9 +4312,9 @@ class TaiyinBindings {
         ffi.NativeFunction<
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Double,
-            ffi.Double,
-            ffi.Pointer<ffi.Double>,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Pointer<taiyin_ephemeris_diagnostic>,
           )
         >
@@ -4324,9 +4324,9 @@ class TaiyinBindings {
           .asFunction<
             int Function(
               ffi.Pointer<taiyin_context>,
+              ffi.Pointer<taiyin_split_julian_date>,
               double,
-              double,
-              ffi.Pointer<ffi.Double>,
+              ffi.Pointer<taiyin_split_julian_date>,
               ffi.Pointer<taiyin_ephemeris_diagnostic>,
             )
           >();
@@ -4413,8 +4413,8 @@ class TaiyinBindings {
   int taiyin_calc_star_position_tdb(
     ffi.Pointer<taiyin_context> context,
     ffi.Pointer<ffi.Char> star_key,
-    double jd_tdb,
-    double jd_tt,
+    ffi.Pointer<taiyin_split_julian_date> jd_tdb,
+    ffi.Pointer<taiyin_split_julian_date> jd_tt,
     int flags,
     ffi.Pointer<ffi.Double> out_position,
     ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
@@ -4436,8 +4436,8 @@ class TaiyinBindings {
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<ffi.Char>,
-            ffi.Double,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint64,
             ffi.Pointer<ffi.Double>,
             ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -4449,8 +4449,8 @@ class TaiyinBindings {
         int Function(
           ffi.Pointer<taiyin_context>,
           ffi.Pointer<ffi.Char>,
-          double,
-          double,
+          ffi.Pointer<taiyin_split_julian_date>,
+          ffi.Pointer<taiyin_split_julian_date>,
           int,
           ffi.Pointer<ffi.Double>,
           ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -4460,7 +4460,7 @@ class TaiyinBindings {
   int taiyin_calc_star_position_tt(
     ffi.Pointer<taiyin_context> context,
     ffi.Pointer<ffi.Char> star_key,
-    double jd_tt,
+    ffi.Pointer<taiyin_split_julian_date> jd_tt,
     int flags,
     ffi.Pointer<ffi.Double> out_position,
     ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
@@ -4481,7 +4481,7 @@ class TaiyinBindings {
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<ffi.Char>,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint64,
             ffi.Pointer<ffi.Double>,
             ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -4493,7 +4493,7 @@ class TaiyinBindings {
         int Function(
           ffi.Pointer<taiyin_context>,
           ffi.Pointer<ffi.Char>,
-          double,
+          ffi.Pointer<taiyin_split_julian_date>,
           int,
           ffi.Pointer<ffi.Double>,
           ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -4503,7 +4503,7 @@ class TaiyinBindings {
   int taiyin_calc_star_position_ut(
     ffi.Pointer<taiyin_context> context,
     ffi.Pointer<ffi.Char> star_key,
-    double jd_ut,
+    ffi.Pointer<taiyin_split_julian_date> jd_ut,
     int flags,
     ffi.Pointer<ffi.Double> out_position,
     ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
@@ -4524,7 +4524,7 @@ class TaiyinBindings {
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<ffi.Char>,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint64,
             ffi.Pointer<ffi.Double>,
             ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -4536,7 +4536,7 @@ class TaiyinBindings {
         int Function(
           ffi.Pointer<taiyin_context>,
           ffi.Pointer<ffi.Char>,
-          double,
+          ffi.Pointer<taiyin_split_julian_date>,
           int,
           ffi.Pointer<ffi.Double>,
           ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -4546,7 +4546,7 @@ class TaiyinBindings {
   int taiyin_calc_star_position_ut_delta_t(
     ffi.Pointer<taiyin_context> context,
     ffi.Pointer<ffi.Char> star_key,
-    double jd_ut1,
+    ffi.Pointer<taiyin_split_julian_date> jd_ut1,
     double delta_t_seconds,
     int flags,
     ffi.Pointer<ffi.Double> out_position,
@@ -4569,7 +4569,7 @@ class TaiyinBindings {
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<ffi.Char>,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Double,
             ffi.Uint64,
             ffi.Pointer<ffi.Double>,
@@ -4583,7 +4583,7 @@ class TaiyinBindings {
             int Function(
               ffi.Pointer<taiyin_context>,
               ffi.Pointer<ffi.Char>,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
               double,
               int,
               ffi.Pointer<ffi.Double>,
@@ -4595,8 +4595,8 @@ class TaiyinBindings {
     ffi.Pointer<taiyin_context> context,
     ffi.Pointer<ffi.Pointer<ffi.Char>> star_keys,
     int star_count,
-    double jd_tdb,
-    double jd_tt,
+    ffi.Pointer<taiyin_split_julian_date> jd_tdb,
+    ffi.Pointer<taiyin_split_julian_date> jd_tt,
     int flags,
     ffi.Pointer<ffi.Double> out_positions,
     ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostics,
@@ -4620,8 +4620,8 @@ class TaiyinBindings {
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<ffi.Pointer<ffi.Char>>,
             ffi.Size,
-            ffi.Double,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint64,
             ffi.Pointer<ffi.Double>,
             ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -4635,8 +4635,8 @@ class TaiyinBindings {
               ffi.Pointer<taiyin_context>,
               ffi.Pointer<ffi.Pointer<ffi.Char>>,
               int,
-              double,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
+              ffi.Pointer<taiyin_split_julian_date>,
               int,
               ffi.Pointer<ffi.Double>,
               ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -4647,7 +4647,7 @@ class TaiyinBindings {
     ffi.Pointer<taiyin_context> context,
     ffi.Pointer<ffi.Pointer<ffi.Char>> star_keys,
     int star_count,
-    double jd_tt,
+    ffi.Pointer<taiyin_split_julian_date> jd_tt,
     int flags,
     ffi.Pointer<ffi.Double> out_positions,
     ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostics,
@@ -4670,7 +4670,7 @@ class TaiyinBindings {
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<ffi.Pointer<ffi.Char>>,
             ffi.Size,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint64,
             ffi.Pointer<ffi.Double>,
             ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -4683,7 +4683,7 @@ class TaiyinBindings {
           ffi.Pointer<taiyin_context>,
           ffi.Pointer<ffi.Pointer<ffi.Char>>,
           int,
-          double,
+          ffi.Pointer<taiyin_split_julian_date>,
           int,
           ffi.Pointer<ffi.Double>,
           ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -4694,7 +4694,7 @@ class TaiyinBindings {
     ffi.Pointer<taiyin_context> context,
     ffi.Pointer<ffi.Pointer<ffi.Char>> star_keys,
     int star_count,
-    double jd_ut,
+    ffi.Pointer<taiyin_split_julian_date> jd_ut,
     int flags,
     ffi.Pointer<ffi.Double> out_positions,
     ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostics,
@@ -4717,7 +4717,7 @@ class TaiyinBindings {
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<ffi.Pointer<ffi.Char>>,
             ffi.Size,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint64,
             ffi.Pointer<ffi.Double>,
             ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -4730,7 +4730,7 @@ class TaiyinBindings {
           ffi.Pointer<taiyin_context>,
           ffi.Pointer<ffi.Pointer<ffi.Char>>,
           int,
-          double,
+          ffi.Pointer<taiyin_split_julian_date>,
           int,
           ffi.Pointer<ffi.Double>,
           ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -4741,7 +4741,7 @@ class TaiyinBindings {
     ffi.Pointer<taiyin_context> context,
     ffi.Pointer<ffi.Pointer<ffi.Char>> star_keys,
     int star_count,
-    double jd_ut1,
+    ffi.Pointer<taiyin_split_julian_date> jd_ut1,
     double delta_t_seconds,
     int flags,
     ffi.Pointer<ffi.Double> out_positions,
@@ -4766,7 +4766,7 @@ class TaiyinBindings {
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<ffi.Pointer<ffi.Char>>,
             ffi.Size,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Double,
             ffi.Uint64,
             ffi.Pointer<ffi.Double>,
@@ -4781,7 +4781,7 @@ class TaiyinBindings {
               ffi.Pointer<taiyin_context>,
               ffi.Pointer<ffi.Pointer<ffi.Char>>,
               int,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
               double,
               int,
               ffi.Pointer<ffi.Double>,
@@ -4792,7 +4792,7 @@ class TaiyinBindings {
   int taiyin_calc_observed_star_ut(
     ffi.Pointer<taiyin_context> context,
     ffi.Pointer<ffi.Char> star_key,
-    double jd_ut,
+    ffi.Pointer<taiyin_split_julian_date> jd_ut,
     int flags,
     ffi.Pointer<taiyin_observed_position> out_position,
     ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
@@ -4813,7 +4813,7 @@ class TaiyinBindings {
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<ffi.Char>,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint64,
             ffi.Pointer<taiyin_observed_position>,
             ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -4825,7 +4825,7 @@ class TaiyinBindings {
         int Function(
           ffi.Pointer<taiyin_context>,
           ffi.Pointer<ffi.Char>,
-          double,
+          ffi.Pointer<taiyin_split_julian_date>,
           int,
           ffi.Pointer<taiyin_observed_position>,
           ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -4836,7 +4836,7 @@ class TaiyinBindings {
     ffi.Pointer<taiyin_context> context,
     ffi.Pointer<ffi.Pointer<ffi.Char>> star_keys,
     int star_count,
-    double jd_ut,
+    ffi.Pointer<taiyin_split_julian_date> jd_ut,
     int flags,
     ffi.Pointer<taiyin_observed_position> out_positions,
     ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostics,
@@ -4859,7 +4859,7 @@ class TaiyinBindings {
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<ffi.Pointer<ffi.Char>>,
             ffi.Size,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint64,
             ffi.Pointer<taiyin_observed_position>,
             ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -4872,7 +4872,7 @@ class TaiyinBindings {
           ffi.Pointer<taiyin_context>,
           ffi.Pointer<ffi.Pointer<ffi.Char>>,
           int,
-          double,
+          ffi.Pointer<taiyin_split_julian_date>,
           int,
           ffi.Pointer<taiyin_observed_position>,
           ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -4954,7 +4954,7 @@ class TaiyinBindings {
   int taiyin_calc_body_osculating_orbit_tt(
     ffi.Pointer<taiyin_context> context,
     int body_id,
-    double jd_tt,
+    ffi.Pointer<taiyin_split_julian_date> jd_tt,
     int reference_frame_id,
     int flags,
     ffi.Pointer<taiyin_body_osculating_orbit> out,
@@ -4977,7 +4977,7 @@ class TaiyinBindings {
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Int32,
             ffi.Uint64,
             ffi.Pointer<taiyin_body_osculating_orbit>,
@@ -4991,7 +4991,7 @@ class TaiyinBindings {
             int Function(
               ffi.Pointer<taiyin_context>,
               int,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
               int,
               int,
               ffi.Pointer<taiyin_body_osculating_orbit>,
@@ -5002,7 +5002,7 @@ class TaiyinBindings {
   int taiyin_calc_body_osculating_orbit_ut(
     ffi.Pointer<taiyin_context> context,
     int body_id,
-    double jd_ut,
+    ffi.Pointer<taiyin_split_julian_date> jd_ut,
     int reference_frame_id,
     int flags,
     ffi.Pointer<taiyin_body_osculating_orbit> out,
@@ -5025,7 +5025,7 @@ class TaiyinBindings {
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Int32,
             ffi.Uint64,
             ffi.Pointer<taiyin_body_osculating_orbit>,
@@ -5039,7 +5039,7 @@ class TaiyinBindings {
             int Function(
               ffi.Pointer<taiyin_context>,
               int,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
               int,
               int,
               ffi.Pointer<taiyin_body_osculating_orbit>,
@@ -5050,7 +5050,7 @@ class TaiyinBindings {
   int taiyin_calc_body_orbit_reference_points_tt(
     ffi.Pointer<taiyin_context> context,
     int body_id,
-    double jd_tt,
+    ffi.Pointer<taiyin_split_julian_date> jd_tt,
     int reference_frame_id,
     int flags,
     ffi.Pointer<taiyin_body_orbit_reference_points> out,
@@ -5073,7 +5073,7 @@ class TaiyinBindings {
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Int32,
             ffi.Uint64,
             ffi.Pointer<taiyin_body_orbit_reference_points>,
@@ -5087,7 +5087,7 @@ class TaiyinBindings {
             int Function(
               ffi.Pointer<taiyin_context>,
               int,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
               int,
               int,
               ffi.Pointer<taiyin_body_orbit_reference_points>,
@@ -5098,7 +5098,7 @@ class TaiyinBindings {
   int taiyin_calc_body_orbit_reference_points_ut(
     ffi.Pointer<taiyin_context> context,
     int body_id,
-    double jd_ut,
+    ffi.Pointer<taiyin_split_julian_date> jd_ut,
     int reference_frame_id,
     int flags,
     ffi.Pointer<taiyin_body_orbit_reference_points> out,
@@ -5121,7 +5121,7 @@ class TaiyinBindings {
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Int32,
             ffi.Uint64,
             ffi.Pointer<taiyin_body_orbit_reference_points>,
@@ -5135,7 +5135,7 @@ class TaiyinBindings {
             int Function(
               ffi.Pointer<taiyin_context>,
               int,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
               int,
               int,
               ffi.Pointer<taiyin_body_orbit_reference_points>,
@@ -5147,7 +5147,7 @@ class TaiyinBindings {
     ffi.Pointer<taiyin_context> context,
     int body_id,
     int kind,
-    double jd_start_tt,
+    ffi.Pointer<taiyin_split_julian_date> jd_start_tt,
     int flags,
     ffi.Pointer<taiyin_body_apsis_search_result> out,
     ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
@@ -5170,7 +5170,7 @@ class TaiyinBindings {
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
             ffi.Int32,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint64,
             ffi.Pointer<taiyin_body_apsis_search_result>,
             ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -5184,7 +5184,7 @@ class TaiyinBindings {
               ffi.Pointer<taiyin_context>,
               int,
               int,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
               int,
               ffi.Pointer<taiyin_body_apsis_search_result>,
               ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -5195,7 +5195,7 @@ class TaiyinBindings {
     ffi.Pointer<taiyin_context> context,
     int body_id,
     int kind,
-    double jd_start_ut,
+    ffi.Pointer<taiyin_split_julian_date> jd_start_ut,
     int flags,
     ffi.Pointer<taiyin_body_apsis_search_result> out,
     ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
@@ -5218,7 +5218,7 @@ class TaiyinBindings {
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
             ffi.Int32,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint64,
             ffi.Pointer<taiyin_body_apsis_search_result>,
             ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -5232,7 +5232,7 @@ class TaiyinBindings {
               ffi.Pointer<taiyin_context>,
               int,
               int,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
               int,
               ffi.Pointer<taiyin_body_apsis_search_result>,
               ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -5243,7 +5243,7 @@ class TaiyinBindings {
     ffi.Pointer<taiyin_context> context,
     int body_id,
     int kind,
-    double jd_start_tt,
+    ffi.Pointer<taiyin_split_julian_date> jd_start_tt,
     int reference_frame_id,
     int flags,
     ffi.Pointer<taiyin_body_node_search_result> out,
@@ -5268,7 +5268,7 @@ class TaiyinBindings {
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
             ffi.Int32,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Int32,
             ffi.Uint64,
             ffi.Pointer<taiyin_body_node_search_result>,
@@ -5283,7 +5283,7 @@ class TaiyinBindings {
               ffi.Pointer<taiyin_context>,
               int,
               int,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
               int,
               int,
               ffi.Pointer<taiyin_body_node_search_result>,
@@ -5295,7 +5295,7 @@ class TaiyinBindings {
     ffi.Pointer<taiyin_context> context,
     int body_id,
     int kind,
-    double jd_start_ut,
+    ffi.Pointer<taiyin_split_julian_date> jd_start_ut,
     int reference_frame_id,
     int flags,
     ffi.Pointer<taiyin_body_node_search_result> out,
@@ -5320,7 +5320,7 @@ class TaiyinBindings {
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
             ffi.Int32,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Int32,
             ffi.Uint64,
             ffi.Pointer<taiyin_body_node_search_result>,
@@ -5335,7 +5335,7 @@ class TaiyinBindings {
               ffi.Pointer<taiyin_context>,
               int,
               int,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
               int,
               int,
               ffi.Pointer<taiyin_body_node_search_result>,
@@ -5399,8 +5399,8 @@ class TaiyinBindings {
 
   int taiyin_search_moon_rise_set_ut(
     ffi.Pointer<taiyin_context> context,
-    double start_jd_ut,
-    double end_jd_ut,
+    ffi.Pointer<taiyin_split_julian_date> start_jd_ut,
+    ffi.Pointer<taiyin_split_julian_date> end_jd_ut,
     int event_kind,
     int limb_kind,
     int flags,
@@ -5424,8 +5424,8 @@ class TaiyinBindings {
         ffi.NativeFunction<
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
-            ffi.Double,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Int32,
             ffi.Int32,
             ffi.Uint64,
@@ -5439,8 +5439,8 @@ class TaiyinBindings {
           .asFunction<
             int Function(
               ffi.Pointer<taiyin_context>,
-              double,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
+              ffi.Pointer<taiyin_split_julian_date>,
               int,
               int,
               int,
@@ -5451,8 +5451,8 @@ class TaiyinBindings {
 
   int taiyin_search_moon_rise_set_at_horizon_ut(
     ffi.Pointer<taiyin_context> context,
-    double start_jd_ut,
-    double end_jd_ut,
+    ffi.Pointer<taiyin_split_julian_date> start_jd_ut,
+    ffi.Pointer<taiyin_split_julian_date> end_jd_ut,
     int event_kind,
     int limb_kind,
     double horizon_altitude_rad,
@@ -5478,8 +5478,8 @@ class TaiyinBindings {
         ffi.NativeFunction<
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
-            ffi.Double,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Int32,
             ffi.Int32,
             ffi.Double,
@@ -5494,8 +5494,8 @@ class TaiyinBindings {
           .asFunction<
             int Function(
               ffi.Pointer<taiyin_context>,
-              double,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
+              ffi.Pointer<taiyin_split_julian_date>,
               int,
               int,
               double,
@@ -5507,8 +5507,8 @@ class TaiyinBindings {
 
   int taiyin_search_moon_transit_ut(
     ffi.Pointer<taiyin_context> context,
-    double start_jd_ut,
-    double end_jd_ut,
+    ffi.Pointer<taiyin_split_julian_date> start_jd_ut,
+    ffi.Pointer<taiyin_split_julian_date> end_jd_ut,
     int event_kind,
     ffi.Pointer<taiyin_visibility_event_result> out,
     ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
@@ -5528,8 +5528,8 @@ class TaiyinBindings {
         ffi.NativeFunction<
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
-            ffi.Double,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Int32,
             ffi.Pointer<taiyin_visibility_event_result>,
             ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -5540,8 +5540,8 @@ class TaiyinBindings {
       .asFunction<
         int Function(
           ffi.Pointer<taiyin_context>,
-          double,
-          double,
+          ffi.Pointer<taiyin_split_julian_date>,
+          ffi.Pointer<taiyin_split_julian_date>,
           int,
           ffi.Pointer<taiyin_visibility_event_result>,
           ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -5551,8 +5551,8 @@ class TaiyinBindings {
   int taiyin_search_planet_rise_set_ut(
     ffi.Pointer<taiyin_context> context,
     int body_id,
-    double start_jd_ut,
-    double end_jd_ut,
+    ffi.Pointer<taiyin_split_julian_date> start_jd_ut,
+    ffi.Pointer<taiyin_split_julian_date> end_jd_ut,
     int event_kind,
     int limb_kind,
     int flags,
@@ -5578,8 +5578,8 @@ class TaiyinBindings {
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
-            ffi.Double,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Int32,
             ffi.Int32,
             ffi.Uint64,
@@ -5594,8 +5594,8 @@ class TaiyinBindings {
             int Function(
               ffi.Pointer<taiyin_context>,
               int,
-              double,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
+              ffi.Pointer<taiyin_split_julian_date>,
               int,
               int,
               int,
@@ -5607,8 +5607,8 @@ class TaiyinBindings {
   int taiyin_search_planet_rise_set_at_horizon_ut(
     ffi.Pointer<taiyin_context> context,
     int body_id,
-    double start_jd_ut,
-    double end_jd_ut,
+    ffi.Pointer<taiyin_split_julian_date> start_jd_ut,
+    ffi.Pointer<taiyin_split_julian_date> end_jd_ut,
     int event_kind,
     int limb_kind,
     double horizon_altitude_rad,
@@ -5636,8 +5636,8 @@ class TaiyinBindings {
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
-            ffi.Double,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Int32,
             ffi.Int32,
             ffi.Double,
@@ -5653,8 +5653,8 @@ class TaiyinBindings {
             int Function(
               ffi.Pointer<taiyin_context>,
               int,
-              double,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
+              ffi.Pointer<taiyin_split_julian_date>,
               int,
               int,
               double,
@@ -5667,8 +5667,8 @@ class TaiyinBindings {
   int taiyin_search_planet_transit_ut(
     ffi.Pointer<taiyin_context> context,
     int body_id,
-    double start_jd_ut,
-    double end_jd_ut,
+    ffi.Pointer<taiyin_split_julian_date> start_jd_ut,
+    ffi.Pointer<taiyin_split_julian_date> end_jd_ut,
     int event_kind,
     ffi.Pointer<taiyin_visibility_event_result> out,
     ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
@@ -5690,8 +5690,8 @@ class TaiyinBindings {
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
-            ffi.Double,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Int32,
             ffi.Pointer<taiyin_visibility_event_result>,
             ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -5704,8 +5704,8 @@ class TaiyinBindings {
             int Function(
               ffi.Pointer<taiyin_context>,
               int,
-              double,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
+              ffi.Pointer<taiyin_split_julian_date>,
               int,
               ffi.Pointer<taiyin_visibility_event_result>,
               ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -5714,8 +5714,8 @@ class TaiyinBindings {
 
   int taiyin_search_solar_rise_set_ut(
     ffi.Pointer<taiyin_context> context,
-    double start_jd_ut,
-    double end_jd_ut,
+    ffi.Pointer<taiyin_split_julian_date> start_jd_ut,
+    ffi.Pointer<taiyin_split_julian_date> end_jd_ut,
     int event_kind,
     int limb_kind,
     int flags,
@@ -5739,8 +5739,8 @@ class TaiyinBindings {
         ffi.NativeFunction<
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
-            ffi.Double,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Int32,
             ffi.Int32,
             ffi.Uint64,
@@ -5754,8 +5754,8 @@ class TaiyinBindings {
           .asFunction<
             int Function(
               ffi.Pointer<taiyin_context>,
-              double,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
+              ffi.Pointer<taiyin_split_julian_date>,
               int,
               int,
               int,
@@ -5766,8 +5766,8 @@ class TaiyinBindings {
 
   int taiyin_search_solar_rise_set_at_horizon_ut(
     ffi.Pointer<taiyin_context> context,
-    double start_jd_ut,
-    double end_jd_ut,
+    ffi.Pointer<taiyin_split_julian_date> start_jd_ut,
+    ffi.Pointer<taiyin_split_julian_date> end_jd_ut,
     int event_kind,
     int limb_kind,
     double horizon_altitude_rad,
@@ -5793,8 +5793,8 @@ class TaiyinBindings {
         ffi.NativeFunction<
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
-            ffi.Double,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Int32,
             ffi.Int32,
             ffi.Double,
@@ -5809,8 +5809,8 @@ class TaiyinBindings {
           .asFunction<
             int Function(
               ffi.Pointer<taiyin_context>,
-              double,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
+              ffi.Pointer<taiyin_split_julian_date>,
               int,
               int,
               double,
@@ -5822,8 +5822,8 @@ class TaiyinBindings {
 
   int taiyin_search_solar_twilight_ut(
     ffi.Pointer<taiyin_context> context,
-    double start_jd_ut,
-    double end_jd_ut,
+    ffi.Pointer<taiyin_split_julian_date> start_jd_ut,
+    ffi.Pointer<taiyin_split_julian_date> end_jd_ut,
     int event_kind,
     int twilight_kind,
     ffi.Pointer<taiyin_visibility_event_result> out,
@@ -5845,8 +5845,8 @@ class TaiyinBindings {
         ffi.NativeFunction<
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
-            ffi.Double,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Int32,
             ffi.Int32,
             ffi.Pointer<taiyin_visibility_event_result>,
@@ -5859,8 +5859,8 @@ class TaiyinBindings {
           .asFunction<
             int Function(
               ffi.Pointer<taiyin_context>,
-              double,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
+              ffi.Pointer<taiyin_split_julian_date>,
               int,
               int,
               ffi.Pointer<taiyin_visibility_event_result>,
@@ -5870,8 +5870,8 @@ class TaiyinBindings {
 
   int taiyin_search_solar_transit_ut(
     ffi.Pointer<taiyin_context> context,
-    double start_jd_ut,
-    double end_jd_ut,
+    ffi.Pointer<taiyin_split_julian_date> start_jd_ut,
+    ffi.Pointer<taiyin_split_julian_date> end_jd_ut,
     int event_kind,
     ffi.Pointer<taiyin_visibility_event_result> out,
     ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
@@ -5891,8 +5891,8 @@ class TaiyinBindings {
         ffi.NativeFunction<
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
-            ffi.Double,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Int32,
             ffi.Pointer<taiyin_visibility_event_result>,
             ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -5904,8 +5904,8 @@ class TaiyinBindings {
           .asFunction<
             int Function(
               ffi.Pointer<taiyin_context>,
-              double,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
+              ffi.Pointer<taiyin_split_julian_date>,
               int,
               ffi.Pointer<taiyin_visibility_event_result>,
               ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -5914,7 +5914,7 @@ class TaiyinBindings {
 
   int taiyin_compute_solar_rise_set_fast_tt(
     ffi.Pointer<taiyin_context> context,
-    double center_jd_tt,
+    ffi.Pointer<taiyin_split_julian_date> center_jd_tt,
     double longitude_deg,
     double latitude_deg,
     double height_m,
@@ -5939,7 +5939,7 @@ class TaiyinBindings {
         ffi.NativeFunction<
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Double,
             ffi.Double,
             ffi.Double,
@@ -5954,7 +5954,7 @@ class TaiyinBindings {
           .asFunction<
             int Function(
               ffi.Pointer<taiyin_context>,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
               double,
               double,
               double,
@@ -5966,7 +5966,7 @@ class TaiyinBindings {
 
   int taiyin_compute_solar_transit_fast_tt(
     ffi.Pointer<taiyin_context> context,
-    double center_jd_tt,
+    ffi.Pointer<taiyin_split_julian_date> center_jd_tt,
     double longitude_deg,
     double latitude_deg,
     double height_m,
@@ -5989,7 +5989,7 @@ class TaiyinBindings {
         ffi.NativeFunction<
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Double,
             ffi.Double,
             ffi.Double,
@@ -6003,7 +6003,7 @@ class TaiyinBindings {
           .asFunction<
             int Function(
               ffi.Pointer<taiyin_context>,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
               double,
               double,
               double,
@@ -6015,8 +6015,8 @@ class TaiyinBindings {
   int taiyin_search_star_rise_set_ut(
     ffi.Pointer<taiyin_context> context,
     ffi.Pointer<ffi.Char> star_key,
-    double start_jd_ut,
-    double end_jd_ut,
+    ffi.Pointer<taiyin_split_julian_date> start_jd_ut,
+    ffi.Pointer<taiyin_split_julian_date> end_jd_ut,
     int event_kind,
     int flags,
     ffi.Pointer<taiyin_visibility_event_result> out,
@@ -6040,8 +6040,8 @@ class TaiyinBindings {
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<ffi.Char>,
-            ffi.Double,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Int32,
             ffi.Uint64,
             ffi.Pointer<taiyin_visibility_event_result>,
@@ -6055,8 +6055,8 @@ class TaiyinBindings {
             int Function(
               ffi.Pointer<taiyin_context>,
               ffi.Pointer<ffi.Char>,
-              double,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
+              ffi.Pointer<taiyin_split_julian_date>,
               int,
               int,
               ffi.Pointer<taiyin_visibility_event_result>,
@@ -6067,8 +6067,8 @@ class TaiyinBindings {
   int taiyin_search_star_rise_set_at_horizon_ut(
     ffi.Pointer<taiyin_context> context,
     ffi.Pointer<ffi.Char> star_key,
-    double start_jd_ut,
-    double end_jd_ut,
+    ffi.Pointer<taiyin_split_julian_date> start_jd_ut,
+    ffi.Pointer<taiyin_split_julian_date> end_jd_ut,
     int event_kind,
     double horizon_altitude_rad,
     int flags,
@@ -6094,8 +6094,8 @@ class TaiyinBindings {
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<ffi.Char>,
-            ffi.Double,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Int32,
             ffi.Double,
             ffi.Uint64,
@@ -6110,8 +6110,8 @@ class TaiyinBindings {
             int Function(
               ffi.Pointer<taiyin_context>,
               ffi.Pointer<ffi.Char>,
-              double,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
+              ffi.Pointer<taiyin_split_julian_date>,
               int,
               double,
               int,
@@ -6123,8 +6123,8 @@ class TaiyinBindings {
   int taiyin_search_star_transit_ut(
     ffi.Pointer<taiyin_context> context,
     ffi.Pointer<ffi.Char> star_key,
-    double start_jd_ut,
-    double end_jd_ut,
+    ffi.Pointer<taiyin_split_julian_date> start_jd_ut,
+    ffi.Pointer<taiyin_split_julian_date> end_jd_ut,
     int event_kind,
     ffi.Pointer<taiyin_visibility_event_result> out,
     ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
@@ -6146,8 +6146,8 @@ class TaiyinBindings {
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<ffi.Char>,
-            ffi.Double,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Int32,
             ffi.Pointer<taiyin_visibility_event_result>,
             ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -6159,8 +6159,8 @@ class TaiyinBindings {
         int Function(
           ffi.Pointer<taiyin_context>,
           ffi.Pointer<ffi.Char>,
-          double,
-          double,
+          ffi.Pointer<taiyin_split_julian_date>,
+          ffi.Pointer<taiyin_split_julian_date>,
           int,
           ffi.Pointer<taiyin_visibility_event_result>,
           ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -6226,7 +6226,7 @@ class TaiyinBindings {
   int taiyin_calc_body_heliacal_visibility_ut(
     ffi.Pointer<taiyin_context> context,
     int body_id,
-    double jd_ut,
+    ffi.Pointer<taiyin_split_julian_date> jd_ut,
     int flags,
     ffi.Pointer<taiyin_heliacal_visibility_conditions> conditions,
     ffi.Pointer<taiyin_heliacal_visibility_result> out,
@@ -6249,7 +6249,7 @@ class TaiyinBindings {
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint64,
             ffi.Pointer<taiyin_heliacal_visibility_conditions>,
             ffi.Pointer<taiyin_heliacal_visibility_result>,
@@ -6263,7 +6263,7 @@ class TaiyinBindings {
             int Function(
               ffi.Pointer<taiyin_context>,
               int,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
               int,
               ffi.Pointer<taiyin_heliacal_visibility_conditions>,
               ffi.Pointer<taiyin_heliacal_visibility_result>,
@@ -6274,7 +6274,7 @@ class TaiyinBindings {
   int taiyin_calc_star_heliacal_visibility_ut(
     ffi.Pointer<taiyin_context> context,
     ffi.Pointer<ffi.Char> star_key,
-    double jd_ut,
+    ffi.Pointer<taiyin_split_julian_date> jd_ut,
     int flags,
     ffi.Pointer<taiyin_heliacal_visibility_conditions> conditions,
     ffi.Pointer<taiyin_heliacal_visibility_result> out,
@@ -6297,7 +6297,7 @@ class TaiyinBindings {
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<ffi.Char>,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint64,
             ffi.Pointer<taiyin_heliacal_visibility_conditions>,
             ffi.Pointer<taiyin_heliacal_visibility_result>,
@@ -6311,7 +6311,7 @@ class TaiyinBindings {
             int Function(
               ffi.Pointer<taiyin_context>,
               ffi.Pointer<ffi.Char>,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
               int,
               ffi.Pointer<taiyin_heliacal_visibility_conditions>,
               ffi.Pointer<taiyin_heliacal_visibility_result>,
@@ -6322,7 +6322,7 @@ class TaiyinBindings {
   int taiyin_search_next_body_heliacal_visibility_ut(
     ffi.Pointer<taiyin_context> context,
     int body_id,
-    double jd_start_ut,
+    ffi.Pointer<taiyin_split_julian_date> jd_start_ut,
     int event_kind,
     double max_search_days,
     int flags,
@@ -6349,7 +6349,7 @@ class TaiyinBindings {
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Int32,
             ffi.Double,
             ffi.Uint64,
@@ -6365,7 +6365,7 @@ class TaiyinBindings {
             int Function(
               ffi.Pointer<taiyin_context>,
               int,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
               int,
               double,
               int,
@@ -6378,7 +6378,7 @@ class TaiyinBindings {
   int taiyin_search_next_star_heliacal_visibility_ut(
     ffi.Pointer<taiyin_context> context,
     ffi.Pointer<ffi.Char> star_key,
-    double jd_start_ut,
+    ffi.Pointer<taiyin_split_julian_date> jd_start_ut,
     int event_kind,
     double max_search_days,
     int flags,
@@ -6405,7 +6405,7 @@ class TaiyinBindings {
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<ffi.Char>,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Int32,
             ffi.Double,
             ffi.Uint64,
@@ -6421,7 +6421,7 @@ class TaiyinBindings {
             int Function(
               ffi.Pointer<taiyin_context>,
               ffi.Pointer<ffi.Char>,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
               int,
               double,
               int,
@@ -6533,9 +6533,9 @@ class TaiyinBindings {
   int taiyin_search_solar_longitude_ut(
     ffi.Pointer<taiyin_context> context,
     double target_longitude_rad,
-    double estimate_jd_ut,
+    ffi.Pointer<taiyin_split_julian_date> estimate_jd_ut,
     int flags,
-    ffi.Pointer<ffi.Double> out_jd_ut,
+    ffi.Pointer<taiyin_split_julian_date> out_jd_ut,
     ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
   ) {
     return _taiyin_search_solar_longitude_ut(
@@ -6554,9 +6554,9 @@ class TaiyinBindings {
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
             ffi.Double,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint64,
-            ffi.Pointer<ffi.Double>,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Pointer<taiyin_ephemeris_diagnostic>,
           )
         >
@@ -6567,9 +6567,9 @@ class TaiyinBindings {
             int Function(
               ffi.Pointer<taiyin_context>,
               double,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
               int,
-              ffi.Pointer<ffi.Double>,
+              ffi.Pointer<taiyin_split_julian_date>,
               ffi.Pointer<taiyin_ephemeris_diagnostic>,
             )
           >();
@@ -6577,9 +6577,9 @@ class TaiyinBindings {
   int taiyin_search_solar_longitude_tt(
     ffi.Pointer<taiyin_context> context,
     double target_longitude_rad,
-    double estimate_jd_tt,
+    ffi.Pointer<taiyin_split_julian_date> estimate_jd_tt,
     int flags,
-    ffi.Pointer<ffi.Double> out_jd_tt,
+    ffi.Pointer<taiyin_split_julian_date> out_jd_tt,
     ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
   ) {
     return _taiyin_search_solar_longitude_tt(
@@ -6598,9 +6598,9 @@ class TaiyinBindings {
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
             ffi.Double,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint64,
-            ffi.Pointer<ffi.Double>,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Pointer<taiyin_ephemeris_diagnostic>,
           )
         >
@@ -6611,9 +6611,9 @@ class TaiyinBindings {
             int Function(
               ffi.Pointer<taiyin_context>,
               double,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
               int,
-              ffi.Pointer<ffi.Double>,
+              ffi.Pointer<taiyin_split_julian_date>,
               ffi.Pointer<taiyin_ephemeris_diagnostic>,
             )
           >();
@@ -6621,9 +6621,9 @@ class TaiyinBindings {
   int taiyin_search_moon_longitude_ut(
     ffi.Pointer<taiyin_context> context,
     double target_longitude_rad,
-    double estimate_jd_ut,
+    ffi.Pointer<taiyin_split_julian_date> estimate_jd_ut,
     int flags,
-    ffi.Pointer<ffi.Double> out_jd_ut,
+    ffi.Pointer<taiyin_split_julian_date> out_jd_ut,
     ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
   ) {
     return _taiyin_search_moon_longitude_ut(
@@ -6642,9 +6642,9 @@ class TaiyinBindings {
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
             ffi.Double,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint64,
-            ffi.Pointer<ffi.Double>,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Pointer<taiyin_ephemeris_diagnostic>,
           )
         >
@@ -6655,9 +6655,9 @@ class TaiyinBindings {
             int Function(
               ffi.Pointer<taiyin_context>,
               double,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
               int,
-              ffi.Pointer<ffi.Double>,
+              ffi.Pointer<taiyin_split_julian_date>,
               ffi.Pointer<taiyin_ephemeris_diagnostic>,
             )
           >();
@@ -6665,9 +6665,9 @@ class TaiyinBindings {
   int taiyin_search_moon_longitude_tt(
     ffi.Pointer<taiyin_context> context,
     double target_longitude_rad,
-    double estimate_jd_tt,
+    ffi.Pointer<taiyin_split_julian_date> estimate_jd_tt,
     int flags,
-    ffi.Pointer<ffi.Double> out_jd_tt,
+    ffi.Pointer<taiyin_split_julian_date> out_jd_tt,
     ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
   ) {
     return _taiyin_search_moon_longitude_tt(
@@ -6686,9 +6686,9 @@ class TaiyinBindings {
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
             ffi.Double,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint64,
-            ffi.Pointer<ffi.Double>,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Pointer<taiyin_ephemeris_diagnostic>,
           )
         >
@@ -6699,9 +6699,9 @@ class TaiyinBindings {
             int Function(
               ffi.Pointer<taiyin_context>,
               double,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
               int,
-              ffi.Pointer<ffi.Double>,
+              ffi.Pointer<taiyin_split_julian_date>,
               ffi.Pointer<taiyin_ephemeris_diagnostic>,
             )
           >();
@@ -6710,11 +6710,11 @@ class TaiyinBindings {
     ffi.Pointer<taiyin_context> context,
     int body_id,
     double target_longitude_rad,
-    double start_jd_ut,
-    double end_jd_ut,
+    ffi.Pointer<taiyin_split_julian_date> start_jd_ut,
+    ffi.Pointer<taiyin_split_julian_date> end_jd_ut,
     double max_step_days,
     int flags,
-    ffi.Pointer<ffi.Double> out_jd_ut,
+    ffi.Pointer<taiyin_split_julian_date> out_jd_ut,
     int capacity,
     ffi.Pointer<ffi.Size> out_count,
     ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
@@ -6741,11 +6741,11 @@ class TaiyinBindings {
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
             ffi.Double,
-            ffi.Double,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Double,
             ffi.Uint64,
-            ffi.Pointer<ffi.Double>,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Size,
             ffi.Pointer<ffi.Size>,
             ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -6759,11 +6759,11 @@ class TaiyinBindings {
               ffi.Pointer<taiyin_context>,
               int,
               double,
-              double,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
+              ffi.Pointer<taiyin_split_julian_date>,
               double,
               int,
-              ffi.Pointer<ffi.Double>,
+              ffi.Pointer<taiyin_split_julian_date>,
               int,
               ffi.Pointer<ffi.Size>,
               ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -6774,11 +6774,11 @@ class TaiyinBindings {
     ffi.Pointer<taiyin_context> context,
     int body_id,
     double target_longitude_rad,
-    double start_jd_tt,
-    double end_jd_tt,
+    ffi.Pointer<taiyin_split_julian_date> start_jd_tt,
+    ffi.Pointer<taiyin_split_julian_date> end_jd_tt,
     double max_step_days,
     int flags,
-    ffi.Pointer<ffi.Double> out_jd_tt,
+    ffi.Pointer<taiyin_split_julian_date> out_jd_tt,
     int capacity,
     ffi.Pointer<ffi.Size> out_count,
     ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
@@ -6805,11 +6805,11 @@ class TaiyinBindings {
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
             ffi.Double,
-            ffi.Double,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Double,
             ffi.Uint64,
-            ffi.Pointer<ffi.Double>,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Size,
             ffi.Pointer<ffi.Size>,
             ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -6823,11 +6823,11 @@ class TaiyinBindings {
               ffi.Pointer<taiyin_context>,
               int,
               double,
-              double,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
+              ffi.Pointer<taiyin_split_julian_date>,
               double,
               int,
-              ffi.Pointer<ffi.Double>,
+              ffi.Pointer<taiyin_split_julian_date>,
               int,
               ffi.Pointer<ffi.Size>,
               ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -6837,11 +6837,11 @@ class TaiyinBindings {
   int taiyin_search_body_longitude_stations_ut(
     ffi.Pointer<taiyin_context> context,
     int body_id,
-    double start_jd_ut,
-    double end_jd_ut,
+    ffi.Pointer<taiyin_split_julian_date> start_jd_ut,
+    ffi.Pointer<taiyin_split_julian_date> end_jd_ut,
     double max_step_days,
     int flags,
-    ffi.Pointer<ffi.Double> out_jd_ut,
+    ffi.Pointer<taiyin_split_julian_date> out_jd_ut,
     ffi.Pointer<ffi.Double> out_longitude_rad,
     int capacity,
     ffi.Pointer<ffi.Size> out_count,
@@ -6868,11 +6868,11 @@ class TaiyinBindings {
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
-            ffi.Double,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Double,
             ffi.Uint64,
-            ffi.Pointer<ffi.Double>,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Pointer<ffi.Double>,
             ffi.Size,
             ffi.Pointer<ffi.Size>,
@@ -6886,11 +6886,11 @@ class TaiyinBindings {
             int Function(
               ffi.Pointer<taiyin_context>,
               int,
-              double,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
+              ffi.Pointer<taiyin_split_julian_date>,
               double,
               int,
-              ffi.Pointer<ffi.Double>,
+              ffi.Pointer<taiyin_split_julian_date>,
               ffi.Pointer<ffi.Double>,
               int,
               ffi.Pointer<ffi.Size>,
@@ -6901,11 +6901,11 @@ class TaiyinBindings {
   int taiyin_search_body_longitude_stations_tt(
     ffi.Pointer<taiyin_context> context,
     int body_id,
-    double start_jd_tt,
-    double end_jd_tt,
+    ffi.Pointer<taiyin_split_julian_date> start_jd_tt,
+    ffi.Pointer<taiyin_split_julian_date> end_jd_tt,
     double max_step_days,
     int flags,
-    ffi.Pointer<ffi.Double> out_jd_tt,
+    ffi.Pointer<taiyin_split_julian_date> out_jd_tt,
     ffi.Pointer<ffi.Double> out_longitude_rad,
     int capacity,
     ffi.Pointer<ffi.Size> out_count,
@@ -6932,11 +6932,11 @@ class TaiyinBindings {
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
-            ffi.Double,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Double,
             ffi.Uint64,
-            ffi.Pointer<ffi.Double>,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Pointer<ffi.Double>,
             ffi.Size,
             ffi.Pointer<ffi.Size>,
@@ -6950,11 +6950,11 @@ class TaiyinBindings {
             int Function(
               ffi.Pointer<taiyin_context>,
               int,
-              double,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
+              ffi.Pointer<taiyin_split_julian_date>,
               double,
               int,
-              ffi.Pointer<ffi.Double>,
+              ffi.Pointer<taiyin_split_julian_date>,
               ffi.Pointer<ffi.Double>,
               int,
               ffi.Pointer<ffi.Size>,
@@ -6967,11 +6967,11 @@ class TaiyinBindings {
     int body_a_id,
     int body_b_id,
     double aspect_rad,
-    double start_jd_ut,
-    double end_jd_ut,
+    ffi.Pointer<taiyin_split_julian_date> start_jd_ut,
+    ffi.Pointer<taiyin_split_julian_date> end_jd_ut,
     double max_step_days,
     int flags,
-    ffi.Pointer<ffi.Double> out_jd_ut,
+    ffi.Pointer<taiyin_split_julian_date> out_jd_ut,
     int capacity,
     ffi.Pointer<ffi.Size> out_count,
     ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
@@ -7000,11 +7000,11 @@ class TaiyinBindings {
             ffi.Int32,
             ffi.Int32,
             ffi.Double,
-            ffi.Double,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Double,
             ffi.Uint64,
-            ffi.Pointer<ffi.Double>,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Size,
             ffi.Pointer<ffi.Size>,
             ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -7019,11 +7019,11 @@ class TaiyinBindings {
               int,
               int,
               double,
-              double,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
+              ffi.Pointer<taiyin_split_julian_date>,
               double,
               int,
-              ffi.Pointer<ffi.Double>,
+              ffi.Pointer<taiyin_split_julian_date>,
               int,
               ffi.Pointer<ffi.Size>,
               ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -7035,11 +7035,11 @@ class TaiyinBindings {
     int body_a_id,
     int body_b_id,
     double aspect_rad,
-    double start_jd_tt,
-    double end_jd_tt,
+    ffi.Pointer<taiyin_split_julian_date> start_jd_tt,
+    ffi.Pointer<taiyin_split_julian_date> end_jd_tt,
     double max_step_days,
     int flags,
-    ffi.Pointer<ffi.Double> out_jd_tt,
+    ffi.Pointer<taiyin_split_julian_date> out_jd_tt,
     int capacity,
     ffi.Pointer<ffi.Size> out_count,
     ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
@@ -7068,11 +7068,11 @@ class TaiyinBindings {
             ffi.Int32,
             ffi.Int32,
             ffi.Double,
-            ffi.Double,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Double,
             ffi.Uint64,
-            ffi.Pointer<ffi.Double>,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Size,
             ffi.Pointer<ffi.Size>,
             ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -7087,11 +7087,11 @@ class TaiyinBindings {
               int,
               int,
               double,
-              double,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
+              ffi.Pointer<taiyin_split_julian_date>,
               double,
               int,
-              ffi.Pointer<ffi.Double>,
+              ffi.Pointer<taiyin_split_julian_date>,
               int,
               ffi.Pointer<ffi.Size>,
               ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -7104,11 +7104,11 @@ class TaiyinBindings {
     int body_b_id,
     ffi.Pointer<ffi.Double> aspect_separations_rad,
     int aspect_count,
-    double start_jd_ut,
-    double end_jd_ut,
+    ffi.Pointer<taiyin_split_julian_date> start_jd_ut,
+    ffi.Pointer<taiyin_split_julian_date> end_jd_ut,
     double max_step_days,
     int flags,
-    ffi.Pointer<ffi.Double> out_jd_ut,
+    ffi.Pointer<taiyin_split_julian_date> out_jd_ut,
     ffi.Pointer<ffi.Double> out_target_aspect_rad,
     int capacity,
     ffi.Pointer<ffi.Size> out_count,
@@ -7141,11 +7141,11 @@ class TaiyinBindings {
             ffi.Int32,
             ffi.Pointer<ffi.Double>,
             ffi.Size,
-            ffi.Double,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Double,
             ffi.Uint64,
-            ffi.Pointer<ffi.Double>,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Pointer<ffi.Double>,
             ffi.Size,
             ffi.Pointer<ffi.Size>,
@@ -7162,11 +7162,11 @@ class TaiyinBindings {
               int,
               ffi.Pointer<ffi.Double>,
               int,
-              double,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
+              ffi.Pointer<taiyin_split_julian_date>,
               double,
               int,
-              ffi.Pointer<ffi.Double>,
+              ffi.Pointer<taiyin_split_julian_date>,
               ffi.Pointer<ffi.Double>,
               int,
               ffi.Pointer<ffi.Size>,
@@ -7180,11 +7180,11 @@ class TaiyinBindings {
     int body_b_id,
     ffi.Pointer<ffi.Double> aspect_separations_rad,
     int aspect_count,
-    double start_jd_tt,
-    double end_jd_tt,
+    ffi.Pointer<taiyin_split_julian_date> start_jd_tt,
+    ffi.Pointer<taiyin_split_julian_date> end_jd_tt,
     double max_step_days,
     int flags,
-    ffi.Pointer<ffi.Double> out_jd_tt,
+    ffi.Pointer<taiyin_split_julian_date> out_jd_tt,
     ffi.Pointer<ffi.Double> out_target_aspect_rad,
     int capacity,
     ffi.Pointer<ffi.Size> out_count,
@@ -7217,11 +7217,11 @@ class TaiyinBindings {
             ffi.Int32,
             ffi.Pointer<ffi.Double>,
             ffi.Size,
-            ffi.Double,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Double,
             ffi.Uint64,
-            ffi.Pointer<ffi.Double>,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Pointer<ffi.Double>,
             ffi.Size,
             ffi.Pointer<ffi.Size>,
@@ -7238,11 +7238,11 @@ class TaiyinBindings {
               int,
               ffi.Pointer<ffi.Double>,
               int,
-              double,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
+              ffi.Pointer<taiyin_split_julian_date>,
               double,
               int,
-              ffi.Pointer<ffi.Double>,
+              ffi.Pointer<taiyin_split_julian_date>,
               ffi.Pointer<ffi.Double>,
               int,
               ffi.Pointer<ffi.Size>,
@@ -7253,8 +7253,8 @@ class TaiyinBindings {
   int taiyin_search_greatest_elongation_ut(
     ffi.Pointer<taiyin_context> context,
     int body_id,
-    double start_jd_ut,
-    double end_jd_ut,
+    ffi.Pointer<taiyin_split_julian_date> start_jd_ut,
+    ffi.Pointer<taiyin_split_julian_date> end_jd_ut,
     int flags,
     ffi.Pointer<taiyin_greatest_elongation_result> out,
     ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
@@ -7276,8 +7276,8 @@ class TaiyinBindings {
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
-            ffi.Double,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint64,
             ffi.Pointer<taiyin_greatest_elongation_result>,
             ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -7290,8 +7290,8 @@ class TaiyinBindings {
             int Function(
               ffi.Pointer<taiyin_context>,
               int,
-              double,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
+              ffi.Pointer<taiyin_split_julian_date>,
               int,
               ffi.Pointer<taiyin_greatest_elongation_result>,
               ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -7302,8 +7302,8 @@ class TaiyinBindings {
     ffi.Pointer<taiyin_context> context,
     int body_a_id,
     int body_b_id,
-    double start_jd_ut,
-    double end_jd_ut,
+    ffi.Pointer<taiyin_split_julian_date> start_jd_ut,
+    ffi.Pointer<taiyin_split_julian_date> end_jd_ut,
     double max_step_days,
     int flags,
     ffi.Pointer<taiyin_angular_separation_result> out,
@@ -7329,8 +7329,8 @@ class TaiyinBindings {
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
             ffi.Int32,
-            ffi.Double,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Double,
             ffi.Uint64,
             ffi.Pointer<taiyin_angular_separation_result>,
@@ -7345,8 +7345,8 @@ class TaiyinBindings {
               ffi.Pointer<taiyin_context>,
               int,
               int,
-              double,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
+              ffi.Pointer<taiyin_split_julian_date>,
               double,
               int,
               ffi.Pointer<taiyin_angular_separation_result>,
@@ -7358,8 +7358,8 @@ class TaiyinBindings {
     ffi.Pointer<taiyin_context> context,
     int body_a_id,
     int body_b_id,
-    double start_jd_tt,
-    double end_jd_tt,
+    ffi.Pointer<taiyin_split_julian_date> start_jd_tt,
+    ffi.Pointer<taiyin_split_julian_date> end_jd_tt,
     double max_step_days,
     int flags,
     ffi.Pointer<taiyin_angular_separation_result> out,
@@ -7385,8 +7385,8 @@ class TaiyinBindings {
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
             ffi.Int32,
-            ffi.Double,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Double,
             ffi.Uint64,
             ffi.Pointer<taiyin_angular_separation_result>,
@@ -7401,8 +7401,8 @@ class TaiyinBindings {
               ffi.Pointer<taiyin_context>,
               int,
               int,
-              double,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
+              ffi.Pointer<taiyin_split_julian_date>,
               double,
               int,
               ffi.Pointer<taiyin_angular_separation_result>,
@@ -7413,7 +7413,7 @@ class TaiyinBindings {
   int taiyin_search_next_solar_transit_ut(
     ffi.Pointer<taiyin_context> context,
     int body_id,
-    double jd_start_ut,
+    ffi.Pointer<taiyin_split_julian_date> jd_start_ut,
     int flags,
     ffi.Pointer<taiyin_solar_transit_result> out,
     ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
@@ -7434,7 +7434,7 @@ class TaiyinBindings {
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint64,
             ffi.Pointer<taiyin_solar_transit_result>,
             ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -7447,7 +7447,7 @@ class TaiyinBindings {
             int Function(
               ffi.Pointer<taiyin_context>,
               int,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
               int,
               ffi.Pointer<taiyin_solar_transit_result>,
               ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -7509,7 +7509,7 @@ class TaiyinBindings {
   int taiyin_search_next_local_solar_transit_ut(
     ffi.Pointer<taiyin_context> context,
     int body_id,
-    double jd_start_ut,
+    ffi.Pointer<taiyin_split_julian_date> jd_start_ut,
     double longitude_deg,
     double latitude_deg,
     double height_m,
@@ -7536,7 +7536,7 @@ class TaiyinBindings {
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Double,
             ffi.Double,
             ffi.Double,
@@ -7552,7 +7552,7 @@ class TaiyinBindings {
             int Function(
               ffi.Pointer<taiyin_context>,
               int,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
               double,
               double,
               double,
@@ -7565,11 +7565,11 @@ class TaiyinBindings {
   int taiyin_search_lunar_phase_crossings_ut(
     ffi.Pointer<taiyin_context> context,
     double phase_rad,
-    double start_jd_ut,
-    double end_jd_ut,
+    ffi.Pointer<taiyin_split_julian_date> start_jd_ut,
+    ffi.Pointer<taiyin_split_julian_date> end_jd_ut,
     double max_step_days,
     int flags,
-    ffi.Pointer<ffi.Double> out_jd_ut,
+    ffi.Pointer<taiyin_split_julian_date> out_jd_ut,
     int capacity,
     ffi.Pointer<ffi.Size> out_count,
     ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
@@ -7594,11 +7594,11 @@ class TaiyinBindings {
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
             ffi.Double,
-            ffi.Double,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Double,
             ffi.Uint64,
-            ffi.Pointer<ffi.Double>,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Size,
             ffi.Pointer<ffi.Size>,
             ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -7611,11 +7611,11 @@ class TaiyinBindings {
             int Function(
               ffi.Pointer<taiyin_context>,
               double,
-              double,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
+              ffi.Pointer<taiyin_split_julian_date>,
               double,
               int,
-              ffi.Pointer<ffi.Double>,
+              ffi.Pointer<taiyin_split_julian_date>,
               int,
               ffi.Pointer<ffi.Size>,
               ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -7625,11 +7625,11 @@ class TaiyinBindings {
   int taiyin_search_lunar_phase_crossings_tt(
     ffi.Pointer<taiyin_context> context,
     double phase_rad,
-    double start_jd_tt,
-    double end_jd_tt,
+    ffi.Pointer<taiyin_split_julian_date> start_jd_tt,
+    ffi.Pointer<taiyin_split_julian_date> end_jd_tt,
     double max_step_days,
     int flags,
-    ffi.Pointer<ffi.Double> out_jd_tt,
+    ffi.Pointer<taiyin_split_julian_date> out_jd_tt,
     int capacity,
     ffi.Pointer<ffi.Size> out_count,
     ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
@@ -7654,11 +7654,11 @@ class TaiyinBindings {
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
             ffi.Double,
-            ffi.Double,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Double,
             ffi.Uint64,
-            ffi.Pointer<ffi.Double>,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Size,
             ffi.Pointer<ffi.Size>,
             ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -7671,11 +7671,11 @@ class TaiyinBindings {
             int Function(
               ffi.Pointer<taiyin_context>,
               double,
-              double,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
+              ffi.Pointer<taiyin_split_julian_date>,
               double,
               int,
-              ffi.Pointer<ffi.Double>,
+              ffi.Pointer<taiyin_split_julian_date>,
               int,
               ffi.Pointer<ffi.Size>,
               ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -7743,7 +7743,7 @@ class TaiyinBindings {
   int taiyin_search_next_geocentric_lunar_star_occultation_ut(
     ffi.Pointer<taiyin_context> context,
     ffi.Pointer<ffi.Char> star_key,
-    double jd_start_ut,
+    ffi.Pointer<taiyin_split_julian_date> jd_start_ut,
     int flags,
     ffi.Pointer<taiyin_lunar_occultation_result> out,
     ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
@@ -7764,7 +7764,7 @@ class TaiyinBindings {
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<ffi.Char>,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint64,
             ffi.Pointer<taiyin_lunar_occultation_result>,
             ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -7777,7 +7777,7 @@ class TaiyinBindings {
             int Function(
               ffi.Pointer<taiyin_context>,
               ffi.Pointer<ffi.Char>,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
               int,
               ffi.Pointer<taiyin_lunar_occultation_result>,
               ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -7787,7 +7787,7 @@ class TaiyinBindings {
   int taiyin_search_next_local_lunar_star_occultation_ut(
     ffi.Pointer<taiyin_context> context,
     ffi.Pointer<ffi.Char> star_key,
-    double jd_start_ut,
+    ffi.Pointer<taiyin_split_julian_date> jd_start_ut,
     int flags,
     ffi.Pointer<taiyin_lunar_occultation_result> out,
     ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
@@ -7808,7 +7808,7 @@ class TaiyinBindings {
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<ffi.Char>,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint64,
             ffi.Pointer<taiyin_lunar_occultation_result>,
             ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -7821,7 +7821,7 @@ class TaiyinBindings {
             int Function(
               ffi.Pointer<taiyin_context>,
               ffi.Pointer<ffi.Char>,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
               int,
               ffi.Pointer<taiyin_lunar_occultation_result>,
               ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -7831,7 +7831,7 @@ class TaiyinBindings {
   int taiyin_search_next_geocentric_lunar_body_occultation_ut(
     ffi.Pointer<taiyin_context> context,
     int body_id,
-    double jd_start_ut,
+    ffi.Pointer<taiyin_split_julian_date> jd_start_ut,
     int flags,
     ffi.Pointer<taiyin_lunar_occultation_result> out,
     ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
@@ -7852,7 +7852,7 @@ class TaiyinBindings {
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint64,
             ffi.Pointer<taiyin_lunar_occultation_result>,
             ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -7865,7 +7865,7 @@ class TaiyinBindings {
             int Function(
               ffi.Pointer<taiyin_context>,
               int,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
               int,
               ffi.Pointer<taiyin_lunar_occultation_result>,
               ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -7876,7 +7876,7 @@ class TaiyinBindings {
     ffi.Pointer<taiyin_context> context,
     int body_id,
     double target_radius_km,
-    double jd_start_ut,
+    ffi.Pointer<taiyin_split_julian_date> jd_start_ut,
     int flags,
     ffi.Pointer<taiyin_lunar_occultation_result> out,
     ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
@@ -7899,7 +7899,7 @@ class TaiyinBindings {
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
             ffi.Double,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint64,
             ffi.Pointer<taiyin_lunar_occultation_result>,
             ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -7913,7 +7913,7 @@ class TaiyinBindings {
               ffi.Pointer<taiyin_context>,
               int,
               double,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
               int,
               ffi.Pointer<taiyin_lunar_occultation_result>,
               ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -7923,7 +7923,7 @@ class TaiyinBindings {
   int taiyin_search_next_local_lunar_body_occultation_ut(
     ffi.Pointer<taiyin_context> context,
     int body_id,
-    double jd_start_ut,
+    ffi.Pointer<taiyin_split_julian_date> jd_start_ut,
     int flags,
     ffi.Pointer<taiyin_lunar_occultation_result> out,
     ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
@@ -7944,7 +7944,7 @@ class TaiyinBindings {
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint64,
             ffi.Pointer<taiyin_lunar_occultation_result>,
             ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -7957,7 +7957,7 @@ class TaiyinBindings {
             int Function(
               ffi.Pointer<taiyin_context>,
               int,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
               int,
               ffi.Pointer<taiyin_lunar_occultation_result>,
               ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -7968,7 +7968,7 @@ class TaiyinBindings {
     ffi.Pointer<taiyin_context> context,
     int body_id,
     double target_radius_km,
-    double jd_start_ut,
+    ffi.Pointer<taiyin_split_julian_date> jd_start_ut,
     int flags,
     ffi.Pointer<taiyin_lunar_occultation_result> out,
     ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
@@ -7991,7 +7991,7 @@ class TaiyinBindings {
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
             ffi.Double,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint64,
             ffi.Pointer<taiyin_lunar_occultation_result>,
             ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -8005,7 +8005,7 @@ class TaiyinBindings {
               ffi.Pointer<taiyin_context>,
               int,
               double,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
               int,
               ffi.Pointer<taiyin_lunar_occultation_result>,
               ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -8520,7 +8520,7 @@ class TaiyinBindings {
 
   int taiyin_solve_lunar_eclipse_at_tt(
     ffi.Pointer<taiyin_context> arg0,
-    double arg1,
+    ffi.Pointer<taiyin_split_julian_date> arg1,
     int arg2,
     ffi.Pointer<taiyin_lunar_eclipse_result_tt> arg3,
     ffi.Pointer<taiyin_ephemeris_diagnostic> arg4,
@@ -8533,7 +8533,7 @@ class TaiyinBindings {
         ffi.NativeFunction<
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint64,
             ffi.Pointer<taiyin_lunar_eclipse_result_tt>,
             ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -8545,7 +8545,7 @@ class TaiyinBindings {
           .asFunction<
             int Function(
               ffi.Pointer<taiyin_context>,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
               int,
               ffi.Pointer<taiyin_lunar_eclipse_result_tt>,
               ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -8554,7 +8554,7 @@ class TaiyinBindings {
 
   int taiyin_solve_lunar_eclipse_at_ut(
     ffi.Pointer<taiyin_context> arg0,
-    double arg1,
+    ffi.Pointer<taiyin_split_julian_date> arg1,
     int arg2,
     ffi.Pointer<taiyin_lunar_eclipse_result_ut> arg3,
     ffi.Pointer<taiyin_ephemeris_diagnostic> arg4,
@@ -8567,7 +8567,7 @@ class TaiyinBindings {
         ffi.NativeFunction<
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint64,
             ffi.Pointer<taiyin_lunar_eclipse_result_ut>,
             ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -8579,7 +8579,7 @@ class TaiyinBindings {
           .asFunction<
             int Function(
               ffi.Pointer<taiyin_context>,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
               int,
               ffi.Pointer<taiyin_lunar_eclipse_result_ut>,
               ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -8588,7 +8588,7 @@ class TaiyinBindings {
 
   int taiyin_search_next_lunar_eclipse_tt(
     ffi.Pointer<taiyin_context> arg0,
-    double arg1,
+    ffi.Pointer<taiyin_split_julian_date> arg1,
     int arg2,
     int arg3,
     ffi.Pointer<taiyin_lunar_eclipse_result_tt> arg4,
@@ -8609,7 +8609,7 @@ class TaiyinBindings {
         ffi.NativeFunction<
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint32,
             ffi.Uint64,
             ffi.Pointer<taiyin_lunar_eclipse_result_tt>,
@@ -8622,7 +8622,7 @@ class TaiyinBindings {
           .asFunction<
             int Function(
               ffi.Pointer<taiyin_context>,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
               int,
               int,
               ffi.Pointer<taiyin_lunar_eclipse_result_tt>,
@@ -8632,7 +8632,7 @@ class TaiyinBindings {
 
   int taiyin_search_next_lunar_eclipse_ut(
     ffi.Pointer<taiyin_context> arg0,
-    double arg1,
+    ffi.Pointer<taiyin_split_julian_date> arg1,
     int arg2,
     int arg3,
     ffi.Pointer<taiyin_lunar_eclipse_result_ut> arg4,
@@ -8653,7 +8653,7 @@ class TaiyinBindings {
         ffi.NativeFunction<
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint32,
             ffi.Uint64,
             ffi.Pointer<taiyin_lunar_eclipse_result_ut>,
@@ -8666,7 +8666,7 @@ class TaiyinBindings {
           .asFunction<
             int Function(
               ffi.Pointer<taiyin_context>,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
               int,
               int,
               ffi.Pointer<taiyin_lunar_eclipse_result_ut>,
@@ -8676,8 +8676,8 @@ class TaiyinBindings {
 
   int taiyin_search_lunar_eclipses_tt(
     ffi.Pointer<taiyin_context> arg0,
-    double arg1,
-    double arg2,
+    ffi.Pointer<taiyin_split_julian_date> arg1,
+    ffi.Pointer<taiyin_split_julian_date> arg2,
     int arg3,
     int arg4,
     ffi.Pointer<taiyin_lunar_eclipse_result_tt> arg5,
@@ -8703,8 +8703,8 @@ class TaiyinBindings {
         ffi.NativeFunction<
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
-            ffi.Double,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint32,
             ffi.Uint64,
             ffi.Pointer<taiyin_lunar_eclipse_result_tt>,
@@ -8719,8 +8719,8 @@ class TaiyinBindings {
           .asFunction<
             int Function(
               ffi.Pointer<taiyin_context>,
-              double,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
+              ffi.Pointer<taiyin_split_julian_date>,
               int,
               int,
               ffi.Pointer<taiyin_lunar_eclipse_result_tt>,
@@ -8732,8 +8732,8 @@ class TaiyinBindings {
 
   int taiyin_search_lunar_eclipses_ut(
     ffi.Pointer<taiyin_context> arg0,
-    double arg1,
-    double arg2,
+    ffi.Pointer<taiyin_split_julian_date> arg1,
+    ffi.Pointer<taiyin_split_julian_date> arg2,
     int arg3,
     int arg4,
     ffi.Pointer<taiyin_lunar_eclipse_result_ut> arg5,
@@ -8759,8 +8759,8 @@ class TaiyinBindings {
         ffi.NativeFunction<
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
-            ffi.Double,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint32,
             ffi.Uint64,
             ffi.Pointer<taiyin_lunar_eclipse_result_ut>,
@@ -8775,8 +8775,8 @@ class TaiyinBindings {
           .asFunction<
             int Function(
               ffi.Pointer<taiyin_context>,
-              double,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
+              ffi.Pointer<taiyin_split_julian_date>,
               int,
               int,
               ffi.Pointer<taiyin_lunar_eclipse_result_ut>,
@@ -8868,7 +8868,7 @@ class TaiyinBindings {
 
   int taiyin_search_next_local_lunar_eclipse_tt(
     ffi.Pointer<taiyin_context> arg0,
-    double arg1,
+    ffi.Pointer<taiyin_split_julian_date> arg1,
     int arg2,
     int arg3,
     ffi.Pointer<taiyin_local_lunar_eclipse_result_tt> arg4,
@@ -8889,7 +8889,7 @@ class TaiyinBindings {
         ffi.NativeFunction<
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint32,
             ffi.Uint64,
             ffi.Pointer<taiyin_local_lunar_eclipse_result_tt>,
@@ -8902,7 +8902,7 @@ class TaiyinBindings {
           .asFunction<
             int Function(
               ffi.Pointer<taiyin_context>,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
               int,
               int,
               ffi.Pointer<taiyin_local_lunar_eclipse_result_tt>,
@@ -8912,7 +8912,7 @@ class TaiyinBindings {
 
   int taiyin_search_next_local_lunar_eclipse_ut(
     ffi.Pointer<taiyin_context> arg0,
-    double arg1,
+    ffi.Pointer<taiyin_split_julian_date> arg1,
     int arg2,
     int arg3,
     ffi.Pointer<taiyin_local_lunar_eclipse_result_ut> arg4,
@@ -8933,7 +8933,7 @@ class TaiyinBindings {
         ffi.NativeFunction<
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint32,
             ffi.Uint64,
             ffi.Pointer<taiyin_local_lunar_eclipse_result_ut>,
@@ -8946,7 +8946,7 @@ class TaiyinBindings {
           .asFunction<
             int Function(
               ffi.Pointer<taiyin_context>,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
               int,
               int,
               ffi.Pointer<taiyin_local_lunar_eclipse_result_ut>,
@@ -8956,7 +8956,7 @@ class TaiyinBindings {
 
   int taiyin_solve_solar_eclipse_at_tt(
     ffi.Pointer<taiyin_context> arg0,
-    double arg1,
+    ffi.Pointer<taiyin_split_julian_date> arg1,
     int arg2,
     ffi.Pointer<taiyin_solar_eclipse_result_tt> arg3,
     ffi.Pointer<taiyin_ephemeris_diagnostic> arg4,
@@ -8969,7 +8969,7 @@ class TaiyinBindings {
         ffi.NativeFunction<
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint64,
             ffi.Pointer<taiyin_solar_eclipse_result_tt>,
             ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -8981,7 +8981,7 @@ class TaiyinBindings {
           .asFunction<
             int Function(
               ffi.Pointer<taiyin_context>,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
               int,
               ffi.Pointer<taiyin_solar_eclipse_result_tt>,
               ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -8990,7 +8990,7 @@ class TaiyinBindings {
 
   int taiyin_solve_solar_eclipse_at_ut(
     ffi.Pointer<taiyin_context> arg0,
-    double arg1,
+    ffi.Pointer<taiyin_split_julian_date> arg1,
     int arg2,
     ffi.Pointer<taiyin_solar_eclipse_result_ut> arg3,
     ffi.Pointer<taiyin_ephemeris_diagnostic> arg4,
@@ -9003,7 +9003,7 @@ class TaiyinBindings {
         ffi.NativeFunction<
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint64,
             ffi.Pointer<taiyin_solar_eclipse_result_ut>,
             ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -9015,7 +9015,7 @@ class TaiyinBindings {
           .asFunction<
             int Function(
               ffi.Pointer<taiyin_context>,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
               int,
               ffi.Pointer<taiyin_solar_eclipse_result_ut>,
               ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -9024,7 +9024,7 @@ class TaiyinBindings {
 
   int taiyin_search_next_solar_eclipse_tt(
     ffi.Pointer<taiyin_context> arg0,
-    double arg1,
+    ffi.Pointer<taiyin_split_julian_date> arg1,
     int arg2,
     int arg3,
     ffi.Pointer<taiyin_solar_eclipse_result_tt> arg4,
@@ -9045,7 +9045,7 @@ class TaiyinBindings {
         ffi.NativeFunction<
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint32,
             ffi.Uint64,
             ffi.Pointer<taiyin_solar_eclipse_result_tt>,
@@ -9058,7 +9058,7 @@ class TaiyinBindings {
           .asFunction<
             int Function(
               ffi.Pointer<taiyin_context>,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
               int,
               int,
               ffi.Pointer<taiyin_solar_eclipse_result_tt>,
@@ -9068,7 +9068,7 @@ class TaiyinBindings {
 
   int taiyin_search_next_solar_eclipse_ut(
     ffi.Pointer<taiyin_context> arg0,
-    double arg1,
+    ffi.Pointer<taiyin_split_julian_date> arg1,
     int arg2,
     int arg3,
     ffi.Pointer<taiyin_solar_eclipse_result_ut> arg4,
@@ -9089,7 +9089,7 @@ class TaiyinBindings {
         ffi.NativeFunction<
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint32,
             ffi.Uint64,
             ffi.Pointer<taiyin_solar_eclipse_result_ut>,
@@ -9102,7 +9102,7 @@ class TaiyinBindings {
           .asFunction<
             int Function(
               ffi.Pointer<taiyin_context>,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
               int,
               int,
               ffi.Pointer<taiyin_solar_eclipse_result_ut>,
@@ -9112,8 +9112,8 @@ class TaiyinBindings {
 
   int taiyin_search_solar_eclipses_tt(
     ffi.Pointer<taiyin_context> arg0,
-    double arg1,
-    double arg2,
+    ffi.Pointer<taiyin_split_julian_date> arg1,
+    ffi.Pointer<taiyin_split_julian_date> arg2,
     int arg3,
     int arg4,
     ffi.Pointer<taiyin_solar_eclipse_result_tt> arg5,
@@ -9139,8 +9139,8 @@ class TaiyinBindings {
         ffi.NativeFunction<
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
-            ffi.Double,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint32,
             ffi.Uint64,
             ffi.Pointer<taiyin_solar_eclipse_result_tt>,
@@ -9155,8 +9155,8 @@ class TaiyinBindings {
           .asFunction<
             int Function(
               ffi.Pointer<taiyin_context>,
-              double,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
+              ffi.Pointer<taiyin_split_julian_date>,
               int,
               int,
               ffi.Pointer<taiyin_solar_eclipse_result_tt>,
@@ -9168,8 +9168,8 @@ class TaiyinBindings {
 
   int taiyin_search_solar_eclipses_ut(
     ffi.Pointer<taiyin_context> arg0,
-    double arg1,
-    double arg2,
+    ffi.Pointer<taiyin_split_julian_date> arg1,
+    ffi.Pointer<taiyin_split_julian_date> arg2,
     int arg3,
     int arg4,
     ffi.Pointer<taiyin_solar_eclipse_result_ut> arg5,
@@ -9195,8 +9195,8 @@ class TaiyinBindings {
         ffi.NativeFunction<
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
-            ffi.Double,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint32,
             ffi.Uint64,
             ffi.Pointer<taiyin_solar_eclipse_result_ut>,
@@ -9211,8 +9211,8 @@ class TaiyinBindings {
           .asFunction<
             int Function(
               ffi.Pointer<taiyin_context>,
-              double,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
+              ffi.Pointer<taiyin_split_julian_date>,
               int,
               int,
               ffi.Pointer<taiyin_solar_eclipse_result_ut>,
@@ -9224,7 +9224,7 @@ class TaiyinBindings {
 
   int taiyin_solve_local_solar_eclipse_at_tt(
     ffi.Pointer<taiyin_context> arg0,
-    double arg1,
+    ffi.Pointer<taiyin_split_julian_date> arg1,
     int arg2,
     ffi.Pointer<taiyin_local_solar_eclipse_result_tt> arg3,
     ffi.Pointer<taiyin_ephemeris_diagnostic> arg4,
@@ -9243,7 +9243,7 @@ class TaiyinBindings {
         ffi.NativeFunction<
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint64,
             ffi.Pointer<taiyin_local_solar_eclipse_result_tt>,
             ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -9255,7 +9255,7 @@ class TaiyinBindings {
           .asFunction<
             int Function(
               ffi.Pointer<taiyin_context>,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
               int,
               ffi.Pointer<taiyin_local_solar_eclipse_result_tt>,
               ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -9264,7 +9264,7 @@ class TaiyinBindings {
 
   int taiyin_solve_local_solar_eclipse_at_ut(
     ffi.Pointer<taiyin_context> arg0,
-    double arg1,
+    ffi.Pointer<taiyin_split_julian_date> arg1,
     int arg2,
     ffi.Pointer<taiyin_local_solar_eclipse_result_ut> arg3,
     ffi.Pointer<taiyin_ephemeris_diagnostic> arg4,
@@ -9283,7 +9283,7 @@ class TaiyinBindings {
         ffi.NativeFunction<
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint64,
             ffi.Pointer<taiyin_local_solar_eclipse_result_ut>,
             ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -9295,7 +9295,7 @@ class TaiyinBindings {
           .asFunction<
             int Function(
               ffi.Pointer<taiyin_context>,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
               int,
               ffi.Pointer<taiyin_local_solar_eclipse_result_ut>,
               ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -9304,7 +9304,7 @@ class TaiyinBindings {
 
   int taiyin_search_next_local_solar_eclipse_tt(
     ffi.Pointer<taiyin_context> arg0,
-    double arg1,
+    ffi.Pointer<taiyin_split_julian_date> arg1,
     int arg2,
     int arg3,
     ffi.Pointer<taiyin_local_solar_eclipse_result_tt> arg4,
@@ -9325,7 +9325,7 @@ class TaiyinBindings {
         ffi.NativeFunction<
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint32,
             ffi.Uint64,
             ffi.Pointer<taiyin_local_solar_eclipse_result_tt>,
@@ -9338,7 +9338,7 @@ class TaiyinBindings {
           .asFunction<
             int Function(
               ffi.Pointer<taiyin_context>,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
               int,
               int,
               ffi.Pointer<taiyin_local_solar_eclipse_result_tt>,
@@ -9348,7 +9348,7 @@ class TaiyinBindings {
 
   int taiyin_search_next_local_solar_eclipse_ut(
     ffi.Pointer<taiyin_context> arg0,
-    double arg1,
+    ffi.Pointer<taiyin_split_julian_date> arg1,
     int arg2,
     int arg3,
     ffi.Pointer<taiyin_local_solar_eclipse_result_ut> arg4,
@@ -9369,7 +9369,7 @@ class TaiyinBindings {
         ffi.NativeFunction<
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint32,
             ffi.Uint64,
             ffi.Pointer<taiyin_local_solar_eclipse_result_ut>,
@@ -9382,7 +9382,7 @@ class TaiyinBindings {
           .asFunction<
             int Function(
               ffi.Pointer<taiyin_context>,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
               int,
               int,
               ffi.Pointer<taiyin_local_solar_eclipse_result_ut>,
@@ -9392,7 +9392,7 @@ class TaiyinBindings {
 
   int taiyin_compute_local_solar_circumstances_tt(
     ffi.Pointer<taiyin_context> arg0,
-    double arg1,
+    ffi.Pointer<taiyin_split_julian_date> arg1,
     ffi.Pointer<taiyin_local_solar_eclipse_circumstances_tt> arg2,
     ffi.Pointer<taiyin_ephemeris_diagnostic> arg3,
   ) {
@@ -9404,7 +9404,7 @@ class TaiyinBindings {
         ffi.NativeFunction<
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Pointer<taiyin_local_solar_eclipse_circumstances_tt>,
             ffi.Pointer<taiyin_ephemeris_diagnostic>,
           )
@@ -9415,7 +9415,7 @@ class TaiyinBindings {
           .asFunction<
             int Function(
               ffi.Pointer<taiyin_context>,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
               ffi.Pointer<taiyin_local_solar_eclipse_circumstances_tt>,
               ffi.Pointer<taiyin_ephemeris_diagnostic>,
             )
@@ -9423,7 +9423,7 @@ class TaiyinBindings {
 
   int taiyin_compute_local_solar_circumstances_ut(
     ffi.Pointer<taiyin_context> arg0,
-    double arg1,
+    ffi.Pointer<taiyin_split_julian_date> arg1,
     ffi.Pointer<taiyin_local_solar_eclipse_circumstances_ut> arg2,
     ffi.Pointer<taiyin_ephemeris_diagnostic> arg3,
   ) {
@@ -9435,7 +9435,7 @@ class TaiyinBindings {
         ffi.NativeFunction<
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Pointer<taiyin_local_solar_eclipse_circumstances_ut>,
             ffi.Pointer<taiyin_ephemeris_diagnostic>,
           )
@@ -9446,7 +9446,7 @@ class TaiyinBindings {
           .asFunction<
             int Function(
               ffi.Pointer<taiyin_context>,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
               ffi.Pointer<taiyin_local_solar_eclipse_circumstances_ut>,
               ffi.Pointer<taiyin_ephemeris_diagnostic>,
             )
@@ -9454,7 +9454,7 @@ class TaiyinBindings {
 
   int taiyin_compute_solar_besselian_elements_tt(
     ffi.Pointer<taiyin_context> arg0,
-    double arg1,
+    ffi.Pointer<taiyin_split_julian_date> arg1,
     double arg2,
     ffi.Pointer<taiyin_solar_besselian_elements> arg3,
     ffi.Pointer<taiyin_ephemeris_diagnostic> arg4,
@@ -9473,7 +9473,7 @@ class TaiyinBindings {
         ffi.NativeFunction<
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Double,
             ffi.Pointer<taiyin_solar_besselian_elements>,
             ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -9485,7 +9485,7 @@ class TaiyinBindings {
           .asFunction<
             int Function(
               ffi.Pointer<taiyin_context>,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
               double,
               ffi.Pointer<taiyin_solar_besselian_elements>,
               ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -9494,7 +9494,7 @@ class TaiyinBindings {
 
   int taiyin_compute_solar_besselian_polynomial_tt(
     ffi.Pointer<taiyin_context> arg0,
-    double arg1,
+    ffi.Pointer<taiyin_split_julian_date> arg1,
     double arg2,
     double arg3,
     int arg4,
@@ -9517,7 +9517,7 @@ class TaiyinBindings {
         ffi.NativeFunction<
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Double,
             ffi.Double,
             ffi.Int32,
@@ -9531,7 +9531,7 @@ class TaiyinBindings {
           .asFunction<
             int Function(
               ffi.Pointer<taiyin_context>,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
               double,
               double,
               int,
@@ -9570,7 +9570,7 @@ class TaiyinBindings {
 
   int taiyin_compute_solar_eclipse_route_row_tt(
     ffi.Pointer<taiyin_context> arg0,
-    double arg1,
+    ffi.Pointer<taiyin_split_julian_date> arg1,
     int arg2,
     ffi.Pointer<taiyin_solar_eclipse_route_row> arg3,
     ffi.Pointer<taiyin_ephemeris_diagnostic> arg4,
@@ -9589,7 +9589,7 @@ class TaiyinBindings {
         ffi.NativeFunction<
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint64,
             ffi.Pointer<taiyin_solar_eclipse_route_row>,
             ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -9601,7 +9601,7 @@ class TaiyinBindings {
           .asFunction<
             int Function(
               ffi.Pointer<taiyin_context>,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
               int,
               ffi.Pointer<taiyin_solar_eclipse_route_row>,
               ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -9610,7 +9610,7 @@ class TaiyinBindings {
 
   int taiyin_compute_solar_eclipse_route_row_ut(
     ffi.Pointer<taiyin_context> arg0,
-    double arg1,
+    ffi.Pointer<taiyin_split_julian_date> arg1,
     int arg2,
     ffi.Pointer<taiyin_solar_eclipse_route_row> arg3,
     ffi.Pointer<taiyin_ephemeris_diagnostic> arg4,
@@ -9629,7 +9629,7 @@ class TaiyinBindings {
         ffi.NativeFunction<
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint64,
             ffi.Pointer<taiyin_solar_eclipse_route_row>,
             ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -9641,7 +9641,7 @@ class TaiyinBindings {
           .asFunction<
             int Function(
               ffi.Pointer<taiyin_context>,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
               int,
               ffi.Pointer<taiyin_solar_eclipse_route_row>,
               ffi.Pointer<taiyin_ephemeris_diagnostic>,
@@ -9650,8 +9650,8 @@ class TaiyinBindings {
 
   int taiyin_compute_solar_eclipse_route_tt(
     ffi.Pointer<taiyin_context> arg0,
-    double arg1,
-    double arg2,
+    ffi.Pointer<taiyin_split_julian_date> arg1,
+    ffi.Pointer<taiyin_split_julian_date> arg2,
     double arg3,
     int arg4,
     ffi.Pointer<taiyin_solar_eclipse_route_row> arg5,
@@ -9677,8 +9677,8 @@ class TaiyinBindings {
         ffi.NativeFunction<
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
-            ffi.Double,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Double,
             ffi.Uint64,
             ffi.Pointer<taiyin_solar_eclipse_route_row>,
@@ -9693,8 +9693,8 @@ class TaiyinBindings {
           .asFunction<
             int Function(
               ffi.Pointer<taiyin_context>,
-              double,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
+              ffi.Pointer<taiyin_split_julian_date>,
               double,
               int,
               ffi.Pointer<taiyin_solar_eclipse_route_row>,
@@ -9706,8 +9706,8 @@ class TaiyinBindings {
 
   int taiyin_compute_solar_eclipse_route_ut(
     ffi.Pointer<taiyin_context> arg0,
-    double arg1,
-    double arg2,
+    ffi.Pointer<taiyin_split_julian_date> arg1,
+    ffi.Pointer<taiyin_split_julian_date> arg2,
     double arg3,
     int arg4,
     ffi.Pointer<taiyin_solar_eclipse_route_row> arg5,
@@ -9733,8 +9733,8 @@ class TaiyinBindings {
         ffi.NativeFunction<
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
-            ffi.Double,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Double,
             ffi.Uint64,
             ffi.Pointer<taiyin_solar_eclipse_route_row>,
@@ -9749,8 +9749,8 @@ class TaiyinBindings {
           .asFunction<
             int Function(
               ffi.Pointer<taiyin_context>,
-              double,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
+              ffi.Pointer<taiyin_split_julian_date>,
               double,
               int,
               ffi.Pointer<taiyin_solar_eclipse_route_row>,
@@ -9762,7 +9762,7 @@ class TaiyinBindings {
 
   int taiyin_compute_solar_eclipse_route_curves_tt(
     ffi.Pointer<taiyin_context> arg0,
-    double arg1,
+    ffi.Pointer<taiyin_split_julian_date> arg1,
     int arg2,
     int arg3,
     ffi.Pointer<taiyin_solar_eclipse_route_curve_point> arg4,
@@ -9787,7 +9787,7 @@ class TaiyinBindings {
         ffi.NativeFunction<
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint64,
             ffi.Size,
             ffi.Pointer<taiyin_solar_eclipse_route_curve_point>,
@@ -9802,7 +9802,7 @@ class TaiyinBindings {
           .asFunction<
             int Function(
               ffi.Pointer<taiyin_context>,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
               int,
               int,
               ffi.Pointer<taiyin_solar_eclipse_route_curve_point>,
@@ -9814,7 +9814,7 @@ class TaiyinBindings {
 
   int taiyin_compute_solar_eclipse_route_curves_ut(
     ffi.Pointer<taiyin_context> arg0,
-    double arg1,
+    ffi.Pointer<taiyin_split_julian_date> arg1,
     int arg2,
     int arg3,
     ffi.Pointer<taiyin_solar_eclipse_route_curve_point> arg4,
@@ -9839,7 +9839,7 @@ class TaiyinBindings {
         ffi.NativeFunction<
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint64,
             ffi.Size,
             ffi.Pointer<taiyin_solar_eclipse_route_curve_point>,
@@ -9854,7 +9854,7 @@ class TaiyinBindings {
           .asFunction<
             int Function(
               ffi.Pointer<taiyin_context>,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
               int,
               int,
               ffi.Pointer<taiyin_solar_eclipse_route_curve_point>,
@@ -9866,7 +9866,7 @@ class TaiyinBindings {
 
   int taiyin_compute_solar_eclipse_route_product_tt(
     ffi.Pointer<taiyin_context> arg0,
-    double arg1,
+    ffi.Pointer<taiyin_split_julian_date> arg1,
     int arg2,
     int arg3,
     ffi.Pointer<taiyin_solar_eclipse_route_product_point> arg4,
@@ -9893,7 +9893,7 @@ class TaiyinBindings {
         ffi.NativeFunction<
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint64,
             ffi.Size,
             ffi.Pointer<taiyin_solar_eclipse_route_product_point>,
@@ -9909,7 +9909,7 @@ class TaiyinBindings {
           .asFunction<
             int Function(
               ffi.Pointer<taiyin_context>,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
               int,
               int,
               ffi.Pointer<taiyin_solar_eclipse_route_product_point>,
@@ -9922,7 +9922,7 @@ class TaiyinBindings {
 
   int taiyin_compute_solar_eclipse_route_product_ut(
     ffi.Pointer<taiyin_context> arg0,
-    double arg1,
+    ffi.Pointer<taiyin_split_julian_date> arg1,
     int arg2,
     int arg3,
     ffi.Pointer<taiyin_solar_eclipse_route_product_point> arg4,
@@ -9949,7 +9949,7 @@ class TaiyinBindings {
         ffi.NativeFunction<
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint64,
             ffi.Size,
             ffi.Pointer<taiyin_solar_eclipse_route_product_point>,
@@ -9965,7 +9965,7 @@ class TaiyinBindings {
           .asFunction<
             int Function(
               ffi.Pointer<taiyin_context>,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
               int,
               int,
               ffi.Pointer<taiyin_solar_eclipse_route_product_point>,
@@ -9978,7 +9978,7 @@ class TaiyinBindings {
 
   int taiyin_compute_solar_eclipse_route_map_product_tt(
     ffi.Pointer<taiyin_context> arg0,
-    double arg1,
+    ffi.Pointer<taiyin_split_julian_date> arg1,
     int arg2,
     int arg3,
     ffi.Pointer<taiyin_solar_eclipse_route_product_point> arg4,
@@ -10005,7 +10005,7 @@ class TaiyinBindings {
         ffi.NativeFunction<
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint64,
             ffi.Size,
             ffi.Pointer<taiyin_solar_eclipse_route_product_point>,
@@ -10021,7 +10021,7 @@ class TaiyinBindings {
           .asFunction<
             int Function(
               ffi.Pointer<taiyin_context>,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
               int,
               int,
               ffi.Pointer<taiyin_solar_eclipse_route_product_point>,
@@ -10034,7 +10034,7 @@ class TaiyinBindings {
 
   int taiyin_compute_solar_eclipse_route_map_product_ut(
     ffi.Pointer<taiyin_context> arg0,
-    double arg1,
+    ffi.Pointer<taiyin_split_julian_date> arg1,
     int arg2,
     int arg3,
     ffi.Pointer<taiyin_solar_eclipse_route_product_point> arg4,
@@ -10061,7 +10061,7 @@ class TaiyinBindings {
         ffi.NativeFunction<
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint64,
             ffi.Size,
             ffi.Pointer<taiyin_solar_eclipse_route_product_point>,
@@ -10077,7 +10077,7 @@ class TaiyinBindings {
           .asFunction<
             int Function(
               ffi.Pointer<taiyin_context>,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
               int,
               int,
               ffi.Pointer<taiyin_solar_eclipse_route_product_point>,
@@ -10090,7 +10090,7 @@ class TaiyinBindings {
 
   int taiyin_compute_local_solar_eclipse_boundary_tt(
     ffi.Pointer<taiyin_context> arg0,
-    double arg1,
+    ffi.Pointer<taiyin_split_julian_date> arg1,
     double arg2,
     double arg3,
     ffi.Pointer<taiyin_local_solar_eclipse_boundary> arg4,
@@ -10111,7 +10111,7 @@ class TaiyinBindings {
         ffi.NativeFunction<
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Double,
             ffi.Double,
             ffi.Pointer<taiyin_local_solar_eclipse_boundary>,
@@ -10124,7 +10124,7 @@ class TaiyinBindings {
           .asFunction<
             int Function(
               ffi.Pointer<taiyin_context>,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
               double,
               double,
               ffi.Pointer<taiyin_local_solar_eclipse_boundary>,
@@ -10134,7 +10134,7 @@ class TaiyinBindings {
 
   int taiyin_compute_local_solar_eclipse_boundary_ut(
     ffi.Pointer<taiyin_context> arg0,
-    double arg1,
+    ffi.Pointer<taiyin_split_julian_date> arg1,
     double arg2,
     double arg3,
     ffi.Pointer<taiyin_local_solar_eclipse_boundary> arg4,
@@ -10155,7 +10155,7 @@ class TaiyinBindings {
         ffi.NativeFunction<
           taiyin_status Function(
             ffi.Pointer<taiyin_context>,
-            ffi.Double,
+            ffi.Pointer<taiyin_split_julian_date>,
             ffi.Double,
             ffi.Double,
             ffi.Pointer<taiyin_local_solar_eclipse_boundary>,
@@ -10168,10 +10168,1640 @@ class TaiyinBindings {
           .asFunction<
             int Function(
               ffi.Pointer<taiyin_context>,
-              double,
+              ffi.Pointer<taiyin_split_julian_date>,
               double,
               double,
               ffi.Pointer<taiyin_local_solar_eclipse_boundary>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  void taiyin_chinese_calendar_config_init(
+    ffi.Pointer<taiyin_chinese_calendar_config> config,
+  ) {
+    return _taiyin_chinese_calendar_config_init(config);
+  }
+
+  late final _taiyin_chinese_calendar_config_initPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<taiyin_chinese_calendar_config>)
+        >
+      >('taiyin_chinese_calendar_config_init');
+  late final _taiyin_chinese_calendar_config_init =
+      _taiyin_chinese_calendar_config_initPtr
+          .asFunction<
+            void Function(ffi.Pointer<taiyin_chinese_calendar_config>)
+          >();
+
+  void taiyin_chinese_calendar_config_init_utc_offset(
+    ffi.Pointer<taiyin_chinese_calendar_config> config,
+    int utc_offset_minutes,
+  ) {
+    return _taiyin_chinese_calendar_config_init_utc_offset(
+      config,
+      utc_offset_minutes,
+    );
+  }
+
+  late final _taiyin_chinese_calendar_config_init_utc_offsetPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Pointer<taiyin_chinese_calendar_config>,
+            ffi.Int32,
+          )
+        >
+      >('taiyin_chinese_calendar_config_init_utc_offset');
+  late final _taiyin_chinese_calendar_config_init_utc_offset =
+      _taiyin_chinese_calendar_config_init_utc_offsetPtr
+          .asFunction<
+            void Function(ffi.Pointer<taiyin_chinese_calendar_config>, int)
+          >();
+
+  void taiyin_chinese_calendar_config_init_meridian(
+    ffi.Pointer<taiyin_chinese_calendar_config> config,
+    double longitude_deg,
+  ) {
+    return _taiyin_chinese_calendar_config_init_meridian(config, longitude_deg);
+  }
+
+  late final _taiyin_chinese_calendar_config_init_meridianPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.Pointer<taiyin_chinese_calendar_config>,
+            ffi.Double,
+          )
+        >
+      >('taiyin_chinese_calendar_config_init_meridian');
+  late final _taiyin_chinese_calendar_config_init_meridian =
+      _taiyin_chinese_calendar_config_init_meridianPtr
+          .asFunction<
+            void Function(ffi.Pointer<taiyin_chinese_calendar_config>, double)
+          >();
+
+  void taiyin_solar_date_init(ffi.Pointer<taiyin_solar_date> value) {
+    return _taiyin_solar_date_init(value);
+  }
+
+  late final _taiyin_solar_date_initPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Void Function(ffi.Pointer<taiyin_solar_date>)>
+      >('taiyin_solar_date_init');
+  late final _taiyin_solar_date_init = _taiyin_solar_date_initPtr
+      .asFunction<void Function(ffi.Pointer<taiyin_solar_date>)>();
+
+  void taiyin_lunar_date_init(ffi.Pointer<taiyin_lunar_date> value) {
+    return _taiyin_lunar_date_init(value);
+  }
+
+  late final _taiyin_lunar_date_initPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Void Function(ffi.Pointer<taiyin_lunar_date>)>
+      >('taiyin_lunar_date_init');
+  late final _taiyin_lunar_date_init = _taiyin_lunar_date_initPtr
+      .asFunction<void Function(ffi.Pointer<taiyin_lunar_date>)>();
+
+  void taiyin_chinese_solar_term_event_init(
+    ffi.Pointer<taiyin_chinese_solar_term_event> value,
+  ) {
+    return _taiyin_chinese_solar_term_event_init(value);
+  }
+
+  late final _taiyin_chinese_solar_term_event_initPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<taiyin_chinese_solar_term_event>)
+        >
+      >('taiyin_chinese_solar_term_event_init');
+  late final _taiyin_chinese_solar_term_event_init =
+      _taiyin_chinese_solar_term_event_initPtr
+          .asFunction<
+            void Function(ffi.Pointer<taiyin_chinese_solar_term_event>)
+          >();
+
+  void taiyin_chinese_calendar_year_init(
+    ffi.Pointer<taiyin_chinese_calendar_year> value,
+  ) {
+    return _taiyin_chinese_calendar_year_init(value);
+  }
+
+  late final _taiyin_chinese_calendar_year_initPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<taiyin_chinese_calendar_year>)
+        >
+      >('taiyin_chinese_calendar_year_init');
+  late final _taiyin_chinese_calendar_year_init =
+      _taiyin_chinese_calendar_year_initPtr
+          .asFunction<
+            void Function(ffi.Pointer<taiyin_chinese_calendar_year>)
+          >();
+
+  int taiyin_chinese_calendar_context_create(
+    ffi.Pointer<taiyin_context> astronomy,
+    ffi.Pointer<taiyin_chinese_calendar_config> config,
+    ffi.Pointer<ffi.Pointer<taiyin_chinese_calendar_context>> out_context,
+  ) {
+    return _taiyin_chinese_calendar_context_create(
+      astronomy,
+      config,
+      out_context,
+    );
+  }
+
+  late final _taiyin_chinese_calendar_context_createPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_context>,
+            ffi.Pointer<taiyin_chinese_calendar_config>,
+            ffi.Pointer<ffi.Pointer<taiyin_chinese_calendar_context>>,
+          )
+        >
+      >('taiyin_chinese_calendar_context_create');
+  late final _taiyin_chinese_calendar_context_create =
+      _taiyin_chinese_calendar_context_createPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_context>,
+              ffi.Pointer<taiyin_chinese_calendar_config>,
+              ffi.Pointer<ffi.Pointer<taiyin_chinese_calendar_context>>,
+            )
+          >();
+
+  void taiyin_chinese_calendar_context_destroy(
+    ffi.Pointer<taiyin_chinese_calendar_context> context,
+  ) {
+    return _taiyin_chinese_calendar_context_destroy(context);
+  }
+
+  late final _taiyin_chinese_calendar_context_destroyPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<taiyin_chinese_calendar_context>)
+        >
+      >('taiyin_chinese_calendar_context_destroy');
+  late final _taiyin_chinese_calendar_context_destroy =
+      _taiyin_chinese_calendar_context_destroyPtr
+          .asFunction<
+            void Function(ffi.Pointer<taiyin_chinese_calendar_context>)
+          >();
+
+  int taiyin_chinese_calendar_calc_year_ut(
+    ffi.Pointer<taiyin_chinese_calendar_context> context,
+    ffi.Pointer<taiyin_split_julian_date> jd_ut,
+    ffi.Pointer<taiyin_chinese_calendar_year> out,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_chinese_calendar_calc_year_ut(
+      context,
+      jd_ut,
+      out,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_chinese_calendar_calc_year_utPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_chinese_calendar_context>,
+            ffi.Pointer<taiyin_split_julian_date>,
+            ffi.Pointer<taiyin_chinese_calendar_year>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_chinese_calendar_calc_year_ut');
+  late final _taiyin_chinese_calendar_calc_year_ut =
+      _taiyin_chinese_calendar_calc_year_utPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_chinese_calendar_context>,
+              ffi.Pointer<taiyin_split_julian_date>,
+              ffi.Pointer<taiyin_chinese_calendar_year>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_chinese_calendar_get_specific_jie_qi_ut(
+    ffi.Pointer<taiyin_chinese_calendar_context> context,
+    int civil_year,
+    int term_index_from_vernal_equinox,
+    ffi.Pointer<taiyin_chinese_solar_term_event> out,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_chinese_calendar_get_specific_jie_qi_ut(
+      context,
+      civil_year,
+      term_index_from_vernal_equinox,
+      out,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_chinese_calendar_get_specific_jie_qi_utPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_chinese_calendar_context>,
+            ffi.Int32,
+            ffi.Uint8,
+            ffi.Pointer<taiyin_chinese_solar_term_event>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_chinese_calendar_get_specific_jie_qi_ut');
+  late final _taiyin_chinese_calendar_get_specific_jie_qi_ut =
+      _taiyin_chinese_calendar_get_specific_jie_qi_utPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_chinese_calendar_context>,
+              int,
+              int,
+              ffi.Pointer<taiyin_chinese_solar_term_event>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_chinese_calendar_get_prev_jie_qi_ut(
+    ffi.Pointer<taiyin_chinese_calendar_context> context,
+    ffi.Pointer<taiyin_split_julian_date> jd_ut,
+    ffi.Pointer<taiyin_chinese_solar_term_event> out,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_chinese_calendar_get_prev_jie_qi_ut(
+      context,
+      jd_ut,
+      out,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_chinese_calendar_get_prev_jie_qi_utPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_chinese_calendar_context>,
+            ffi.Pointer<taiyin_split_julian_date>,
+            ffi.Pointer<taiyin_chinese_solar_term_event>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_chinese_calendar_get_prev_jie_qi_ut');
+  late final _taiyin_chinese_calendar_get_prev_jie_qi_ut =
+      _taiyin_chinese_calendar_get_prev_jie_qi_utPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_chinese_calendar_context>,
+              ffi.Pointer<taiyin_split_julian_date>,
+              ffi.Pointer<taiyin_chinese_solar_term_event>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_chinese_calendar_get_next_jie_qi_ut(
+    ffi.Pointer<taiyin_chinese_calendar_context> context,
+    ffi.Pointer<taiyin_split_julian_date> jd_ut,
+    ffi.Pointer<taiyin_chinese_solar_term_event> out,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_chinese_calendar_get_next_jie_qi_ut(
+      context,
+      jd_ut,
+      out,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_chinese_calendar_get_next_jie_qi_utPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_chinese_calendar_context>,
+            ffi.Pointer<taiyin_split_julian_date>,
+            ffi.Pointer<taiyin_chinese_solar_term_event>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_chinese_calendar_get_next_jie_qi_ut');
+  late final _taiyin_chinese_calendar_get_next_jie_qi_ut =
+      _taiyin_chinese_calendar_get_next_jie_qi_utPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_chinese_calendar_context>,
+              ffi.Pointer<taiyin_split_julian_date>,
+              ffi.Pointer<taiyin_chinese_solar_term_event>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_chinese_calendar_get_prev_jie_ut(
+    ffi.Pointer<taiyin_chinese_calendar_context> context,
+    ffi.Pointer<taiyin_split_julian_date> jd_ut,
+    ffi.Pointer<taiyin_chinese_solar_term_event> out,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_chinese_calendar_get_prev_jie_ut(
+      context,
+      jd_ut,
+      out,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_chinese_calendar_get_prev_jie_utPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_chinese_calendar_context>,
+            ffi.Pointer<taiyin_split_julian_date>,
+            ffi.Pointer<taiyin_chinese_solar_term_event>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_chinese_calendar_get_prev_jie_ut');
+  late final _taiyin_chinese_calendar_get_prev_jie_ut =
+      _taiyin_chinese_calendar_get_prev_jie_utPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_chinese_calendar_context>,
+              ffi.Pointer<taiyin_split_julian_date>,
+              ffi.Pointer<taiyin_chinese_solar_term_event>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_chinese_calendar_get_next_jie_ut(
+    ffi.Pointer<taiyin_chinese_calendar_context> context,
+    ffi.Pointer<taiyin_split_julian_date> jd_ut,
+    ffi.Pointer<taiyin_chinese_solar_term_event> out,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_chinese_calendar_get_next_jie_ut(
+      context,
+      jd_ut,
+      out,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_chinese_calendar_get_next_jie_utPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_chinese_calendar_context>,
+            ffi.Pointer<taiyin_split_julian_date>,
+            ffi.Pointer<taiyin_chinese_solar_term_event>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_chinese_calendar_get_next_jie_ut');
+  late final _taiyin_chinese_calendar_get_next_jie_ut =
+      _taiyin_chinese_calendar_get_next_jie_utPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_chinese_calendar_context>,
+              ffi.Pointer<taiyin_split_julian_date>,
+              ffi.Pointer<taiyin_chinese_solar_term_event>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_chinese_calendar_get_prev_qi_ut(
+    ffi.Pointer<taiyin_chinese_calendar_context> context,
+    ffi.Pointer<taiyin_split_julian_date> jd_ut,
+    ffi.Pointer<taiyin_chinese_solar_term_event> out,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_chinese_calendar_get_prev_qi_ut(
+      context,
+      jd_ut,
+      out,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_chinese_calendar_get_prev_qi_utPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_chinese_calendar_context>,
+            ffi.Pointer<taiyin_split_julian_date>,
+            ffi.Pointer<taiyin_chinese_solar_term_event>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_chinese_calendar_get_prev_qi_ut');
+  late final _taiyin_chinese_calendar_get_prev_qi_ut =
+      _taiyin_chinese_calendar_get_prev_qi_utPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_chinese_calendar_context>,
+              ffi.Pointer<taiyin_split_julian_date>,
+              ffi.Pointer<taiyin_chinese_solar_term_event>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_chinese_calendar_get_next_qi_ut(
+    ffi.Pointer<taiyin_chinese_calendar_context> context,
+    ffi.Pointer<taiyin_split_julian_date> jd_ut,
+    ffi.Pointer<taiyin_chinese_solar_term_event> out,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_chinese_calendar_get_next_qi_ut(
+      context,
+      jd_ut,
+      out,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_chinese_calendar_get_next_qi_utPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_chinese_calendar_context>,
+            ffi.Pointer<taiyin_split_julian_date>,
+            ffi.Pointer<taiyin_chinese_solar_term_event>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_chinese_calendar_get_next_qi_ut');
+  late final _taiyin_chinese_calendar_get_next_qi_ut =
+      _taiyin_chinese_calendar_get_next_qi_utPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_chinese_calendar_context>,
+              ffi.Pointer<taiyin_split_julian_date>,
+              ffi.Pointer<taiyin_chinese_solar_term_event>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_chinese_calendar_from_solar(
+    ffi.Pointer<taiyin_chinese_calendar_context> context,
+    ffi.Pointer<taiyin_solar_date> solar,
+    ffi.Pointer<taiyin_lunar_date> out,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_chinese_calendar_from_solar(context, solar, out, diagnostic);
+  }
+
+  late final _taiyin_chinese_calendar_from_solarPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_chinese_calendar_context>,
+            ffi.Pointer<taiyin_solar_date>,
+            ffi.Pointer<taiyin_lunar_date>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_chinese_calendar_from_solar');
+  late final _taiyin_chinese_calendar_from_solar =
+      _taiyin_chinese_calendar_from_solarPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_chinese_calendar_context>,
+              ffi.Pointer<taiyin_solar_date>,
+              ffi.Pointer<taiyin_lunar_date>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_chinese_calendar_from_lunar(
+    ffi.Pointer<taiyin_chinese_calendar_context> context,
+    ffi.Pointer<taiyin_lunar_date> lunar,
+    ffi.Pointer<taiyin_solar_date> out,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_chinese_calendar_from_lunar(context, lunar, out, diagnostic);
+  }
+
+  late final _taiyin_chinese_calendar_from_lunarPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_chinese_calendar_context>,
+            ffi.Pointer<taiyin_lunar_date>,
+            ffi.Pointer<taiyin_solar_date>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_chinese_calendar_from_lunar');
+  late final _taiyin_chinese_calendar_from_lunar =
+      _taiyin_chinese_calendar_from_lunarPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_chinese_calendar_context>,
+              ffi.Pointer<taiyin_lunar_date>,
+              ffi.Pointer<taiyin_solar_date>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_chinese_calendar_get_month_days(
+    ffi.Pointer<taiyin_chinese_calendar_context> context,
+    int lunar_year,
+    int month,
+    int is_leap,
+    ffi.Pointer<ffi.Uint8> out_day_count,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_chinese_calendar_get_month_days(
+      context,
+      lunar_year,
+      month,
+      is_leap,
+      out_day_count,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_chinese_calendar_get_month_daysPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_chinese_calendar_context>,
+            ffi.Int32,
+            ffi.Uint8,
+            taiyin_bool,
+            ffi.Pointer<ffi.Uint8>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_chinese_calendar_get_month_days');
+  late final _taiyin_chinese_calendar_get_month_days =
+      _taiyin_chinese_calendar_get_month_daysPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_chinese_calendar_context>,
+              int,
+              int,
+              int,
+              ffi.Pointer<ffi.Uint8>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  void taiyin_ganzhi_four_pillars_init(
+    ffi.Pointer<taiyin_ganzhi_four_pillars> value,
+  ) {
+    return _taiyin_ganzhi_four_pillars_init(value);
+  }
+
+  late final _taiyin_ganzhi_four_pillars_initPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<taiyin_ganzhi_four_pillars>)
+        >
+      >('taiyin_ganzhi_four_pillars_init');
+  late final _taiyin_ganzhi_four_pillars_init =
+      _taiyin_ganzhi_four_pillars_initPtr
+          .asFunction<void Function(ffi.Pointer<taiyin_ganzhi_four_pillars>)>();
+
+  int taiyin_ganzhi_make(
+    int stem_id,
+    int branch_id,
+    ffi.Pointer<taiyin_ganzhi> out_value,
+  ) {
+    return _taiyin_ganzhi_make(stem_id, branch_id, out_value);
+  }
+
+  late final _taiyin_ganzhi_makePtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Uint8,
+            ffi.Uint8,
+            ffi.Pointer<taiyin_ganzhi>,
+          )
+        >
+      >('taiyin_ganzhi_make');
+  late final _taiyin_ganzhi_make = _taiyin_ganzhi_makePtr
+      .asFunction<int Function(int, int, ffi.Pointer<taiyin_ganzhi>)>();
+
+  int taiyin_ganzhi_advance(
+    int value,
+    int delta,
+    ffi.Pointer<taiyin_ganzhi> out_value,
+  ) {
+    return _taiyin_ganzhi_advance(value, delta, out_value);
+  }
+
+  late final _taiyin_ganzhi_advancePtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            taiyin_ganzhi,
+            ffi.Int32,
+            ffi.Pointer<taiyin_ganzhi>,
+          )
+        >
+      >('taiyin_ganzhi_advance');
+  late final _taiyin_ganzhi_advance = _taiyin_ganzhi_advancePtr
+      .asFunction<int Function(int, int, ffi.Pointer<taiyin_ganzhi>)>();
+
+  int taiyin_ganzhi_get_month(
+    int year_stem_id,
+    int month_index,
+    ffi.Pointer<taiyin_ganzhi> out_value,
+  ) {
+    return _taiyin_ganzhi_get_month(year_stem_id, month_index, out_value);
+  }
+
+  late final _taiyin_ganzhi_get_monthPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Uint8,
+            ffi.Uint8,
+            ffi.Pointer<taiyin_ganzhi>,
+          )
+        >
+      >('taiyin_ganzhi_get_month');
+  late final _taiyin_ganzhi_get_month = _taiyin_ganzhi_get_monthPtr
+      .asFunction<int Function(int, int, ffi.Pointer<taiyin_ganzhi>)>();
+
+  int taiyin_ganzhi_get_hour(
+    int day_stem_id,
+    int hour_index,
+    ffi.Pointer<taiyin_ganzhi> out_value,
+  ) {
+    return _taiyin_ganzhi_get_hour(day_stem_id, hour_index, out_value);
+  }
+
+  late final _taiyin_ganzhi_get_hourPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Uint8,
+            ffi.Uint8,
+            ffi.Pointer<taiyin_ganzhi>,
+          )
+        >
+      >('taiyin_ganzhi_get_hour');
+  late final _taiyin_ganzhi_get_hour = _taiyin_ganzhi_get_hourPtr
+      .asFunction<int Function(int, int, ffi.Pointer<taiyin_ganzhi>)>();
+
+  int taiyin_ganzhi_calc_day_pillar(
+    ffi.Pointer<taiyin_calendar_datetime> civil_date,
+    ffi.Pointer<taiyin_ganzhi> out_value,
+  ) {
+    return _taiyin_ganzhi_calc_day_pillar(civil_date, out_value);
+  }
+
+  late final _taiyin_ganzhi_calc_day_pillarPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_calendar_datetime>,
+            ffi.Pointer<taiyin_ganzhi>,
+          )
+        >
+      >('taiyin_ganzhi_calc_day_pillar');
+  late final _taiyin_ganzhi_calc_day_pillar = _taiyin_ganzhi_calc_day_pillarPtr
+      .asFunction<
+        int Function(
+          ffi.Pointer<taiyin_calendar_datetime>,
+          ffi.Pointer<taiyin_ganzhi>,
+        )
+      >();
+
+  int taiyin_ganzhi_get_nayin_element(
+    int value,
+    ffi.Pointer<ffi.Uint8> out_element_id,
+  ) {
+    return _taiyin_ganzhi_get_nayin_element(value, out_element_id);
+  }
+
+  late final _taiyin_ganzhi_get_nayin_elementPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(taiyin_ganzhi, ffi.Pointer<ffi.Uint8>)
+        >
+      >('taiyin_ganzhi_get_nayin_element');
+  late final _taiyin_ganzhi_get_nayin_element =
+      _taiyin_ganzhi_get_nayin_elementPtr
+          .asFunction<int Function(int, ffi.Pointer<ffi.Uint8>)>();
+
+  int taiyin_ganzhi_get_nayin_id(
+    int value,
+    ffi.Pointer<ffi.Uint8> out_nayin_id,
+  ) {
+    return _taiyin_ganzhi_get_nayin_id(value, out_nayin_id);
+  }
+
+  late final _taiyin_ganzhi_get_nayin_idPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(taiyin_ganzhi, ffi.Pointer<ffi.Uint8>)
+        >
+      >('taiyin_ganzhi_get_nayin_id');
+  late final _taiyin_ganzhi_get_nayin_id = _taiyin_ganzhi_get_nayin_idPtr
+      .asFunction<int Function(int, ffi.Pointer<ffi.Uint8>)>();
+
+  int taiyin_chinese_calendar_calc_four_pillars_ut(
+    ffi.Pointer<taiyin_chinese_calendar_context> context,
+    ffi.Pointer<taiyin_split_julian_date> instant_utc,
+    ffi.Pointer<taiyin_calendar_datetime> virtual_time,
+    int rat_hour_mode,
+    ffi.Pointer<taiyin_ganzhi_four_pillars> out,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_chinese_calendar_calc_four_pillars_ut(
+      context,
+      instant_utc,
+      virtual_time,
+      rat_hour_mode,
+      out,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_chinese_calendar_calc_four_pillars_utPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_chinese_calendar_context>,
+            ffi.Pointer<taiyin_split_julian_date>,
+            ffi.Pointer<taiyin_calendar_datetime>,
+            ffi.Int32,
+            ffi.Pointer<taiyin_ganzhi_four_pillars>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_chinese_calendar_calc_four_pillars_ut');
+  late final _taiyin_chinese_calendar_calc_four_pillars_ut =
+      _taiyin_chinese_calendar_calc_four_pillars_utPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_chinese_calendar_context>,
+              ffi.Pointer<taiyin_split_julian_date>,
+              ffi.Pointer<taiyin_calendar_datetime>,
+              int,
+              ffi.Pointer<taiyin_ganzhi_four_pillars>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  void taiyin_bazi_context_config_init(
+    ffi.Pointer<taiyin_bazi_context_config> value,
+  ) {
+    return _taiyin_bazi_context_config_init(value);
+  }
+
+  late final _taiyin_bazi_context_config_initPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<taiyin_bazi_context_config>)
+        >
+      >('taiyin_bazi_context_config_init');
+  late final _taiyin_bazi_context_config_init =
+      _taiyin_bazi_context_config_initPtr
+          .asFunction<void Function(ffi.Pointer<taiyin_bazi_context_config>)>();
+
+  void taiyin_bazi_chart_init(ffi.Pointer<taiyin_bazi_chart> value) {
+    return _taiyin_bazi_chart_init(value);
+  }
+
+  late final _taiyin_bazi_chart_initPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Void Function(ffi.Pointer<taiyin_bazi_chart>)>
+      >('taiyin_bazi_chart_init');
+  late final _taiyin_bazi_chart_init = _taiyin_bazi_chart_initPtr
+      .asFunction<void Function(ffi.Pointer<taiyin_bazi_chart>)>();
+
+  void taiyin_bazi_relation_init(ffi.Pointer<taiyin_bazi_relation> value) {
+    return _taiyin_bazi_relation_init(value);
+  }
+
+  late final _taiyin_bazi_relation_initPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Void Function(ffi.Pointer<taiyin_bazi_relation>)>
+      >('taiyin_bazi_relation_init');
+  late final _taiyin_bazi_relation_init = _taiyin_bazi_relation_initPtr
+      .asFunction<void Function(ffi.Pointer<taiyin_bazi_relation>)>();
+
+  void taiyin_bazi_qiyun_result_init(
+    ffi.Pointer<taiyin_bazi_qiyun_result> value,
+  ) {
+    return _taiyin_bazi_qiyun_result_init(value);
+  }
+
+  late final _taiyin_bazi_qiyun_result_initPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<taiyin_bazi_qiyun_result>)
+        >
+      >('taiyin_bazi_qiyun_result_init');
+  late final _taiyin_bazi_qiyun_result_init = _taiyin_bazi_qiyun_result_initPtr
+      .asFunction<void Function(ffi.Pointer<taiyin_bazi_qiyun_result>)>();
+
+  void taiyin_bazi_dayun_init(ffi.Pointer<taiyin_bazi_dayun> value) {
+    return _taiyin_bazi_dayun_init(value);
+  }
+
+  late final _taiyin_bazi_dayun_initPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Void Function(ffi.Pointer<taiyin_bazi_dayun>)>
+      >('taiyin_bazi_dayun_init');
+  late final _taiyin_bazi_dayun_init = _taiyin_bazi_dayun_initPtr
+      .asFunction<void Function(ffi.Pointer<taiyin_bazi_dayun>)>();
+
+  void taiyin_bazi_xiaoyun_init(ffi.Pointer<taiyin_bazi_xiaoyun> value) {
+    return _taiyin_bazi_xiaoyun_init(value);
+  }
+
+  late final _taiyin_bazi_xiaoyun_initPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Void Function(ffi.Pointer<taiyin_bazi_xiaoyun>)>
+      >('taiyin_bazi_xiaoyun_init');
+  late final _taiyin_bazi_xiaoyun_init = _taiyin_bazi_xiaoyun_initPtr
+      .asFunction<void Function(ffi.Pointer<taiyin_bazi_xiaoyun>)>();
+
+  void taiyin_bazi_renyuan_siling_segment_init(
+    ffi.Pointer<taiyin_bazi_renyuan_siling_segment> value,
+  ) {
+    return _taiyin_bazi_renyuan_siling_segment_init(value);
+  }
+
+  late final _taiyin_bazi_renyuan_siling_segment_initPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<taiyin_bazi_renyuan_siling_segment>)
+        >
+      >('taiyin_bazi_renyuan_siling_segment_init');
+  late final _taiyin_bazi_renyuan_siling_segment_init =
+      _taiyin_bazi_renyuan_siling_segment_initPtr
+          .asFunction<
+            void Function(ffi.Pointer<taiyin_bazi_renyuan_siling_segment>)
+          >();
+
+  void taiyin_bazi_renyuan_siling_result_init(
+    ffi.Pointer<taiyin_bazi_renyuan_siling_result> value,
+  ) {
+    return _taiyin_bazi_renyuan_siling_result_init(value);
+  }
+
+  late final _taiyin_bazi_renyuan_siling_result_initPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<taiyin_bazi_renyuan_siling_result>)
+        >
+      >('taiyin_bazi_renyuan_siling_result_init');
+  late final _taiyin_bazi_renyuan_siling_result_init =
+      _taiyin_bazi_renyuan_siling_result_initPtr
+          .asFunction<
+            void Function(ffi.Pointer<taiyin_bazi_renyuan_siling_result>)
+          >();
+
+  int taiyin_bazi_context_create(
+    ffi.Pointer<taiyin_bazi_context_config> bazi_config,
+    ffi.Pointer<ffi.Pointer<taiyin_bazi_context>> out_context,
+  ) {
+    return _taiyin_bazi_context_create(bazi_config, out_context);
+  }
+
+  late final _taiyin_bazi_context_createPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_bazi_context_config>,
+            ffi.Pointer<ffi.Pointer<taiyin_bazi_context>>,
+          )
+        >
+      >('taiyin_bazi_context_create');
+  late final _taiyin_bazi_context_create = _taiyin_bazi_context_createPtr
+      .asFunction<
+        int Function(
+          ffi.Pointer<taiyin_bazi_context_config>,
+          ffi.Pointer<ffi.Pointer<taiyin_bazi_context>>,
+        )
+      >();
+
+  void taiyin_bazi_context_destroy(ffi.Pointer<taiyin_bazi_context> context) {
+    return _taiyin_bazi_context_destroy(context);
+  }
+
+  late final _taiyin_bazi_context_destroyPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Void Function(ffi.Pointer<taiyin_bazi_context>)>
+      >('taiyin_bazi_context_destroy');
+  late final _taiyin_bazi_context_destroy = _taiyin_bazi_context_destroyPtr
+      .asFunction<void Function(ffi.Pointer<taiyin_bazi_context>)>();
+
+  int taiyin_bazi_get_kong_wang(
+    int value,
+    ffi.Pointer<ffi.Uint8> out_branches,
+  ) {
+    return _taiyin_bazi_get_kong_wang(value, out_branches);
+  }
+
+  late final _taiyin_bazi_get_kong_wangPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(taiyin_ganzhi, ffi.Pointer<ffi.Uint8>)
+        >
+      >('taiyin_bazi_get_kong_wang');
+  late final _taiyin_bazi_get_kong_wang = _taiyin_bazi_get_kong_wangPtr
+      .asFunction<int Function(int, ffi.Pointer<ffi.Uint8>)>();
+
+  int taiyin_bazi_get_ten_god(
+    int day_stem_id,
+    int target_stem_id,
+    ffi.Pointer<ffi.Uint8> out_ten_god_id,
+  ) {
+    return _taiyin_bazi_get_ten_god(
+      day_stem_id,
+      target_stem_id,
+      out_ten_god_id,
+    );
+  }
+
+  late final _taiyin_bazi_get_ten_godPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(ffi.Uint8, ffi.Uint8, ffi.Pointer<ffi.Uint8>)
+        >
+      >('taiyin_bazi_get_ten_god');
+  late final _taiyin_bazi_get_ten_god = _taiyin_bazi_get_ten_godPtr
+      .asFunction<int Function(int, int, ffi.Pointer<ffi.Uint8>)>();
+
+  int taiyin_bazi_get_hidden_stems(
+    int branch_id,
+    ffi.Pointer<ffi.Uint8> out_stems,
+    ffi.Pointer<ffi.Uint8> out_count,
+  ) {
+    return _taiyin_bazi_get_hidden_stems(branch_id, out_stems, out_count);
+  }
+
+  late final _taiyin_bazi_get_hidden_stemsPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Uint8,
+            ffi.Pointer<ffi.Uint8>,
+            ffi.Pointer<ffi.Uint8>,
+          )
+        >
+      >('taiyin_bazi_get_hidden_stems');
+  late final _taiyin_bazi_get_hidden_stems = _taiyin_bazi_get_hidden_stemsPtr
+      .asFunction<
+        int Function(int, ffi.Pointer<ffi.Uint8>, ffi.Pointer<ffi.Uint8>)
+      >();
+
+  int taiyin_bazi_calc_stem_relation(
+    int stem_a,
+    int stem_b,
+    ffi.Pointer<ffi.Uint32> out_flags,
+    ffi.Pointer<ffi.Uint8> out_combined_element_id,
+  ) {
+    return _taiyin_bazi_calc_stem_relation(
+      stem_a,
+      stem_b,
+      out_flags,
+      out_combined_element_id,
+    );
+  }
+
+  late final _taiyin_bazi_calc_stem_relationPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Uint8,
+            ffi.Uint8,
+            ffi.Pointer<ffi.Uint32>,
+            ffi.Pointer<ffi.Uint8>,
+          )
+        >
+      >('taiyin_bazi_calc_stem_relation');
+  late final _taiyin_bazi_calc_stem_relation =
+      _taiyin_bazi_calc_stem_relationPtr
+          .asFunction<
+            int Function(
+              int,
+              int,
+              ffi.Pointer<ffi.Uint32>,
+              ffi.Pointer<ffi.Uint8>,
+            )
+          >();
+
+  int taiyin_bazi_calc_branch_relation(
+    int branch_a,
+    int branch_b,
+    ffi.Pointer<ffi.Uint32> out_flags,
+    ffi.Pointer<ffi.Uint8> out_combined_element_id,
+  ) {
+    return _taiyin_bazi_calc_branch_relation(
+      branch_a,
+      branch_b,
+      out_flags,
+      out_combined_element_id,
+    );
+  }
+
+  late final _taiyin_bazi_calc_branch_relationPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Uint8,
+            ffi.Uint8,
+            ffi.Pointer<ffi.Uint32>,
+            ffi.Pointer<ffi.Uint8>,
+          )
+        >
+      >('taiyin_bazi_calc_branch_relation');
+  late final _taiyin_bazi_calc_branch_relation =
+      _taiyin_bazi_calc_branch_relationPtr
+          .asFunction<
+            int Function(
+              int,
+              int,
+              ffi.Pointer<ffi.Uint32>,
+              ffi.Pointer<ffi.Uint8>,
+            )
+          >();
+
+  int taiyin_bazi_calc_branch_triple_relation(
+    int branch_a,
+    int branch_b,
+    int branch_c,
+    ffi.Pointer<ffi.Uint32> out_flags,
+    ffi.Pointer<ffi.Uint8> out_combined_element_id,
+  ) {
+    return _taiyin_bazi_calc_branch_triple_relation(
+      branch_a,
+      branch_b,
+      branch_c,
+      out_flags,
+      out_combined_element_id,
+    );
+  }
+
+  late final _taiyin_bazi_calc_branch_triple_relationPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Uint8,
+            ffi.Uint8,
+            ffi.Uint8,
+            ffi.Pointer<ffi.Uint32>,
+            ffi.Pointer<ffi.Uint8>,
+          )
+        >
+      >('taiyin_bazi_calc_branch_triple_relation');
+  late final _taiyin_bazi_calc_branch_triple_relation =
+      _taiyin_bazi_calc_branch_triple_relationPtr
+          .asFunction<
+            int Function(
+              int,
+              int,
+              int,
+              ffi.Pointer<ffi.Uint32>,
+              ffi.Pointer<ffi.Uint8>,
+            )
+          >();
+
+  int taiyin_bazi_get_life_stage(
+    int stem_id,
+    int branch_id,
+    int earth_palace_mode,
+    ffi.Pointer<ffi.Uint8> out_life_stage_id,
+  ) {
+    return _taiyin_bazi_get_life_stage(
+      stem_id,
+      branch_id,
+      earth_palace_mode,
+      out_life_stage_id,
+    );
+  }
+
+  late final _taiyin_bazi_get_life_stagePtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Uint8,
+            ffi.Uint8,
+            ffi.Int32,
+            ffi.Pointer<ffi.Uint8>,
+          )
+        >
+      >('taiyin_bazi_get_life_stage');
+  late final _taiyin_bazi_get_life_stage = _taiyin_bazi_get_life_stagePtr
+      .asFunction<int Function(int, int, int, ffi.Pointer<ffi.Uint8>)>();
+
+  int taiyin_bazi_calc_chart(
+    ffi.Pointer<taiyin_bazi_context> context,
+    ffi.Pointer<taiyin_ganzhi_four_pillars> pillars,
+    ffi.Pointer<taiyin_bazi_chart> out,
+  ) {
+    return _taiyin_bazi_calc_chart(context, pillars, out);
+  }
+
+  late final _taiyin_bazi_calc_chartPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_bazi_context>,
+            ffi.Pointer<taiyin_ganzhi_four_pillars>,
+            ffi.Pointer<taiyin_bazi_chart>,
+          )
+        >
+      >('taiyin_bazi_calc_chart');
+  late final _taiyin_bazi_calc_chart = _taiyin_bazi_calc_chartPtr
+      .asFunction<
+        int Function(
+          ffi.Pointer<taiyin_bazi_context>,
+          ffi.Pointer<taiyin_ganzhi_four_pillars>,
+          ffi.Pointer<taiyin_bazi_chart>,
+        )
+      >();
+
+  int taiyin_bazi_calc_liunian(
+    int effective_year,
+    ffi.Pointer<taiyin_ganzhi> out,
+  ) {
+    return _taiyin_bazi_calc_liunian(effective_year, out);
+  }
+
+  late final _taiyin_bazi_calc_liunianPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(ffi.Int32, ffi.Pointer<taiyin_ganzhi>)
+        >
+      >('taiyin_bazi_calc_liunian');
+  late final _taiyin_bazi_calc_liunian = _taiyin_bazi_calc_liunianPtr
+      .asFunction<int Function(int, ffi.Pointer<taiyin_ganzhi>)>();
+
+  int taiyin_bazi_calc_liuyue(
+    int year_pillar,
+    int month_branch,
+    ffi.Pointer<taiyin_ganzhi> out,
+  ) {
+    return _taiyin_bazi_calc_liuyue(year_pillar, month_branch, out);
+  }
+
+  late final _taiyin_bazi_calc_liuyuePtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            taiyin_ganzhi,
+            ffi.Uint8,
+            ffi.Pointer<taiyin_ganzhi>,
+          )
+        >
+      >('taiyin_bazi_calc_liuyue');
+  late final _taiyin_bazi_calc_liuyue = _taiyin_bazi_calc_liuyuePtr
+      .asFunction<int Function(int, int, ffi.Pointer<taiyin_ganzhi>)>();
+
+  int taiyin_bazi_calc_liuri(
+    ffi.Pointer<taiyin_calendar_datetime> civil_date,
+    ffi.Pointer<taiyin_ganzhi> out,
+  ) {
+    return _taiyin_bazi_calc_liuri(civil_date, out);
+  }
+
+  late final _taiyin_bazi_calc_liuriPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_calendar_datetime>,
+            ffi.Pointer<taiyin_ganzhi>,
+          )
+        >
+      >('taiyin_bazi_calc_liuri');
+  late final _taiyin_bazi_calc_liuri = _taiyin_bazi_calc_liuriPtr
+      .asFunction<
+        int Function(
+          ffi.Pointer<taiyin_calendar_datetime>,
+          ffi.Pointer<taiyin_ganzhi>,
+        )
+      >();
+
+  int taiyin_bazi_calc_liushi(
+    int day_pillar,
+    int hour_index,
+    ffi.Pointer<taiyin_ganzhi> out,
+  ) {
+    return _taiyin_bazi_calc_liushi(day_pillar, hour_index, out);
+  }
+
+  late final _taiyin_bazi_calc_liushiPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            taiyin_ganzhi,
+            ffi.Uint8,
+            ffi.Pointer<taiyin_ganzhi>,
+          )
+        >
+      >('taiyin_bazi_calc_liushi');
+  late final _taiyin_bazi_calc_liushi = _taiyin_bazi_calc_liushiPtr
+      .asFunction<int Function(int, int, ffi.Pointer<taiyin_ganzhi>)>();
+
+  int taiyin_bazi_calc_xiaoyun(
+    ffi.Pointer<taiyin_bazi_chart> chart,
+    int direction,
+    int age,
+    ffi.Pointer<taiyin_ganzhi> out,
+  ) {
+    return _taiyin_bazi_calc_xiaoyun(chart, direction, age, out);
+  }
+
+  late final _taiyin_bazi_calc_xiaoyunPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_bazi_chart>,
+            ffi.Int32,
+            ffi.Int32,
+            ffi.Pointer<taiyin_ganzhi>,
+          )
+        >
+      >('taiyin_bazi_calc_xiaoyun');
+  late final _taiyin_bazi_calc_xiaoyun = _taiyin_bazi_calc_xiaoyunPtr
+      .asFunction<
+        int Function(
+          ffi.Pointer<taiyin_bazi_chart>,
+          int,
+          int,
+          ffi.Pointer<taiyin_ganzhi>,
+        )
+      >();
+
+  int taiyin_bazi_fill_xiaoyun(
+    ffi.Pointer<taiyin_bazi_chart> chart,
+    int direction,
+    int start_age,
+    int requested_count,
+    ffi.Pointer<taiyin_bazi_xiaoyun> out,
+    int capacity,
+    ffi.Pointer<ffi.Size> out_count,
+  ) {
+    return _taiyin_bazi_fill_xiaoyun(
+      chart,
+      direction,
+      start_age,
+      requested_count,
+      out,
+      capacity,
+      out_count,
+    );
+  }
+
+  late final _taiyin_bazi_fill_xiaoyunPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_bazi_chart>,
+            ffi.Int32,
+            ffi.Int32,
+            ffi.Size,
+            ffi.Pointer<taiyin_bazi_xiaoyun>,
+            ffi.Size,
+            ffi.Pointer<ffi.Size>,
+          )
+        >
+      >('taiyin_bazi_fill_xiaoyun');
+  late final _taiyin_bazi_fill_xiaoyun = _taiyin_bazi_fill_xiaoyunPtr
+      .asFunction<
+        int Function(
+          ffi.Pointer<taiyin_bazi_chart>,
+          int,
+          int,
+          int,
+          ffi.Pointer<taiyin_bazi_xiaoyun>,
+          int,
+          ffi.Pointer<ffi.Size>,
+        )
+      >();
+
+  int taiyin_bazi_collect_chart_relations(
+    ffi.Pointer<taiyin_bazi_chart> chart,
+    int pillar_mask,
+    int relation_mask,
+    ffi.Pointer<taiyin_bazi_relation> out,
+    int capacity,
+    ffi.Pointer<ffi.Size> out_count,
+  ) {
+    return _taiyin_bazi_collect_chart_relations(
+      chart,
+      pillar_mask,
+      relation_mask,
+      out,
+      capacity,
+      out_count,
+    );
+  }
+
+  late final _taiyin_bazi_collect_chart_relationsPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_bazi_chart>,
+            ffi.Uint32,
+            ffi.Uint32,
+            ffi.Pointer<taiyin_bazi_relation>,
+            ffi.Size,
+            ffi.Pointer<ffi.Size>,
+          )
+        >
+      >('taiyin_bazi_collect_chart_relations');
+  late final _taiyin_bazi_collect_chart_relations =
+      _taiyin_bazi_collect_chart_relationsPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_bazi_chart>,
+              int,
+              int,
+              ffi.Pointer<taiyin_bazi_relation>,
+              int,
+              ffi.Pointer<ffi.Size>,
+            )
+          >();
+
+  int taiyin_bazi_collect_target_shen_sha(
+    ffi.Pointer<taiyin_bazi_chart> chart,
+    int target_ganzhi,
+    int target_kind,
+    ffi.Pointer<ffi.Uint64> out_words,
+    int word_capacity,
+    ffi.Pointer<ffi.Size> out_word_count,
+  ) {
+    return _taiyin_bazi_collect_target_shen_sha(
+      chart,
+      target_ganzhi,
+      target_kind,
+      out_words,
+      word_capacity,
+      out_word_count,
+    );
+  }
+
+  late final _taiyin_bazi_collect_target_shen_shaPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_bazi_chart>,
+            taiyin_ganzhi,
+            ffi.Int32,
+            ffi.Pointer<ffi.Uint64>,
+            ffi.Size,
+            ffi.Pointer<ffi.Size>,
+          )
+        >
+      >('taiyin_bazi_collect_target_shen_sha');
+  late final _taiyin_bazi_collect_target_shen_sha =
+      _taiyin_bazi_collect_target_shen_shaPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_bazi_chart>,
+              int,
+              int,
+              ffi.Pointer<ffi.Uint64>,
+              int,
+              ffi.Pointer<ffi.Size>,
+            )
+          >();
+
+  int taiyin_bazi_collect_target_shen_sha_with_gender(
+    ffi.Pointer<taiyin_bazi_chart> chart,
+    int target_ganzhi,
+    int target_kind,
+    int gender,
+    ffi.Pointer<ffi.Uint64> out_words,
+    int word_capacity,
+    ffi.Pointer<ffi.Size> out_word_count,
+  ) {
+    return _taiyin_bazi_collect_target_shen_sha_with_gender(
+      chart,
+      target_ganzhi,
+      target_kind,
+      gender,
+      out_words,
+      word_capacity,
+      out_word_count,
+    );
+  }
+
+  late final _taiyin_bazi_collect_target_shen_sha_with_genderPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_bazi_chart>,
+            taiyin_ganzhi,
+            ffi.Int32,
+            ffi.Int32,
+            ffi.Pointer<ffi.Uint64>,
+            ffi.Size,
+            ffi.Pointer<ffi.Size>,
+          )
+        >
+      >('taiyin_bazi_collect_target_shen_sha_with_gender');
+  late final _taiyin_bazi_collect_target_shen_sha_with_gender =
+      _taiyin_bazi_collect_target_shen_sha_with_genderPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_bazi_chart>,
+              int,
+              int,
+              int,
+              ffi.Pointer<ffi.Uint64>,
+              int,
+              ffi.Pointer<ffi.Size>,
+            )
+          >();
+
+  int taiyin_bazi_calc_qiyun(
+    ffi.Pointer<taiyin_bazi_context> context,
+    ffi.Pointer<taiyin_chinese_calendar_context> calendar_context,
+    ffi.Pointer<taiyin_split_julian_date> birth_jd_ut,
+    ffi.Pointer<taiyin_calendar_datetime> birth_civil_time,
+    ffi.Pointer<taiyin_bazi_chart> chart,
+    int gender,
+    ffi.Pointer<taiyin_bazi_qiyun_result> out,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_bazi_calc_qiyun(
+      context,
+      calendar_context,
+      birth_jd_ut,
+      birth_civil_time,
+      chart,
+      gender,
+      out,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_bazi_calc_qiyunPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_bazi_context>,
+            ffi.Pointer<taiyin_chinese_calendar_context>,
+            ffi.Pointer<taiyin_split_julian_date>,
+            ffi.Pointer<taiyin_calendar_datetime>,
+            ffi.Pointer<taiyin_bazi_chart>,
+            ffi.Int32,
+            ffi.Pointer<taiyin_bazi_qiyun_result>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_bazi_calc_qiyun');
+  late final _taiyin_bazi_calc_qiyun = _taiyin_bazi_calc_qiyunPtr
+      .asFunction<
+        int Function(
+          ffi.Pointer<taiyin_bazi_context>,
+          ffi.Pointer<taiyin_chinese_calendar_context>,
+          ffi.Pointer<taiyin_split_julian_date>,
+          ffi.Pointer<taiyin_calendar_datetime>,
+          ffi.Pointer<taiyin_bazi_chart>,
+          int,
+          ffi.Pointer<taiyin_bazi_qiyun_result>,
+          ffi.Pointer<taiyin_ephemeris_diagnostic>,
+        )
+      >();
+
+  int taiyin_bazi_fill_dayun(
+    ffi.Pointer<taiyin_bazi_context> context,
+    ffi.Pointer<taiyin_calendar_datetime> birth_civil_time,
+    ffi.Pointer<taiyin_bazi_chart> chart,
+    ffi.Pointer<taiyin_bazi_qiyun_result> qiyun,
+    int requested_count,
+    ffi.Pointer<taiyin_bazi_dayun> out,
+    int capacity,
+    ffi.Pointer<ffi.Size> out_count,
+  ) {
+    return _taiyin_bazi_fill_dayun(
+      context,
+      birth_civil_time,
+      chart,
+      qiyun,
+      requested_count,
+      out,
+      capacity,
+      out_count,
+    );
+  }
+
+  late final _taiyin_bazi_fill_dayunPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_bazi_context>,
+            ffi.Pointer<taiyin_calendar_datetime>,
+            ffi.Pointer<taiyin_bazi_chart>,
+            ffi.Pointer<taiyin_bazi_qiyun_result>,
+            ffi.Size,
+            ffi.Pointer<taiyin_bazi_dayun>,
+            ffi.Size,
+            ffi.Pointer<ffi.Size>,
+          )
+        >
+      >('taiyin_bazi_fill_dayun');
+  late final _taiyin_bazi_fill_dayun = _taiyin_bazi_fill_dayunPtr
+      .asFunction<
+        int Function(
+          ffi.Pointer<taiyin_bazi_context>,
+          ffi.Pointer<taiyin_calendar_datetime>,
+          ffi.Pointer<taiyin_bazi_chart>,
+          ffi.Pointer<taiyin_bazi_qiyun_result>,
+          int,
+          ffi.Pointer<taiyin_bazi_dayun>,
+          int,
+          ffi.Pointer<ffi.Size>,
+        )
+      >();
+
+  int taiyin_bazi_get_renyuan_siling_segments(
+    int month_branch_id,
+    int table_model,
+    ffi.Pointer<taiyin_bazi_renyuan_siling_segment> out,
+    int capacity,
+    ffi.Pointer<ffi.Size> out_count,
+  ) {
+    return _taiyin_bazi_get_renyuan_siling_segments(
+      month_branch_id,
+      table_model,
+      out,
+      capacity,
+      out_count,
+    );
+  }
+
+  late final _taiyin_bazi_get_renyuan_siling_segmentsPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Uint8,
+            ffi.Int32,
+            ffi.Pointer<taiyin_bazi_renyuan_siling_segment>,
+            ffi.Size,
+            ffi.Pointer<ffi.Size>,
+          )
+        >
+      >('taiyin_bazi_get_renyuan_siling_segments');
+  late final _taiyin_bazi_get_renyuan_siling_segments =
+      _taiyin_bazi_get_renyuan_siling_segmentsPtr
+          .asFunction<
+            int Function(
+              int,
+              int,
+              ffi.Pointer<taiyin_bazi_renyuan_siling_segment>,
+              int,
+              ffi.Pointer<ffi.Size>,
+            )
+          >();
+
+  int taiyin_bazi_calc_renyuan_siling(
+    ffi.Pointer<taiyin_chinese_calendar_context> calendar_context,
+    ffi.Pointer<taiyin_split_julian_date> instant_jd_ut,
+    ffi.Pointer<taiyin_bazi_chart> chart,
+    int table_model,
+    int time_model,
+    ffi.Pointer<taiyin_bazi_renyuan_siling_result> out,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_bazi_calc_renyuan_siling(
+      calendar_context,
+      instant_jd_ut,
+      chart,
+      table_model,
+      time_model,
+      out,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_bazi_calc_renyuan_silingPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_status Function(
+            ffi.Pointer<taiyin_chinese_calendar_context>,
+            ffi.Pointer<taiyin_split_julian_date>,
+            ffi.Pointer<taiyin_bazi_chart>,
+            ffi.Int32,
+            ffi.Int32,
+            ffi.Pointer<taiyin_bazi_renyuan_siling_result>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_bazi_calc_renyuan_siling');
+  late final _taiyin_bazi_calc_renyuan_siling =
+      _taiyin_bazi_calc_renyuan_silingPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_chinese_calendar_context>,
+              ffi.Pointer<taiyin_split_julian_date>,
+              ffi.Pointer<taiyin_bazi_chart>,
+              int,
+              int,
+              ffi.Pointer<taiyin_bazi_renyuan_siling_result>,
               ffi.Pointer<taiyin_ephemeris_diagnostic>,
             )
           >();
@@ -10227,6 +11857,128 @@ typedef __darwin_ssize_t = ffi.Long;
 typedef Dart__darwin_ssize_t = int;
 typedef __darwin_time_t = ffi.Long;
 typedef Dart__darwin_time_t = int;
+typedef __darwin_blkcnt_t = __int64_t;
+typedef __darwin_blksize_t = __int32_t;
+typedef __darwin_dev_t = __int32_t;
+typedef __darwin_fsblkcnt_t = ffi.UnsignedInt;
+typedef Dart__darwin_fsblkcnt_t = int;
+typedef __darwin_fsfilcnt_t = ffi.UnsignedInt;
+typedef Dart__darwin_fsfilcnt_t = int;
+typedef __darwin_gid_t = __uint32_t;
+typedef __darwin_id_t = __uint32_t;
+typedef __darwin_ino64_t = __uint64_t;
+typedef __darwin_ino_t = __darwin_ino64_t;
+typedef __darwin_mach_port_name_t = __darwin_natural_t;
+typedef __darwin_mach_port_t = __darwin_mach_port_name_t;
+typedef __darwin_mode_t = __uint16_t;
+typedef __darwin_off_t = __int64_t;
+typedef __darwin_pid_t = __int32_t;
+typedef __darwin_sigset_t = __uint32_t;
+typedef __darwin_suseconds_t = __int32_t;
+typedef __darwin_uid_t = __uint32_t;
+typedef __darwin_useconds_t = __uint32_t;
+
+final class __darwin_pthread_handler_rec extends ffi.Struct {
+  external ffi.Pointer<
+    ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>
+  >
+  __routine;
+
+  external ffi.Pointer<ffi.Void> __arg;
+
+  external ffi.Pointer<__darwin_pthread_handler_rec> __next;
+}
+
+final class _opaque_pthread_attr_t extends ffi.Struct {
+  @ffi.Long()
+  external int __sig;
+
+  @ffi.Array.multi([56])
+  external ffi.Array<ffi.Char> __opaque;
+}
+
+final class _opaque_pthread_cond_t extends ffi.Struct {
+  @ffi.Long()
+  external int __sig;
+
+  @ffi.Array.multi([40])
+  external ffi.Array<ffi.Char> __opaque;
+}
+
+final class _opaque_pthread_condattr_t extends ffi.Struct {
+  @ffi.Long()
+  external int __sig;
+
+  @ffi.Array.multi([8])
+  external ffi.Array<ffi.Char> __opaque;
+}
+
+final class _opaque_pthread_mutex_t extends ffi.Struct {
+  @ffi.Long()
+  external int __sig;
+
+  @ffi.Array.multi([56])
+  external ffi.Array<ffi.Char> __opaque;
+}
+
+final class _opaque_pthread_mutexattr_t extends ffi.Struct {
+  @ffi.Long()
+  external int __sig;
+
+  @ffi.Array.multi([8])
+  external ffi.Array<ffi.Char> __opaque;
+}
+
+final class _opaque_pthread_once_t extends ffi.Struct {
+  @ffi.Long()
+  external int __sig;
+
+  @ffi.Array.multi([8])
+  external ffi.Array<ffi.Char> __opaque;
+}
+
+final class _opaque_pthread_rwlock_t extends ffi.Struct {
+  @ffi.Long()
+  external int __sig;
+
+  @ffi.Array.multi([192])
+  external ffi.Array<ffi.Char> __opaque;
+}
+
+final class _opaque_pthread_rwlockattr_t extends ffi.Struct {
+  @ffi.Long()
+  external int __sig;
+
+  @ffi.Array.multi([16])
+  external ffi.Array<ffi.Char> __opaque;
+}
+
+final class _opaque_pthread_t extends ffi.Struct {
+  @ffi.Long()
+  external int __sig;
+
+  external ffi.Pointer<__darwin_pthread_handler_rec> __cleanup_stack;
+
+  @ffi.Array.multi([8176])
+  external ffi.Array<ffi.Char> __opaque;
+}
+
+typedef __darwin_pthread_attr_t = _opaque_pthread_attr_t;
+typedef __darwin_pthread_cond_t = _opaque_pthread_cond_t;
+typedef __darwin_pthread_condattr_t = _opaque_pthread_condattr_t;
+typedef __darwin_pthread_key_t = ffi.UnsignedLong;
+typedef Dart__darwin_pthread_key_t = int;
+typedef __darwin_pthread_mutex_t = _opaque_pthread_mutex_t;
+typedef __darwin_pthread_mutexattr_t = _opaque_pthread_mutexattr_t;
+typedef __darwin_pthread_once_t = _opaque_pthread_once_t;
+typedef __darwin_pthread_rwlock_t = _opaque_pthread_rwlock_t;
+typedef __darwin_pthread_rwlockattr_t = _opaque_pthread_rwlockattr_t;
+typedef __darwin_pthread_t = ffi.Pointer<_opaque_pthread_t>;
+typedef __darwin_nl_item = ffi.Int;
+typedef Dart__darwin_nl_item = int;
+typedef __darwin_wctrans_t = ffi.Int;
+typedef Dart__darwin_wctrans_t = int;
+typedef __darwin_wctype_t = __uint32_t;
 typedef u_int8_t = ffi.UnsignedChar;
 typedef Dartu_int8_t = int;
 typedef u_int16_t = ffi.UnsignedShort;
@@ -10248,23 +12000,10 @@ typedef user_time_t = ffi.Int64;
 typedef Dartuser_time_t = int;
 typedef user_off_t = ffi.Int64;
 typedef Dartuser_off_t = int;
-typedef user_addr_ut = user_addr_t;
-typedef user_size_ut = user_size_t;
-typedef user64_addr_t = __uint64_t;
-typedef user64_size_t = __uint64_t;
-typedef user64_ssize_t = __int64_t;
-typedef user64_long_t = __int64_t;
-typedef user64_ulong_t = __uint64_t;
-typedef user64_time_t = __int64_t;
-typedef user64_off_t = __int64_t;
-typedef user32_addr_t = __uint32_t;
-typedef user32_size_t = __uint32_t;
-typedef user32_ssize_t = __int32_t;
-typedef user32_long_t = __int32_t;
-typedef user32_ulong_t = __uint32_t;
-typedef user32_time_t = __int32_t;
-typedef user32_off_t = __int64_t;
 typedef syscall_arg_t = u_int64_t;
+typedef ptrdiff_t = __darwin_ptrdiff_t;
+typedef rsize_t = __darwin_size_t;
+typedef wint_t = __darwin_wint_t;
 typedef int_least8_t = ffi.Int8;
 typedef Dartint_least8_t = int;
 typedef int_least16_t = ffi.Int16;
@@ -10318,12 +12057,23 @@ sealed class taiyin_capability {
   static const TAIYIN_CAPABILITY_CUSTOM_AYANAMSHA = 4096;
   static const TAIYIN_CAPABILITY_CUSTOM_HOUSES = 8192;
   static const TAIYIN_CAPABILITY_SPLIT_TIME = 16384;
+  static const TAIYIN_CAPABILITY_CHINESE_CALENDAR = 32768;
+  static const TAIYIN_CAPABILITY_BAZI = 65536;
+  static const TAIYIN_CAPABILITY_GANZHI_CALENDAR = 131072;
 }
 
 typedef taiyin_status = ffi.Int32;
 typedef Darttaiyin_status = int;
 typedef taiyin_bool = ffi.Uint8;
 typedef Darttaiyin_bool = int;
+
+final class taiyin_split_julian_date extends ffi.Struct {
+  @ffi.Int64()
+  external int day_number;
+
+  @ffi.Double()
+  external double day_fraction;
+}
 
 sealed class taiyin_status_code {
   static const TAIYIN_STATUS_OK = 0;
@@ -10423,8 +12173,7 @@ final class taiyin_ephemeris_diagnostic extends ffi.Struct {
   @ffi.Int32()
   external int frame;
 
-  @ffi.Double()
-  external double jd_tdb;
+  external taiyin_split_julian_date jd_tdb;
 
   @ffi.Int32()
   external int candidate_count;
@@ -10872,7 +12621,7 @@ final class taiyin_lunar_apsis_position extends ffi.Struct {
 typedef taiyin_ayanamsha_evaluator_fnFunction =
     taiyin_status Function(
       ffi.Pointer<taiyin_context> context,
-      ffi.Double jd_tt,
+      ffi.Pointer<taiyin_split_julian_date> jd_tt,
       ffi.Uint64 native_position_flags,
       ffi.Pointer<ffi.Double> out_ayanamsha_rad,
       ffi.Pointer<ffi.Void> user_data,
@@ -10880,7 +12629,7 @@ typedef taiyin_ayanamsha_evaluator_fnFunction =
 typedef Darttaiyin_ayanamsha_evaluator_fnFunction =
     Darttaiyin_status Function(
       ffi.Pointer<taiyin_context> context,
-      double jd_tt,
+      ffi.Pointer<taiyin_split_julian_date> jd_tt,
       int native_position_flags,
       ffi.Pointer<ffi.Double> out_ayanamsha_rad,
       ffi.Pointer<ffi.Void> user_data,
@@ -11090,8 +12839,8 @@ typedef taiyin_native_position_evaluator_fnFunction =
     taiyin_status Function(
       ffi.Pointer<taiyin_context> context,
       ffi.Int32 target_id,
-      ffi.Double jd_tdb,
-      ffi.Double jd_tt,
+      ffi.Pointer<taiyin_split_julian_date> jd_tdb,
+      ffi.Pointer<taiyin_split_julian_date> jd_tt,
       ffi.Uint32 flags,
       ffi.Pointer<ffi.Double> out_position,
       ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
@@ -11101,8 +12850,8 @@ typedef Darttaiyin_native_position_evaluator_fnFunction =
     Darttaiyin_status Function(
       ffi.Pointer<taiyin_context> context,
       int target_id,
-      double jd_tdb,
-      double jd_tt,
+      ffi.Pointer<taiyin_split_julian_date> jd_tdb,
+      ffi.Pointer<taiyin_split_julian_date> jd_tt,
       int flags,
       ffi.Pointer<ffi.Double> out_position,
       ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
@@ -11116,8 +12865,8 @@ typedef taiyin_native_state_evaluator_fnFunction =
     taiyin_status Function(
       ffi.Pointer<taiyin_context> context,
       ffi.Int32 target_id,
-      ffi.Double jd_tdb,
-      ffi.Double jd_tt,
+      ffi.Pointer<taiyin_split_julian_date> jd_tdb,
+      ffi.Pointer<taiyin_split_julian_date> jd_tt,
       ffi.Uint32 flags,
       ffi.Pointer<taiyin_cartesian_state> out_state,
       ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
@@ -11127,8 +12876,8 @@ typedef Darttaiyin_native_state_evaluator_fnFunction =
     Darttaiyin_status Function(
       ffi.Pointer<taiyin_context> context,
       int target_id,
-      double jd_tdb,
-      double jd_tt,
+      ffi.Pointer<taiyin_split_julian_date> jd_tdb,
+      ffi.Pointer<taiyin_split_julian_date> jd_tt,
       int flags,
       ffi.Pointer<taiyin_cartesian_state> out_state,
       ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
@@ -11193,14 +12942,6 @@ sealed class taiyin_time_scale_diagnostic_flags {
   static const TAIYIN_TIME_USED_LEAP_SECONDS = 1;
   static const TAIYIN_TIME_USED_EOP = 2;
   static const TAIYIN_TIME_USED_DELTA_T_MODEL = 4;
-}
-
-final class taiyin_split_julian_date extends ffi.Struct {
-  @ffi.Int64()
-  external int day_number;
-
-  @ffi.Double()
-  external double day_fraction;
 }
 
 final class taiyin_precise_time_scales extends ffi.Struct {
@@ -11323,11 +13064,9 @@ final class taiyin_equation_of_time_result extends ffi.Struct {
   @ffi.Uint32()
   external int struct_size;
 
-  @ffi.Double()
-  external double jd_ut;
+  external taiyin_split_julian_date jd_ut;
 
-  @ffi.Double()
-  external double jd_tt;
+  external taiyin_split_julian_date jd_tt;
 
   @ffi.Double()
   external double equation_days;
@@ -11458,8 +13197,7 @@ final class taiyin_body_apsis_search_result extends ffi.Struct {
   @ffi.Int32()
   external int kind;
 
-  @ffi.Double()
-  external double jd;
+  external taiyin_split_julian_date jd;
 
   @ffi.Double()
   external double distance_au;
@@ -11490,8 +13228,7 @@ final class taiyin_body_node_search_result extends ffi.Struct {
   @ffi.Int32()
   external int kind;
 
-  @ffi.Double()
-  external double jd;
+  external taiyin_split_julian_date jd;
 
   @ffi.Double()
   external double reference_plane_angle_rad;
@@ -11555,8 +13292,7 @@ final class taiyin_visibility_event_result extends ffi.Struct {
   @ffi.Int32()
   external int crossing_direction;
 
-  @ffi.Double()
-  external double jd_ut;
+  external taiyin_split_julian_date jd_ut;
 
   @ffi.Double()
   external double residual_rad;
@@ -11567,11 +13303,9 @@ final class taiyin_visibility_event_result extends ffi.Struct {
   @ffi.Double()
   external double max_residual_rad;
 
-  @ffi.Double()
-  external double min_residual_jd_ut;
+  external taiyin_split_julian_date min_residual_jd_ut;
 
-  @ffi.Double()
-  external double max_residual_jd_ut;
+  external taiyin_split_julian_date max_residual_jd_ut;
 
   @ffi.Int32()
   external int sample_count;
@@ -11587,11 +13321,9 @@ final class taiyin_solar_rise_set_fast_result extends ffi.Struct {
   @ffi.Int32()
   external int altitude_state;
 
-  @ffi.Double()
-  external double rise_jd_tt;
+  external taiyin_split_julian_date rise_jd_tt;
 
-  @ffi.Double()
-  external double set_jd_tt;
+  external taiyin_split_julian_date set_jd_tt;
 
   @ffi.Int32()
   external int sample_count;
@@ -11604,8 +13336,7 @@ final class taiyin_solar_transit_fast_result extends ffi.Struct {
   @ffi.Uint32()
   external int struct_size;
 
-  @ffi.Double()
-  external double transit_jd_tt;
+  external taiyin_split_julian_date transit_jd_tt;
 
   @ffi.Double()
   external double altitude_rad;
@@ -11725,14 +13456,11 @@ final class taiyin_heliacal_visibility_search_result extends ffi.Struct {
   @ffi.Int32()
   external int event_kind;
 
-  @ffi.Double()
-  external double jd_ut;
+  external taiyin_split_julian_date jd_ut;
 
-  @ffi.Double()
-  external double window_start_jd_ut;
+  external taiyin_split_julian_date window_start_jd_ut;
 
-  @ffi.Double()
-  external double window_end_jd_ut;
+  external taiyin_split_julian_date window_end_jd_ut;
 
   @ffi.Int32()
   external int scanned_day_count;
@@ -11769,8 +13497,7 @@ final class taiyin_greatest_elongation_result extends ffi.Struct {
   @ffi.Uint32()
   external int struct_size;
 
-  @ffi.Double()
-  external double jd_ut;
+  external taiyin_split_julian_date jd_ut;
 
   @ffi.Double()
   external double elongation_rad;
@@ -11797,8 +13524,7 @@ final class taiyin_angular_separation_result extends ffi.Struct {
   @ffi.Uint32()
   external int struct_size;
 
-  @ffi.Double()
-  external double jd;
+  external taiyin_split_julian_date jd;
 
   @ffi.Double()
   external double separation_rad;
@@ -11829,8 +13555,7 @@ final class taiyin_solar_transit_result extends ffi.Struct {
   @ffi.Uint32()
   external int kind;
 
-  @ffi.Double()
-  external double greatest_jd_ut;
+  external taiyin_split_julian_date greatest_jd_ut;
 
   @ffi.Double()
   external double minimum_separation_rad;
@@ -11841,17 +13566,13 @@ final class taiyin_solar_transit_result extends ffi.Struct {
   @ffi.Double()
   external double body_radius_rad;
 
-  @ffi.Double()
-  external double t1_jd_ut;
+  external taiyin_split_julian_date t1_jd_ut;
 
-  @ffi.Double()
-  external double t2_jd_ut;
+  external taiyin_split_julian_date t2_jd_ut;
 
-  @ffi.Double()
-  external double t3_jd_ut;
+  external taiyin_split_julian_date t3_jd_ut;
 
-  @ffi.Double()
-  external double t4_jd_ut;
+  external taiyin_split_julian_date t4_jd_ut;
 
   @ffi.Int32()
   external int iteration_count;
@@ -11877,11 +13598,9 @@ final class taiyin_local_solar_transit_result extends ffi.Struct {
   @ffi.Array.multi([5])
   external ffi.Array<ffi.Double> contact_sun_azimuth_deg;
 
-  @ffi.Double()
-  external double sunrise_jd_ut;
+  external taiyin_split_julian_date sunrise_jd_ut;
 
-  @ffi.Double()
-  external double sunset_jd_ut;
+  external taiyin_split_julian_date sunset_jd_ut;
 }
 
 sealed class taiyin_occultation_kind {
@@ -11945,26 +13664,19 @@ final class taiyin_lunar_occultation_result extends ffi.Struct {
   @ffi.Uint32()
   external int type_flags;
 
-  @ffi.Double()
-  external double jd_ut;
+  external taiyin_split_julian_date jd_ut;
 
-  @ffi.Double()
-  external double begin_jd_ut;
+  external taiyin_split_julian_date begin_jd_ut;
 
-  @ffi.Double()
-  external double end_jd_ut;
+  external taiyin_split_julian_date end_jd_ut;
 
-  @ffi.Double()
-  external double first_contact_jd_ut;
+  external taiyin_split_julian_date first_contact_jd_ut;
 
-  @ffi.Double()
-  external double second_contact_jd_ut;
+  external taiyin_split_julian_date second_contact_jd_ut;
 
-  @ffi.Double()
-  external double third_contact_jd_ut;
+  external taiyin_split_julian_date third_contact_jd_ut;
 
-  @ffi.Double()
-  external double fourth_contact_jd_ut;
+  external taiyin_split_julian_date fourth_contact_jd_ut;
 
   @ffi.Double()
   external double separation_rad;
@@ -11980,11 +13692,9 @@ final class taiyin_lunar_occultation_result extends ffi.Struct {
 
   external taiyin_lunar_occultation_phenomena phenomena;
 
-  @ffi.Double()
-  external double candidate_jd_ut;
+  external taiyin_split_julian_date candidate_jd_ut;
 
-  @ffi.Double()
-  external double next_search_jd_ut;
+  external taiyin_split_julian_date next_search_jd_ut;
 
   @ffi.Int32()
   external int candidate_count;
@@ -12006,11 +13716,9 @@ final class taiyin_lunar_occultation_visibility_interval extends ffi.Struct {
   @ffi.Array.multi([3])
   external ffi.Array<ffi.Uint8> reserved;
 
-  @ffi.Double()
-  external double begin_jd_ut;
+  external taiyin_split_julian_date begin_jd_ut;
 
-  @ffi.Double()
-  external double end_jd_ut;
+  external taiyin_split_julian_date end_jd_ut;
 }
 
 final class taiyin_lunar_occultation_visibility_sample extends ffi.Struct {
@@ -12023,8 +13731,7 @@ final class taiyin_lunar_occultation_visibility_sample extends ffi.Struct {
   @ffi.Array.multi([3])
   external ffi.Array<ffi.Uint8> reserved;
 
-  @ffi.Double()
-  external double jd_ut;
+  external taiyin_split_julian_date jd_ut;
 
   @ffi.Double()
   external double moon_altitude_rad;
@@ -12062,23 +13769,17 @@ final class taiyin_lunar_occultation_local_visibility extends ffi.Struct {
 
   external taiyin_lunar_occultation_visibility_sample fourth_contact;
 
-  @ffi.Double()
-  external double target_rise_jd_ut;
+  external taiyin_split_julian_date target_rise_jd_ut;
 
-  @ffi.Double()
-  external double target_set_jd_ut;
+  external taiyin_split_julian_date target_set_jd_ut;
 
-  @ffi.Double()
-  external double visible_begin_jd_ut;
+  external taiyin_split_julian_date visible_begin_jd_ut;
 
-  @ffi.Double()
-  external double visible_end_jd_ut;
+  external taiyin_split_julian_date visible_end_jd_ut;
 
-  @ffi.Double()
-  external double dark_visible_begin_jd_ut;
+  external taiyin_split_julian_date dark_visible_begin_jd_ut;
 
-  @ffi.Double()
-  external double dark_visible_end_jd_ut;
+  external taiyin_split_julian_date dark_visible_end_jd_ut;
 
   @ffi.Int32()
   external int visible_interval_count;
@@ -12108,8 +13809,7 @@ final class taiyin_lunar_occultation_path_point extends ffi.Struct {
   @ffi.Array.multi([3])
   external ffi.Array<ffi.Uint8> reserved;
 
-  @ffi.Double()
-  external double jd_ut;
+  external taiyin_split_julian_date jd_ut;
 
   @ffi.Double()
   external double longitude_deg;
@@ -12134,14 +13834,11 @@ final class taiyin_lunar_occultation_where_result extends ffi.Struct {
   @ffi.Uint32()
   external int type_flags;
 
-  @ffi.Double()
-  external double jd_ut;
+  external taiyin_split_julian_date jd_ut;
 
-  @ffi.Double()
-  external double center_line_begin_jd_ut;
+  external taiyin_split_julian_date center_line_begin_jd_ut;
 
-  @ffi.Double()
-  external double center_line_end_jd_ut;
+  external taiyin_split_julian_date center_line_end_jd_ut;
 
   @ffi.Int32()
   external int center_line_path_count;
@@ -12293,8 +13990,7 @@ final class taiyin_lunar_eclipse_result_tt extends ffi.Struct {
   @ffi.Uint32()
   external int kind;
 
-  @ffi.Double()
-  external double maximum_jd_tt;
+  external taiyin_split_julian_date maximum_jd_tt;
 
   @ffi.Double()
   external double umbral_magnitude;
@@ -12315,7 +14011,7 @@ final class taiyin_lunar_eclipse_result_tt extends ffi.Struct {
   external double moon_radius_rad;
 
   @ffi.Array.multi([7])
-  external ffi.Array<ffi.Double> contact_jd_tt;
+  external ffi.Array<taiyin_split_julian_date> contact_jd_tt;
 }
 
 final class taiyin_lunar_eclipse_result_ut extends ffi.Struct {
@@ -12325,8 +14021,7 @@ final class taiyin_lunar_eclipse_result_ut extends ffi.Struct {
   @ffi.Uint32()
   external int kind;
 
-  @ffi.Double()
-  external double maximum_jd_ut;
+  external taiyin_split_julian_date maximum_jd_ut;
 
   @ffi.Double()
   external double delta_t_seconds;
@@ -12350,7 +14045,7 @@ final class taiyin_lunar_eclipse_result_ut extends ffi.Struct {
   external double moon_radius_rad;
 
   @ffi.Array.multi([7])
-  external ffi.Array<ffi.Double> contact_jd_ut;
+  external ffi.Array<taiyin_split_julian_date> contact_jd_ut;
 }
 
 final class taiyin_local_lunar_eclipse_result_tt extends ffi.Struct {
@@ -12363,8 +14058,7 @@ final class taiyin_local_lunar_eclipse_result_tt extends ffi.Struct {
   @ffi.Uint32()
   external int visibility_flags;
 
-  @ffi.Double()
-  external double maximum_jd_tt;
+  external taiyin_split_julian_date maximum_jd_tt;
 
   @ffi.Double()
   external double umbral_magnitude;
@@ -12373,7 +14067,7 @@ final class taiyin_local_lunar_eclipse_result_tt extends ffi.Struct {
   external double penumbral_magnitude;
 
   @ffi.Array.multi([7])
-  external ffi.Array<ffi.Double> contact_jd_tt;
+  external ffi.Array<taiyin_split_julian_date> contact_jd_tt;
 
   @ffi.Array.multi([7])
   external ffi.Array<ffi.Double> contact_moon_altitude_deg;
@@ -12381,11 +14075,9 @@ final class taiyin_local_lunar_eclipse_result_tt extends ffi.Struct {
   @ffi.Array.multi([7])
   external ffi.Array<ffi.Double> contact_moon_azimuth_deg;
 
-  @ffi.Double()
-  external double moonrise_jd_tt;
+  external taiyin_split_julian_date moonrise_jd_tt;
 
-  @ffi.Double()
-  external double moonset_jd_tt;
+  external taiyin_split_julian_date moonset_jd_tt;
 }
 
 final class taiyin_local_lunar_eclipse_result_ut extends ffi.Struct {
@@ -12398,8 +14090,7 @@ final class taiyin_local_lunar_eclipse_result_ut extends ffi.Struct {
   @ffi.Uint32()
   external int visibility_flags;
 
-  @ffi.Double()
-  external double maximum_jd_ut;
+  external taiyin_split_julian_date maximum_jd_ut;
 
   @ffi.Double()
   external double delta_t_seconds;
@@ -12411,7 +14102,7 @@ final class taiyin_local_lunar_eclipse_result_ut extends ffi.Struct {
   external double penumbral_magnitude;
 
   @ffi.Array.multi([7])
-  external ffi.Array<ffi.Double> contact_jd_ut;
+  external ffi.Array<taiyin_split_julian_date> contact_jd_ut;
 
   @ffi.Array.multi([7])
   external ffi.Array<ffi.Double> contact_moon_altitude_deg;
@@ -12419,11 +14110,9 @@ final class taiyin_local_lunar_eclipse_result_ut extends ffi.Struct {
   @ffi.Array.multi([7])
   external ffi.Array<ffi.Double> contact_moon_azimuth_deg;
 
-  @ffi.Double()
-  external double moonrise_jd_ut;
+  external taiyin_split_julian_date moonrise_jd_ut;
 
-  @ffi.Double()
-  external double moonset_jd_ut;
+  external taiyin_split_julian_date moonset_jd_ut;
 }
 
 final class taiyin_solar_eclipse_result_tt extends ffi.Struct {
@@ -12433,8 +14122,7 @@ final class taiyin_solar_eclipse_result_tt extends ffi.Struct {
   @ffi.Uint32()
   external int kind;
 
-  @ffi.Double()
-  external double maximum_jd_tt;
+  external taiyin_split_julian_date maximum_jd_tt;
 
   @ffi.Double()
   external double axis_distance_km;
@@ -12458,7 +14146,7 @@ final class taiyin_solar_eclipse_result_tt extends ffi.Struct {
   external double maximum_longitude_deg;
 
   @ffi.Array.multi([5])
-  external ffi.Array<ffi.Double> contact_jd_tt;
+  external ffi.Array<taiyin_split_julian_date> contact_jd_tt;
 }
 
 final class taiyin_solar_eclipse_result_ut extends ffi.Struct {
@@ -12468,8 +14156,7 @@ final class taiyin_solar_eclipse_result_ut extends ffi.Struct {
   @ffi.Uint32()
   external int kind;
 
-  @ffi.Double()
-  external double maximum_jd_ut;
+  external taiyin_split_julian_date maximum_jd_ut;
 
   @ffi.Double()
   external double delta_t_seconds;
@@ -12496,15 +14183,14 @@ final class taiyin_solar_eclipse_result_ut extends ffi.Struct {
   external double maximum_longitude_deg;
 
   @ffi.Array.multi([5])
-  external ffi.Array<ffi.Double> contact_jd_ut;
+  external ffi.Array<taiyin_split_julian_date> contact_jd_ut;
 }
 
 final class taiyin_local_solar_eclipse_circumstances_tt extends ffi.Struct {
   @ffi.Uint32()
   external int struct_size;
 
-  @ffi.Double()
-  external double jd_tt;
+  external taiyin_split_julian_date jd_tt;
 
   @ffi.Double()
   external double magnitude;
@@ -12532,8 +14218,7 @@ final class taiyin_local_solar_eclipse_circumstances_ut extends ffi.Struct {
   @ffi.Uint32()
   external int struct_size;
 
-  @ffi.Double()
-  external double jd_ut;
+  external taiyin_split_julian_date jd_ut;
 
   @ffi.Double()
   external double delta_t_seconds;
@@ -12567,8 +14252,7 @@ final class taiyin_local_solar_eclipse_result_tt extends ffi.Struct {
   @ffi.Uint32()
   external int kind;
 
-  @ffi.Double()
-  external double maximum_jd_tt;
+  external taiyin_split_julian_date maximum_jd_tt;
 
   @ffi.Double()
   external double magnitude;
@@ -12583,7 +14267,7 @@ final class taiyin_local_solar_eclipse_result_tt extends ffi.Struct {
   external double sun_azimuth_deg;
 
   @ffi.Array.multi([5])
-  external ffi.Array<ffi.Double> contact_jd_tt;
+  external ffi.Array<taiyin_split_julian_date> contact_jd_tt;
 
   @ffi.Double()
   external double position_angle_c1_deg;
@@ -12617,8 +14301,7 @@ final class taiyin_local_solar_eclipse_result_ut extends ffi.Struct {
   @ffi.Uint32()
   external int kind;
 
-  @ffi.Double()
-  external double maximum_jd_ut;
+  external taiyin_split_julian_date maximum_jd_ut;
 
   @ffi.Double()
   external double delta_t_seconds;
@@ -12636,7 +14319,7 @@ final class taiyin_local_solar_eclipse_result_ut extends ffi.Struct {
   external double sun_azimuth_deg;
 
   @ffi.Array.multi([5])
-  external ffi.Array<ffi.Double> contact_jd_ut;
+  external ffi.Array<taiyin_split_julian_date> contact_jd_ut;
 
   @ffi.Double()
   external double position_angle_c1_deg;
@@ -12708,11 +14391,9 @@ final class taiyin_solar_eclipse_path_point extends ffi.Struct {
   @ffi.Uint32()
   external int struct_size;
 
-  @ffi.Double()
-  external double jd_tt;
+  external taiyin_split_julian_date jd_tt;
 
-  @ffi.Double()
-  external double jd_ut;
+  external taiyin_split_julian_date jd_ut;
 
   @ffi.Double()
   external double latitude_deg;
@@ -12734,11 +14415,9 @@ final class taiyin_solar_eclipse_route_row extends ffi.Struct {
   @ffi.Uint32()
   external int struct_size;
 
-  @ffi.Double()
-  external double jd_tt;
+  external taiyin_split_julian_date jd_tt;
 
-  @ffi.Double()
-  external double jd_ut;
+  external taiyin_split_julian_date jd_ut;
 
   external taiyin_solar_eclipse_path_point center_line;
 
@@ -12771,11 +14450,9 @@ final class taiyin_solar_eclipse_route_curve_point extends ffi.Struct {
   @ffi.Uint32()
   external int struct_size;
 
-  @ffi.Double()
-  external double jd_tt;
+  external taiyin_split_julian_date jd_tt;
 
-  @ffi.Double()
-  external double jd_ut;
+  external taiyin_split_julian_date jd_ut;
 
   @ffi.Uint32()
   external int curve_kind;
@@ -12791,11 +14468,9 @@ final class taiyin_solar_eclipse_route_product_point extends ffi.Struct {
   @ffi.Uint32()
   external int struct_size;
 
-  @ffi.Double()
-  external double jd_tt;
+  external taiyin_split_julian_date jd_tt;
 
-  @ffi.Double()
-  external double jd_ut;
+  external taiyin_split_julian_date jd_ut;
 
   @ffi.Uint32()
   external int point_kind;
@@ -12923,8 +14598,7 @@ final class taiyin_solar_besselian_polynomial extends ffi.Struct {
   @ffi.Uint32()
   external int struct_size;
 
-  @ffi.Double()
-  external double t0_jd_tt;
+  external taiyin_split_julian_date t0_jd_tt;
 
   @ffi.Double()
   external double span_hours;
@@ -12971,6 +14645,638 @@ final class taiyin_solar_besselian_polynomial extends ffi.Struct {
   external taiyin_solar_besselian_elements center;
 
   external taiyin_solar_besselian_elements max_residual;
+}
+
+final class taiyin_chinese_calendar_context extends ffi.Opaque {}
+
+sealed class taiyin_chinese_calendar_rule_mode {
+  static const TAIYIN_C_CHINESE_CALENDAR_HISTORICAL_CHINA = 0;
+  static const TAIYIN_C_CHINESE_CALENDAR_ASTRONOMICAL = 1;
+}
+
+sealed class taiyin_chinese_calendar_day_boundary_mode {
+  static const TAIYIN_C_CHINESE_CALENDAR_FIXED_UTC_OFFSET = 0;
+  static const TAIYIN_C_CHINESE_CALENDAR_MEAN_SOLAR_MERIDIAN = 1;
+}
+
+sealed class taiyin_chinese_calendar_month_name {
+  static const TAIYIN_C_CHINESE_MONTH_NAME_NORMAL = 0;
+  static const TAIYIN_C_CHINESE_MONTH_NAME_THIRTEEN = 1;
+  static const TAIYIN_C_CHINESE_MONTH_NAME_LATER_NINE = 2;
+  static const TAIYIN_C_CHINESE_MONTH_NAME_ALT_TWELVE = 3;
+  static const TAIYIN_C_CHINESE_MONTH_NAME_ALT_ONE = 4;
+}
+
+final class taiyin_chinese_calendar_config extends ffi.Struct {
+  @ffi.Uint32()
+  external int struct_size;
+
+  @ffi.Int32()
+  external int rule_mode;
+
+  @ffi.Int32()
+  external int day_boundary_mode;
+
+  @ffi.Int32()
+  external int utc_offset_minutes;
+
+  @ffi.Int32()
+  external int reserved;
+
+  @ffi.Double()
+  external double calendar_meridian_deg;
+}
+
+final class taiyin_solar_date extends ffi.Struct {
+  @ffi.Uint32()
+  external int struct_size;
+
+  @ffi.Int32()
+  external int year;
+
+  @ffi.Uint8()
+  external int month;
+
+  @ffi.Uint8()
+  external int day;
+
+  @ffi.Array.multi([2])
+  external ffi.Array<ffi.Uint8> reserved;
+}
+
+final class taiyin_lunar_date extends ffi.Struct {
+  @ffi.Uint32()
+  external int struct_size;
+
+  @ffi.Int32()
+  external int year;
+
+  @ffi.Uint8()
+  external int month;
+
+  @ffi.Uint8()
+  external int day;
+
+  @ffi.Uint8()
+  external int is_leap;
+
+  @ffi.Uint8()
+  external int month_days;
+
+  @ffi.Uint8()
+  external int month_name;
+
+  @ffi.Array.multi([3])
+  external ffi.Array<ffi.Uint8> reserved;
+}
+
+final class taiyin_chinese_solar_term_event extends ffi.Struct {
+  @ffi.Uint32()
+  external int struct_size;
+
+  @ffi.Uint8()
+  external int index_from_winter_solstice;
+
+  @ffi.Array.multi([3])
+  external ffi.Array<ffi.Uint8> reserved;
+
+  @ffi.Double()
+  external double target_longitude_rad;
+
+  external taiyin_split_julian_date jd_ut;
+
+  @ffi.Int64()
+  external int civil_day_number;
+}
+
+final class taiyin_chinese_new_moon_event extends ffi.Struct {
+  @ffi.Uint32()
+  external int struct_size;
+
+  @ffi.Uint32()
+  external int reserved;
+
+  external taiyin_split_julian_date jd_ut;
+
+  @ffi.Int64()
+  external int civil_day_number;
+}
+
+final class taiyin_chinese_calendar_month extends ffi.Struct {
+  @ffi.Uint32()
+  external int struct_size;
+
+  @ffi.Int32()
+  external int lunar_year;
+
+  @ffi.Uint8()
+  external int month;
+
+  @ffi.Uint8()
+  external int is_leap;
+
+  @ffi.Uint8()
+  external int day_count;
+
+  @ffi.Uint8()
+  external int month_name;
+
+  @ffi.Int64()
+  external int first_civil_day_number;
+
+  external taiyin_split_julian_date astronomical_new_moon_jd_ut;
+}
+
+final class taiyin_chinese_calendar_year extends ffi.Struct {
+  @ffi.Uint32()
+  external int struct_size;
+
+  @ffi.Array.multi([25])
+  external ffi.Array<taiyin_chinese_solar_term_event> solar_terms;
+
+  @ffi.Array.multi([15])
+  external ffi.Array<taiyin_chinese_new_moon_event> new_moons;
+
+  @ffi.Array.multi([14])
+  external ffi.Array<taiyin_chinese_calendar_month> months;
+
+  @ffi.Uint8()
+  external int solar_term_count;
+
+  @ffi.Uint8()
+  external int new_moon_count;
+
+  @ffi.Uint8()
+  external int month_count;
+
+  @ffi.Int8()
+  external int leap_month_index;
+
+  @ffi.Int64()
+  external int first_winter_solstice_day_number;
+
+  @ffi.Int64()
+  external int second_winter_solstice_day_number;
+}
+
+typedef taiyin_ganzhi = ffi.Uint8;
+typedef Darttaiyin_ganzhi = int;
+
+sealed class taiyin_ganzhi_rat_hour_mode {
+  static const TAIYIN_GANZHI_RAT_HOUR_NO_SPLIT = 0;
+  static const TAIYIN_GANZHI_RAT_HOUR_TODAY_GAN = 1;
+  static const TAIYIN_GANZHI_RAT_HOUR_TOMORROW_GAN = 2;
+}
+
+sealed class taiyin_ganzhi_wuxing {
+  static const TAIYIN_GANZHI_WUXING_WATER = 0;
+  static const TAIYIN_GANZHI_WUXING_WOOD = 1;
+  static const TAIYIN_GANZHI_WUXING_METAL = 2;
+  static const TAIYIN_GANZHI_WUXING_EARTH = 3;
+  static const TAIYIN_GANZHI_WUXING_FIRE = 4;
+}
+
+final class taiyin_ganzhi_four_pillars extends ffi.Struct {
+  @ffi.Uint32()
+  external int struct_size;
+
+  @taiyin_ganzhi()
+  external int year;
+
+  @taiyin_ganzhi()
+  external int month;
+
+  @taiyin_ganzhi()
+  external int day;
+
+  @taiyin_ganzhi()
+  external int hour;
+}
+
+final class taiyin_bazi_context extends ffi.Opaque {}
+
+sealed class taiyin_bazi_earth_palace_mode {
+  static const TAIYIN_BAZI_EARTH_PALACE_FIRE_EARTH = 0;
+  static const TAIYIN_BAZI_EARTH_PALACE_WATER_EARTH = 1;
+}
+
+sealed class taiyin_bazi_gender {
+  static const TAIYIN_BAZI_GENDER_FEMALE = 0;
+  static const TAIYIN_BAZI_GENDER_MALE = 1;
+}
+
+sealed class taiyin_bazi_qiyun_direction_mode {
+  static const TAIYIN_BAZI_QIYUN_DIRECTION_YEAR_STEM_GENDER = 0;
+}
+
+sealed class taiyin_bazi_qiyun_time_model {
+  static const TAIYIN_BAZI_QIYUN_TRADITIONAL_CALENDAR = 0;
+  static const TAIYIN_BAZI_QIYUN_JULIAN_YEAR = 1;
+  static const TAIYIN_BAZI_QIYUN_TROPICAL_YEAR = 2;
+}
+
+sealed class taiyin_bazi_dayun_boundary_model {
+  static const TAIYIN_BAZI_DAYUN_CIVIL_YEARS = 0;
+  static const TAIYIN_BAZI_DAYUN_JULIAN_YEARS = 1;
+  static const TAIYIN_BAZI_DAYUN_TROPICAL_YEARS = 2;
+}
+
+sealed class taiyin_bazi_renyuan_siling_table_model {
+  static const TAIYIN_BAZI_RENYUAN_SILING_SAN_MING_TONG_HUI = 0;
+  static const TAIYIN_BAZI_RENYUAN_SILING_COMMON = 1;
+}
+
+sealed class taiyin_bazi_renyuan_siling_time_model {
+  static const TAIYIN_BAZI_RENYUAN_SILING_ELAPSED_24_HOURS = 0;
+  static const TAIYIN_BAZI_RENYUAN_SILING_LOCAL_CIVIL_DAYS = 1;
+}
+
+sealed class taiyin_bazi_renyuan_siling_origin_kind {
+  static const TAIYIN_BAZI_RENYUAN_SILING_ORIGIN_STEM = 0;
+  static const TAIYIN_BAZI_RENYUAN_SILING_ORIGIN_GEN_EARTH = 1;
+  static const TAIYIN_BAZI_RENYUAN_SILING_ORIGIN_KUN_EARTH = 2;
+}
+
+sealed class taiyin_bazi_wuxing {
+  static const TAIYIN_BAZI_WUXING_WATER = 0;
+  static const TAIYIN_BAZI_WUXING_WOOD = 1;
+  static const TAIYIN_BAZI_WUXING_METAL = 2;
+  static const TAIYIN_BAZI_WUXING_EARTH = 3;
+  static const TAIYIN_BAZI_WUXING_FIRE = 4;
+}
+
+sealed class taiyin_bazi_stem_relation_flags {
+  static const TAIYIN_BAZI_STEM_RELATION_COMBINATION = 1;
+  static const TAIYIN_BAZI_STEM_RELATION_CLASH = 2;
+  static const TAIYIN_BAZI_STEM_RELATION_RESTRAINT = 4;
+}
+
+sealed class taiyin_bazi_branch_relation_flags {
+  static const TAIYIN_BAZI_BRANCH_RELATION_COMBINATION = 1;
+  static const TAIYIN_BAZI_BRANCH_RELATION_CLASH = 2;
+  static const TAIYIN_BAZI_BRANCH_RELATION_HARM = 4;
+  static const TAIYIN_BAZI_BRANCH_RELATION_DESTRUCTION = 8;
+  static const TAIYIN_BAZI_BRANCH_RELATION_PUNISHMENT = 16;
+  static const TAIYIN_BAZI_BRANCH_RELATION_SELF_PUNISHMENT = 32;
+  static const TAIYIN_BAZI_BRANCH_RELATION_HIDDEN_COMBINATION = 64;
+  static const TAIYIN_BAZI_BRANCH_RELATION_SEVERANCE = 128;
+}
+
+sealed class taiyin_bazi_branch_triple_relation_flags {
+  static const TAIYIN_BAZI_BRANCH_TRIPLE_RELATION_COMBINATION = 1;
+  static const TAIYIN_BAZI_BRANCH_TRIPLE_RELATION_DIRECTION = 2;
+  static const TAIYIN_BAZI_BRANCH_TRIPLE_RELATION_PUNISHMENT = 4;
+}
+
+sealed class taiyin_bazi_shen_sha_target_kind {
+  static const TAIYIN_BAZI_SHEN_SHA_TARGET_YEAR = 0;
+  static const TAIYIN_BAZI_SHEN_SHA_TARGET_MONTH = 1;
+  static const TAIYIN_BAZI_SHEN_SHA_TARGET_DAY = 2;
+  static const TAIYIN_BAZI_SHEN_SHA_TARGET_HOUR = 3;
+  static const TAIYIN_BAZI_SHEN_SHA_TARGET_MING_GONG = 4;
+  static const TAIYIN_BAZI_SHEN_SHA_TARGET_SHEN_GONG = 5;
+  static const TAIYIN_BAZI_SHEN_SHA_TARGET_TAI_YUAN = 6;
+  static const TAIYIN_BAZI_SHEN_SHA_TARGET_TAI_XI = 7;
+  static const TAIYIN_BAZI_SHEN_SHA_TARGET_DA_YUN = 8;
+  static const TAIYIN_BAZI_SHEN_SHA_TARGET_FLOW_YEAR = 9;
+  static const TAIYIN_BAZI_SHEN_SHA_TARGET_FLOW_MONTH = 10;
+  static const TAIYIN_BAZI_SHEN_SHA_TARGET_FLOW_DAY = 11;
+  static const TAIYIN_BAZI_SHEN_SHA_TARGET_FLOW_HOUR = 12;
+}
+
+sealed class taiyin_bazi_shen_sha_id {
+  static const TAIYIN_BAZI_SHEN_SHA_TIAN_YI_GUI_REN = 0;
+  static const TAIYIN_BAZI_SHEN_SHA_YI_MA = 1;
+  static const TAIYIN_BAZI_SHEN_SHA_KONG_WANG = 11;
+  static const TAIYIN_BAZI_SHEN_SHA_TIAN_CHU_GUI_REN_XUN = 12;
+  static const TAIYIN_BAZI_SHEN_SHA_XIAN_CHI_TAO_HUA = 2;
+  static const TAIYIN_BAZI_SHEN_SHA_HONG_LUAN = 3;
+  static const TAIYIN_BAZI_SHEN_SHA_TIAN_XI = 4;
+  static const TAIYIN_BAZI_SHEN_SHA_YANG_REN = 5;
+  static const TAIYIN_BAZI_SHEN_SHA_FEI_REN = 6;
+  static const TAIYIN_BAZI_SHEN_SHA_FU_XING_GUI_REN = 7;
+  static const TAIYIN_BAZI_SHEN_SHA_ZAI_SHA = 8;
+  static const TAIYIN_BAZI_SHEN_SHA_JIE_SHA = 9;
+  static const TAIYIN_BAZI_SHEN_SHA_WANG_SHEN = 10;
+  static const TAIYIN_BAZI_SHEN_SHA_TIAN_CHU_GUI_REN = 13;
+  static const TAIYIN_BAZI_SHEN_SHA_DE_XIU_GUI_REN = 14;
+  static const TAIYIN_BAZI_SHEN_SHA_TIAN_YI_MEDICINE = 15;
+  static const TAIYIN_BAZI_SHEN_SHA_XUE_REN = 16;
+  static const TAIYIN_BAZI_SHEN_SHA_GOU_SHA = 18;
+  static const TAIYIN_BAZI_SHEN_SHA_JIAO_SHA = 19;
+  static const TAIYIN_BAZI_SHEN_SHA_YUAN_CHEN = 20;
+  static const TAIYIN_BAZI_SHEN_SHA_GU_CHEN = 21;
+  static const TAIYIN_BAZI_SHEN_SHA_GUA_SU = 22;
+  static const TAIYIN_BAZI_SHEN_SHA_HONG_YAN_SHA = 23;
+  static const TAIYIN_BAZI_SHEN_SHA_JIN_YU = 24;
+  static const TAIYIN_BAZI_SHEN_SHA_JIN_SHEN = 25;
+  static const TAIYIN_BAZI_SHEN_SHA_TONG_ZI = 31;
+  static const TAIYIN_BAZI_SHEN_SHA_TIAN_DE_HE = 32;
+  static const TAIYIN_BAZI_SHEN_SHA_SAN_QI_TIAN = 33;
+  static const TAIYIN_BAZI_SHEN_SHA_SAN_QI_DI = 34;
+  static const TAIYIN_BAZI_SHEN_SHA_SAN_QI_REN = 35;
+  static const TAIYIN_BAZI_SHEN_SHA_YUE_DE_HE = 17;
+  static const TAIYIN_BAZI_SHEN_SHA_TIAN_SHE_DAY = 26;
+  static const TAIYIN_BAZI_SHEN_SHA_LIU_XIA = 27;
+  static const TAIYIN_BAZI_SHEN_SHA_SANG_MEN = 28;
+  static const TAIYIN_BAZI_SHEN_SHA_DIAO_KE = 29;
+  static const TAIYIN_BAZI_SHEN_SHA_PI_MA = 30;
+  static const TAIYIN_BAZI_SHEN_SHA_JIANG_XING = 36;
+  static const TAIYIN_BAZI_SHEN_SHA_HUA_GAI = 37;
+  static const TAIYIN_BAZI_SHEN_SHA_DI_ZHUAN = 50;
+  static const TAIYIN_BAZI_SHEN_SHA_TIAN_ZHUAN = 51;
+  static const TAIYIN_BAZI_SHEN_SHA_KUI_GANG = 38;
+  static const TAIYIN_BAZI_SHEN_SHA_SHI_LING_DAY = 39;
+  static const TAIYIN_BAZI_SHEN_SHA_BA_ZHUAN_DAY = 40;
+  static const TAIYIN_BAZI_SHEN_SHA_LIU_XIU_DAY = 41;
+  static const TAIYIN_BAZI_SHEN_SHA_JIU_CHOU_DAY = 42;
+  static const TAIYIN_BAZI_SHEN_SHA_SI_FEI_DAY = 43;
+  static const TAIYIN_BAZI_SHEN_SHA_SHI_E_DA_BAI = 44;
+  static const TAIYIN_BAZI_SHEN_SHA_YIN_CHA_YANG_CUO = 46;
+  static const TAIYIN_BAZI_SHEN_SHA_GU_LUAN_SHA = 47;
+  static const TAIYIN_BAZI_SHEN_SHA_TIAN_LUO_DI_WANG = 45;
+  static const TAIYIN_BAZI_SHEN_SHA_GONG_LU = 48;
+  static const TAIYIN_BAZI_SHEN_SHA_GONG_GUI = 49;
+  static const TAIYIN_BAZI_SHEN_SHA_TAI_JI_GUI_REN = 52;
+  static const TAIYIN_BAZI_SHEN_SHA_WEN_CHANG_GUI_REN = 53;
+  static const TAIYIN_BAZI_SHEN_SHA_GUO_YIN_GUI_REN = 54;
+  static const TAIYIN_BAZI_SHEN_SHA_YUE_DE_GUI_REN = 56;
+  static const TAIYIN_BAZI_SHEN_SHA_LU_SHEN = 57;
+  static const TAIYIN_BAZI_SHEN_SHA_RI_GAN_XUE_TANG = 58;
+  static const TAIYIN_BAZI_SHEN_SHA_RI_GAN_CI_GUAN = 59;
+  static const TAIYIN_BAZI_SHEN_SHA_TIAN_DE_GUI_REN = 55;
+  static const TAIYIN_BAZI_SHEN_SHA_ZHENG_XUE_TANG = 60;
+  static const TAIYIN_BAZI_SHEN_SHA_ZHENG_CI_GUAN = 61;
+  static const TAIYIN_BAZI_SHEN_SHA_GUAN_GUI_XUE_TANG = 62;
+  static const TAIYIN_BAZI_SHEN_SHA_GUAN_GUI_CI_GUAN = 63;
+  static const TAIYIN_BAZI_SHEN_SHA_GUAN_XING_XUE_TANG = 64;
+  static const TAIYIN_BAZI_SHEN_SHA_XUE_TANG_HUI_GUI = 65;
+}
+
+sealed class taiyin_bazi_relation_kind {
+  static const TAIYIN_BAZI_RELATION_STEM_COMBINATION = 0;
+  static const TAIYIN_BAZI_RELATION_STEM_CLASH = 1;
+  static const TAIYIN_BAZI_RELATION_STEM_RESTRAINT = 2;
+  static const TAIYIN_BAZI_RELATION_BRANCH_COMBINATION = 3;
+  static const TAIYIN_BAZI_RELATION_BRANCH_CLASH = 4;
+  static const TAIYIN_BAZI_RELATION_BRANCH_HARM = 5;
+  static const TAIYIN_BAZI_RELATION_BRANCH_DESTRUCTION = 6;
+  static const TAIYIN_BAZI_RELATION_BRANCH_TRIPLE_PUNISHMENT = 7;
+  static const TAIYIN_BAZI_RELATION_BRANCH_PUNISHMENT = 8;
+  static const TAIYIN_BAZI_RELATION_BRANCH_SELF_PUNISHMENT = 9;
+  static const TAIYIN_BAZI_RELATION_BRANCH_TRIPLE_COMBINATION = 10;
+  static const TAIYIN_BAZI_RELATION_BRANCH_TRIPLE_DIRECTION = 11;
+  static const TAIYIN_BAZI_RELATION_BRANCH_HALF_COMBINATION = 12;
+  static const TAIYIN_BAZI_RELATION_BRANCH_ARCHING_COMBINATION = 13;
+  static const TAIYIN_BAZI_RELATION_BRANCH_HIDDEN_COMBINATION = 14;
+  static const TAIYIN_BAZI_RELATION_BRANCH_SEVERANCE = 15;
+}
+
+sealed class taiyin_bazi_relation_pillar_flags {
+  static const TAIYIN_BAZI_RELATION_PILLAR_YEAR = 1;
+  static const TAIYIN_BAZI_RELATION_PILLAR_MONTH = 2;
+  static const TAIYIN_BAZI_RELATION_PILLAR_DAY = 4;
+  static const TAIYIN_BAZI_RELATION_PILLAR_HOUR = 8;
+  static const TAIYIN_BAZI_RELATION_PILLAR_MING_GONG = 16;
+  static const TAIYIN_BAZI_RELATION_PILLAR_SHEN_GONG = 32;
+  static const TAIYIN_BAZI_RELATION_PILLAR_TAI_YUAN = 64;
+  static const TAIYIN_BAZI_RELATION_PILLAR_TAI_XI = 128;
+  static const TAIYIN_BAZI_RELATION_PILLAR_PRIMARY = 15;
+  static const TAIYIN_BAZI_RELATION_PILLAR_EXTRA = 240;
+  static const TAIYIN_BAZI_RELATION_PILLAR_ALL = 255;
+}
+
+final class taiyin_bazi_context_config extends ffi.Struct {
+  @ffi.Uint32()
+  external int struct_size;
+
+  @ffi.Int32()
+  external int earth_palace_mode;
+
+  @ffi.Int32()
+  external int qiyun_direction_mode;
+
+  @ffi.Int32()
+  external int qiyun_time_model;
+
+  @ffi.Int32()
+  external int dayun_boundary_model;
+}
+
+final class taiyin_bazi_chart extends ffi.Struct {
+  @ffi.Uint32()
+  external int struct_size;
+
+  @taiyin_ganzhi()
+  external int year_pillar;
+
+  @taiyin_ganzhi()
+  external int month_pillar;
+
+  @taiyin_ganzhi()
+  external int day_pillar;
+
+  @taiyin_ganzhi()
+  external int hour_pillar;
+
+  @taiyin_ganzhi()
+  external int ming_gong;
+
+  @taiyin_ganzhi()
+  external int shen_gong;
+
+  @taiyin_ganzhi()
+  external int tai_yuan;
+
+  @taiyin_ganzhi()
+  external int tai_xi;
+
+  @ffi.Array.multi([4])
+  external ffi.Array<ffi.Uint8> hidden_stem_count;
+
+  @ffi.Array.multi([4, 3])
+  external ffi.Array<ffi.Array<ffi.Uint8>> hidden_stems;
+
+  @ffi.Array.multi([4])
+  external ffi.Array<ffi.Uint8> visible_ten_gods;
+
+  @ffi.Array.multi([4, 3])
+  external ffi.Array<ffi.Array<ffi.Uint8>> hidden_ten_gods;
+
+  @ffi.Array.multi([4])
+  external ffi.Array<ffi.Uint8> life_stages;
+
+  @ffi.Array.multi([4])
+  external ffi.Array<ffi.Uint8> nayin_ids;
+}
+
+final class taiyin_bazi_relation extends ffi.Struct {
+  @ffi.Uint32()
+  external int struct_size;
+
+  @ffi.Int32()
+  external int kind;
+
+  @ffi.Uint32()
+  external int pillar_mask;
+
+  @ffi.Uint8()
+  external int combined_element_id;
+
+  @ffi.Array.multi([3])
+  external ffi.Array<ffi.Uint8> reserved;
+}
+
+final class taiyin_bazi_qiyun_result extends ffi.Struct {
+  @ffi.Uint32()
+  external int struct_size;
+
+  @ffi.Int32()
+  external int direction;
+
+  @ffi.Int32()
+  external int time_model;
+
+  @ffi.Uint8()
+  external int reference_jie_index;
+
+  @ffi.Array.multi([3])
+  external ffi.Array<ffi.Uint8> reserved;
+
+  @ffi.Double()
+  external double jie_interval_days;
+
+  @ffi.Double()
+  external double start_age_years;
+
+  @ffi.Int32()
+  external int offset_years;
+
+  @ffi.Int32()
+  external int offset_months;
+
+  @ffi.Int32()
+  external int offset_days;
+
+  @ffi.Int32()
+  external int offset_hours;
+
+  @ffi.Int32()
+  external int offset_minutes;
+
+  @ffi.Double()
+  external double offset_seconds;
+
+  external taiyin_split_julian_date reference_jie_jd_ut;
+
+  external taiyin_split_julian_date start_jd_ut;
+
+  external taiyin_calendar_datetime start_civil_time;
+}
+
+final class taiyin_bazi_dayun extends ffi.Struct {
+  @ffi.Uint32()
+  external int struct_size;
+
+  @ffi.Uint32()
+  external int index;
+
+  @taiyin_ganzhi()
+  external int ganzhi;
+
+  @ffi.Array.multi([3])
+  external ffi.Array<ffi.Uint8> reserved;
+
+  @ffi.Int32()
+  external int start_virtual_age;
+
+  @ffi.Int32()
+  external int end_virtual_age;
+
+  external taiyin_split_julian_date start_jd_ut;
+
+  external taiyin_split_julian_date end_jd_ut;
+
+  external taiyin_calendar_datetime start_civil_time;
+
+  external taiyin_calendar_datetime end_civil_time;
+}
+
+final class taiyin_bazi_xiaoyun extends ffi.Struct {
+  @ffi.Uint32()
+  external int struct_size;
+
+  @ffi.Uint32()
+  external int age;
+
+  @taiyin_ganzhi()
+  external int ganzhi;
+
+  @ffi.Array.multi([3])
+  external ffi.Array<ffi.Uint8> reserved;
+}
+
+final class taiyin_bazi_renyuan_siling_segment extends ffi.Struct {
+  @ffi.Uint32()
+  external int struct_size;
+
+  @ffi.Uint8()
+  external int stem_id;
+
+  @ffi.Uint8()
+  external int origin_kind;
+
+  @ffi.Uint8()
+  external int segment_index;
+
+  @ffi.Uint8()
+  external int reserved;
+
+  @ffi.Double()
+  external double start_day;
+
+  @ffi.Double()
+  external double end_day;
+}
+
+final class taiyin_bazi_renyuan_siling_result extends ffi.Struct {
+  @ffi.Uint32()
+  external int struct_size;
+
+  @ffi.Int32()
+  external int table_model;
+
+  @ffi.Int32()
+  external int time_model;
+
+  @ffi.Uint8()
+  external int month_branch_id;
+
+  @ffi.Uint8()
+  external int stem_id;
+
+  @ffi.Uint8()
+  external int origin_kind;
+
+  @ffi.Uint8()
+  external int segment_index;
+
+  @ffi.Uint8()
+  external int previous_jie_index;
+
+  @ffi.Array.multi([3])
+  external ffi.Array<ffi.Uint8> reserved;
+
+  @ffi.Double()
+  external double days_since_jie;
+
+  @ffi.Double()
+  external double segment_start_day;
+
+  @ffi.Double()
+  external double segment_end_day;
+
+  external taiyin_split_julian_date previous_jie_jd_ut;
 }
 
 const int TAIYIN_C_OCCULTATION_WHERE_MAX_PATH_POINTS = 16;

@@ -158,8 +158,8 @@ final class TaiyinContextConfiguration {
         _bindings.taiyin_context_set_simple_topocentric_observer(
           _context,
           native,
-          ut1.toDouble(),
-          tt.toDouble(),
+          writeJulianDate(arena, ut1),
+          writeJulianDate(arena, tt),
         ),
       );
     });
@@ -179,8 +179,8 @@ final class TaiyinContextConfiguration {
         _bindings.taiyin_context_set_precise_topocentric_observer(
           _context,
           native,
-          utc.toDouble(),
-          tt.toDouble(),
+          writeJulianDate(arena, utc),
+          writeJulianDate(arena, tt),
         ),
       );
     });

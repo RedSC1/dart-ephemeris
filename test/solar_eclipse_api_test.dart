@@ -2,12 +2,9 @@ import 'dart:io';
 
 import 'package:taiyin/taiyin.dart';
 import 'package:test/test.dart';
+import 'support/native_library.dart';
 
 void main() {
-  final libraryPath =
-      Platform.environment['TAIYIN_TEST_LIBRARY'] ??
-      '../taiyin-ephemeris/build-c-api-release/libtaiyin.dylib';
-  final nativeLibraryAvailable = File(libraryPath).existsSync();
   const nativeDataRoot = '../taiyin-ephemeris/data';
   const majorBodiesPath = '$nativeDataRoot/ephemerides/opm2/major-bodies/600y';
   const lunarLimbPath = '$nativeDataRoot/lunar-limb/kaguya_lalt_16ppd.tll1';
@@ -342,11 +339,12 @@ void main() {
         );
 
         expect(elements.value.tHours, 0);
-        expect(elements.value.x, closeTo(0.158222771478, 1e-9));
-        expect(elements.value.y, closeTo(0.304493852574, 1e-9));
+        // Updated after the native precession/nutation fix (2026-08).
+        expect(elements.value.x, closeTo(0.15822277776121665, 1e-9));
+        expect(elements.value.y, closeTo(0.3044938492945148, 1e-9));
         expect(elements.value.zeta, closeTo(56.410877306293, 1e-8));
         expect(elements.value.dDegrees, closeTo(-7.590825680172, 1e-9));
-        expect(elements.value.muDegrees, closeTo(273.994309607730, 1e-8));
+        expect(elements.value.muDegrees, closeTo(273.994309591411, 1e-8));
         expect(elements.value.l1, closeTo(0.535736741366, 1e-9));
         expect(elements.value.l2, closeTo(0.010590415175, 1e-9));
         expect(

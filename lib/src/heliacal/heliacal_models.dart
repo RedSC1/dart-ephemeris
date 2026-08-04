@@ -130,8 +130,8 @@ final class TaiyinHeliacalVisibilityResult {
 
 /// A located heliacal-visibility transition and its best visibility window.
 ///
-/// The native ABI returns these UT1 dates as scalar Julian dates, so they
-/// cannot retain split-JD precision at the FFI boundary.
+/// The native ABI returns these as split-JD UT1 dates, preserving full
+/// precision at the FFI boundary.
 final class TaiyinHeliacalVisibilitySearchResult {
   const TaiyinHeliacalVisibilitySearchResult({
     required this.event,
