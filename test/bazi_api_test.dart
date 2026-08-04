@@ -113,6 +113,21 @@ void main() {
         expect(dayun[1].ganzhi.branchId, 4);
       });
 
+      test('fills a contiguous xiao-yun range', () {
+        final chart = chartFor2024();
+        final entries = context.bazi.fillXiaoyun(
+          chart: chart,
+          direction: 1,
+          startAge: 1,
+          requestedCount: 5,
+        );
+        expect(entries, hasLength(5));
+        for (var index = 0; index < entries.length; index++) {
+          expect(entries[index].age, 1 + index);
+          expect(entries[index].ganzhi, isA<TaiyinGanzhi>());
+        }
+      });
+
       test('collects chart relations', () {
         final relations = context.bazi.collectChartRelations(
           chart: chartFor2024(),

@@ -295,6 +295,57 @@ final class TaiyinBaziContext implements Finalizable {
     });
   }
 
+  /// Fills a contiguous range of 小运 (xiao-yun) entries starting at
+  /// [startAge] (one-based virtual ages).
+  List<TaiyinBaziXiaoyun> fillXiaoyun({
+    required TaiyinBaziChart chart,
+    required int direction,
+    required int startAge,
+    required int requestedCount,
+  }) {
+    _ensureOpen();
+    _requireBazi();
+    return using((arena) {
+      final nativeChart = _writeBaziChart(_bindings, arena, chart);
+
+      final count = arena<Size>();
+      final countStatus = _bindings.taiyin_bazi_fill_xiaoyun(
+        nativeChart,
+        direction,
+        startAge,
+        requestedCount,
+        nullptr,
+        0,
+        count,
+      );
+      _checkStatus(_bindings, countStatus);
+      final requiredCount = _validatedArrayCount(count.value, 'BaZi xiao-yun');
+      if (requiredCount == 0) {
+        return const <TaiyinBaziXiaoyun>[];
+      }
+
+      final output = arena<taiyin_bazi_xiaoyun>(requiredCount);
+      for (var index = 0; index < requiredCount; index++) {
+        _bindings.taiyin_bazi_xiaoyun_init(output + index);
+      }
+      final fillStatus = _bindings.taiyin_bazi_fill_xiaoyun(
+        nativeChart,
+        direction,
+        startAge,
+        requestedCount,
+        output,
+        requiredCount,
+        count,
+      );
+      _checkStatus(_bindings, fillStatus);
+      final resultCount = _validatedArrayCount(count.value, 'BaZi xiao-yun');
+      return List.unmodifiable([
+        for (var index = 0; index < resultCount; index++)
+          _readXiaoyun((output + index).ref),
+      ]);
+    });
+  }
+
   /// Derives the full 八字 chart (命宫/身宫/胎元/胎息/藏干/十神/大运十二宫) from
   /// the four pillars.
   TaiyinBaziChart calcChart(TaiyinGanzhiFourPillars pillars) {
@@ -795,6 +846,13 @@ TaiyinBaziQiyunResult _readQiyunResult(taiyin_bazi_qiyun_result value) {
     referenceJieJdUt: readJulianDate<Ut1Scale>(value.reference_jie_jd_ut),
     startJdUt: readJulianDate<Ut1Scale>(value.start_jd_ut),
     startCivilTime: _readCalendarDateTime(value.start_civil_time),
+  );
+}
+
+TaiyinBaziXiaoyun _readXiaoyun(taiyin_bazi_xiaoyun value) {
+  return TaiyinBaziXiaoyun(
+    age: value.age,
+    ganzhi: TaiyinGanzhi.fromNative(value.ganzhi),
   );
 }
 

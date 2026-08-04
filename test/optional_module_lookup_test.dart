@@ -63,6 +63,15 @@ void main() {
             .calcYearUt(JulianDate<Ut1Scale>.fromDouble(2460348.0))
             .value;
         expect(year.solarTermCount, 25);
+        // fourPillars needs the extension-gated Ganzhi symbol, which is absent
+        // on the baseline library; it must refuse with UnsupportedError.
+        expect(
+          () => context.chineseCalendar.fourPillars(
+            instantUtc: JulianDate<UtcScale>.fromDouble(2460351.0),
+            virtualTime: AstroDateTime(2024, 2, 10, 12),
+          ),
+          throwsUnsupportedError,
+        );
         // Ganzhi and BaZi are optional: the API must refuse before any symbol
         // lookup on an extension-free library.
         expect(

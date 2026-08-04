@@ -11,6 +11,8 @@ final class TaiyinChineseCalendarContext implements Finalizable {
     this._bindings,
     this._context,
     this._finalizer,
+    this._capabilities,
+    this._owner,
   ) {
     _finalizer.attach(this, _context.cast(), detach: this);
   }
@@ -20,6 +22,7 @@ final class TaiyinChineseCalendarContext implements Finalizable {
     TaiyinBindings bindings,
     Pointer<taiyin_context> astronomyContext,
     TaiyinChineseCalendarConfig config,
+    TaiyinContext owner,
   ) {
     final context = using((arena) {
       final nativeConfig = _writeChineseCalendarConfig(bindings, arena, config);
@@ -38,12 +41,16 @@ final class TaiyinChineseCalendarContext implements Finalizable {
       bindings,
       context,
       nativeState.chineseCalendarFinalizer,
+      nativeState.capabilities,
+      owner,
     );
   }
 
   final TaiyinBindings _bindings;
   final Pointer<taiyin_chinese_calendar_context> _context;
   final NativeFinalizer _finalizer;
+  final int _capabilities;
+  final TaiyinContext _owner;
   bool _closed = false;
 
   bool get isClosed => _closed;
@@ -52,6 +59,7 @@ final class TaiyinChineseCalendarContext implements Finalizable {
   void close() {
     if (_closed) return;
     _closed = true;
+    _owner._calendarChildren.remove(this);
     _finalizer.detach(this);
     _bindings.taiyin_chinese_calendar_context_destroy(_context);
   }
@@ -60,6 +68,9 @@ final class TaiyinChineseCalendarContext implements Finalizable {
     if (_closed) {
       throw StateError('This TaiyinChineseCalendarContext has been closed.');
     }
+    // This context borrows the owning context's native astronomy state, so it
+    // must not outlive the owner.
+    _owner._ensureOpen();
   }
 
   /// Computes the full winter-solstice-based Chinese calendar year containing
@@ -301,6 +312,16 @@ final class TaiyinChineseCalendarContext implements Finalizable {
     TaiyinGanzhiRatHourMode ratHourMode = TaiyinGanzhiRatHourMode.noSplit,
   }) {
     _ensureOpen();
+    // four-pillars needs the Ganzhi extension symbol, which is absent on a
+    // baseline build; refuse before any lookup rather than surfacing a
+    // low-level symbol error.
+    if ((_capabilities & taiyinGanzhiCalendarCapability) == 0) {
+      throw UnsupportedError(
+        'The loaded Taiyin library does not include the Ganzhi calendar '
+        'extension (build with TAIYIN_BUILD_GANZHI_CALENDAR_EXTENSION=ON), '
+        'which fourPillars requires.',
+      );
+    }
     return using((arena) {
       final nativeVirtualTime = writeNativeCalendar(
         _bindings,

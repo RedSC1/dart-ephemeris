@@ -325,6 +325,10 @@ final class TaiyinContext implements Finalizable {
   late final TaiyinStarApi stars;
   late final TaiyinGanzhiApi ganzhi;
   TaiyinChineseCalendarContext? _chineseCalendar;
+
+  /// Every calendar context created from this context, tracked so closing the
+  /// owner invalidates caller-created children that borrow its native state.
+  final Set<TaiyinChineseCalendarContext> _calendarChildren = {};
   TaiyinBaziContext? _bazi;
   bool _closed = false;
 
@@ -361,12 +365,15 @@ final class TaiyinContext implements Finalizable {
     TaiyinChineseCalendarConfig config = const TaiyinChineseCalendarConfig(),
   }) {
     _ensureOpen();
-    return TaiyinChineseCalendarContext._create(
+    final child = TaiyinChineseCalendarContext._create(
       _nativeState,
       _bindings,
       _context,
       config,
+      this,
     );
+    _calendarChildren.add(child);
+    return child;
   }
 
   /// A BaZi context using the default astronomical configuration.
@@ -408,7 +415,10 @@ final class TaiyinContext implements Finalizable {
     if (_closed) return;
     _closed = true;
     // Destroy borrowed child contexts before the owning native context.
-    _chineseCalendar?.close();
+    for (final child in List.of(_calendarChildren)) {
+      child.close();
+    }
+    _calendarChildren.clear();
     _bazi?.close();
     _contextFinalizer.detach(this);
     _bindings.taiyin_context_destroy(_context);

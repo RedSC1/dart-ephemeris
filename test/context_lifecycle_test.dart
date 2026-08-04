@@ -38,6 +38,26 @@ void main() {
         expect(() => bazi.calcLiunian(2024), throwsStateError);
       });
 
+      test(
+        'closing the owner invalidates caller-created calendar contexts',
+        () {
+          // A caller-created calendar context borrows the owner's native state;
+          // closing the owner must invalidate it too, not just the cached one.
+          final custom = context.createChineseCalendar(
+            config: const TaiyinChineseCalendarConfig.utcOffset(0),
+          );
+          expect(custom.isClosed, isFalse);
+
+          context.close();
+
+          expect(custom.isClosed, isTrue);
+          expect(
+            () => custom.calcYearUt(JulianDate<Ut1Scale>.fromDouble(2460348.0)),
+            throwsStateError,
+          );
+        },
+      );
+
       test('clone creates independent cached child contexts', () {
         final originalCalendar = context.chineseCalendar;
         final clone = context.clone();

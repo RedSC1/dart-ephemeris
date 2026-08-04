@@ -845,11 +845,19 @@ final day = context.ganzhi.dayPillar(AstroDateTime(2024, 2, 10));
 
 // Requires TAIYIN_BUILD_BAZI_EXTENSION.
 final bazi = context.bazi;
-final chart = bazi.calcChart(pillars.value);
+final chart = bazi.calcChart(pillars.value); // returns TaiyinBaziChart
+final qiyun = bazi.calcQiyun(
+  birthJdUt: JulianDate<Ut1Scale>.fromDouble(2460351.0),
+  birthCivilTime: AstroDateTime(2024, 2, 10, 12),
+  chart: chart,
+  gender: TaiyinBaziGender.male,
+  calendar: context.chineseCalendar,
+);
 final dayun = bazi.fillDayun(
   birthCivilTime: AstroDateTime(2024, 2, 10, 12),
-  chart: chart.value,
-  qiyun: qiyun.value,
+  chart: chart,
+  qiyun: qiyun.value, // calcQiyun returns TaiyinEphemerisResult
+  requestedCount: 5,
 );
 ```
 
