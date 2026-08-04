@@ -93,16 +93,30 @@ enum TaiyinEarthlyBranch {
 /// One Ganzhi value: a heavenly stem (high nibble) and an earthly branch
 /// (low nibble) packed into the C ABI's `uint8_t` representation.
 final class TaiyinGanzhi {
-  const TaiyinGanzhi({required this.stemId, required this.branchId})
-    : assert(stemId >= 0 && stemId <= 9, 'stemId must be in 0..9'),
-      assert(branchId >= 0 && branchId <= 11, 'branchId must be in 0..11');
+  /// Creates a Ganzhi from validated stem and branch ids.
+  ///
+  /// Validates at runtime (not only via `assert`), so invalid ids are rejected
+  /// in release builds too.
+  factory TaiyinGanzhi({required int stemId, required int branchId}) {
+    if (stemId < 0 || stemId > 9) {
+      throw ArgumentError.value(stemId, 'stemId', 'must be in 0..9');
+    }
+    if (branchId < 0 || branchId > 11) {
+      throw ArgumentError.value(branchId, 'branchId', 'must be in 0..11');
+    }
+    return TaiyinGanzhi._(stemId, branchId);
+  }
+
+  const TaiyinGanzhi._(this.stemId, this.branchId);
 
   /// Decodes a raw C ABI value (`0xff` is invalid).
   factory TaiyinGanzhi.fromNative(int raw) {
-    if (raw == 0xff || (raw & 0x0f) == 0x0f || ((raw >> 4) & 0x0f) == 0x0f) {
+    final stemId = raw >> 4;
+    final branchId = raw & 0x0f;
+    if (raw == 0xff || stemId > 9 || branchId > 11) {
       throw ArgumentError.value(raw, 'raw', 'invalid packed Ganzhi');
     }
-    return TaiyinGanzhi(stemId: raw >> 4, branchId: raw & 0x0f);
+    return TaiyinGanzhi(stemId: stemId, branchId: branchId);
   }
 
   final int stemId;

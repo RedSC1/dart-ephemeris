@@ -124,7 +124,7 @@ const _solarRouteMaximumSampleCount = 4096;
 ///
 /// A local method samples the observer location already configured on the
 /// owning [TaiyinContext]. Native calculation coordinates and contact times
-/// cross ABI-2 as scalar Julian dates.
+/// cross the ABI-5 boundary as split Julian dates.
 final class TaiyinEclipseApi {
   TaiyinEclipseApi._(
     this._bindings,

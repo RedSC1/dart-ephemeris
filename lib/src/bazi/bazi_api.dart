@@ -338,7 +338,7 @@ final class TaiyinBaziContext implements Finalizable {
         count,
       );
       _checkStatus(_bindings, fillStatus);
-      final resultCount = _validatedArrayCount(count.value, 'BaZi xiao-yun');
+      final resultCount = _validatedResultCount(count.value, requiredCount);
       return List.unmodifiable([
         for (var index = 0; index < resultCount; index++)
           _readXiaoyun((output + index).ref),

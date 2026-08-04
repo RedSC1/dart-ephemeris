@@ -95,9 +95,10 @@ final tt = calendar.toJulianDate<TtScale>();
 `JulianDate<S>` stores an integer day and a normalized fractional day. Its time
 scale is part of the Dart type, so a `JulianDate<Ut1Scale>` cannot be passed to
 `positionTt`. `toJulianDate<S>()` interprets the calendar fields in that scale;
-it does not perform UTC/TAI/TT conversion. Time conversion uses the split-date
-C ABI. Position and state entry points currently accept a scalar Julian date
-upstream, so those calls merge the two parts at the final FFI boundary.
+it does not perform UTC/TAI/TT conversion. The split representation crosses
+the FFI boundary end to end: the ABI-5 native entry points use
+`taiyin_split_julian_date` for every calculation time, so the Dart value is
+never merged to a scalar `double` mid-calculation.
 
 Use the context-owned time service for actual scale conversion:
 

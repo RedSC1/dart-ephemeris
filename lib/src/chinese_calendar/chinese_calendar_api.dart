@@ -312,9 +312,9 @@ final class TaiyinChineseCalendarContext implements Finalizable {
     TaiyinGanzhiRatHourMode ratHourMode = TaiyinGanzhiRatHourMode.noSplit,
   }) {
     _ensureOpen();
-    // four-pillars needs the Ganzhi extension symbol, which is absent on a
-    // baseline build; refuse before any lookup rather than surfacing a
-    // low-level symbol error.
+    // four-pillars needs the Ganzhi extension; the native entry point is
+    // always exported but returns UNSUPPORTED without it. Refuse up front
+    // with a clear error instead of a native UNSUPPORTED status.
     if ((_capabilities & taiyinGanzhiCalendarCapability) == 0) {
       throw UnsupportedError(
         'The loaded Taiyin library does not include the Ganzhi calendar '

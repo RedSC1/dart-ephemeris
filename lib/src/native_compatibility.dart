@@ -6,15 +6,13 @@ const int taiyinGanzhiCalendarCapability = 1 << 17;
 
 /// Symbols required by the ABI-5 native baseline used by this package.
 ///
-/// Chinese-calendar symbols are always built into `taiyin_c`, and the pure
-/// Ganzhi rule primitives (`make`, `advance`, `get_month`, `get_hour`,
-/// `get_nayin_*`, `four_pillars_init`) are always exported. BaZi symbols are
-/// intentionally excluded: they only exist when the library is built with
-/// `TAIYIN_BUILD_BAZI_EXTENSION=ON`. The extension-dependent Ganzhi entry
-/// points (`taiyin_ganzhi_calc_day_pillar` and
-/// `taiyin_chinese_calendar_calc_four_pillars_ut`) also only exist when the
-/// Ganzhi extension is on, so they are gated by capability in
-/// [taiyinGanzhiSymbols] instead of being required here.
+/// Chinese-calendar symbols and every Ganzhi entry point are always exported
+/// by `taiyin_c`. The Ganzhi functions return `TAIYIN_ERROR_UNSUPPORTED` when
+/// the Ganzhi extension is off, so the `ganzhiCalendar` capability tells
+/// callers whether the module actually works. BaZi symbols are intentionally
+/// excluded: they only exist when the library is built with
+/// `TAIYIN_BUILD_BAZI_EXTENSION=ON`, so the package gates them by capability
+/// instead of requiring them.
 const Set<String> taiyinRequiredAbi5Symbols = {
   'taiyin_get_library_codename',
   'taiyin_format_ephemeris_diagnostic',
@@ -249,13 +247,6 @@ const Set<String> taiyinRequiredAbi5Symbols = {
   'taiyin_ganzhi_get_hour',
   'taiyin_ganzhi_get_nayin_element',
   'taiyin_ganzhi_get_nayin_id',
-};
-
-/// Ganzhi symbols that only exist when the library is built with the Ganzhi
-/// extension. Unlike the pure rule primitives above, these are absent from a
-/// baseline build, so they are verified only when the library advertises the
-/// `ganzhiCalendar` capability.
-const Set<String> taiyinGanzhiSymbols = {
   'taiyin_ganzhi_calc_day_pillar',
   'taiyin_chinese_calendar_calc_four_pillars_ut',
 };

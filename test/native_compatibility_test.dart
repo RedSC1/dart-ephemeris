@@ -141,22 +141,26 @@ void main() {
       );
     });
 
-    test('reports missing extension-gated Ganzhi symbols when advertised', () {
-      expect(
-        () => validateTaiyinRequiredSymbols(
-          providesSymbol: (symbol) =>
-              symbol != 'taiyin_chinese_calendar_calc_four_pillars_ut',
-          requiredSymbols: taiyinGanzhiSymbols,
-        ),
-        throwsA(
-          isA<StateError>().having(
-            (error) => error.message,
-            'message',
-            contains('taiyin_chinese_calendar_calc_four_pillars_ut'),
+    test(
+      'reports missing four-pillars Ganzhi symbol from the required set',
+      () {
+        // calc_four_pillars_ut is always exported (it returns UNSUPPORTED when
+        // the extension is off), so it belongs to the required baseline.
+        expect(
+          () => validateTaiyinRequiredSymbols(
+            providesSymbol: (symbol) =>
+                symbol != 'taiyin_chinese_calendar_calc_four_pillars_ut',
           ),
-        ),
-      );
-    });
+          throwsA(
+            isA<StateError>().having(
+              (error) => error.message,
+              'message',
+              contains('taiyin_chinese_calendar_calc_four_pillars_ut'),
+            ),
+          ),
+        );
+      },
+    );
 
     test('reports missing ABI-5 symbols before lazy lookup', () {
       expect(

@@ -354,9 +354,13 @@ final class TaiyinContext implements Finalizable {
   /// A Chinese-calendar context using the default astronomical configuration.
   ///
   /// The first access creates and caches the native context; [close] releases
-  /// it together with the owning context.
-  TaiyinChineseCalendarContext get chineseCalendar =>
-      _chineseCalendar ??= createChineseCalendar();
+  /// it together with the owning context. A cache entry closed by the caller
+  /// is replaced on the next access.
+  TaiyinChineseCalendarContext get chineseCalendar {
+    final cached = _chineseCalendar;
+    if (cached != null && !cached.isClosed) return cached;
+    return _chineseCalendar = createChineseCalendar();
+  }
 
   /// Creates an independent Chinese-calendar context owned by the caller.
   ///
@@ -379,8 +383,13 @@ final class TaiyinContext implements Finalizable {
   /// A BaZi context using the default astronomical configuration.
   ///
   /// The first access creates and caches the native context; [close] releases
-  /// it together with the owning context.
-  TaiyinBaziContext get bazi => _bazi ??= createBazi();
+  /// it together with the owning context. A cache entry closed by the caller
+  /// is replaced on the next access.
+  TaiyinBaziContext get bazi {
+    final cached = _bazi;
+    if (cached != null && !cached.isClosed) return cached;
+    return _bazi = createBazi();
+  }
 
   /// Creates an independent BaZi context owned by the caller.
   ///
@@ -501,12 +510,6 @@ _TaiyinNativeLibraryState _nativeLibraryStateFor(DynamicLibrary library) {
       capabilities: capabilities,
     );
     validateTaiyinRequiredSymbols(providesSymbol: library.providesSymbol);
-    if ((capabilities & taiyinGanzhiCalendarCapability) != 0) {
-      validateTaiyinRequiredSymbols(
-        providesSymbol: library.providesSymbol,
-        requiredSymbols: taiyinGanzhiSymbols,
-      );
-    }
     if ((capabilities & taiyinBaziCapability) != 0) {
       validateTaiyinRequiredSymbols(
         providesSymbol: library.providesSymbol,
