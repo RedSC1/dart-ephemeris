@@ -29,35 +29,24 @@ so ABI completeness can be tracked exactly.
 - [x] Custom ayanamsha and house-system callbacks, including native
   unregister/clear lifecycle APIs
 
-## Cross-cutting technical debt: split-JD calculation ABI
+## Split-JD calculation ABI — resolved
 
-The Dart `JulianDate` type preserves a split day number and day fraction, and
-time-scale conversions already use the native split-JD C ABI. Most calculation
-entry points still accept a single `double` Julian day, however. This includes
-the existing position, star, observed, phenomena, orbital, and solar-time APIs
-as well as the astrology, visibility, event, heliacal, occultation, and eclipse
-API families. Their Dart wrappers therefore call `JulianDate.toDouble()` at the
-FFI boundary and cannot preserve the full split representation end to end.
+The native core migrated all physical-calculation entry points to
+`taiyin_split_julian_date` end to end in C ABI 3 (including time-bearing result
+fields), and the Dart package followed in the ABI-5 migration (commit
+`46ec1d8`). The Dart `JulianDate` split representation now crosses the FFI
+boundary intact for every calculation family; `JulianDate.toDouble()` is no
+longer called at the boundary except by tests that decode native fields.
 
-Do not add input-only `_split` calculation wrappers as an incremental shortcut.
-The former position/state experiment was reverted because it immediately merged
-the split input to `double`: it had no numerical effect and would have implied a
-precision guarantee the native core could not make. The Dart package therefore
-uses an explicit scalar boundary for physical calculations today.
+Historical notes that are now obsolete:
 
-An eventual migration is a native-core project, not an ABI façade project. It
-must define an internal split epoch, propagate it through evaluation and search
-algorithms, introduce split representations for time-bearing result fields, and
-only then add matching C ABI and Dart APIs. Existing scalar `double` symbols
-must remain available during that transition.
-
-- [ ] Inventory every calculation entry point that accepts one or more Julian
-  dates as `double`.
-- [ ] Define the native-core split epoch and split result-field policy.
-- [ ] Migrate one complete calculation-and-search family end to end, with
-  numerical regression coverage.
-- [ ] Add C ABI and Dart APIs only for end-to-end-migrated families.
-- [ ] Apply the same policy to newly wrapped calculation families.
+- Do not add input-only `_split` calculation wrappers as an incremental
+  shortcut: the former position/state experiment was reverted because it merged
+  the split input to `double` and implied a precision guarantee the native core
+  could not make. The native core did the migration itself instead.
+- Existing scalar `double` symbols remain available only as legacy pure
+  time-conversion helpers (see `docs/c_api.md`); the split representation is
+  the calculation boundary.
 
 ## `astrology.h` — 38/38
 
