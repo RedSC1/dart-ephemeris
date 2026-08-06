@@ -356,6 +356,14 @@ custom registrations, including stale callbacks left by a Dart Hot Restart.
 See [custom target lifecycle and concurrency](docs/custom-target-lifecycle.md)
 for the complete threading, isolate, reset, and borrowed-request rules.
 
+A complete runnable tour of all three Dart-backed callbacks (custom target,
+custom house system, custom ayanamsha) is in
+[`example/custom_callbacks_example.dart`](example/custom_callbacks_example.dart):
+
+```sh
+dart run example/custom_callbacks_example.dart ../taiyin-ephemeris/build-bazi/libtaiyin.dylib
+```
+
 ## Context configuration
 
 `context.configuration` owns observer, atmosphere, astronomy-model,
