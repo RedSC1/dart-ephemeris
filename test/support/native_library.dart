@@ -2,11 +2,12 @@ import 'dart:io';
 
 /// The ABI-5 Taiyin shared library used by default in native-integration tests.
 ///
-/// Defaults to the full-module build (Chinese calendar + Ganzhi + BaZi).
-/// Override with the `TAIYIN_TEST_LIBRARY` environment variable.
+/// Defaults to the pinned copy in `native/` (full-module build: Chinese
+/// calendar + Ganzhi + BaZi). Override with the `TAIYIN_TEST_LIBRARY`
+/// environment variable to test against a freshly built library.
 String get libraryPath =>
     Platform.environment['TAIYIN_TEST_LIBRARY'] ??
-    '../taiyin-ephemeris/build-bazi/libtaiyin.dylib';
+    'native/libtaiyin.dylib';
 
 /// Whether [libraryPath] exists on disk.
 bool get nativeLibraryAvailable => File(libraryPath).existsSync();
