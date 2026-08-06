@@ -100,6 +100,43 @@ the FFI boundary end to end: the ABI-5 native entry points use
 `taiyin_split_julian_date` for every calculation time, so the Dart value is
 never merged to a scalar `double` mid-calculation.
 
+### Julian-day convention
+
+Every Julian day produced or consumed by `AstroDateTime` is a **standard Julian
+day**: the true instant on a UTC timeline, never tied to a local civil
+timezone. There is no "Beijing-time Julian day" or other zone-labelled variant.
+
+A civil value alone does not identify an instant; its relationship to a
+standard Julian day is decided by the caller-supplied `utcOffsetHours`
+argument:
+
+```dart
+final birthBeijing = AstroDateTime(2024, 2, 10, 12);       // 12:00 UTC+8 wall clock
+final instantJd = birthBeijing.toJulianDay(utcOffsetHours: 8); // → standard JD of the true instant
+final j2000 = birthBeijing.toJ2000(utcOffsetHours: 8);         // → days from J2000.0
+final instantSplit = birthBeijing.toJulianDate<UtcScale>(       // split, full precision
+  utcOffsetHours: 8,
+);
+
+final backToBeijing = AstroDateTime.fromJulianDay(          // standard JD → 12:00 UTC+8 wall clock
+  instantJd,
+  utcOffsetHours: 8,
+);
+```
+
+`toJulianDay` / `toJ2000` / `toJulianDate` subtract the offset (civil →
+instant); `fromJulianDay` / `fromJulianDate` / `fromJ2000` add it (instant →
+civil). An omitted offset treats the civil fields as a UTC reading. The offset
+is a **conversion argument, never a stored property** on `AstroDateTime` —
+which is why true-solar-time values (whose relationship to UTC depends on the
+date, not a fixed zone) fit the same type without lying. Feed `toJulianDate`'s
+split result straight to a calculation; the scalar `toJulianDay` merge is exact
+only to about 40 µs, so prefer the split form when nanosecond precision
+matters. The uniform 86,400-second-day model cannot display a leap second
+(`second: 60`); a non-zero offset absorbs it before the shift, so read
+leap-second instants as UTC. For converting a UTC civil instant into other
+scales use the context-owned time service below.
+
 Use the context-owned time service for actual scale conversion:
 
 ```dart
