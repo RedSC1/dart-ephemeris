@@ -1,7 +1,7 @@
 part of '../taiyin.dart';
 
 typedef _VisibilityStatusChecker =
-    void Function(int status, TaiyinEphemerisDiagnostic? diagnostic);
+    void Function(int status, EphemerisDiagnostic? diagnostic);
 typedef _VisibilityEventCalculation =
     int Function(
       Arena arena,
@@ -24,11 +24,11 @@ typedef _SolarTransitFastCalculation =
 /// Rise, set, twilight, and meridian-transit searches.
 ///
 /// Rise/set and transit searches use the observer location configured on the
-/// owning [TaiyinContext]. They require a finite, non-empty UT1 interval. The
+/// owning [EphemerisContext]. They require a finite, non-empty UT1 interval. The
 /// native ABI accepts and returns split Julian dates end to end, so the
 /// [JulianDate] split representation crosses the FFI boundary intact.
-final class TaiyinVisibilityApi {
-  TaiyinVisibilityApi._(
+final class VisibilityApi {
+  VisibilityApi._(
     this._bindings,
     this._context,
     this._ensureOpen,
@@ -44,13 +44,13 @@ final class TaiyinVisibilityApi {
   ///
   /// Set [horizonAltitudeRadians] to search against a custom geometric
   /// horizon. Otherwise the native standard-horizon route is used.
-  TaiyinEphemerisResult<TaiyinVisibilityEvent> moonRiseSetAtUt1(
+  EphemerisResult<VisibilityEvent> moonRiseSetAtUt1(
     JulianDate<Ut1Scale> start,
     JulianDate<Ut1Scale> end, {
-    required TaiyinVisibilityEventKind event,
-    TaiyinVisibilityLimb limb = TaiyinVisibilityLimb.upper,
+    required VisibilityEventKind event,
+    VisibilityLimb limb = VisibilityLimb.upper,
     double? horizonAltitudeRadians,
-    Set<TaiyinVisibilityFlag> flags = const {},
+    Set<VisibilityFlag> flags = const {},
   }) {
     _ensureOpen();
     _requireRiseOrSet(event);
@@ -85,10 +85,10 @@ final class TaiyinVisibilityApi {
   }
 
   /// Searches a UT1 interval for an upper or lower lunar meridian transit.
-  TaiyinEphemerisResult<TaiyinVisibilityEvent> moonTransitAtUt1(
+  EphemerisResult<VisibilityEvent> moonTransitAtUt1(
     JulianDate<Ut1Scale> start,
     JulianDate<Ut1Scale> end, {
-    required TaiyinVisibilityEventKind event,
+    required VisibilityEventKind event,
   }) {
     _ensureOpen();
     _requireTransit(event);
@@ -109,15 +109,15 @@ final class TaiyinVisibilityApi {
   /// Searches a UT1 interval for rise or set of a physical planet.
   ///
   /// [body] may be Mercury through Pluto. The Sun and Moon have dedicated
-  /// methods. [TaiyinVisibilityFlag.fixedDiscSize] is not supported here.
-  TaiyinEphemerisResult<TaiyinVisibilityEvent> planetRiseSetAtUt1(
-    TaiyinBody body,
+  /// methods. [VisibilityFlag.fixedDiscSize] is not supported here.
+  EphemerisResult<VisibilityEvent> planetRiseSetAtUt1(
+    Body body,
     JulianDate<Ut1Scale> start,
     JulianDate<Ut1Scale> end, {
-    required TaiyinVisibilityEventKind event,
-    TaiyinVisibilityLimb limb = TaiyinVisibilityLimb.upper,
+    required VisibilityEventKind event,
+    VisibilityLimb limb = VisibilityLimb.upper,
     double? horizonAltitudeRadians,
-    Set<TaiyinVisibilityFlag> flags = const {},
+    Set<VisibilityFlag> flags = const {},
   }) {
     _ensureOpen();
     _requirePlanet(body);
@@ -155,11 +155,11 @@ final class TaiyinVisibilityApi {
   }
 
   /// Searches a UT1 interval for an upper or lower planetary transit.
-  TaiyinEphemerisResult<TaiyinVisibilityEvent> planetTransitAtUt1(
-    TaiyinBody body,
+  EphemerisResult<VisibilityEvent> planetTransitAtUt1(
+    Body body,
     JulianDate<Ut1Scale> start,
     JulianDate<Ut1Scale> end, {
-    required TaiyinVisibilityEventKind event,
+    required VisibilityEventKind event,
   }) {
     _ensureOpen();
     _requirePlanet(body);
@@ -183,13 +183,13 @@ final class TaiyinVisibilityApi {
   ///
   /// Set [horizonAltitudeRadians] to search against a custom geometric
   /// horizon. Otherwise the native standard-horizon route is used.
-  TaiyinEphemerisResult<TaiyinVisibilityEvent> solarRiseSetAtUt1(
+  EphemerisResult<VisibilityEvent> solarRiseSetAtUt1(
     JulianDate<Ut1Scale> start,
     JulianDate<Ut1Scale> end, {
-    required TaiyinVisibilityEventKind event,
-    TaiyinVisibilityLimb limb = TaiyinVisibilityLimb.upper,
+    required VisibilityEventKind event,
+    VisibilityLimb limb = VisibilityLimb.upper,
     double? horizonAltitudeRadians,
-    Set<TaiyinVisibilityFlag> flags = const {},
+    Set<VisibilityFlag> flags = const {},
   }) {
     _ensureOpen();
     _requireRiseOrSet(event);
@@ -225,13 +225,13 @@ final class TaiyinVisibilityApi {
 
   /// Searches a UT1 interval for a selected morning or evening twilight.
   ///
-  /// [TaiyinVisibilityEventKind.rise] finds morning twilight (dawn), while
-  /// [TaiyinVisibilityEventKind.set] finds evening twilight (dusk).
-  TaiyinEphemerisResult<TaiyinVisibilityEvent> solarTwilightAtUt1(
+  /// [VisibilityEventKind.rise] finds morning twilight (dawn), while
+  /// [VisibilityEventKind.set] finds evening twilight (dusk).
+  EphemerisResult<VisibilityEvent> solarTwilightAtUt1(
     JulianDate<Ut1Scale> start,
     JulianDate<Ut1Scale> end, {
-    required TaiyinVisibilityEventKind event,
-    required TaiyinTwilightKind twilight,
+    required VisibilityEventKind event,
+    required TwilightKind twilight,
   }) {
     _ensureOpen();
     _requireRiseOrSet(event);
@@ -251,10 +251,10 @@ final class TaiyinVisibilityApi {
   }
 
   /// Searches a UT1 interval for an upper or lower solar meridian transit.
-  TaiyinEphemerisResult<TaiyinVisibilityEvent> solarTransitAtUt1(
+  EphemerisResult<VisibilityEvent> solarTransitAtUt1(
     JulianDate<Ut1Scale> start,
     JulianDate<Ut1Scale> end, {
-    required TaiyinVisibilityEventKind event,
+    required VisibilityEventKind event,
   }) {
     _ensureOpen();
     _requireTransit(event);
@@ -276,9 +276,9 @@ final class TaiyinVisibilityApi {
   ///
   /// This fast route receives [observer] directly; it does not use the
   /// context's configured observer location for the supplied coordinates.
-  TaiyinEphemerisResult<TaiyinSolarRiseSetFastResult> solarRiseSetFastAtTt(
+  EphemerisResult<SolarRiseSetFastResult> solarRiseSetFastAtTt(
     JulianDate<TtScale> center,
-    TaiyinObserverLocation observer, {
+    ObserverLocation observer, {
     double horizonAltitudeRadians = 0,
   }) {
     _ensureOpen();
@@ -302,9 +302,9 @@ final class TaiyinVisibilityApi {
   ///
   /// This fast route receives [observer] directly; it does not use the
   /// context's configured observer location for the supplied coordinates.
-  TaiyinEphemerisResult<TaiyinSolarTransitFastResult> solarTransitFastAtTt(
+  EphemerisResult<SolarTransitFastResult> solarTransitFastAtTt(
     JulianDate<TtScale> center,
-    TaiyinObserverLocation observer,
+    ObserverLocation observer,
   ) {
     _ensureOpen();
     _validateObserver(observer);
@@ -325,13 +325,13 @@ final class TaiyinVisibilityApi {
   ///
   /// The runtime star catalog must contain [starKey]. Set
   /// [horizonAltitudeRadians] to search against a custom geometric horizon.
-  TaiyinEphemerisResult<TaiyinVisibilityEvent> starRiseSetAtUt1(
+  EphemerisResult<VisibilityEvent> starRiseSetAtUt1(
     String starKey,
     JulianDate<Ut1Scale> start,
     JulianDate<Ut1Scale> end, {
-    required TaiyinVisibilityEventKind event,
+    required VisibilityEventKind event,
     double? horizonAltitudeRadians,
-    Set<TaiyinVisibilityFlag> flags = const {},
+    Set<VisibilityFlag> flags = const {},
   }) {
     _ensureOpen();
     _requireStarKey(starKey);
@@ -370,11 +370,11 @@ final class TaiyinVisibilityApi {
   }
 
   /// Searches a UT1 interval for an upper or lower catalogued-star transit.
-  TaiyinEphemerisResult<TaiyinVisibilityEvent> starTransitAtUt1(
+  EphemerisResult<VisibilityEvent> starTransitAtUt1(
     String starKey,
     JulianDate<Ut1Scale> start,
     JulianDate<Ut1Scale> end, {
-    required TaiyinVisibilityEventKind event,
+    required VisibilityEventKind event,
   }) {
     _ensureOpen();
     _requireStarKey(starKey);
@@ -398,8 +398,8 @@ final class TaiyinVisibilityApi {
     });
   }
 
-  TaiyinEphemerisResult<TaiyinVisibilityEvent> _searchEvent(
-    TaiyinVisibilityEventKind event,
+  EphemerisResult<VisibilityEvent> _searchEvent(
+    VisibilityEventKind event,
     _VisibilityEventCalculation calculate,
   ) {
     return using((arena) {
@@ -412,13 +412,11 @@ final class TaiyinVisibilityApi {
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
       final value = output.ref;
-      return TaiyinEphemerisResult(
-        value: TaiyinVisibilityEvent(
+      return EphemerisResult(
+        value: VisibilityEvent(
           requestedEvent: event,
-          altitudeState: TaiyinVisibilityAltitudeState.fromId(
-            value.altitude_state,
-          ),
-          crossingDirection: TaiyinVisibilityCrossingDirection.fromId(
+          altitudeState: VisibilityAltitudeState.fromId(value.altitude_state),
+          crossingDirection: VisibilityCrossingDirection.fromId(
             value.crossing_direction,
           ),
           coordinate: _ut1OrNull(value.jd_ut),
@@ -435,7 +433,7 @@ final class TaiyinVisibilityApi {
     });
   }
 
-  TaiyinEphemerisResult<TaiyinSolarRiseSetFastResult> _solarRiseSetFast(
+  EphemerisResult<SolarRiseSetFastResult> _solarRiseSetFast(
     _SolarRiseSetFastCalculation calculate,
   ) {
     return using((arena) {
@@ -448,11 +446,9 @@ final class TaiyinVisibilityApi {
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
       final value = output.ref;
-      return TaiyinEphemerisResult(
-        value: TaiyinSolarRiseSetFastResult(
-          altitudeState: TaiyinVisibilityAltitudeState.fromId(
-            value.altitude_state,
-          ),
+      return EphemerisResult(
+        value: SolarRiseSetFastResult(
+          altitudeState: VisibilityAltitudeState.fromId(value.altitude_state),
           rise: _ttOrNull(value.rise_jd_tt),
           set: _ttOrNull(value.set_jd_tt),
           sampleCount: value.sample_count,
@@ -463,7 +459,7 @@ final class TaiyinVisibilityApi {
     });
   }
 
-  TaiyinEphemerisResult<TaiyinSolarTransitFastResult> _solarTransitFast(
+  EphemerisResult<SolarTransitFastResult> _solarTransitFast(
     _SolarTransitFastCalculation calculate,
   ) {
     return using((arena) {
@@ -476,8 +472,8 @@ final class TaiyinVisibilityApi {
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
       final value = output.ref;
-      return TaiyinEphemerisResult(
-        value: TaiyinSolarTransitFastResult(
+      return EphemerisResult(
+        value: SolarTransitFastResult(
           coordinate: _ttOrNull(value.transit_jd_tt),
           altitudeRadians: value.altitude_rad,
           azimuthRadians: value.azimuth_rad,
@@ -490,17 +486,16 @@ final class TaiyinVisibilityApi {
   }
 
   int _visibilityMask(
-    Set<TaiyinVisibilityFlag> flags, {
+    Set<VisibilityFlag> flags, {
     bool allowsFixedDiscSize = true,
   }) {
-    if (flags.contains(TaiyinVisibilityFlag.refraction) &&
-        flags.contains(TaiyinVisibilityFlag.noRefraction)) {
+    if (flags.contains(VisibilityFlag.refraction) &&
+        flags.contains(VisibilityFlag.noRefraction)) {
       throw ArgumentError(
         'Refraction and noRefraction cannot be requested together.',
       );
     }
-    if (!allowsFixedDiscSize &&
-        flags.contains(TaiyinVisibilityFlag.fixedDiscSize)) {
+    if (!allowsFixedDiscSize && flags.contains(VisibilityFlag.fixedDiscSize)) {
       throw ArgumentError.value(
         flags,
         'flags',
@@ -522,7 +517,7 @@ final class TaiyinVisibilityApi {
     }
   }
 
-  void _validateObserver(TaiyinObserverLocation observer) {
+  void _validateObserver(ObserverLocation observer) {
     _requireFinite(observer.longitudeDegrees, 'observer.longitudeDegrees');
     _requireFinite(observer.latitudeDegrees, 'observer.latitudeDegrees');
     _requireFinite(observer.heightMeters, 'observer.heightMeters');
@@ -536,13 +531,13 @@ final class TaiyinVisibilityApi {
     }
   }
 
-  void _requireRiseOrSet(TaiyinVisibilityEventKind event) {
+  void _requireRiseOrSet(VisibilityEventKind event) {
     if (!event.isRiseOrSet) {
       throw ArgumentError.value(event, 'event', 'must be rise or set');
     }
   }
 
-  void _requireTransit(TaiyinVisibilityEventKind event) {
+  void _requireTransit(VisibilityEventKind event) {
     if (!event.isTransit) {
       throw ArgumentError.value(
         event,
@@ -552,16 +547,16 @@ final class TaiyinVisibilityApi {
     }
   }
 
-  void _requirePlanet(TaiyinBody body) {
+  void _requirePlanet(Body body) {
     const supported = {
-      TaiyinBody.mercury,
-      TaiyinBody.venus,
-      TaiyinBody.mars,
-      TaiyinBody.jupiter,
-      TaiyinBody.saturn,
-      TaiyinBody.uranus,
-      TaiyinBody.neptune,
-      TaiyinBody.pluto,
+      Body.mercury,
+      Body.venus,
+      Body.mars,
+      Body.jupiter,
+      Body.saturn,
+      Body.uranus,
+      Body.neptune,
+      Body.pluto,
     };
     if (!supported.contains(body)) {
       throw ArgumentError.value(

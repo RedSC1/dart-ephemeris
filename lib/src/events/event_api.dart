@@ -1,7 +1,7 @@
 part of '../taiyin.dart';
 
 typedef _EventsStatusChecker =
-    void Function(int status, TaiyinEphemerisDiagnostic? diagnostic);
+    void Function(int status, EphemerisDiagnostic? diagnostic);
 typedef _EventScalarCalculation =
     int Function(
       Arena arena,
@@ -31,8 +31,8 @@ typedef _EventPairArrayCalculation =
 ///
 /// All native event coordinates cross the FFI boundary as split Julian dates
 /// ([taiyin_split_julian_date]), keeping the low-order fraction intact.
-final class TaiyinEventsApi {
-  TaiyinEventsApi._(
+final class EventsApi {
+  EventsApi._(
     this._bindings,
     this._context,
     this._ensureOpen,
@@ -45,7 +45,7 @@ final class TaiyinEventsApi {
   final _EventsStatusChecker _checkStatus;
 
   /// Native-recommended maximum step for a bounded longitude search.
-  double recommendedLongitudeSearchStepDays(TaiyinTarget body) {
+  double recommendedLongitudeSearchStepDays(Target body) {
     _ensureOpen();
     _requireNonZeroTarget(body, 'body');
     return _bindings.taiyin_recommended_longitude_search_step_days(body.id);
@@ -55,10 +55,7 @@ final class TaiyinEventsApi {
   ///
   /// The recommendation is independent of target order: native code uses the
   /// smaller of the two targets' longitude-search recommendations.
-  double recommendedAspectSearchStepDays(
-    TaiyinTarget bodyA,
-    TaiyinTarget bodyB,
-  ) {
+  double recommendedAspectSearchStepDays(Target bodyA, Target bodyB) {
     _ensureOpen();
     _requireDistinctTargets(bodyA, bodyB);
     return _bindings.taiyin_recommended_aspect_search_step_days(
@@ -68,18 +65,18 @@ final class TaiyinEventsApi {
   }
 
   /// Finds a solar ecliptic-longitude crossing near a UT1 estimate.
-  TaiyinEphemerisResult<JulianDate<Ut1Scale>> solarLongitudeAtUt1(
+  EphemerisResult<JulianDate<Ut1Scale>> solarLongitudeAtUt1(
     double targetLongitudeRadians,
     JulianDate<Ut1Scale> estimate, {
-    Set<TaiyinPositionFlag> positionFlags = const {},
-    Set<TaiyinEventSearchOption> options = const {},
+    Set<PositionFlag> positionFlags = const {},
+    Set<EventSearchOption> options = const {},
   }) {
     _ensureOpen();
     _requireFinite(targetLongitudeRadians, 'targetLongitudeRadians');
     final mask = _eventMask(
       positionFlags,
       options,
-      allowedOptions: const {TaiyinEventSearchOption.reverse},
+      allowedOptions: const {EventSearchOption.reverse},
     );
     return _scalar<Ut1Scale>((arena, output, diagnostic) {
       return _bindings.taiyin_search_solar_longitude_ut(
@@ -94,18 +91,18 @@ final class TaiyinEventsApi {
   }
 
   /// Finds a solar ecliptic-longitude crossing near a TT estimate.
-  TaiyinEphemerisResult<JulianDate<TtScale>> solarLongitudeAtTt(
+  EphemerisResult<JulianDate<TtScale>> solarLongitudeAtTt(
     double targetLongitudeRadians,
     JulianDate<TtScale> estimate, {
-    Set<TaiyinPositionFlag> positionFlags = const {},
-    Set<TaiyinEventSearchOption> options = const {},
+    Set<PositionFlag> positionFlags = const {},
+    Set<EventSearchOption> options = const {},
   }) {
     _ensureOpen();
     _requireFinite(targetLongitudeRadians, 'targetLongitudeRadians');
     final mask = _eventMask(
       positionFlags,
       options,
-      allowedOptions: const {TaiyinEventSearchOption.reverse},
+      allowedOptions: const {EventSearchOption.reverse},
     );
     return _scalar<TtScale>((arena, output, diagnostic) {
       return _bindings.taiyin_search_solar_longitude_tt(
@@ -120,18 +117,18 @@ final class TaiyinEventsApi {
   }
 
   /// Finds a lunar ecliptic-longitude crossing near a UT1 estimate.
-  TaiyinEphemerisResult<JulianDate<Ut1Scale>> moonLongitudeAtUt1(
+  EphemerisResult<JulianDate<Ut1Scale>> moonLongitudeAtUt1(
     double targetLongitudeRadians,
     JulianDate<Ut1Scale> estimate, {
-    Set<TaiyinPositionFlag> positionFlags = const {},
-    Set<TaiyinEventSearchOption> options = const {},
+    Set<PositionFlag> positionFlags = const {},
+    Set<EventSearchOption> options = const {},
   }) {
     _ensureOpen();
     _requireFinite(targetLongitudeRadians, 'targetLongitudeRadians');
     final mask = _eventMask(
       positionFlags,
       options,
-      allowedOptions: const {TaiyinEventSearchOption.reverse},
+      allowedOptions: const {EventSearchOption.reverse},
     );
     return _scalar<Ut1Scale>((arena, output, diagnostic) {
       return _bindings.taiyin_search_moon_longitude_ut(
@@ -146,18 +143,18 @@ final class TaiyinEventsApi {
   }
 
   /// Finds a lunar ecliptic-longitude crossing near a TT estimate.
-  TaiyinEphemerisResult<JulianDate<TtScale>> moonLongitudeAtTt(
+  EphemerisResult<JulianDate<TtScale>> moonLongitudeAtTt(
     double targetLongitudeRadians,
     JulianDate<TtScale> estimate, {
-    Set<TaiyinPositionFlag> positionFlags = const {},
-    Set<TaiyinEventSearchOption> options = const {},
+    Set<PositionFlag> positionFlags = const {},
+    Set<EventSearchOption> options = const {},
   }) {
     _ensureOpen();
     _requireFinite(targetLongitudeRadians, 'targetLongitudeRadians');
     final mask = _eventMask(
       positionFlags,
       options,
-      allowedOptions: const {TaiyinEventSearchOption.reverse},
+      allowedOptions: const {EventSearchOption.reverse},
     );
     return _scalar<TtScale>((arena, output, diagnostic) {
       return _bindings.taiyin_search_moon_longitude_tt(
@@ -172,14 +169,14 @@ final class TaiyinEventsApi {
   }
 
   /// Finds all [body] longitude crossings in a UT1 interval.
-  TaiyinEphemerisResult<List<JulianDate<Ut1Scale>>> longitudeCrossingsAtUt1(
-    TaiyinTarget body,
+  EphemerisResult<List<JulianDate<Ut1Scale>>> longitudeCrossingsAtUt1(
+    Target body,
     double targetLongitudeRadians,
     JulianDate<Ut1Scale> start,
     JulianDate<Ut1Scale> end, {
     required double maxStepDays,
     int maxResults = 16,
-    Set<TaiyinPositionFlag> positionFlags = const {},
+    Set<PositionFlag> positionFlags = const {},
   }) {
     _ensureOpen();
     _requireNonZeroTarget(body, 'body');
@@ -212,14 +209,14 @@ final class TaiyinEventsApi {
   }
 
   /// Finds all [body] longitude crossings in a TT interval.
-  TaiyinEphemerisResult<List<JulianDate<TtScale>>> longitudeCrossingsAtTt(
-    TaiyinTarget body,
+  EphemerisResult<List<JulianDate<TtScale>>> longitudeCrossingsAtTt(
+    Target body,
     double targetLongitudeRadians,
     JulianDate<TtScale> start,
     JulianDate<TtScale> end, {
     required double maxStepDays,
     int maxResults = 16,
-    Set<TaiyinPositionFlag> positionFlags = const {},
+    Set<PositionFlag> positionFlags = const {},
   }) {
     _ensureOpen();
     _requireNonZeroTarget(body, 'body');
@@ -252,14 +249,13 @@ final class TaiyinEventsApi {
   }
 
   /// Finds stationary longitudes of [body] in a UT1 interval.
-  TaiyinEphemerisResult<List<TaiyinLongitudeStation<Ut1Scale>>>
-  longitudeStationsAtUt1(
-    TaiyinTarget body,
+  EphemerisResult<List<LongitudeStation<Ut1Scale>>> longitudeStationsAtUt1(
+    Target body,
     JulianDate<Ut1Scale> start,
     JulianDate<Ut1Scale> end, {
     required double maxStepDays,
     int maxResults = 16,
-    Set<TaiyinPositionFlag> positionFlags = const {},
+    Set<PositionFlag> positionFlags = const {},
   }) {
     _ensureOpen();
     _requireNonZeroTarget(body, 'body');
@@ -267,7 +263,7 @@ final class TaiyinEventsApi {
     _requirePositiveFinite(maxStepDays, 'maxStepDays');
     _requireCapacity(maxResults);
     final mask = _eventMask(positionFlags, const {});
-    return _pairArray<Ut1Scale, TaiyinLongitudeStation<Ut1Scale>>(
+    return _pairArray<Ut1Scale, LongitudeStation<Ut1Scale>>(
       maxResults,
       (arena, primary, secondary, capacity, count, diagnostic) {
         return _bindings.taiyin_search_body_longitude_stations_ut(
@@ -284,22 +280,19 @@ final class TaiyinEventsApi {
           diagnostic,
         );
       },
-      (coordinate, longitude) => TaiyinLongitudeStation(
-        coordinate: coordinate,
-        longitudeRadians: longitude,
-      ),
+      (coordinate, longitude) =>
+          LongitudeStation(coordinate: coordinate, longitudeRadians: longitude),
     );
   }
 
   /// Finds stationary longitudes of [body] in a TT interval.
-  TaiyinEphemerisResult<List<TaiyinLongitudeStation<TtScale>>>
-  longitudeStationsAtTt(
-    TaiyinTarget body,
+  EphemerisResult<List<LongitudeStation<TtScale>>> longitudeStationsAtTt(
+    Target body,
     JulianDate<TtScale> start,
     JulianDate<TtScale> end, {
     required double maxStepDays,
     int maxResults = 16,
-    Set<TaiyinPositionFlag> positionFlags = const {},
+    Set<PositionFlag> positionFlags = const {},
   }) {
     _ensureOpen();
     _requireNonZeroTarget(body, 'body');
@@ -307,7 +300,7 @@ final class TaiyinEventsApi {
     _requirePositiveFinite(maxStepDays, 'maxStepDays');
     _requireCapacity(maxResults);
     final mask = _eventMask(positionFlags, const {});
-    return _pairArray<TtScale, TaiyinLongitudeStation<TtScale>>(
+    return _pairArray<TtScale, LongitudeStation<TtScale>>(
       maxResults,
       (arena, primary, secondary, capacity, count, diagnostic) {
         return _bindings.taiyin_search_body_longitude_stations_tt(
@@ -324,23 +317,21 @@ final class TaiyinEventsApi {
           diagnostic,
         );
       },
-      (coordinate, longitude) => TaiyinLongitudeStation(
-        coordinate: coordinate,
-        longitudeRadians: longitude,
-      ),
+      (coordinate, longitude) =>
+          LongitudeStation(coordinate: coordinate, longitudeRadians: longitude),
     );
   }
 
   /// Finds [aspectRadians] crossings between two targets in a UT1 interval.
-  TaiyinEphemerisResult<List<JulianDate<Ut1Scale>>> aspectCrossingsAtUt1(
-    TaiyinTarget bodyA,
-    TaiyinTarget bodyB,
+  EphemerisResult<List<JulianDate<Ut1Scale>>> aspectCrossingsAtUt1(
+    Target bodyA,
+    Target bodyB,
     double aspectRadians,
     JulianDate<Ut1Scale> start,
     JulianDate<Ut1Scale> end, {
     required double maxStepDays,
     int maxResults = 16,
-    Set<TaiyinPositionFlag> positionFlags = const {},
+    Set<PositionFlag> positionFlags = const {},
   }) {
     _ensureOpen();
     _requireDistinctTargets(bodyA, bodyB);
@@ -374,15 +365,15 @@ final class TaiyinEventsApi {
   }
 
   /// Finds [aspectRadians] crossings between two targets in a TT interval.
-  TaiyinEphemerisResult<List<JulianDate<TtScale>>> aspectCrossingsAtTt(
-    TaiyinTarget bodyA,
-    TaiyinTarget bodyB,
+  EphemerisResult<List<JulianDate<TtScale>>> aspectCrossingsAtTt(
+    Target bodyA,
+    Target bodyB,
     double aspectRadians,
     JulianDate<TtScale> start,
     JulianDate<TtScale> end, {
     required double maxStepDays,
     int maxResults = 16,
-    Set<TaiyinPositionFlag> positionFlags = const {},
+    Set<PositionFlag> positionFlags = const {},
   }) {
     _ensureOpen();
     _requireDistinctTargets(bodyA, bodyB);
@@ -416,16 +407,15 @@ final class TaiyinEventsApi {
   }
 
   /// Finds exact matches against any of [aspectSeparationsRadians] in UT1.
-  TaiyinEphemerisResult<List<TaiyinExactAspectEvent<Ut1Scale>>>
-  exactAspectsAtUt1(
-    TaiyinTarget bodyA,
-    TaiyinTarget bodyB,
+  EphemerisResult<List<ExactAspectEvent<Ut1Scale>>> exactAspectsAtUt1(
+    Target bodyA,
+    Target bodyB,
     List<double> aspectSeparationsRadians,
     JulianDate<Ut1Scale> start,
     JulianDate<Ut1Scale> end, {
     required double maxStepDays,
     int maxResults = 16,
-    Set<TaiyinPositionFlag> positionFlags = const {},
+    Set<PositionFlag> positionFlags = const {},
   }) {
     _ensureOpen();
     return _exactAspects<Ut1Scale>(
@@ -468,15 +458,15 @@ final class TaiyinEventsApi {
   }
 
   /// Finds exact matches against any of [aspectSeparationsRadians] in TT.
-  TaiyinEphemerisResult<List<TaiyinExactAspectEvent<TtScale>>> exactAspectsAtTt(
-    TaiyinTarget bodyA,
-    TaiyinTarget bodyB,
+  EphemerisResult<List<ExactAspectEvent<TtScale>>> exactAspectsAtTt(
+    Target bodyA,
+    Target bodyB,
     List<double> aspectSeparationsRadians,
     JulianDate<TtScale> start,
     JulianDate<TtScale> end, {
     required double maxStepDays,
     int maxResults = 16,
-    Set<TaiyinPositionFlag> positionFlags = const {},
+    Set<PositionFlag> positionFlags = const {},
   }) {
     _ensureOpen();
     return _exactAspects<TtScale>(
@@ -519,11 +509,11 @@ final class TaiyinEventsApi {
   }
 
   /// Finds the greatest elongation of Mercury or Venus in a UT1 interval.
-  TaiyinEphemerisResult<TaiyinGreatestElongationEvent> greatestElongationAtUt1(
-    TaiyinBody body,
+  EphemerisResult<GreatestElongationEvent> greatestElongationAtUt1(
+    Body body,
     JulianDate<Ut1Scale> start,
     JulianDate<Ut1Scale> end, {
-    Set<TaiyinPositionFlag> positionFlags = const {},
+    Set<PositionFlag> positionFlags = const {},
   }) {
     _ensureOpen();
     _requireInnerPlanet(body);
@@ -547,16 +537,16 @@ final class TaiyinEventsApi {
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
       final value = output.ref;
-      return TaiyinEphemerisResult(
-        value: TaiyinGreatestElongationEvent(
+      return EphemerisResult(
+        value: GreatestElongationEvent(
           bodyId: value.body_id,
           coordinate: readJulianDate<Ut1Scale>(value.jd_ut),
           elongationRadians: value.elongation_rad,
           relativeLongitudeRadians: value.relative_longitude_rad,
-          kind: TaiyinGreatestElongationKind.fromMask(value.kind),
+          kind: GreatestElongationKind.fromMask(value.kind),
           iterationCount: value.iteration_count,
           evaluationCount: value.evaluation_count,
-          phenomena: TaiyinEventPhenomena(
+          phenomena: EventPhenomena(
             phaseAngleRadians: value.phenomena.phase_angle_rad,
             illuminatedFraction: value.phenomena.illuminated_fraction,
             solarElongationRadians: value.phenomena.solar_elongation_rad,
@@ -573,14 +563,14 @@ final class TaiyinEventsApi {
   }
 
   /// Finds a local minimum of separation between two targets in UT1.
-  TaiyinEphemerisResult<TaiyinMinimumAngularSeparationEvent<Ut1Scale>>
+  EphemerisResult<MinimumAngularSeparationEvent<Ut1Scale>>
   minimumAngularSeparationAtUt1(
-    TaiyinTarget bodyA,
-    TaiyinTarget bodyB,
+    Target bodyA,
+    Target bodyB,
     JulianDate<Ut1Scale> start,
     JulianDate<Ut1Scale> end, {
     required double maxStepDays,
-    Set<TaiyinPositionFlag> positionFlags = const {},
+    Set<PositionFlag> positionFlags = const {},
   }) {
     _ensureOpen();
     return _minimumSeparation<Ut1Scale>(
@@ -606,14 +596,14 @@ final class TaiyinEventsApi {
   }
 
   /// Finds a local minimum of separation between two targets in TT.
-  TaiyinEphemerisResult<TaiyinMinimumAngularSeparationEvent<TtScale>>
+  EphemerisResult<MinimumAngularSeparationEvent<TtScale>>
   minimumAngularSeparationAtTt(
-    TaiyinTarget bodyA,
-    TaiyinTarget bodyB,
+    Target bodyA,
+    Target bodyB,
     JulianDate<TtScale> start,
     JulianDate<TtScale> end, {
     required double maxStepDays,
-    Set<TaiyinPositionFlag> positionFlags = const {},
+    Set<PositionFlag> positionFlags = const {},
   }) {
     _ensureOpen();
     return _minimumSeparation<TtScale>(
@@ -639,18 +629,18 @@ final class TaiyinEventsApi {
   }
 
   /// Finds the next global Mercury or Venus solar transit from [start].
-  TaiyinEphemerisResult<TaiyinSolarTransitEvent> nextSolarTransitAtUt1(
-    TaiyinBody body,
+  EphemerisResult<SolarTransitEvent> nextSolarTransitAtUt1(
+    Body body,
     JulianDate<Ut1Scale> start, {
-    Set<TaiyinPositionFlag> positionFlags = const {},
-    Set<TaiyinEventSearchOption> options = const {},
+    Set<PositionFlag> positionFlags = const {},
+    Set<EventSearchOption> options = const {},
   }) {
     _ensureOpen();
     _requireInnerPlanet(body);
     final mask = _eventMask(
       positionFlags,
       options,
-      allowedOptions: const {TaiyinEventSearchOption.reverse},
+      allowedOptions: const {EventSearchOption.reverse},
       disallowTopocentric: true,
     );
     return _solarTransit((arena, output, diagnostic) {
@@ -666,11 +656,11 @@ final class TaiyinEventsApi {
   }
 
   /// Computes local circumstances for a previously found [globalTransit].
-  TaiyinEphemerisResult<TaiyinLocalSolarTransitEvent> localSolarTransitAtUt1(
-    TaiyinSolarTransitEvent globalTransit,
-    TaiyinObserverLocation observer, {
-    Set<TaiyinPositionFlag> positionFlags = const {},
-    Set<TaiyinEventSearchOption> options = const {},
+  EphemerisResult<LocalSolarTransitEvent> localSolarTransitAtUt1(
+    SolarTransitEvent globalTransit,
+    ObserverLocation observer, {
+    Set<PositionFlag> positionFlags = const {},
+    Set<EventSearchOption> options = const {},
   }) {
     _ensureOpen();
     _validateObserver(observer);
@@ -678,8 +668,8 @@ final class TaiyinEventsApi {
       positionFlags,
       options,
       allowedOptions: const {
-        TaiyinEventSearchOption.refraction,
-        TaiyinEventSearchOption.noRefraction,
+        EventSearchOption.refraction,
+        EventSearchOption.noRefraction,
       },
       disallowTopocentric: true,
     );
@@ -702,13 +692,12 @@ final class TaiyinEventsApi {
   }
 
   /// Finds the next local Mercury or Venus solar transit from [start].
-  TaiyinEphemerisResult<TaiyinLocalSolarTransitEvent>
-  nextLocalSolarTransitAtUt1(
-    TaiyinBody body,
+  EphemerisResult<LocalSolarTransitEvent> nextLocalSolarTransitAtUt1(
+    Body body,
     JulianDate<Ut1Scale> start,
-    TaiyinObserverLocation observer, {
-    Set<TaiyinPositionFlag> positionFlags = const {},
-    Set<TaiyinEventSearchOption> options = const {},
+    ObserverLocation observer, {
+    Set<PositionFlag> positionFlags = const {},
+    Set<EventSearchOption> options = const {},
   }) {
     _ensureOpen();
     _requireInnerPlanet(body);
@@ -717,9 +706,9 @@ final class TaiyinEventsApi {
       positionFlags,
       options,
       allowedOptions: const {
-        TaiyinEventSearchOption.reverse,
-        TaiyinEventSearchOption.refraction,
-        TaiyinEventSearchOption.noRefraction,
+        EventSearchOption.reverse,
+        EventSearchOption.refraction,
+        EventSearchOption.noRefraction,
       },
       disallowTopocentric: true,
     );
@@ -739,13 +728,13 @@ final class TaiyinEventsApi {
   }
 
   /// Finds lunar phase crossings in a UT1 interval.
-  TaiyinEphemerisResult<List<JulianDate<Ut1Scale>>> lunarPhaseCrossingsAtUt1(
+  EphemerisResult<List<JulianDate<Ut1Scale>>> lunarPhaseCrossingsAtUt1(
     double phaseRadians,
     JulianDate<Ut1Scale> start,
     JulianDate<Ut1Scale> end, {
     required double maxStepDays,
     int maxResults = 16,
-    Set<TaiyinPositionFlag> positionFlags = const {},
+    Set<PositionFlag> positionFlags = const {},
   }) {
     _ensureOpen();
     _requireFinite(phaseRadians, 'phaseRadians');
@@ -776,13 +765,13 @@ final class TaiyinEventsApi {
   }
 
   /// Finds lunar phase crossings in a TT interval.
-  TaiyinEphemerisResult<List<JulianDate<TtScale>>> lunarPhaseCrossingsAtTt(
+  EphemerisResult<List<JulianDate<TtScale>>> lunarPhaseCrossingsAtTt(
     double phaseRadians,
     JulianDate<TtScale> start,
     JulianDate<TtScale> end, {
     required double maxStepDays,
     int maxResults = 16,
-    Set<TaiyinPositionFlag> positionFlags = const {},
+    Set<PositionFlag> positionFlags = const {},
   }) {
     _ensureOpen();
     _requireFinite(phaseRadians, 'phaseRadians');
@@ -812,7 +801,7 @@ final class TaiyinEventsApi {
     });
   }
 
-  TaiyinEphemerisResult<JulianDate<S>> _scalar<S extends TimeScale>(
+  EphemerisResult<JulianDate<S>> _scalar<S extends TimeScale>(
     _EventScalarCalculation calculate,
   ) {
     return using((arena) {
@@ -822,14 +811,14 @@ final class TaiyinEventsApi {
       final status = calculate(arena, output, diagnostic);
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
-      return TaiyinEphemerisResult(
+      return EphemerisResult(
         value: readJulianDate<S>(output.ref),
         diagnostic: mappedDiagnostic,
       );
     });
   }
 
-  TaiyinEphemerisResult<List<JulianDate<S>>> _dateArray<S extends TimeScale>(
+  EphemerisResult<List<JulianDate<S>>> _dateArray<S extends TimeScale>(
     int maxResults,
     _EventDateArrayCalculation calculate,
   ) {
@@ -848,11 +837,11 @@ final class TaiyinEventsApi {
           (index) => readJulianDate<S>((output + index).ref),
         ),
       );
-      return TaiyinEphemerisResult(value: values, diagnostic: mappedDiagnostic);
+      return EphemerisResult(value: values, diagnostic: mappedDiagnostic);
     });
   }
 
-  TaiyinEphemerisResult<List<T>> _pairArray<S extends TimeScale, T>(
+  EphemerisResult<List<T>> _pairArray<S extends TimeScale, T>(
     int maxResults,
     _EventPairArrayCalculation calculate,
     T Function(JulianDate<S> coordinate, double secondary) read,
@@ -883,20 +872,19 @@ final class TaiyinEventsApi {
           ),
         ),
       );
-      return TaiyinEphemerisResult(value: values, diagnostic: mappedDiagnostic);
+      return EphemerisResult(value: values, diagnostic: mappedDiagnostic);
     });
   }
 
-  TaiyinEphemerisResult<List<TaiyinExactAspectEvent<S>>>
-  _exactAspects<S extends TimeScale>(
-    TaiyinTarget bodyA,
-    TaiyinTarget bodyB,
+  EphemerisResult<List<ExactAspectEvent<S>>> _exactAspects<S extends TimeScale>(
+    Target bodyA,
+    Target bodyB,
     List<double> aspectSeparationsRadians,
     JulianDate<S> start,
     JulianDate<S> end, {
     required double maxStepDays,
     required int maxResults,
-    required Set<TaiyinPositionFlag> positionFlags,
+    required Set<PositionFlag> positionFlags,
     required int Function(
       Arena,
       Pointer<Double>,
@@ -949,27 +937,27 @@ final class TaiyinEventsApi {
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
       final resultCount = _validatedResultCount(count.value, maxResults);
-      final values = List<TaiyinExactAspectEvent<S>>.unmodifiable(
+      final values = List<ExactAspectEvent<S>>.unmodifiable(
         List.generate(
           resultCount,
-          (index) => TaiyinExactAspectEvent(
+          (index) => ExactAspectEvent(
             coordinate: readJulianDate<S>((output + index).ref),
             aspectRadians: (outputAspects + index).value,
           ),
         ),
       );
-      return TaiyinEphemerisResult(value: values, diagnostic: mappedDiagnostic);
+      return EphemerisResult(value: values, diagnostic: mappedDiagnostic);
     });
   }
 
-  TaiyinEphemerisResult<TaiyinMinimumAngularSeparationEvent<S>>
+  EphemerisResult<MinimumAngularSeparationEvent<S>>
   _minimumSeparation<S extends TimeScale>(
-    TaiyinTarget bodyA,
-    TaiyinTarget bodyB,
+    Target bodyA,
+    Target bodyB,
     JulianDate<S> start,
     JulianDate<S> end, {
     required double maxStepDays,
-    required Set<TaiyinPositionFlag> positionFlags,
+    required Set<PositionFlag> positionFlags,
     required int Function(
       Arena,
       Pointer<taiyin_angular_separation_result>,
@@ -992,8 +980,8 @@ final class TaiyinEventsApi {
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
       final value = output.ref;
-      return TaiyinEphemerisResult(
-        value: TaiyinMinimumAngularSeparationEvent<S>(
+      return EphemerisResult(
+        value: MinimumAngularSeparationEvent<S>(
           bodyAId: value.body_a_id,
           bodyBId: value.body_b_id,
           coordinate: readJulianDate<S>(value.jd),
@@ -1007,7 +995,7 @@ final class TaiyinEventsApi {
     });
   }
 
-  TaiyinEphemerisResult<TaiyinSolarTransitEvent> _solarTransit(
+  EphemerisResult<SolarTransitEvent> _solarTransit(
     int Function(
       Arena,
       Pointer<taiyin_solar_transit_result>,
@@ -1024,14 +1012,14 @@ final class TaiyinEventsApi {
       final status = calculate(arena, output, diagnostic);
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
-      return TaiyinEphemerisResult(
+      return EphemerisResult(
         value: _readSolarTransit(output.ref),
         diagnostic: mappedDiagnostic,
       );
     });
   }
 
-  TaiyinEphemerisResult<TaiyinLocalSolarTransitEvent> _localSolarTransit(
+  EphemerisResult<LocalSolarTransitEvent> _localSolarTransit(
     int Function(
       Arena,
       Pointer<taiyin_local_solar_transit_result>,
@@ -1049,19 +1037,19 @@ final class TaiyinEventsApi {
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
       final value = output.ref;
-      return TaiyinEphemerisResult(
-        value: TaiyinLocalSolarTransitEvent(
+      return EphemerisResult(
+        value: LocalSolarTransitEvent(
           global: _readSolarTransit(value.global),
           topocentric: _readSolarTransit(value.topocentric),
-          visibilityFlags: TaiyinSolarTransitVisibilityFlag.fromMask(
+          visibilityFlags: SolarTransitVisibilityFlag.fromMask(
             value.visibility_flags,
           ),
           contactSunAltitudeDegrees: List.generate(
-            TaiyinLocalSolarTransitEvent.contactSlotCount,
+            LocalSolarTransitEvent.contactSlotCount,
             (index) => value.contact_sun_altitude_deg[index],
           ),
           contactSunAzimuthDegrees: List.generate(
-            TaiyinLocalSolarTransitEvent.contactSlotCount,
+            LocalSolarTransitEvent.contactSlotCount,
             (index) => value.contact_sun_azimuth_deg[index],
           ),
           sunrise: _ut1OrNull(value.sunrise_jd_ut),
@@ -1072,10 +1060,10 @@ final class TaiyinEventsApi {
     });
   }
 
-  TaiyinSolarTransitEvent _readSolarTransit(taiyin_solar_transit_result value) {
-    return TaiyinSolarTransitEvent(
+  SolarTransitEvent _readSolarTransit(taiyin_solar_transit_result value) {
+    return SolarTransitEvent(
       bodyId: value.body_id,
-      kinds: TaiyinSolarTransitKind.values
+      kinds: SolarTransitKind.values
           .where((kind) => (value.kind & kind.mask) != 0)
           .toSet(),
       greatest: readJulianDate<Ut1Scale>(value.greatest_jd_ut),
@@ -1093,7 +1081,7 @@ final class TaiyinEventsApi {
 
   void _writeSolarTransit(
     taiyin_solar_transit_result output,
-    TaiyinSolarTransitEvent value,
+    SolarTransitEvent value,
   ) {
     output
       ..struct_size = sizeOf<taiyin_solar_transit_result>()
@@ -1117,21 +1105,18 @@ final class TaiyinEventsApi {
   }
 
   int _eventMask(
-    Set<TaiyinPositionFlag> positionFlags,
-    Set<TaiyinEventSearchOption> options, {
-    Set<TaiyinEventSearchOption> allowedOptions = const {},
+    Set<PositionFlag> positionFlags,
+    Set<EventSearchOption> options, {
+    Set<EventSearchOption> allowedOptions = const {},
     bool disallowTopocentric = false,
   }) {
-    const unsupportedCoordinates = {
-      TaiyinPositionFlag.xyz,
-      TaiyinPositionFlag.equatorial,
-    };
+    const unsupportedCoordinates = {PositionFlag.xyz, PositionFlag.equatorial};
     final unsupportedPositions = positionFlags.intersection(
       unsupportedCoordinates,
     );
     if (unsupportedPositions.isNotEmpty ||
         (disallowTopocentric &&
-            positionFlags.contains(TaiyinPositionFlag.topocentric))) {
+            positionFlags.contains(PositionFlag.topocentric))) {
       throw ArgumentError.value(
         positionFlags,
         'positionFlags',
@@ -1147,8 +1132,8 @@ final class TaiyinEventsApi {
         'contains options unsupported by this event search',
       );
     }
-    if (options.contains(TaiyinEventSearchOption.refraction) &&
-        options.contains(TaiyinEventSearchOption.noRefraction)) {
+    if (options.contains(EventSearchOption.refraction) &&
+        options.contains(EventSearchOption.noRefraction)) {
       throw ArgumentError.value(
         options,
         'options',
@@ -1168,7 +1153,7 @@ final class TaiyinEventsApi {
     }
   }
 
-  void _requireDistinctTargets(TaiyinTarget bodyA, TaiyinTarget bodyB) {
+  void _requireDistinctTargets(Target bodyA, Target bodyB) {
     _requireNonZeroTarget(bodyA, 'bodyA');
     _requireNonZeroTarget(bodyB, 'bodyB');
     if (bodyA.id == bodyB.id) {
@@ -1176,7 +1161,7 @@ final class TaiyinEventsApi {
     }
   }
 
-  void _requireNonZeroTarget(TaiyinTarget body, String name) {
+  void _requireNonZeroTarget(Target body, String name) {
     if (body.id == 0) {
       throw ArgumentError.value(
         body,
@@ -1186,13 +1171,13 @@ final class TaiyinEventsApi {
     }
   }
 
-  void _requireInnerPlanet(TaiyinBody body) {
-    if (body != TaiyinBody.mercury && body != TaiyinBody.venus) {
+  void _requireInnerPlanet(Body body) {
+    if (body != Body.mercury && body != Body.venus) {
       throw ArgumentError.value(body, 'body', 'must be Mercury or Venus');
     }
   }
 
-  void _validateObserver(TaiyinObserverLocation observer) {
+  void _validateObserver(ObserverLocation observer) {
     _requireFinite(observer.longitudeDegrees, 'observer.longitudeDegrees');
     _requireFinite(observer.latitudeDegrees, 'observer.latitudeDegrees');
     _requireFinite(observer.heightMeters, 'observer.heightMeters');

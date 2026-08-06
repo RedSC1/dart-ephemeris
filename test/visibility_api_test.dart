@@ -11,22 +11,22 @@ void main() {
   const fixedCatalogPath =
       '$nativeDataRoot/stars/catalogs/stars-fixed-traditional.tsc1';
 
-  group('TaiyinVisibilityApi native integration', () {
-    late Taiyin runtime;
-    late TaiyinContext context;
+  group('VisibilityApi native integration', () {
+    late Ephemeris runtime;
+    late EphemerisContext context;
     final start = JulianDate<Ut1Scale>.fromDouble(2460408.75);
     final end = JulianDate<Ut1Scale>.fromDouble(2460409.75);
     final centerTt = JulianDate<TtScale>.fromDouble(2460409.0);
-    const denver = TaiyinObserverLocation(
+    const denver = ObserverLocation(
       longitudeDegrees: -104.9903,
       latitudeDegrees: 39.7392,
       heightMeters: 1609,
     );
 
     setUp(() {
-      runtime = Taiyin.open(
+      runtime = Ephemeris.open(
         libraryPath: libraryPath,
-        options: const TaiyinRuntimeOptions(
+        options: const RuntimeOptions(
           sourcePaths: [majorBodiesPath, centerOfBodyPath],
           loadPackagedData: false,
           loadBuiltinEop: false,
@@ -38,21 +38,21 @@ void main() {
       context = runtime.createContext();
       context.configuration
         ..setGeocentricObserver(
-          observerId: TaiyinBody.earth.id,
-          centerId: TaiyinBody.earth.id,
+          observerId: Body.earth.id,
+          centerId: Body.earth.id,
         )
         ..setObserverLocation(denver)
         ..setStandardAtmosphere()
         ..useSolarDeflector()
         ..setApparentConfig(
-          TaiyinApparentConfig(
+          ApparentConfig(
             flags: const {
-              TaiyinApparentFlag.spherical,
-              TaiyinApparentFlag.lightTime,
-              TaiyinApparentFlag.aberration,
-              TaiyinApparentFlag.deflection,
+              ApparentFlag.spherical,
+              ApparentFlag.lightTime,
+              ApparentFlag.aberration,
+              ApparentFlag.deflection,
             },
-            outputFrame: TaiyinApparentFrame.trueEclipticOfDate,
+            outputFrame: ApparentFrame.trueEclipticOfDate,
           ),
         );
     });
@@ -66,45 +66,39 @@ void main() {
       final rise = context.visibility.moonRiseSetAtUt1(
         start,
         end,
-        event: TaiyinVisibilityEventKind.rise,
-        flags: {TaiyinVisibilityFlag.refraction},
+        event: VisibilityEventKind.rise,
+        flags: {VisibilityFlag.refraction},
       );
       final fixedDiscRise = context.visibility.moonRiseSetAtUt1(
         start,
         end,
-        event: TaiyinVisibilityEventKind.rise,
-        flags: {
-          TaiyinVisibilityFlag.fixedDiscSize,
-          TaiyinVisibilityFlag.noRefraction,
-        },
+        event: VisibilityEventKind.rise,
+        flags: {VisibilityFlag.fixedDiscSize, VisibilityFlag.noRefraction},
       );
       final plainSet = context.visibility.moonRiseSetAtUt1(
         start,
         end,
-        event: TaiyinVisibilityEventKind.set,
-        limb: TaiyinVisibilityLimb.center,
-        flags: {TaiyinVisibilityFlag.noRefraction},
+        event: VisibilityEventKind.set,
+        limb: VisibilityLimb.center,
+        flags: {VisibilityFlag.noRefraction},
       );
       final customSet = context.visibility.moonRiseSetAtUt1(
         start,
         end,
-        event: TaiyinVisibilityEventKind.set,
-        limb: TaiyinVisibilityLimb.center,
+        event: VisibilityEventKind.set,
+        limb: VisibilityLimb.center,
         horizonAltitudeRadians: math.pi / 180,
-        flags: {TaiyinVisibilityFlag.noRefraction},
+        flags: {VisibilityFlag.noRefraction},
       );
       final transit = context.visibility.moonTransitAtUt1(
         start,
         end,
-        event: TaiyinVisibilityEventKind.upperTransit,
+        event: VisibilityEventKind.upperTransit,
       );
 
       expect(rise.diagnostic.status, 0);
-      expect(rise.value.altitudeState, TaiyinVisibilityAltitudeState.crosses);
-      expect(
-        rise.value.crossingDirection,
-        TaiyinVisibilityCrossingDirection.rising,
-      );
+      expect(rise.value.altitudeState, VisibilityAltitudeState.crosses);
+      expect(rise.value.crossingDirection, VisibilityCrossingDirection.rising);
       expect(
         rise.value.coordinate!.toDouble(),
         closeTo(2460409.020203506574, 5 / JulianDate.secondsPerDay),
@@ -128,48 +122,45 @@ void main() {
 
     test('searches planetary rise, custom horizons, and transits', () {
       final defaultMercuryRise = context.visibility.planetRiseSetAtUt1(
-        TaiyinBody.mercury,
+        Body.mercury,
         start,
         end,
-        event: TaiyinVisibilityEventKind.rise,
+        event: VisibilityEventKind.rise,
       );
       final mercuryRise = context.visibility.planetRiseSetAtUt1(
-        TaiyinBody.mercury,
+        Body.mercury,
         start,
         end,
-        event: TaiyinVisibilityEventKind.rise,
-        flags: {TaiyinVisibilityFlag.refraction},
+        event: VisibilityEventKind.rise,
+        flags: {VisibilityFlag.refraction},
       );
       final unrefractedMercuryRise = context.visibility.planetRiseSetAtUt1(
-        TaiyinBody.mercury,
+        Body.mercury,
         start,
         end,
-        event: TaiyinVisibilityEventKind.rise,
-        flags: {TaiyinVisibilityFlag.noRefraction},
+        event: VisibilityEventKind.rise,
+        flags: {VisibilityFlag.noRefraction},
       );
       final customMercuryRise = context.visibility.planetRiseSetAtUt1(
-        TaiyinBody.mercury,
+        Body.mercury,
         start,
         end,
-        event: TaiyinVisibilityEventKind.rise,
+        event: VisibilityEventKind.rise,
         horizonAltitudeRadians: math.pi / 180,
-        flags: {TaiyinVisibilityFlag.noRefraction},
+        flags: {VisibilityFlag.noRefraction},
       );
       final venusTransit = context.visibility.planetTransitAtUt1(
-        TaiyinBody.venus,
+        Body.venus,
         start,
         end,
-        event: TaiyinVisibilityEventKind.upperTransit,
+        event: VisibilityEventKind.upperTransit,
       );
 
       expect(mercuryRise.diagnostic.status, 0);
-      expect(
-        mercuryRise.value.altitudeState,
-        TaiyinVisibilityAltitudeState.crosses,
-      );
+      expect(mercuryRise.value.altitudeState, VisibilityAltitudeState.crosses);
       expect(
         mercuryRise.value.crossingDirection,
-        TaiyinVisibilityCrossingDirection.rising,
+        VisibilityCrossingDirection.rising,
       );
       expect(mercuryRise.value.coordinate, isNotNull);
       expect(
@@ -201,35 +192,32 @@ void main() {
       final sunrise = context.visibility.solarRiseSetAtUt1(
         start,
         end,
-        event: TaiyinVisibilityEventKind.rise,
-        flags: {TaiyinVisibilityFlag.refraction},
+        event: VisibilityEventKind.rise,
+        flags: {VisibilityFlag.refraction},
       );
       final customSunrise = context.visibility.solarRiseSetAtUt1(
         start,
         end,
-        event: TaiyinVisibilityEventKind.rise,
+        event: VisibilityEventKind.rise,
         horizonAltitudeRadians: math.pi / 180,
-        flags: {TaiyinVisibilityFlag.refraction},
+        flags: {VisibilityFlag.refraction},
       );
       final fixedDiscSunrise = context.visibility.solarRiseSetAtUt1(
         start,
         end,
-        event: TaiyinVisibilityEventKind.rise,
-        flags: {
-          TaiyinVisibilityFlag.fixedDiscSize,
-          TaiyinVisibilityFlag.noRefraction,
-        },
+        event: VisibilityEventKind.rise,
+        flags: {VisibilityFlag.fixedDiscSize, VisibilityFlag.noRefraction},
       );
       final twilight = context.visibility.solarTwilightAtUt1(
         start,
         end,
-        event: TaiyinVisibilityEventKind.set,
-        twilight: TaiyinTwilightKind.nautical,
+        event: VisibilityEventKind.set,
+        twilight: TwilightKind.nautical,
       );
       final transit = context.visibility.solarTransitAtUt1(
         start,
         end,
-        event: TaiyinVisibilityEventKind.upperTransit,
+        event: VisibilityEventKind.upperTransit,
       );
       final fastRiseSet = context.visibility.solarRiseSetFastAtTt(
         centerTt,
@@ -273,31 +261,28 @@ void main() {
         'spica',
         start,
         end,
-        event: TaiyinVisibilityEventKind.rise,
-        flags: {TaiyinVisibilityFlag.noRefraction},
+        event: VisibilityEventKind.rise,
+        flags: {VisibilityFlag.noRefraction},
       );
       final customRise = context.visibility.starRiseSetAtUt1(
         'spica',
         start,
         end,
-        event: TaiyinVisibilityEventKind.rise,
+        event: VisibilityEventKind.rise,
         horizonAltitudeRadians: math.pi / 180,
-        flags: {TaiyinVisibilityFlag.noRefraction},
+        flags: {VisibilityFlag.noRefraction},
       );
       final transit = context.visibility.starTransitAtUt1(
         'spica',
         start,
         end,
-        event: TaiyinVisibilityEventKind.upperTransit,
+        event: VisibilityEventKind.upperTransit,
       );
 
       expect(rise.diagnostic.status, 0);
-      expect(rise.value.altitudeState, TaiyinVisibilityAltitudeState.crosses);
+      expect(rise.value.altitudeState, VisibilityAltitudeState.crosses);
       expect(rise.value.coordinate, isNotNull);
-      expect(
-        rise.value.crossingDirection,
-        TaiyinVisibilityCrossingDirection.rising,
-      );
+      expect(rise.value.crossingDirection, VisibilityCrossingDirection.rising);
       expect(rise.value.residualRadians.abs(), lessThan(1e-8));
       // Deterministic regression baselines for this bundled Spica catalog and
       // native visibility configuration.
@@ -327,23 +312,21 @@ void main() {
         addTearDown(strictContext.close);
         strictContext.configuration
           ..setGeocentricObserver(
-            observerId: TaiyinBody.earth.id,
-            centerId: TaiyinBody.earth.id,
+            observerId: Body.earth.id,
+            centerId: Body.earth.id,
           )
           ..setObserverLocation(denver)
-          ..setAtmospherePolicy({
-            TaiyinAtmospherePolicyFlag.allowStandardFallback,
-          })
+          ..setAtmospherePolicy({AtmospherePolicyFlag.allowStandardFallback})
           ..useSolarDeflector()
           ..setApparentConfig(
-            TaiyinApparentConfig(
+            ApparentConfig(
               flags: const {
-                TaiyinApparentFlag.spherical,
-                TaiyinApparentFlag.lightTime,
-                TaiyinApparentFlag.aberration,
-                TaiyinApparentFlag.deflection,
+                ApparentFlag.spherical,
+                ApparentFlag.lightTime,
+                ApparentFlag.aberration,
+                ApparentFlag.deflection,
               },
-              outputFrame: TaiyinApparentFrame.trueEclipticOfDate,
+              outputFrame: ApparentFrame.trueEclipticOfDate,
             ),
           );
 
@@ -351,11 +334,11 @@ void main() {
           () => strictContext.visibility.solarRiseSetAtUt1(
             start,
             end,
-            event: TaiyinVisibilityEventKind.rise,
-            flags: {TaiyinVisibilityFlag.strictMeteorology},
+            event: VisibilityEventKind.rise,
+            flags: {VisibilityFlag.strictMeteorology},
           ),
           throwsA(
-            isA<TaiyinException>().having(
+            isA<EphemerisError>().having(
               (error) => error.status,
               'status',
               isNot(0),
@@ -366,10 +349,10 @@ void main() {
         final unrefracted = strictContext.visibility.solarRiseSetAtUt1(
           start,
           end,
-          event: TaiyinVisibilityEventKind.rise,
+          event: VisibilityEventKind.rise,
           flags: {
-            TaiyinVisibilityFlag.strictMeteorology,
-            TaiyinVisibilityFlag.noRefraction,
+            VisibilityFlag.strictMeteorology,
+            VisibilityFlag.noRefraction,
           },
         );
         expect(unrefracted.diagnostic.status, 0);
@@ -379,7 +362,7 @@ void main() {
 
     test('maps no-event states and rejects invalid Dart inputs', () {
       context.configuration.setObserverLocation(
-        const TaiyinObserverLocation(
+        const ObserverLocation(
           longitudeDegrees: 15.6333,
           latitudeDegrees: 78.2232,
           heightMeters: 10,
@@ -389,31 +372,28 @@ void main() {
       final polar = context.visibility.solarRiseSetAtUt1(
         polarStart,
         polarStart.add(const Duration(days: 1)),
-        event: TaiyinVisibilityEventKind.set,
+        event: VisibilityEventKind.set,
       );
 
       expect(polar.diagnostic.status, 0);
-      expect(
-        polar.value.altitudeState,
-        TaiyinVisibilityAltitudeState.alwaysAbove,
-      );
+      expect(polar.value.altitudeState, VisibilityAltitudeState.alwaysAbove);
       expect(polar.value.coordinate, isNull);
       expect(
         () => context.visibility.planetRiseSetAtUt1(
-          TaiyinBody.earth,
+          Body.earth,
           start,
           end,
-          event: TaiyinVisibilityEventKind.rise,
+          event: VisibilityEventKind.rise,
         ),
         throwsArgumentError,
       );
       expect(
         () => context.visibility.planetRiseSetAtUt1(
-          TaiyinBody.mercury,
+          Body.mercury,
           start,
           end,
-          event: TaiyinVisibilityEventKind.rise,
-          flags: {TaiyinVisibilityFlag.fixedDiscSize},
+          event: VisibilityEventKind.rise,
+          flags: {VisibilityFlag.fixedDiscSize},
         ),
         throwsArgumentError,
       );
@@ -422,11 +402,8 @@ void main() {
           'spica',
           start,
           end,
-          event: TaiyinVisibilityEventKind.rise,
-          flags: {
-            TaiyinVisibilityFlag.refraction,
-            TaiyinVisibilityFlag.noRefraction,
-          },
+          event: VisibilityEventKind.rise,
+          flags: {VisibilityFlag.refraction, VisibilityFlag.noRefraction},
         ),
         throwsArgumentError,
       );
@@ -435,7 +412,7 @@ void main() {
           'spica\u0000suffix',
           start,
           end,
-          event: TaiyinVisibilityEventKind.upperTransit,
+          event: VisibilityEventKind.upperTransit,
         ),
         throwsArgumentError,
       );
@@ -443,7 +420,7 @@ void main() {
         () => context.visibility.solarTransitAtUt1(
           start,
           end,
-          event: TaiyinVisibilityEventKind.rise,
+          event: VisibilityEventKind.rise,
         ),
         throwsArgumentError,
       );
@@ -451,7 +428,7 @@ void main() {
         () => context.visibility.solarRiseSetAtUt1(
           end,
           start,
-          event: TaiyinVisibilityEventKind.rise,
+          event: VisibilityEventKind.rise,
         ),
         throwsArgumentError,
       );
@@ -460,7 +437,7 @@ void main() {
         () => context.visibility.solarTransitAtUt1(
           start,
           end,
-          event: TaiyinVisibilityEventKind.upperTransit,
+          event: VisibilityEventKind.upperTransit,
         ),
         throwsStateError,
       );

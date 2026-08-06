@@ -8,10 +8,10 @@ void main() {
   group(
     'ported: time_angle_interpolation',
     () {
-      late TaiyinContext taiyin;
+      late EphemerisContext taiyin;
 
       setUp(() {
-        taiyin = Taiyin.open(libraryPath: libraryPath).createContext();
+        taiyin = Ephemeris.open(libraryPath: libraryPath).createContext();
       });
 
       tearDown(() {
@@ -64,7 +64,7 @@ void main() {
         expect(
           () =>
               taiyin.time.taiMinusUtc(AstroDateTime(1971, 12, 31, 23, 59, 59)),
-          throwsA(isA<TaiyinException>()),
+          throwsA(isA<EphemerisError>()),
         );
         expect(taiyin.time.taiMinusUtc(AstroDateTime(1972, 1, 1)), 10);
         expect(

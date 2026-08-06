@@ -4,16 +4,16 @@ import 'support/native_library.dart';
 
 void main() {
   group(
-    'TaiyinPositionApi native integration',
+    'PositionApi native integration',
     () {
-      late TaiyinContext taiyin;
+      late EphemerisContext taiyin;
       final tt = JulianDate<TtScale>.fromDouble(2460409.0);
       final ut1 = JulianDate<Ut1Scale>.fromDouble(2460409.0);
       final tdb = JulianDate<TdbScale>.fromDouble(2460409.0);
       final utc = AstroDateTime(2024, 4, 8, 18);
 
       setUp(() {
-        taiyin = Taiyin.open(libraryPath: libraryPath).createContext();
+        taiyin = Ephemeris.open(libraryPath: libraryPath).createContext();
       });
 
       tearDown(() {
@@ -22,37 +22,37 @@ void main() {
 
       test('returns a position with its native diagnostic', () {
         final result = taiyin.position.atTt(
-          TaiyinBody.moon,
+          Body.moon,
           tt,
-          flags: {TaiyinPositionFlag.xyz, TaiyinPositionFlag.speed},
+          flags: {PositionFlag.xyz, PositionFlag.speed},
         );
 
         expect(result.value.values, hasLength(6));
         expect(result.value.values.every((value) => value.isFinite), isTrue);
         expect(result.value.isCartesian, isTrue);
         expect(result.diagnostic.status, 0);
-        expect(result.diagnostic.targetId, TaiyinBody.moon.id);
+        expect(result.diagnostic.targetId, Body.moon.id);
         expect(result.diagnostic.julianDateTdb.toDouble().isFinite, isTrue);
         expect(result.diagnostic.candidateCount, greaterThanOrEqualTo(0));
       });
 
       test('covers TDB, UT1, explicit Delta-T, and UTC routes', () {
         final results = [
-          taiyin.position.atTdb(TaiyinBody.sun, tdb, tt),
-          taiyin.position.atUt1(TaiyinBody.sun, ut1),
-          taiyin.position.atUt1WithDeltaT(TaiyinBody.sun, ut1, 69.184),
-          taiyin.position.atUtc(TaiyinBody.sun, utc),
+          taiyin.position.atTdb(Body.sun, tdb, tt),
+          taiyin.position.atUt1(Body.sun, ut1),
+          taiyin.position.atUt1WithDeltaT(Body.sun, ut1, 69.184),
+          taiyin.position.atUtc(Body.sun, utc),
         ];
 
         for (final result in results) {
           expect(result.value.values.every((value) => value.isFinite), isTrue);
           expect(result.diagnostic.status, 0);
-          expect(result.diagnostic.targetId, TaiyinBody.sun.id);
+          expect(result.diagnostic.targetId, Body.sun.id);
         }
       });
 
       test('batch calculations preserve target order and match singles', () {
-        const bodies = [TaiyinBody.sun, TaiyinBody.moon];
+        const bodies = [Body.sun, Body.moon];
         final batch = taiyin.position.batchAtTt(bodies, tt);
 
         expect(batch, hasLength(bodies.length));
@@ -65,7 +65,7 @@ void main() {
       });
 
       test('covers batch TDB, UT1, explicit Delta-T, and UTC routes', () {
-        const bodies = [TaiyinBody.sun, TaiyinBody.moon];
+        const bodies = [Body.sun, Body.moon];
         final batches = [
           taiyin.position.batchAtTdb(bodies, tdb, tt),
           taiyin.position.batchAtUt1(bodies, ut1),
@@ -87,25 +87,25 @@ void main() {
       });
 
       test('preserves successful targets when a batch target fails', () {
-        const bodies = [TaiyinBody.sun, TaiyinBody.mars];
+        const bodies = [Body.sun, Body.mars];
         final batch = taiyin.position.batchAtTt(bodies, tt);
 
         expect(batch, hasLength(2));
         expect(batch[0].diagnostic.status, 0);
         expect(batch[0].value.values.every((value) => value.isFinite), isTrue);
         expect(batch[1].diagnostic.status, isNot(0));
-        expect(batch[1].diagnostic.targetId, TaiyinBody.mars.id);
+        expect(batch[1].diagnostic.targetId, Body.mars.id);
       });
 
       test('attaches native diagnostics to single-target failures', () {
         expect(
-          () => taiyin.position.atTt(TaiyinBody.mars, tt),
+          () => taiyin.position.atTt(Body.mars, tt),
           throwsA(
-            isA<TaiyinException>()
+            isA<EphemerisError>()
                 .having(
                   (error) => error.diagnostic?.targetId,
                   'diagnostic target',
-                  TaiyinBody.mars.id,
+                  Body.mars.id,
                 )
                 .having(
                   (error) => error.diagnostic?.status,
@@ -116,19 +116,19 @@ void main() {
         );
 
         expect(
-          () => taiyin.position.stateAtTt(TaiyinBody.earth, tt),
+          () => taiyin.position.stateAtTt(Body.earth, tt),
           throwsA(
-            isA<TaiyinException>().having(
+            isA<EphemerisError>().having(
               (error) => error.diagnostic?.targetId,
               'state diagnostic target',
-              TaiyinBody.earth.id,
+              Body.earth.id,
             ),
           ),
         );
       });
 
       test('returns finite Cartesian position, velocity, and acceleration', () {
-        final result = taiyin.position.stateAtTt(TaiyinBody.moon, tt);
+        final result = taiyin.position.stateAtTt(Body.moon, tt);
         final state = result.value;
 
         expect(
@@ -143,15 +143,15 @@ void main() {
           state.accelerationAuPerDay2.values.every((value) => value.isFinite),
           isTrue,
         );
-        expect(result.diagnostic.targetId, TaiyinBody.moon.id);
+        expect(result.diagnostic.targetId, Body.moon.id);
       });
 
       test('covers Cartesian-state time routes', () {
         final results = [
-          taiyin.position.stateAtTdb(TaiyinBody.moon, tdb, tt),
-          taiyin.position.stateAtUt1(TaiyinBody.moon, ut1),
-          taiyin.position.stateAtUt1WithDeltaT(TaiyinBody.moon, ut1, 69.184),
-          taiyin.position.stateAtUtc(TaiyinBody.moon, utc),
+          taiyin.position.stateAtTdb(Body.moon, tdb, tt),
+          taiyin.position.stateAtUt1(Body.moon, ut1),
+          taiyin.position.stateAtUt1WithDeltaT(Body.moon, ut1, 69.184),
+          taiyin.position.stateAtUtc(Body.moon, utc),
         ];
 
         for (final result in results) {
@@ -165,16 +165,12 @@ void main() {
 
       test('rejects non-finite Delta-T and use after close', () {
         expect(
-          () =>
-              taiyin.position.atUt1WithDeltaT(TaiyinBody.sun, ut1, double.nan),
+          () => taiyin.position.atUt1WithDeltaT(Body.sun, ut1, double.nan),
           throwsArgumentError,
         );
 
         taiyin.close();
-        expect(
-          () => taiyin.position.atTt(TaiyinBody.sun, tt),
-          throwsStateError,
-        );
+        expect(() => taiyin.position.atTt(Body.sun, tt), throwsStateError);
       });
     },
     skip: nativeLibraryAvailable

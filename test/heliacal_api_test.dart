@@ -8,19 +8,16 @@ void main() {
   const fixedCatalogPath =
       '$nativeDataRoot/stars/catalogs/stars-fixed-traditional.tsc1';
 
-  group('TaiyinHeliacalApi native integration', () {
-    late Taiyin runtime;
-    late TaiyinContext context;
-    const observer = TaiyinObserverLocation(
-      longitudeDegrees: 0,
-      latitudeDegrees: 0,
-    );
+  group('HeliacalApi native integration', () {
+    late Ephemeris runtime;
+    late EphemerisContext context;
+    const observer = ObserverLocation(longitudeDegrees: 0, latitudeDegrees: 0);
     final aprilEclipse = JulianDate<Ut1Scale>.fromDouble(2460408.5);
 
     setUp(() {
-      runtime = Taiyin.open(
+      runtime = Ephemeris.open(
         libraryPath: libraryPath,
-        options: const TaiyinRuntimeOptions(
+        options: const RuntimeOptions(
           sourcePaths: [majorBodiesPath],
           loadPackagedData: false,
           loadBuiltinEop: false,
@@ -32,28 +29,24 @@ void main() {
       context = runtime.createContext();
       context.configuration
         ..setGeocentricObserver(
-          observerId: TaiyinBody.earth.id,
-          centerId: TaiyinBody.earth.id,
+          observerId: Body.earth.id,
+          centerId: Body.earth.id,
         )
         ..setObserverLocation(observer)
-        ..setAtmospherePolicy({
-          TaiyinAtmospherePolicyFlag.allowStandardFallback,
-        })
+        ..setAtmospherePolicy({AtmospherePolicyFlag.allowStandardFallback})
         ..useSolarDeflector()
         ..setApparentConfig(
-          TaiyinApparentConfig(
+          ApparentConfig(
             flags: const {
-              TaiyinApparentFlag.spherical,
-              TaiyinApparentFlag.lightTime,
-              TaiyinApparentFlag.aberration,
-              TaiyinApparentFlag.deflection,
+              ApparentFlag.spherical,
+              ApparentFlag.lightTime,
+              ApparentFlag.aberration,
+              ApparentFlag.deflection,
             },
-            outputFrame: TaiyinApparentFrame.trueEclipticOfDate,
+            outputFrame: ApparentFrame.trueEclipticOfDate,
           ),
         )
-        ..setHeliacalVisibilityModel(
-          TaiyinHeliacalVisibilityModel.schaefer1993,
-        );
+        ..setHeliacalVisibilityModel(HeliacalVisibilityModel.schaefer1993);
     });
 
     tearDown(() {
@@ -62,46 +55,40 @@ void main() {
     });
 
     test('evaluates body and catalogue-star heliacal visibility', () {
-      const conditions = TaiyinHeliacalVisibilityConditions(
+      const conditions = HeliacalVisibilityConditions(
         extinctionMagnitudePerAirmass: 0.5,
         skyBrightnessNanolambert: 1234,
       );
       final venus = context.heliacal.bodyAtUt1(
-        TaiyinBody.venus,
+        Body.venus,
         aprilEclipse,
-        positionFlags: {TaiyinPositionFlag.truePosition},
-        flags: {TaiyinHeliacalFlag.includeMoonlight},
+        positionFlags: {PositionFlag.truePosition},
+        flags: {HeliacalFlag.includeMoonlight},
         conditions: conditions,
       );
       final spica = context.heliacal.starAtUt1('spica', aprilEclipse);
 
       expect(venus.diagnostic.status, 0);
-      expect(
-        venus.value.modelId,
-        TaiyinHeliacalVisibilityModel.schaefer1993.id,
-      );
+      expect(venus.value.modelId, HeliacalVisibilityModel.schaefer1993.id);
       expect(venus.value.extinctionMagnitudePerAirmass, 0.5);
       expect(venus.value.skyBrightnessNanolambert, 1234);
       expect(venus.value.moonlightBrightnessNanolambert, 0);
       expect(spica.diagnostic.status, 0);
       expect(spica.value.targetMagnitude.isFinite, isTrue);
       expect(spica.value.limitingMagnitude.isFinite, isTrue);
-      expect(
-        spica.value.modelId,
-        TaiyinHeliacalVisibilityModel.schaefer1993.id,
-      );
+      expect(spica.value.modelId, HeliacalVisibilityModel.schaefer1993.id);
       expect(spica.value.skyBrightnessNanolambert, greaterThan(0));
     });
 
     test('honors strict meteorology and explicit atmosphere data', () {
       expect(
         () => context.heliacal.bodyAtUt1(
-          TaiyinBody.venus,
+          Body.venus,
           aprilEclipse,
-          flags: {TaiyinHeliacalFlag.strictMeteorology},
+          flags: {HeliacalFlag.strictMeteorology},
         ),
         throwsA(
-          isA<TaiyinException>().having(
+          isA<EphemerisError>().having(
             (error) => error.status,
             'status',
             isNot(0),
@@ -110,12 +97,12 @@ void main() {
       );
 
       context.configuration
-        ..setAtmosphere(const TaiyinAtmosphere(relativeHumidityPercent: 40))
+        ..setAtmosphere(const Atmosphere(relativeHumidityPercent: 40))
         ..setMeteorologicalRangeKm(40);
       final result = context.heliacal.bodyAtUt1(
-        TaiyinBody.venus,
+        Body.venus,
         aprilEclipse,
-        flags: {TaiyinHeliacalFlag.strictMeteorology},
+        flags: {HeliacalFlag.strictMeteorology},
       );
 
       expect(result.diagnostic.status, 0);
@@ -123,19 +110,19 @@ void main() {
     });
 
     test('matches native Venus heliacal-search oracles', () {
-      const conditions = TaiyinHeliacalVisibilityConditions(
+      const conditions = HeliacalVisibilityConditions(
         extinctionMagnitudePerAirmass: 0.25,
       );
       const cases = [
-        (TaiyinHeliacalEventKind.morningFirst, 2460760.739317970350),
-        (TaiyinHeliacalEventKind.morningLast, 2460430.731063851155),
-        (TaiyinHeliacalEventKind.eveningFirst, 2460497.270654550754),
-        (TaiyinHeliacalEventKind.eveningLast, 2460749.272280503064),
+        (HeliacalEventKind.morningFirst, 2460760.739317970350),
+        (HeliacalEventKind.morningLast, 2460430.731063851155),
+        (HeliacalEventKind.eveningFirst, 2460497.270654550754),
+        (HeliacalEventKind.eveningLast, 2460749.272280503064),
       ];
 
       for (final (event, coordinate) in cases) {
         final result = context.heliacal.nextBodyEventAtUt1(
-          TaiyinBody.venus,
+          Body.venus,
           JulianDate<Ut1Scale>.fromDouble(coordinate - 2),
           event: event,
           maxSearchDays: 5,
@@ -171,12 +158,12 @@ void main() {
       final result = context.heliacal.nextStarEventAtUt1(
         'spica',
         start,
-        event: TaiyinHeliacalEventKind.morningFirst,
+        event: HeliacalEventKind.morningFirst,
         maxSearchDays: 366,
       );
 
       expect(result.diagnostic.status, 0);
-      expect(result.value.event, TaiyinHeliacalEventKind.morningFirst);
+      expect(result.value.event, HeliacalEventKind.morningFirst);
       expect(result.value.coordinate.isAfter(start), isTrue);
       expect(
         result.value.coordinate.isBefore(start.add(const Duration(days: 366))),
@@ -192,11 +179,11 @@ void main() {
 
     test('rejects unsupported inputs and use after close', () {
       expect(
-        () => context.heliacal.bodyAtUt1(TaiyinBody.sun, aprilEclipse),
+        () => context.heliacal.bodyAtUt1(Body.sun, aprilEclipse),
         throwsArgumentError,
       );
       expect(
-        () => context.heliacal.bodyAtUt1(TaiyinBody.moon, aprilEclipse),
+        () => context.heliacal.bodyAtUt1(Body.moon, aprilEclipse),
         throwsArgumentError,
       );
       expect(
@@ -205,34 +192,34 @@ void main() {
       );
       expect(
         () => context.heliacal.bodyAtUt1(
-          TaiyinBody.venus,
+          Body.venus,
           aprilEclipse,
-          positionFlags: {TaiyinPositionFlag.speed},
+          positionFlags: {PositionFlag.speed},
         ),
         throwsArgumentError,
       );
       expect(
         () => context.heliacal.bodyAtUt1(
-          TaiyinBody.venus,
+          Body.venus,
           aprilEclipse,
-          positionFlags: {TaiyinPositionFlag.xyz},
+          positionFlags: {PositionFlag.xyz},
         ),
         throwsArgumentError,
       );
       expect(
         () => context.heliacal.nextBodyEventAtUt1(
-          TaiyinBody.venus,
+          Body.venus,
           aprilEclipse,
-          event: TaiyinHeliacalEventKind.morningFirst,
+          event: HeliacalEventKind.morningFirst,
           maxSearchDays: 0,
         ),
         throwsArgumentError,
       );
       expect(
         () => context.heliacal.bodyAtUt1(
-          TaiyinBody.venus,
+          Body.venus,
           aprilEclipse,
-          conditions: const TaiyinHeliacalVisibilityConditions(
+          conditions: const HeliacalVisibilityConditions(
             extinctionMagnitudePerAirmass: 0,
           ),
         ),
@@ -240,9 +227,9 @@ void main() {
       );
       expect(
         () => context.heliacal.bodyAtUt1(
-          TaiyinBody.venus,
+          Body.venus,
           aprilEclipse,
-          conditions: const TaiyinHeliacalVisibilityConditions(
+          conditions: const HeliacalVisibilityConditions(
             skyBrightnessNanolambert: 0,
           ),
         ),
@@ -250,7 +237,7 @@ void main() {
       );
       context.close();
       expect(
-        () => context.heliacal.bodyAtUt1(TaiyinBody.venus, aprilEclipse),
+        () => context.heliacal.bodyAtUt1(Body.venus, aprilEclipse),
         throwsStateError,
       );
     });

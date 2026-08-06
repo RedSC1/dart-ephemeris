@@ -8,13 +8,13 @@ void main() {
   final lunarLimbPath = '$nativeDataPath/lunar-limb/kaguya_lalt_16ppd.tll1';
 
   group(
-    'Taiyin global runtime native integration',
+    'Ephemeris global runtime native integration',
     () {
-      late Taiyin runtime;
-      late TaiyinContext context;
+      late Ephemeris runtime;
+      late EphemerisContext context;
 
       setUp(() {
-        runtime = Taiyin.open(libraryPath: libraryPath);
+        runtime = Ephemeris.open(libraryPath: libraryPath);
         context = runtime.createContext();
       });
 
@@ -37,16 +37,16 @@ void main() {
       test('formats structured native diagnostics for logs', () {
         final diagnostic = context.position
             .atTt(
-              TaiyinBody.moon,
+              Body.moon,
               JulianDate<TtScale>.fromDouble(2460409.0),
-              flags: {TaiyinPositionFlag.xyz},
+              flags: {PositionFlag.xyz},
             )
             .diagnostic;
 
         final formatted = runtime.formatEphemerisDiagnostic(diagnostic);
 
         expect(formatted, contains('status=TAIYIN_STATUS_OK(0)'));
-        expect(formatted, contains('target=${TaiyinBody.moon.id}'));
+        expect(formatted, contains('target=${Body.moon.id}'));
         expect(formatted, contains('jd_tdb='));
       });
 
@@ -59,9 +59,9 @@ void main() {
 
           final position = context.position
               .atTt(
-                TaiyinAstrologyTarget.trueNode,
+                AstrologyTarget.trueNode,
                 JulianDate<TtScale>.fromDouble(2460409.0),
-                flags: {TaiyinPositionFlag.radians, TaiyinPositionFlag.speed},
+                flags: {PositionFlag.radians, PositionFlag.speed},
               )
               .value;
 
@@ -109,11 +109,11 @@ void main() {
         expect(runtime.cacheEntryCount, 0);
 
         runtime.addSourcePath(nativeDataPath);
-        context.configuration.setRouteRule(TaiyinRouteRule.opm2);
+        context.configuration.setRouteRule(RouteRule.opm2);
         context.position.atTt(
-          TaiyinBody.mercury,
+          Body.mercury,
           JulianDate<TtScale>.fromDouble(2460409.0),
-          flags: {TaiyinPositionFlag.xyz, TaiyinPositionFlag.truePosition},
+          flags: {PositionFlag.xyz, PositionFlag.truePosition},
         );
         expect(runtime.cacheEntryCount, greaterThan(0));
 
@@ -127,7 +127,7 @@ void main() {
         expect(
           () => runtime.loadEopTable(missingPath),
           throwsA(
-            isA<TaiyinException>()
+            isA<EphemerisError>()
                 .having((error) => error.status, 'status', -2001)
                 .having(
                   (error) => error.name,
@@ -139,7 +139,7 @@ void main() {
         expect(
           () => runtime.loadLunarLimbModel(missingPath),
           throwsA(
-            isA<TaiyinException>().having(
+            isA<EphemerisError>().having(
               (error) => error.status,
               'status',
               -2001,
@@ -149,7 +149,7 @@ void main() {
         expect(
           () => runtime.addSourcePath(missingPath),
           throwsA(
-            isA<TaiyinException>().having(
+            isA<EphemerisError>().having(
               (error) => error.status,
               'status',
               -2004,
@@ -188,9 +188,9 @@ void main() {
           expect(
             surviving.position
                 .atTt(
-                  TaiyinBody.moon,
+                  Body.moon,
                   JulianDate<TtScale>.fromDouble(2460409.0),
-                  flags: {TaiyinPositionFlag.xyz},
+                  flags: {PositionFlag.xyz},
                 )
                 .value
                 .values,

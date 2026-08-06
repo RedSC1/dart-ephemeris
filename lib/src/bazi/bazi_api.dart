@@ -5,12 +5,12 @@ const int _taiyinBaziInvalidWuxing = 0xff;
 
 /// Owns one native BaZi context.
 ///
-/// Create one through [TaiyinContext.createBazi], or use
-/// [TaiyinContext.bazi] for the cached default configuration. Call [close]
-/// before discarding the handle; closing the owning [TaiyinContext] closes its
+/// Create one through [EphemerisContext.createBazi], or use
+/// [EphemerisContext.bazi] for the cached default configuration. Call [close]
+/// before discarding the handle; closing the owning [EphemerisContext] closes its
 /// cached BaZi context first.
-final class TaiyinBaziContext implements Finalizable {
-  TaiyinBaziContext._(
+final class BaziContext implements Finalizable {
+  BaziContext._(
     this._bindings,
     this._context,
     this._finalizer,
@@ -19,10 +19,10 @@ final class TaiyinBaziContext implements Finalizable {
     _finalizer.attach(this, _context.cast(), detach: this);
   }
 
-  factory TaiyinBaziContext._create(
-    _TaiyinNativeLibraryState nativeState,
+  factory BaziContext._create(
+    _NativeLibraryState nativeState,
     TaiyinBindings bindings,
-    TaiyinBaziContextConfig config,
+    BaziContextConfig config,
   ) {
     final finalizer = nativeState.baziFinalizer;
     if (finalizer == null) {
@@ -40,7 +40,7 @@ final class TaiyinBaziContext implements Finalizable {
       );
       return output.value;
     });
-    return TaiyinBaziContext._(
+    return BaziContext._(
       bindings,
       context,
       finalizer,
@@ -66,7 +66,7 @@ final class TaiyinBaziContext implements Finalizable {
 
   void _ensureOpen() {
     if (_closed) {
-      throw StateError('This TaiyinBaziContext has been closed.');
+      throw StateError('This BaziContext has been closed.');
     }
   }
 
@@ -80,9 +80,7 @@ final class TaiyinBaziContext implements Finalizable {
   }
 
   /// Returns the 空亡 (kong-wang) branches for a Ganzhi value.
-  ({TaiyinEarthlyBranch a, TaiyinEarthlyBranch b}) getKongWang(
-    TaiyinGanzhi value,
-  ) {
+  ({EarthlyBranch a, EarthlyBranch b}) getKongWang(Ganzhi value) {
     _ensureOpen();
     _requireBazi();
     return using((arena) {
@@ -92,17 +90,14 @@ final class TaiyinBaziContext implements Finalizable {
         _bindings.taiyin_bazi_get_kong_wang(value.raw, output),
       );
       return (
-        a: TaiyinEarthlyBranch.fromId(output[0]),
-        b: TaiyinEarthlyBranch.fromId(output[1]),
+        a: EarthlyBranch.fromId(output[0]),
+        b: EarthlyBranch.fromId(output[1]),
       );
     });
   }
 
   /// Returns the 十神 (ten god) of a stem relative to the day stem.
-  TaiyinBaziTenGod getTenGod({
-    required int dayStemId,
-    required int targetStemId,
-  }) {
+  BaziTenGod getTenGod({required int dayStemId, required int targetStemId}) {
     _ensureOpen();
     _requireBazi();
     return using((arena) {
@@ -111,7 +106,7 @@ final class TaiyinBaziContext implements Finalizable {
         _bindings,
         _bindings.taiyin_bazi_get_ten_god(dayStemId, targetStemId, output),
       );
-      return TaiyinBaziTenGod.fromId(output.value);
+      return BaziTenGod.fromId(output.value);
     });
   }
 
@@ -137,7 +132,7 @@ final class TaiyinBaziContext implements Finalizable {
   }
 
   /// Calculates the relation between two heavenly stems.
-  TaiyinBaziStemRelationResult calcStemRelation(int stemA, int stemB) {
+  BaziStemRelationResult calcStemRelation(int stemA, int stemB) {
     _ensureOpen();
     _requireBazi();
     return using((arena) {
@@ -157,7 +152,7 @@ final class TaiyinBaziContext implements Finalizable {
   }
 
   /// Calculates the relation between two earthly branches.
-  TaiyinBaziBranchRelationResult calcBranchRelation(int branchA, int branchB) {
+  BaziBranchRelationResult calcBranchRelation(int branchA, int branchB) {
     _ensureOpen();
     _requireBazi();
     return using((arena) {
@@ -177,7 +172,7 @@ final class TaiyinBaziContext implements Finalizable {
   }
 
   /// Calculates the triple relation among three earthly branches.
-  TaiyinBaziBranchTripleRelationResult calcBranchTripleRelation(
+  BaziBranchTripleRelationResult calcBranchTripleRelation(
     int branchA,
     int branchB,
     int branchC,
@@ -205,7 +200,7 @@ final class TaiyinBaziContext implements Finalizable {
   int getLifeStage({
     required int stemId,
     required int branchId,
-    TaiyinBaziEarthPalaceMode mode = TaiyinBaziEarthPalaceMode.fireEarth,
+    BaziEarthPalaceMode mode = BaziEarthPalaceMode.fireEarth,
   }) {
     _ensureOpen();
     _requireBazi();
@@ -220,7 +215,7 @@ final class TaiyinBaziContext implements Finalizable {
   }
 
   /// Calculates the 流年 (liu-nian / flow-year) Ganzhi for an effective year.
-  TaiyinGanzhi calcLiunian(int effectiveYear) {
+  Ganzhi calcLiunian(int effectiveYear) {
     _ensureOpen();
     _requireBazi();
     return using((arena) {
@@ -229,14 +224,14 @@ final class TaiyinBaziContext implements Finalizable {
         _bindings,
         _bindings.taiyin_bazi_calc_liunian(effectiveYear, output),
       );
-      return TaiyinGanzhi.fromNative(output.value);
+      return Ganzhi.fromNative(output.value);
     });
   }
 
   /// Calculates the 流月 (liu-yue / flow-month) Ganzhi.
   ///
   /// [monthBranch] follows the C ABI: 2 = 寅, …, 0 = 子, 1 = 丑.
-  TaiyinGanzhi calcLiuyue(TaiyinGanzhi yearPillar, int monthBranch) {
+  Ganzhi calcLiuyue(Ganzhi yearPillar, int monthBranch) {
     _ensureOpen();
     _requireBazi();
     return using((arena) {
@@ -245,12 +240,12 @@ final class TaiyinBaziContext implements Finalizable {
         _bindings,
         _bindings.taiyin_bazi_calc_liuyue(yearPillar.raw, monthBranch, output),
       );
-      return TaiyinGanzhi.fromNative(output.value);
+      return Ganzhi.fromNative(output.value);
     });
   }
 
   /// Calculates the 流日 (liu-ri / flow-day) Ganzhi for a civil date.
-  TaiyinGanzhi calcLiuri(AstroDateTime civilDate) {
+  Ganzhi calcLiuri(AstroDateTime civilDate) {
     _ensureOpen();
     _requireBazi();
     return using((arena) {
@@ -260,14 +255,14 @@ final class TaiyinBaziContext implements Finalizable {
         _bindings,
         _bindings.taiyin_bazi_calc_liuri(calendar, output),
       );
-      return TaiyinGanzhi.fromNative(output.value);
+      return Ganzhi.fromNative(output.value);
     });
   }
 
   /// Calculates the 流时 (liu-shi / flow-hour) Ganzhi.
   ///
   /// [hourIndex] follows the C ABI branch sequence: 0 = 子, …, 11 = 亥.
-  TaiyinGanzhi calcLiushi(TaiyinGanzhi dayPillar, int hourIndex) {
+  Ganzhi calcLiushi(Ganzhi dayPillar, int hourIndex) {
     _ensureOpen();
     _requireBazi();
     return using((arena) {
@@ -276,12 +271,12 @@ final class TaiyinBaziContext implements Finalizable {
         _bindings,
         _bindings.taiyin_bazi_calc_liushi(dayPillar.raw, hourIndex, output),
       );
-      return TaiyinGanzhi.fromNative(output.value);
+      return Ganzhi.fromNative(output.value);
     });
   }
 
   /// Calculates the 小运 (xiao-yun) Ganzhi for an age within a chart.
-  TaiyinGanzhi calcXiaoyun(TaiyinBaziChart chart, int direction, int age) {
+  Ganzhi calcXiaoyun(BaziChart chart, int direction, int age) {
     _ensureOpen();
     _requireBazi();
     return using((arena) {
@@ -291,14 +286,14 @@ final class TaiyinBaziContext implements Finalizable {
         _bindings,
         _bindings.taiyin_bazi_calc_xiaoyun(nativeChart, direction, age, output),
       );
-      return TaiyinGanzhi.fromNative(output.value);
+      return Ganzhi.fromNative(output.value);
     });
   }
 
   /// Fills a contiguous range of 小运 (xiao-yun) entries starting at
   /// [startAge] (one-based virtual ages).
-  List<TaiyinBaziXiaoyun> fillXiaoyun({
-    required TaiyinBaziChart chart,
+  List<BaziXiaoyun> fillXiaoyun({
+    required BaziChart chart,
     required int direction,
     required int startAge,
     required int requestedCount,
@@ -321,7 +316,7 @@ final class TaiyinBaziContext implements Finalizable {
       _checkStatus(_bindings, countStatus);
       final requiredCount = _validatedArrayCount(count.value, 'BaZi xiao-yun');
       if (requiredCount == 0) {
-        return const <TaiyinBaziXiaoyun>[];
+        return const <BaziXiaoyun>[];
       }
 
       final output = arena<taiyin_bazi_xiaoyun>(requiredCount);
@@ -348,7 +343,7 @@ final class TaiyinBaziContext implements Finalizable {
 
   /// Derives the full 八字 chart (命宫/身宫/胎元/胎息/藏干/十神/大运十二宫) from
   /// the four pillars.
-  TaiyinBaziChart calcChart(TaiyinGanzhiFourPillars pillars) {
+  BaziChart calcChart(GanzhiFourPillars pillars) {
     _ensureOpen();
     _requireBazi();
     return using((arena) {
@@ -367,12 +362,12 @@ final class TaiyinBaziContext implements Finalizable {
   ///
   /// [calendar] supplies the astronomical solar-term context used by the
   /// native BaZi module.
-  TaiyinEphemerisResult<TaiyinBaziQiyunResult> calcQiyun({
+  EphemerisResult<BaziQiyunResult> calcQiyun({
     required JulianDate<Ut1Scale> birthJdUt,
     required AstroDateTime birthCivilTime,
-    required TaiyinBaziChart chart,
-    required TaiyinBaziGender gender,
-    required TaiyinChineseCalendarContext calendar,
+    required BaziChart chart,
+    required BaziGender gender,
+    required ChineseCalendarContext calendar,
   }) {
     _ensureOpen();
     _requireBazi();
@@ -395,7 +390,7 @@ final class TaiyinBaziContext implements Finalizable {
       );
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(_bindings, status, diagnostic: mappedDiagnostic);
-      return TaiyinEphemerisResult(
+      return EphemerisResult(
         value: _readQiyunResult(output.ref),
         diagnostic: mappedDiagnostic,
       );
@@ -405,10 +400,10 @@ final class TaiyinBaziContext implements Finalizable {
   /// Fills the 大运 (da-yun) decades following a 起运 result.
   ///
   /// [requestedCount] is the number of one-based da-yun entries to generate.
-  List<TaiyinBaziDayun> fillDayun({
+  List<BaziDayun> fillDayun({
     required AstroDateTime birthCivilTime,
-    required TaiyinBaziChart chart,
-    required TaiyinBaziQiyunResult qiyun,
+    required BaziChart chart,
+    required BaziQiyunResult qiyun,
     required int requestedCount,
   }) {
     _ensureOpen();
@@ -432,7 +427,7 @@ final class TaiyinBaziContext implements Finalizable {
       _checkStatus(_bindings, countStatus);
       final requiredCount = _validatedArrayCount(count.value, 'BaZi da-yun');
       if (requiredCount == 0) {
-        return const <TaiyinBaziDayun>[];
+        return const <BaziDayun>[];
       }
 
       final output = arena<taiyin_bazi_dayun>(requiredCount);
@@ -462,12 +457,12 @@ final class TaiyinBaziContext implements Finalizable {
   ///
   /// [calendar] supplies the astronomical solar-term context used by the
   /// native BaZi module.
-  TaiyinEphemerisResult<TaiyinBaziRenyuanSilingResult> calcRenyuanSiling({
+  EphemerisResult<BaziRenyuanSilingResult> calcRenyuanSiling({
     required JulianDate<Ut1Scale> instantJdUt,
-    required TaiyinBaziChart chart,
-    required TaiyinBaziRenyuanSilingTableModel tableModel,
-    required TaiyinBaziRenyuanSilingTimeModel timeModel,
-    required TaiyinChineseCalendarContext calendar,
+    required BaziChart chart,
+    required BaziRenyuanSilingTableModel tableModel,
+    required BaziRenyuanSilingTimeModel timeModel,
+    required ChineseCalendarContext calendar,
   }) {
     _ensureOpen();
     _requireBazi();
@@ -489,7 +484,7 @@ final class TaiyinBaziContext implements Finalizable {
       );
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(_bindings, status, diagnostic: mappedDiagnostic);
-      return TaiyinEphemerisResult(
+      return EphemerisResult(
         value: _readRenyuanSilingResult(output.ref),
         diagnostic: mappedDiagnostic,
       );
@@ -497,9 +492,9 @@ final class TaiyinBaziContext implements Finalizable {
   }
 
   /// Returns the 人元司令 (ren-yuan si-ling) command segments of a month branch.
-  List<TaiyinBaziRenyuanSilingSegment> getRenyuanSilingSegments(
+  List<BaziRenyuanSilingSegment> getRenyuanSilingSegments(
     int monthBranchId,
-    TaiyinBaziRenyuanSilingTableModel tableModel,
+    BaziRenyuanSilingTableModel tableModel,
   ) {
     _ensureOpen();
     _requireBazi();
@@ -518,7 +513,7 @@ final class TaiyinBaziContext implements Finalizable {
         'BaZi renyuan siling segments',
       );
       if (requiredCount == 0) {
-        return const <TaiyinBaziRenyuanSilingSegment>[];
+        return const <BaziRenyuanSilingSegment>[];
       }
 
       final output = arena<taiyin_bazi_renyuan_siling_segment>(requiredCount);
@@ -545,8 +540,8 @@ final class TaiyinBaziContext implements Finalizable {
   ///
   /// [relationMask] uses `1 << relationKind.id` bits; the default covers every
   /// relation kind.
-  List<TaiyinBaziRelation> collectChartRelations({
-    required TaiyinBaziChart chart,
+  List<BaziRelation> collectChartRelations({
+    required BaziChart chart,
     int pillarMask = 0xff,
     int relationMask = 0xffff,
   }) {
@@ -569,7 +564,7 @@ final class TaiyinBaziContext implements Finalizable {
         'BaZi chart relations',
       );
       if (requiredCount == 0) {
-        return const <TaiyinBaziRelation>[];
+        return const <BaziRelation>[];
       }
 
       final output = arena<taiyin_bazi_relation>(requiredCount);
@@ -597,11 +592,11 @@ final class TaiyinBaziContext implements Finalizable {
   ///
   /// When [gender] is provided the gender-dependent legacy shen-sha rules are
   /// applied; otherwise the gender-neutral rules are used.
-  Set<TaiyinBaziShenShaId> collectTargetShenSha({
-    required TaiyinBaziChart chart,
-    required TaiyinGanzhi target,
-    required TaiyinBaziShenShaTargetKind targetKind,
-    TaiyinBaziGender? gender,
+  Set<BaziShenShaId> collectTargetShenSha({
+    required BaziChart chart,
+    required Ganzhi target,
+    required BaziShenShaTargetKind targetKind,
+    BaziGender? gender,
   }) {
     _ensureOpen();
     _requireBazi();
@@ -636,14 +631,14 @@ final class TaiyinBaziContext implements Finalizable {
           'outside 1..$wordCapacity',
         );
       }
-      final result = <TaiyinBaziShenShaId>{};
+      final result = <BaziShenShaId>{};
       for (var wordIndex = 0; wordIndex < count; wordIndex++) {
         final word = words[wordIndex];
         for (var bit = 0; bit < 64; bit++) {
           if ((word & (1 << bit)) == 0) continue;
           final id = wordIndex * 64 + bit;
           if (id < 66) {
-            result.add(TaiyinBaziShenShaId.fromId(id));
+            result.add(BaziShenShaId.fromId(id));
           }
         }
       }
@@ -655,7 +650,7 @@ final class TaiyinBaziContext implements Finalizable {
 Pointer<taiyin_bazi_context_config> _writeBaziConfig(
   TaiyinBindings bindings,
   Arena arena,
-  TaiyinBaziContextConfig config,
+  BaziContextConfig config,
 ) {
   final native = arena<taiyin_bazi_context_config>();
   bindings.taiyin_bazi_context_config_init(native);
@@ -670,7 +665,7 @@ Pointer<taiyin_bazi_context_config> _writeBaziConfig(
 Pointer<taiyin_ganzhi_four_pillars> _writeFourPillars(
   TaiyinBindings bindings,
   Arena arena,
-  TaiyinGanzhiFourPillars value,
+  GanzhiFourPillars value,
 ) {
   final native = arena<taiyin_ganzhi_four_pillars>();
   bindings.taiyin_ganzhi_four_pillars_init(native);
@@ -685,7 +680,7 @@ Pointer<taiyin_ganzhi_four_pillars> _writeFourPillars(
 Pointer<taiyin_bazi_chart> _writeBaziChart(
   TaiyinBindings bindings,
   Arena arena,
-  TaiyinBaziChart value,
+  BaziChart value,
 ) {
   final native = arena<taiyin_bazi_chart>();
   bindings.taiyin_bazi_chart_init(native);
@@ -715,7 +710,7 @@ Pointer<taiyin_bazi_chart> _writeBaziChart(
 Pointer<taiyin_bazi_qiyun_result> _writeQiyun(
   TaiyinBindings bindings,
   Arena arena,
-  TaiyinBaziQiyunResult value,
+  BaziQiyunResult value,
 ) {
   final native = arena<taiyin_bazi_qiyun_result>();
   bindings.taiyin_bazi_qiyun_result_init(native);
@@ -745,16 +740,16 @@ Pointer<taiyin_bazi_qiyun_result> _writeQiyun(
   return native;
 }
 
-TaiyinBaziChart _readBaziChart(taiyin_bazi_chart value) {
-  return TaiyinBaziChart(
-    yearPillar: TaiyinGanzhi.fromNative(value.year_pillar),
-    monthPillar: TaiyinGanzhi.fromNative(value.month_pillar),
-    dayPillar: TaiyinGanzhi.fromNative(value.day_pillar),
-    hourPillar: TaiyinGanzhi.fromNative(value.hour_pillar),
-    mingGong: TaiyinGanzhi.fromNative(value.ming_gong),
-    shenGong: TaiyinGanzhi.fromNative(value.shen_gong),
-    taiYuan: TaiyinGanzhi.fromNative(value.tai_yuan),
-    taiXi: TaiyinGanzhi.fromNative(value.tai_xi),
+BaziChart _readBaziChart(taiyin_bazi_chart value) {
+  return BaziChart(
+    yearPillar: Ganzhi.fromNative(value.year_pillar),
+    monthPillar: Ganzhi.fromNative(value.month_pillar),
+    dayPillar: Ganzhi.fromNative(value.day_pillar),
+    hourPillar: Ganzhi.fromNative(value.hour_pillar),
+    mingGong: Ganzhi.fromNative(value.ming_gong),
+    shenGong: Ganzhi.fromNative(value.shen_gong),
+    taiYuan: Ganzhi.fromNative(value.tai_yuan),
+    taiXi: Ganzhi.fromNative(value.tai_xi),
     hiddenStemCount: List<int>.unmodifiable([
       for (var pillar = 0; pillar < 4; pillar++)
         value.hidden_stem_count[pillar],
@@ -784,56 +779,50 @@ TaiyinBaziChart _readBaziChart(taiyin_bazi_chart value) {
   );
 }
 
-TaiyinBaziRelation _readRelation(taiyin_bazi_relation value) {
-  return TaiyinBaziRelation(
-    kind: TaiyinBaziRelationKind.fromId(value.kind),
-    pillarMask: TaiyinBaziRelationPillarFlags.fold(value.pillar_mask),
+BaziRelation _readRelation(taiyin_bazi_relation value) {
+  return BaziRelation(
+    kind: BaziRelationKind.fromId(value.kind),
+    pillarMask: BaziRelationPillarFlags.fold(value.pillar_mask),
     combinedElementId: value.combined_element_id == _taiyinBaziInvalidWuxing
         ? null
-        : TaiyinBaziWuxing.fromId(value.combined_element_id),
+        : BaziWuxing.fromId(value.combined_element_id),
   );
 }
 
-TaiyinBaziStemRelationResult _readStemRelation(
+BaziStemRelationResult _readStemRelation(int flags, int combinedElementId) {
+  return BaziStemRelationResult(
+    flags: BaziStemRelationFlags.fold(flags),
+    combinedElementId: combinedElementId == _taiyinBaziInvalidWuxing
+        ? null
+        : BaziWuxing.fromId(combinedElementId),
+  );
+}
+
+BaziBranchRelationResult _readBranchRelation(int flags, int combinedElementId) {
+  return BaziBranchRelationResult(
+    flags: BaziBranchRelationFlags.fold(flags),
+    combinedElementId: combinedElementId == _taiyinBaziInvalidWuxing
+        ? null
+        : BaziWuxing.fromId(combinedElementId),
+  );
+}
+
+BaziBranchTripleRelationResult _readBranchTripleRelation(
   int flags,
   int combinedElementId,
 ) {
-  return TaiyinBaziStemRelationResult(
-    flags: TaiyinBaziStemRelationFlags.fold(flags),
+  return BaziBranchTripleRelationResult(
+    flags: BaziBranchTripleRelationFlags.fold(flags),
     combinedElementId: combinedElementId == _taiyinBaziInvalidWuxing
         ? null
-        : TaiyinBaziWuxing.fromId(combinedElementId),
+        : BaziWuxing.fromId(combinedElementId),
   );
 }
 
-TaiyinBaziBranchRelationResult _readBranchRelation(
-  int flags,
-  int combinedElementId,
-) {
-  return TaiyinBaziBranchRelationResult(
-    flags: TaiyinBaziBranchRelationFlags.fold(flags),
-    combinedElementId: combinedElementId == _taiyinBaziInvalidWuxing
-        ? null
-        : TaiyinBaziWuxing.fromId(combinedElementId),
-  );
-}
-
-TaiyinBaziBranchTripleRelationResult _readBranchTripleRelation(
-  int flags,
-  int combinedElementId,
-) {
-  return TaiyinBaziBranchTripleRelationResult(
-    flags: TaiyinBaziBranchTripleRelationFlags.fold(flags),
-    combinedElementId: combinedElementId == _taiyinBaziInvalidWuxing
-        ? null
-        : TaiyinBaziWuxing.fromId(combinedElementId),
-  );
-}
-
-TaiyinBaziQiyunResult _readQiyunResult(taiyin_bazi_qiyun_result value) {
-  return TaiyinBaziQiyunResult(
+BaziQiyunResult _readQiyunResult(taiyin_bazi_qiyun_result value) {
+  return BaziQiyunResult(
     direction: value.direction,
-    timeModel: TaiyinBaziQiyunTimeModel.fromId(value.time_model),
+    timeModel: BaziQiyunTimeModel.fromId(value.time_model),
     referenceJieIndex: value.reference_jie_index,
     jieIntervalDays: value.jie_interval_days,
     startAgeYears: value.start_age_years,
@@ -849,17 +838,14 @@ TaiyinBaziQiyunResult _readQiyunResult(taiyin_bazi_qiyun_result value) {
   );
 }
 
-TaiyinBaziXiaoyun _readXiaoyun(taiyin_bazi_xiaoyun value) {
-  return TaiyinBaziXiaoyun(
-    age: value.age,
-    ganzhi: TaiyinGanzhi.fromNative(value.ganzhi),
-  );
+BaziXiaoyun _readXiaoyun(taiyin_bazi_xiaoyun value) {
+  return BaziXiaoyun(age: value.age, ganzhi: Ganzhi.fromNative(value.ganzhi));
 }
 
-TaiyinBaziDayun _readDayun(taiyin_bazi_dayun value) {
-  return TaiyinBaziDayun(
+BaziDayun _readDayun(taiyin_bazi_dayun value) {
+  return BaziDayun(
     index: value.index,
-    ganzhi: TaiyinGanzhi.fromNative(value.ganzhi),
+    ganzhi: Ganzhi.fromNative(value.ganzhi),
     startVirtualAge: value.start_virtual_age,
     endVirtualAge: value.end_virtual_age,
     startJdUt: readJulianDate<Ut1Scale>(value.start_jd_ut),
@@ -869,27 +855,27 @@ TaiyinBaziDayun _readDayun(taiyin_bazi_dayun value) {
   );
 }
 
-TaiyinBaziRenyuanSilingSegment _readRenyuanSilingSegment(
+BaziRenyuanSilingSegment _readRenyuanSilingSegment(
   taiyin_bazi_renyuan_siling_segment value,
 ) {
-  return TaiyinBaziRenyuanSilingSegment(
+  return BaziRenyuanSilingSegment(
     stemId: value.stem_id,
-    originKind: TaiyinBaziRenyuanSilingOriginKind.fromId(value.origin_kind),
+    originKind: BaziRenyuanSilingOriginKind.fromId(value.origin_kind),
     segmentIndex: value.segment_index,
     startDay: value.start_day,
     endDay: value.end_day,
   );
 }
 
-TaiyinBaziRenyuanSilingResult _readRenyuanSilingResult(
+BaziRenyuanSilingResult _readRenyuanSilingResult(
   taiyin_bazi_renyuan_siling_result value,
 ) {
-  return TaiyinBaziRenyuanSilingResult(
-    tableModel: TaiyinBaziRenyuanSilingTableModel.fromId(value.table_model),
-    timeModel: TaiyinBaziRenyuanSilingTimeModel.fromId(value.time_model),
+  return BaziRenyuanSilingResult(
+    tableModel: BaziRenyuanSilingTableModel.fromId(value.table_model),
+    timeModel: BaziRenyuanSilingTimeModel.fromId(value.time_model),
     monthBranchId: value.month_branch_id,
     stemId: value.stem_id,
-    originKind: TaiyinBaziRenyuanSilingOriginKind.fromId(value.origin_kind),
+    originKind: BaziRenyuanSilingOriginKind.fromId(value.origin_kind),
     segmentIndex: value.segment_index,
     previousJieIndex: value.previous_jie_index,
     daysSinceJie: value.days_since_jie,

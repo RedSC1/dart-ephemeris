@@ -6,32 +6,32 @@ import '../time/time_scale.dart';
 /// Its stable values are the `TAIYIN_C_HELIACAL_EVENT_*` C ABI constants;
 /// the native runtime names the equivalent constants
 /// `TAIYIN_HELIACAL_VISIBILITY_EVENT_*`.
-enum TaiyinHeliacalEventKind {
+enum HeliacalEventKind {
   morningFirst(1),
   morningLast(2),
   eveningFirst(3),
   eveningLast(4),
   unknown(-1);
 
-  const TaiyinHeliacalEventKind(this.id);
+  const HeliacalEventKind(this.id);
 
   /// Stable value used by the Taiyin C ABI.
   final int id;
 
-  static TaiyinHeliacalEventKind fromId(int id) {
+  static HeliacalEventKind fromId(int id) {
     return values.where((value) => value.id == id).firstOrNull ?? unknown;
   }
 }
 
 /// Options specific to heliacal-visibility calculations.
-enum TaiyinHeliacalFlag {
+enum HeliacalFlag {
   /// Includes the selected model's moonlight contribution when available.
   includeMoonlight(1 << 32),
 
   /// Requires explicit complete meteorological inputs instead of fallback.
   strictMeteorology(1 << 33);
 
-  const TaiyinHeliacalFlag(this.mask);
+  const HeliacalFlag(this.mask);
 
   /// Bit used by the Taiyin C ABI.
   final int mask;
@@ -41,8 +41,8 @@ enum TaiyinHeliacalFlag {
 ///
 /// A `null` property asks the selected native profile to use its calibrated or
 /// derived value. Values that are supplied must be finite and positive.
-final class TaiyinHeliacalVisibilityConditions {
-  const TaiyinHeliacalVisibilityConditions({
+final class HeliacalVisibilityConditions {
+  const HeliacalVisibilityConditions({
     this.extinctionMagnitudePerAirmass,
     this.skyBrightnessNanolambert,
     this.nightSkyBrightnessNanolambert,
@@ -64,8 +64,8 @@ final class TaiyinHeliacalVisibilityConditions {
 /// only optional scalar diagnostics: native non-finite sentinels map to
 /// `null`. The other numeric fields preserve the native model output and are
 /// finite for the bundled models on a successful calculation.
-final class TaiyinHeliacalVisibilityResult {
-  const TaiyinHeliacalVisibilityResult({
+final class HeliacalVisibilityResult {
+  const HeliacalVisibilityResult({
     required this.visible,
     required this.modelId,
     required this.extinctionModelId,
@@ -132,8 +132,8 @@ final class TaiyinHeliacalVisibilityResult {
 ///
 /// The native ABI returns these as split-JD UT1 dates, preserving full
 /// precision at the FFI boundary.
-final class TaiyinHeliacalVisibilitySearchResult {
-  const TaiyinHeliacalVisibilitySearchResult({
+final class HeliacalVisibilitySearchResult {
+  const HeliacalVisibilitySearchResult({
     required this.event,
     required this.coordinate,
     required this.windowStart,
@@ -144,12 +144,12 @@ final class TaiyinHeliacalVisibilitySearchResult {
     required this.visibility,
   });
 
-  final TaiyinHeliacalEventKind event;
+  final HeliacalEventKind event;
   final JulianDate<Ut1Scale> coordinate;
   final JulianDate<Ut1Scale> windowStart;
   final JulianDate<Ut1Scale> windowEnd;
   final int scannedDayCount;
   final int sampledWindowCount;
   final int visibilityEvaluationCount;
-  final TaiyinHeliacalVisibilityResult visibility;
+  final HeliacalVisibilityResult visibility;
 }

@@ -7,25 +7,25 @@ void main() {
   const majorBodiesPath = '$nativeDataRoot/ephemerides/opm2/major-bodies/600y';
   const fixedCatalogPath =
       '$nativeDataRoot/stars/catalogs/stars-fixed-traditional.tsc1';
-  const antaresLocation = TaiyinObserverLocation(
+  const antaresLocation = ObserverLocation(
     longitudeDegrees: -78.709289952229,
     latitudeDegrees: 24.897937227562,
   );
-  const mercuryLocation = TaiyinObserverLocation(
+  const mercuryLocation = ObserverLocation(
     longitudeDegrees: -144.104686755054,
     latitudeDegrees: -10.079501905368,
   );
 
   group(
-    'TaiyinOccultationApi native integration',
+    'OccultationApi native integration',
     () {
-      late Taiyin runtime;
-      late TaiyinContext context;
+      late Ephemeris runtime;
+      late EphemerisContext context;
 
       setUp(() {
-        runtime = Taiyin.open(
+        runtime = Ephemeris.open(
           libraryPath: libraryPath,
-          options: const TaiyinRuntimeOptions(
+          options: const RuntimeOptions(
             sourcePaths: [majorBodiesPath],
             loadPackagedData: false,
             loadBuiltinEop: false,
@@ -37,24 +37,24 @@ void main() {
         context = runtime.createContext();
         context.configuration
           ..setGeocentricObserver(
-            observerId: TaiyinBody.earth.id,
-            centerId: TaiyinBody.earth.id,
+            observerId: Body.earth.id,
+            centerId: Body.earth.id,
           )
           ..setObserverLocation(antaresLocation)
           ..setStandardAtmosphere()
           ..useSolarDeflector()
           ..setApparentConfig(
-            TaiyinApparentConfig(
+            ApparentConfig(
               flags: {
-                TaiyinApparentFlag.spherical,
-                TaiyinApparentFlag.lightTime,
-                TaiyinApparentFlag.aberration,
-                TaiyinApparentFlag.deflection,
+                ApparentFlag.spherical,
+                ApparentFlag.lightTime,
+                ApparentFlag.aberration,
+                ApparentFlag.deflection,
               },
-              outputFrame: TaiyinApparentFrame.trueEclipticOfDate,
+              outputFrame: ApparentFrame.trueEclipticOfDate,
             ),
           )
-          ..setRouteRule(TaiyinRouteRule.opm2);
+          ..setRouteRule(RouteRule.opm2);
       });
 
       tearDown(() {
@@ -69,25 +69,25 @@ void main() {
           final geocentric = context.occultation.nextGeocentricStarAtUt1(
             'antares',
             start,
-            positionFlags: {TaiyinPositionFlag.truePosition},
+            positionFlags: {PositionFlag.truePosition},
           );
           final local = context.occultation.nextLocalStarAtUt1(
             'antares',
             start,
-            options: {TaiyinOccultationSearchOption.oneCandidate},
+            options: {OccultationSearchOption.oneCandidate},
           );
           final visibility = context.occultation.localStarVisibilityAtUt1(
             'antares',
             local.value,
-            options: {TaiyinOccultationVisibilityOption.refraction},
+            options: {OccultationVisibilityOption.refraction},
           );
           final where = context.occultation.starWhereAtUt1(
             'antares',
             geocentric.value,
-            visibilityOptions: {TaiyinOccultationVisibilityOption.refraction},
+            visibilityOptions: {OccultationVisibilityOption.refraction},
           );
 
-          expect(geocentric.value.kind, TaiyinLunarOccultationKind.lunarStar);
+          expect(geocentric.value.kind, LunarOccultationKind.lunarStar);
           expect(geocentric.value.begin, isNotNull);
           expect(geocentric.value.end, isNotNull);
           expect(
@@ -117,7 +117,7 @@ void main() {
             isTrue,
           );
           expect(where.value.centerLineHitsEarth, isTrue);
-          expect(where.value.types, contains(TaiyinOccultationType.central));
+          expect(where.value.types, contains(OccultationType.central));
           expect(where.value.maximumLocation, isNotNull);
           expect(
             where.value.maximumLocation!.longitudeDegrees,
@@ -135,41 +135,41 @@ void main() {
       test('searches body occultations with standard and custom radii', () {
         final start = JulianDate<Ut1Scale>.fromDouble(2460900.5);
         final geocentric = context.occultation.nextGeocentricBodyAtUt1(
-          TaiyinBody.mercury,
+          Body.mercury,
           start,
         );
         final enlarged = context.occultation.nextGeocentricBodyAtUt1(
-          TaiyinBody.mercury,
+          Body.mercury,
           start,
           targetRadiusKilometers: 2 * 2439.7,
-          options: {TaiyinOccultationSearchOption.filterTotal},
+          options: {OccultationSearchOption.filterTotal},
         );
 
         context.configuration.setObserverLocation(mercuryLocation);
         final local = context.occultation.nextLocalBodyAtUt1(
-          TaiyinBody.mercury,
+          Body.mercury,
           start,
         );
         final localWithRadius = context.occultation.nextLocalBodyAtUt1(
-          TaiyinBody.mercury,
+          Body.mercury,
           start,
           targetRadiusKilometers: 2 * 2439.7,
         );
         final visibility = context.occultation.localBodyVisibilityAtUt1(
-          TaiyinBody.mercury,
+          Body.mercury,
           local.value,
         );
         final where = context.occultation.bodyWhereAtUt1(
-          TaiyinBody.mercury,
+          Body.mercury,
           geocentric.value,
         );
         final whereWithRadius = context.occultation.bodyWhereAtUt1(
-          TaiyinBody.mercury,
+          Body.mercury,
           enlarged.value,
           targetRadiusKilometers: 2 * 2439.7,
         );
 
-        expect(geocentric.value.kind, TaiyinLunarOccultationKind.lunarBody);
+        expect(geocentric.value.kind, LunarOccultationKind.lunarBody);
         expect(
           geocentric.value.coordinate.toDouble(),
           closeTo(2461090.465108, 10 / 86400),
@@ -200,7 +200,7 @@ void main() {
         expect(visibility.value.fourthContact, isNotNull);
         expect(visibility.value.visibleIntervals, isNotEmpty);
         expect(where.value.maximumLocation, isNotNull);
-        expect(where.value.types, contains(TaiyinOccultationType.central));
+        expect(where.value.types, contains(OccultationType.central));
         expect(
           whereWithRadius.value.targetRadiusRadians,
           greaterThan(where.value.targetRadiusRadians!),
@@ -210,22 +210,19 @@ void main() {
       test('rejects invalid Dart inputs and use after close', () {
         final start = JulianDate<Ut1Scale>.fromDouble(2460900.5);
         expect(
+          () => context.occultation.nextGeocentricBodyAtUt1(Body.moon, start),
+          throwsArgumentError,
+        );
+        expect(
           () => context.occultation.nextGeocentricBodyAtUt1(
-            TaiyinBody.moon,
+            Body.solarSystemBarycenter,
             start,
           ),
           throwsArgumentError,
         );
         expect(
           () => context.occultation.nextGeocentricBodyAtUt1(
-            TaiyinBody.solarSystemBarycenter,
-            start,
-          ),
-          throwsArgumentError,
-        );
-        expect(
-          () => context.occultation.nextGeocentricBodyAtUt1(
-            TaiyinBody.mercury,
+            Body.mercury,
             start,
             targetRadiusKilometers: -1,
           ),
@@ -239,7 +236,7 @@ void main() {
           () => context.occultation.nextGeocentricStarAtUt1(
             'antares',
             start,
-            positionFlags: {TaiyinPositionFlag.xyz},
+            positionFlags: {PositionFlag.xyz},
           ),
           throwsArgumentError,
         );
@@ -249,7 +246,7 @@ void main() {
         );
         expect(
           () => context.occultation.localBodyVisibilityAtUt1(
-            TaiyinBody.mercury,
+            Body.mercury,
             star.value,
           ),
           throwsArgumentError,

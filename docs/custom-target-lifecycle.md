@@ -2,19 +2,19 @@
 
 Custom targets bridge process-wide native function pointers to Dart
 `NativeCallable` objects. Their lifecycle is therefore stricter than an
-ordinary `TaiyinContext`.
+ordinary `EphemerisContext`.
 
 ## Required operating model
 
-1. Call `Taiyin.open` once from the application's long-lived main isolate.
+1. Call `Ephemeris.open` once from the application's long-lived main isolate.
 2. Register custom targets before starting concurrent calculations.
 3. Pass `registration.target` to contexts in the same isolate group, including
    contexts attached by worker isolates.
 4. Stop and join all calculations before calling `registration.close()`,
-   `clearCustomTargets()`, or `Taiyin.open` again.
+   `clearCustomTargets()`, or `Ephemeris.open` again.
 5. Close every registration when it is no longer needed.
 
-Calculations may run concurrently from independent `TaiyinContext` objects.
+Calculations may run concurrently from independent `EphemerisContext` objects.
 Registration, unregistration, clearing, and process-wide runtime
 reinitialization are setup-time lifecycle changes. They are serialized
 internally, but must not overlap a calculation because native code may already
@@ -25,7 +25,7 @@ Do not register or close a target from inside its own evaluator.
 ## Why registrations have no GC finalizer
 
 The isolate's native-library state strongly retains every active
-`TaiyinCustomTargetRegistration`, and the registration retains its
+`CustomTargetRegistration`, and the registration retains its
 `NativeCallable` objects. The registration therefore cannot be garbage
 collected while native code still owns its callbacks.
 
@@ -38,7 +38,7 @@ native pointer.
 ## Isolates
 
 Create registrations in the long-lived main isolate. Worker isolates should
-use `TaiyinContext.attach` and may calculate registered targets, but should not
+use `EphemerisContext.attach` and may calculate registered targets, but should not
 own process-wide registration lifecycle changes.
 
 The `NativeCallable` objects use the default `keepIsolateAlive = true`.
@@ -47,7 +47,7 @@ until the registration is closed or a runtime reset invalidates it.
 
 ## Runtime reset and Hot Restart
 
-Every `Taiyin.open` after the first successful native initialization is a
+Every `Ephemeris.open` after the first successful native initialization is a
 process-wide reset:
 
 - Native C-owned evaluators are cleared before reinitialization can fail.
@@ -63,7 +63,7 @@ change because the wrapper requires the unregister and clear ABI symbols.
 
 ## Borrowed evaluator requests
 
-`TaiyinCustomTargetRequest` borrows a native context that exists only during
+`CustomTargetRequest` borrows a native context that exists only during
 the synchronous evaluator invocation. `positionOf()` checks this dynamic
 scope. Saving a request and using it from a later microtask, timer, callback, or
 future throws `StateError` before crossing FFI.
@@ -89,7 +89,7 @@ cannot truncate to the same native ID.
 ## Evaluator and diagnostic behavior
 
 - Evaluator closures and captured values must be transitively immutable.
-- Throw `TaiyinCustomEvaluatorFailure(status)` to return a deliberate native
+- Throw `CustomEvaluatorFailure(status)` to return a deliberate native
   status.
 - Unexpected evaluator exceptions become `TAIYIN_ERROR_INTERNAL`; the wrapper
   does not print to stderr or impose an application logging policy.

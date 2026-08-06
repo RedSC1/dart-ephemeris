@@ -5,13 +5,12 @@ import 'package:taiyin/taiyin.dart';
 import 'package:test/test.dart';
 import 'support/native_library.dart';
 
-double _customAyanamsha(TaiyinCustomAyanamshaRequest request) =>
-    2 * math.pi + 0.123;
+double _customAyanamsha(CustomAyanamshaRequest request) => 2 * math.pi + 0.123;
 
-double _throwingCustomAyanamsha(TaiyinCustomAyanamshaRequest request) =>
+double _throwingCustomAyanamsha(CustomAyanamshaRequest request) =>
     throw StateError('expected callback failure');
 
-List<double> _customHouseCusps(TaiyinCustomHouseSystemRequest request) {
+List<double> _customHouseCusps(CustomHouseSystemRequest request) {
   const offset = 0.01;
   final step = 2 * math.pi / 12;
   return [
@@ -20,7 +19,7 @@ List<double> _customHouseCusps(TaiyinCustomHouseSystemRequest request) {
   ];
 }
 
-List<double> _invalidCustomHouseCusps(TaiyinCustomHouseSystemRequest request) =>
+List<double> _invalidCustomHouseCusps(CustomHouseSystemRequest request) =>
     const [0.0];
 
 Future<double> _calculateCustomAyanamshaInWorker(
@@ -77,12 +76,12 @@ Future<double> _calculateCustomHouseInWorker(
 
 void _customAyanamshaWorkerMain((SendPort, String, int) message) {
   final (sendPort, libraryPath, modelId) = message;
-  TaiyinContext? context;
+  EphemerisContext? context;
   try {
-    context = TaiyinContext.attach(libraryPath: libraryPath);
+    context = EphemerisContext.attach(libraryPath: libraryPath);
     final result = context.astrology.ayanamshaAtTt(
       JulianDate<TtScale>.fromDouble(2460409.0),
-      ayanamsha: TaiyinCustomAyanamshaModel(modelId),
+      ayanamsha: CustomAyanamshaModel(modelId),
     );
     sendPort.send(result);
   } catch (error, stackTrace) {
@@ -94,14 +93,14 @@ void _customAyanamshaWorkerMain((SendPort, String, int) message) {
 
 void _customHouseWorkerMain((SendPort, String, int) message) {
   final (sendPort, libraryPath, modelId) = message;
-  TaiyinContext? context;
+  EphemerisContext? context;
   try {
-    context = TaiyinContext.attach(libraryPath: libraryPath);
+    context = EphemerisContext.attach(libraryPath: libraryPath);
     final houses = context.astrology.housesFromArmc(
       armcRadians: 1.0,
       observerLatitudeRadians: 0.5,
       trueObliquityRadians: 0.409,
-      system: TaiyinCustomHouseSystemModel(modelId),
+      system: CustomHouseSystemModel(modelId),
     );
     sendPort.send(houses.cuspLongitudesRadians.first);
   } catch (error, stackTrace) {
@@ -113,15 +112,15 @@ void _customHouseWorkerMain((SendPort, String, int) message) {
 
 void main() {
   group(
-    'TaiyinAstrologyApi native integration',
+    'AstrologyApi native integration',
     () {
-      late Taiyin runtime;
-      late TaiyinContext context;
+      late Ephemeris runtime;
+      late EphemerisContext context;
       final tt = JulianDate<TtScale>.fromDouble(2460409.0);
       final ut1 = JulianDate<Ut1Scale>.fromDouble(2460311.0);
 
       setUp(() {
-        runtime = Taiyin.open(libraryPath: libraryPath);
+        runtime = Ephemeris.open(libraryPath: libraryPath);
         context = runtime.createContext();
       });
 
@@ -132,14 +131,12 @@ void main() {
       test('evaluates built-in ayanamshas and exposes their availability', () {
         final fagan = context.astrology.ayanamshaAtTt(
           JulianDate<TtScale>.fromDouble(2433282.42346),
-          precessionPolicy:
-              TaiyinSiderealPrecessionPolicy.useReferencePrecession,
+          precessionPolicy: SiderealPrecessionPolicy.useReferencePrecession,
         );
         final lahiri = context.astrology.ayanamshaAtTt(
           JulianDate<TtScale>.fromDouble(2435553.5),
-          ayanamsha: TaiyinAyanamsha.lahiri,
-          precessionPolicy:
-              TaiyinSiderealPrecessionPolicy.useReferencePrecession,
+          ayanamsha: Ayanamsha.lahiri,
+          precessionPolicy: SiderealPrecessionPolicy.useReferencePrecession,
         );
 
         // Oracles reflect the native precession fix (2026-08); under
@@ -147,10 +144,10 @@ void main() {
         // the published reference offset exactly.
         expect(fagan * 180 / math.pi, closeTo(24.04112467418854, 1e-9));
         expect(lahiri * 180 / math.pi, closeTo(23.250184940616585, 1e-9));
-        for (final ayanamsha in TaiyinAyanamsha.values) {
+        for (final ayanamsha in Ayanamsha.values) {
           expect(context.astrology.hasAyanamshaModel(ayanamsha), isTrue);
         }
-        for (final system in TaiyinHouseSystem.values) {
+        for (final system in HouseSystem.values) {
           expect(context.astrology.hasHouseSystemModel(system), isTrue);
         }
       });
@@ -159,7 +156,7 @@ void main() {
         final ayanamsha = runtime.registerCustomAyanamshaModel(
           100101,
           evaluator: _customAyanamsha,
-          referencePrecessionModel: TaiyinPrecessionModel.iau2006,
+          referencePrecessionModel: PrecessionModel.iau2006,
         );
         final houseSystem = runtime.registerCustomHouseSystemModel(
           100101,
@@ -187,7 +184,7 @@ void main() {
             closeTo(0.12297428980664273, 1e-9),
           );
           final sidereal = context.astrology.siderealPositionAtTt(
-            TaiyinBody.sun,
+            Body.sun,
             tt,
             ayanamsha: ayanamsha.model,
           );
@@ -255,7 +252,7 @@ void main() {
           fallback: fallback.model,
         );
         try {
-          expect(() => fallback.close(), throwsA(isA<TaiyinException>()));
+          expect(() => fallback.close(), throwsA(isA<EphemerisError>()));
           expect(fallback.isClosed, isFalse);
           dependent.close();
           fallback.close();
@@ -279,7 +276,7 @@ void main() {
               tt,
               ayanamsha: registration.model,
             ),
-            throwsA(isA<TaiyinException>()),
+            throwsA(isA<EphemerisError>()),
           );
         } finally {
           registration.close();
@@ -287,15 +284,15 @@ void main() {
       });
 
       test('rejects invalid custom model identifiers', () {
-        expect(() => TaiyinCustomAyanamshaModel(9999), throwsArgumentError);
-        expect(() => TaiyinCustomHouseSystemModel(9999), throwsArgumentError);
+        expect(() => CustomAyanamshaModel(9999), throwsArgumentError);
+        expect(() => CustomHouseSystemModel(9999), throwsArgumentError);
       });
 
       test('clears custom models and applies a custom house fallback', () {
         final fallback = runtime.registerCustomHouseSystemModel(
           100102,
           evaluator: _invalidCustomHouseCusps,
-          fallback: TaiyinHouseSystem.porphyry,
+          fallback: HouseSystem.porphyry,
         );
         final ayanamsha = runtime.registerCustomAyanamshaModel(
           100102,
@@ -309,8 +306,8 @@ void main() {
             system: fallback.model,
           );
           expect(houses.requestedSystemId, fallback.model.id);
-          expect(houses.resolvedSystem, TaiyinHouseSystem.porphyry);
-          expect(houses.flags, contains(TaiyinHouseResultFlag.usedFallback));
+          expect(houses.resolvedSystem, HouseSystem.porphyry);
+          expect(houses.flags, contains(HouseResultFlag.usedFallback));
 
           runtime
             ..clearCustomAyanamshaModels()
@@ -333,7 +330,7 @@ void main() {
           evaluator: _customHouseCusps,
         );
 
-        Taiyin.open(libraryPath: libraryPath);
+        Ephemeris.open(libraryPath: libraryPath);
 
         expect(ayanamsha.isClosed, isTrue);
         expect(houseSystem.isClosed, isTrue);
@@ -341,15 +338,12 @@ void main() {
 
       test('calculates sidereal ecliptic positions with a diagnostic', () {
         final fromTt = context.astrology.siderealPositionAtTt(
-          TaiyinBody.sun,
+          Body.sun,
           tt,
-          ayanamsha: TaiyinAyanamsha.lahiri,
-          flags: {TaiyinPositionFlag.speed},
+          ayanamsha: Ayanamsha.lahiri,
+          flags: {PositionFlag.speed},
         );
-        final fromUt1 = context.astrology.siderealPositionAtUt1(
-          TaiyinBody.sun,
-          ut1,
-        );
+        final fromUt1 = context.astrology.siderealPositionAtUt1(Body.sun, ut1);
         final position = fromTt.value;
         final offset = _normalizeSignedRadians(
           position.tropicalLongitudeRadians - position.siderealLongitudeRadians,
@@ -357,7 +351,7 @@ void main() {
 
         expect(
           position.flags,
-          containsAll({TaiyinPositionFlag.radians, TaiyinPositionFlag.speed}),
+          containsAll({PositionFlag.radians, PositionFlag.speed}),
         );
         expect(
           [
@@ -376,13 +370,13 @@ void main() {
             offset -
                 context.astrology.ayanamshaAtTt(
                   tt,
-                  ayanamsha: TaiyinAyanamsha.lahiri,
+                  ayanamsha: Ayanamsha.lahiri,
                 ),
           ),
           closeTo(0, 1e-12),
         );
         expect(fromTt.diagnostic.status, 0);
-        expect(fromTt.diagnostic.targetId, TaiyinBody.sun.id);
+        expect(fromTt.diagnostic.targetId, Body.sun.id);
         expect(fromUt1.diagnostic.status, 0);
         expect(fromUt1.value.tropicalLongitudeRateRadiansPerDay.isNaN, isTrue);
         expect(fromUt1.value.siderealLongitudeRateRadiansPerDay.isNaN, isTrue);
@@ -390,79 +384,79 @@ void main() {
 
       test('supports generic sidereal ecliptic, equatorial, and XYZ modes', () {
         final structured = context.astrology.siderealPositionAtTt(
-          TaiyinBody.sun,
+          Body.sun,
           tt,
-          ayanamsha: TaiyinAyanamsha.lahiri,
-          flags: {TaiyinPositionFlag.speed},
+          ayanamsha: Ayanamsha.lahiri,
+          flags: {PositionFlag.speed},
         );
         final ecliptic = context.astrology.siderealCoordinatesAtTt(
-          TaiyinBody.sun,
+          Body.sun,
           tt,
-          ayanamsha: TaiyinAyanamsha.lahiri,
-          flags: {TaiyinPositionFlag.speed},
+          ayanamsha: Ayanamsha.lahiri,
+          flags: {PositionFlag.speed},
         );
         final equatorial = context.astrology.siderealCoordinatesAtTt(
-          TaiyinBody.sun,
+          Body.sun,
           tt,
-          ayanamsha: TaiyinAyanamsha.lahiri,
-          flags: {TaiyinPositionFlag.speed, TaiyinPositionFlag.equatorial},
+          ayanamsha: Ayanamsha.lahiri,
+          flags: {PositionFlag.speed, PositionFlag.equatorial},
         );
         final equatorialXyz = context.astrology.siderealCoordinatesAtTt(
-          TaiyinBody.sun,
+          Body.sun,
           tt,
-          ayanamsha: TaiyinAyanamsha.lahiri,
+          ayanamsha: Ayanamsha.lahiri,
           flags: {
-            TaiyinPositionFlag.speed,
-            TaiyinPositionFlag.equatorial,
-            TaiyinPositionFlag.xyz,
+            PositionFlag.speed,
+            PositionFlag.equatorial,
+            PositionFlag.xyz,
           },
         );
         final meanEquatorial = context.astrology.siderealCoordinatesAtTt(
-          TaiyinBody.sun,
+          Body.sun,
           tt,
-          ayanamsha: TaiyinAyanamsha.lahiri,
+          ayanamsha: Ayanamsha.lahiri,
           flags: {
-            TaiyinPositionFlag.speed,
-            TaiyinPositionFlag.equatorial,
-            TaiyinPositionFlag.noNutation,
+            PositionFlag.speed,
+            PositionFlag.equatorial,
+            PositionFlag.noNutation,
           },
         );
         final faganEquatorial = context.astrology.siderealCoordinatesAtTt(
-          TaiyinBody.sun,
+          Body.sun,
           tt,
           flags: {
-            TaiyinPositionFlag.speed,
-            TaiyinPositionFlag.equatorial,
-            TaiyinPositionFlag.radians,
+            PositionFlag.speed,
+            PositionFlag.equatorial,
+            PositionFlag.radians,
           },
         );
         final explicitMean = context.astrology.siderealCoordinatesAtTt(
-          TaiyinBody.sun,
+          Body.sun,
           tt,
-          ayanamsha: TaiyinAyanamsha.lahiri,
-          flags: {TaiyinPositionFlag.noNutation},
+          ayanamsha: Ayanamsha.lahiri,
+          flags: {PositionFlag.noNutation},
         );
         final genericUt1 = context.astrology.siderealCoordinatesAtUt1(
-          TaiyinBody.sun,
+          Body.sun,
           ut1,
-          flags: {TaiyinPositionFlag.xyz},
+          flags: {PositionFlag.xyz},
         );
 
         expect(
           ecliptic.value.coordinateFrame,
-          TaiyinSiderealCoordinateFrame.meanEclipticOfDate,
+          SiderealCoordinateFrame.meanEclipticOfDate,
         );
         expect(
           equatorial.value.coordinateFrame,
-          TaiyinSiderealCoordinateFrame.trueEquatorOfDate,
+          SiderealCoordinateFrame.trueEquatorOfDate,
         );
         expect(
           equatorialXyz.value.coordinateFrame,
-          TaiyinSiderealCoordinateFrame.trueEquatorOfDate,
+          SiderealCoordinateFrame.trueEquatorOfDate,
         );
         expect(
           meanEquatorial.value.coordinateFrame,
-          TaiyinSiderealCoordinateFrame.meanEquatorOfDate,
+          SiderealCoordinateFrame.meanEquatorOfDate,
         );
         expect(ecliptic.value.isCartesian, isFalse);
         expect(ecliptic.value.isEquatorial, isFalse);
@@ -473,10 +467,10 @@ void main() {
         expect(
           equatorialXyz.value.flags,
           containsAll({
-            TaiyinPositionFlag.speed,
-            TaiyinPositionFlag.equatorial,
-            TaiyinPositionFlag.xyz,
-            TaiyinPositionFlag.radians,
+            PositionFlag.speed,
+            PositionFlag.equatorial,
+            PositionFlag.xyz,
+            PositionFlag.radians,
           }),
         );
         expect(ecliptic.value.values, hasLength(6));
@@ -499,22 +493,22 @@ void main() {
         );
 
         final nativeTrueEquatorial = context.positionTt(
-          TaiyinBody.sun,
+          Body.sun,
           tt,
           flags: {
-            TaiyinPositionFlag.speed,
-            TaiyinPositionFlag.equatorial,
-            TaiyinPositionFlag.radians,
+            PositionFlag.speed,
+            PositionFlag.equatorial,
+            PositionFlag.radians,
           },
         );
         final nativeMeanEquatorial = context.positionTt(
-          TaiyinBody.sun,
+          Body.sun,
           tt,
           flags: {
-            TaiyinPositionFlag.speed,
-            TaiyinPositionFlag.equatorial,
-            TaiyinPositionFlag.noNutation,
-            TaiyinPositionFlag.radians,
+            PositionFlag.speed,
+            PositionFlag.equatorial,
+            PositionFlag.noNutation,
+            PositionFlag.radians,
           },
         );
         for (var index = 0; index < 6; index++) {
@@ -551,9 +545,9 @@ void main() {
           closeTo(
             context.astrology
                 .siderealCoordinatesAtTt(
-                  TaiyinBody.sun,
+                  Body.sun,
                   tt,
-                  ayanamsha: TaiyinAyanamsha.lahiri,
+                  ayanamsha: Ayanamsha.lahiri,
                 )
                 .value
                 .values[0],
@@ -569,134 +563,132 @@ void main() {
       });
 
       test('supports typed sidereal reference planes and epochs', () {
-        final j2000Epoch = TaiyinSiderealReferenceEpoch.tt(
+        final j2000Epoch = SiderealReferenceEpoch.tt(
           JulianDate<TtScale>.fromDouble(2451545.0),
         );
-        final ut1Epoch = TaiyinSiderealReferenceEpoch.ut1(ut1);
+        final ut1Epoch = SiderealReferenceEpoch.ut1(ut1);
         final j2000Position = context.astrology.siderealPositionAtTt(
-          TaiyinBody.sun,
+          Body.sun,
           tt,
-          referencePlane: TaiyinSiderealReferencePlane.meanEclipticJ2000,
-          flags: {TaiyinPositionFlag.speed},
+          referencePlane: SiderealReferencePlane.meanEclipticJ2000,
+          flags: {PositionFlag.speed},
         );
         final fixedPosition = context.astrology.siderealPositionAtTt(
-          TaiyinBody.sun,
+          Body.sun,
           tt,
-          referencePlane: TaiyinSiderealReferencePlane.meanEclipticAtEpoch,
+          referencePlane: SiderealReferencePlane.meanEclipticAtEpoch,
           referenceEpoch: j2000Epoch,
-          flags: {TaiyinPositionFlag.speed},
+          flags: {PositionFlag.speed},
         );
         final invariablePosition = context.astrology.siderealPositionAtTt(
-          TaiyinBody.sun,
+          Body.sun,
           tt,
-          referencePlane: TaiyinSiderealReferencePlane.solarSystemInvariable,
+          referencePlane: SiderealReferencePlane.solarSystemInvariable,
           referenceEpoch: j2000Epoch,
-          flags: {TaiyinPositionFlag.speed},
+          flags: {PositionFlag.speed},
         );
         final j2000Coordinates = context.astrology.siderealCoordinatesAtTt(
-          TaiyinBody.sun,
+          Body.sun,
           tt,
-          referencePlane: TaiyinSiderealReferencePlane.meanEclipticJ2000,
-          flags: {TaiyinPositionFlag.speed},
+          referencePlane: SiderealReferencePlane.meanEclipticJ2000,
+          flags: {PositionFlag.speed},
         );
         final fixedJ2000 = context.astrology.siderealCoordinatesAtTt(
-          TaiyinBody.sun,
+          Body.sun,
           tt,
-          referencePlane: TaiyinSiderealReferencePlane.meanEclipticAtEpoch,
+          referencePlane: SiderealReferencePlane.meanEclipticAtEpoch,
           referenceEpoch: j2000Epoch,
-          flags: {TaiyinPositionFlag.speed},
+          flags: {PositionFlag.speed},
         );
         final invariable = context.astrology.siderealCoordinatesAtTt(
-          TaiyinBody.sun,
+          Body.sun,
           tt,
-          referencePlane: TaiyinSiderealReferencePlane.solarSystemInvariable,
+          referencePlane: SiderealReferencePlane.solarSystemInvariable,
           referenceEpoch: j2000Epoch,
         );
         final ut1Fixed = context.astrology.siderealCoordinatesAtTt(
-          TaiyinBody.sun,
+          Body.sun,
           tt,
-          referencePlane: TaiyinSiderealReferencePlane.meanEclipticAtEpoch,
+          referencePlane: SiderealReferencePlane.meanEclipticAtEpoch,
           referenceEpoch: ut1Epoch,
         );
         final ut1FixedPosition = context.astrology.siderealPositionAtUt1(
-          TaiyinBody.sun,
+          Body.sun,
           ut1,
-          referencePlane: TaiyinSiderealReferencePlane.meanEclipticAtEpoch,
+          referencePlane: SiderealReferencePlane.meanEclipticAtEpoch,
           referenceEpoch: j2000Epoch,
-          flags: {TaiyinPositionFlag.speed},
+          flags: {PositionFlag.speed},
         );
         final ut1FixedCoordinates = context.astrology.siderealCoordinatesAtUt1(
-          TaiyinBody.sun,
+          Body.sun,
           ut1,
-          referencePlane: TaiyinSiderealReferencePlane.meanEclipticAtEpoch,
+          referencePlane: SiderealReferencePlane.meanEclipticAtEpoch,
           referenceEpoch: ut1Epoch,
-          flags: {TaiyinPositionFlag.speed},
+          flags: {PositionFlag.speed},
         );
         final rawFixed = context.astrology.siderealCoordinatesAtTt(
-          TaiyinBody.sun,
+          Body.sun,
           tt,
-          precessionPolicy: TaiyinSiderealPrecessionPolicy.rawReferenceOffset,
-          referencePlane: TaiyinSiderealReferencePlane.meanEclipticAtEpoch,
+          precessionPolicy: SiderealPrecessionPolicy.rawReferenceOffset,
+          referencePlane: SiderealReferencePlane.meanEclipticAtEpoch,
           referenceEpoch: j2000Epoch,
         );
         final equatorial = context.astrology.siderealCoordinatesAtTt(
-          TaiyinBody.sun,
+          Body.sun,
           tt,
-          referencePlane: TaiyinSiderealReferencePlane.meanEclipticJ2000,
-          flags: {TaiyinPositionFlag.equatorial, TaiyinPositionFlag.speed},
+          referencePlane: SiderealReferencePlane.meanEclipticJ2000,
+          flags: {PositionFlag.equatorial, PositionFlag.speed},
         );
         final equatorialWithIgnoredSiderealOptions = context.astrology
             .siderealCoordinatesAtTt(
-              TaiyinBody.sun,
+              Body.sun,
               tt,
-              ayanamsha: TaiyinAyanamsha.lahiri,
-              precessionPolicy:
-                  TaiyinSiderealPrecessionPolicy.useReferencePrecession,
-              referencePlane:
-                  TaiyinSiderealReferencePlane.solarSystemInvariable,
+              ayanamsha: Ayanamsha.lahiri,
+              precessionPolicy: SiderealPrecessionPolicy.useReferencePrecession,
+              referencePlane: SiderealReferencePlane.solarSystemInvariable,
               referenceEpoch: j2000Epoch,
-              flags: {TaiyinPositionFlag.equatorial, TaiyinPositionFlag.speed},
+              flags: {PositionFlag.equatorial, PositionFlag.speed},
             );
 
         expect(
           j2000Position.value.coordinateFrame,
-          TaiyinSiderealCoordinateFrame.j2000Ecliptic,
+          SiderealCoordinateFrame.j2000Ecliptic,
         );
         expect(
           j2000Coordinates.value.coordinateFrame,
-          TaiyinSiderealCoordinateFrame.j2000Ecliptic,
+          SiderealCoordinateFrame.j2000Ecliptic,
         );
         expect(
           fixedPosition.value.coordinateFrame,
-          TaiyinSiderealCoordinateFrame.fixedMeanEclipticAtEpoch,
+          SiderealCoordinateFrame.fixedMeanEclipticAtEpoch,
         );
         expect(
           invariablePosition.value.coordinateFrame,
-          TaiyinSiderealCoordinateFrame.solarSystemInvariable,
+          SiderealCoordinateFrame.solarSystemInvariable,
         );
         expect(
           fixedJ2000.value.coordinateFrame,
-          TaiyinSiderealCoordinateFrame.fixedMeanEclipticAtEpoch,
+          SiderealCoordinateFrame.fixedMeanEclipticAtEpoch,
         );
         expect(
           invariable.value.coordinateFrame,
-          TaiyinSiderealCoordinateFrame.solarSystemInvariable,
+          SiderealCoordinateFrame.solarSystemInvariable,
         );
         expect(
           ut1Fixed.value.coordinateFrame,
-          TaiyinSiderealCoordinateFrame.fixedMeanEclipticAtEpoch,
+          SiderealCoordinateFrame.fixedMeanEclipticAtEpoch,
         );
         expect(
           ut1FixedPosition.value.coordinateFrame,
-          TaiyinSiderealCoordinateFrame.fixedMeanEclipticAtEpoch,
+          SiderealCoordinateFrame.fixedMeanEclipticAtEpoch,
         );
         expect(
           ut1FixedCoordinates.value.coordinateFrame,
-          TaiyinSiderealCoordinateFrame.fixedMeanEclipticAtEpoch,
+          SiderealCoordinateFrame.fixedMeanEclipticAtEpoch,
         );
         expect(
           equatorial.value.coordinateFrame,
-          TaiyinSiderealCoordinateFrame.trueEquatorOfDate,
+          SiderealCoordinateFrame.trueEquatorOfDate,
         );
         expect(
           j2000Position.value.siderealLongitudeRadians,
@@ -722,11 +714,11 @@ void main() {
         );
         expect(
           rawFixed.value.precessionPolicy,
-          TaiyinSiderealPrecessionPolicy.rawReferenceOffset,
+          SiderealPrecessionPolicy.rawReferenceOffset,
         );
         expect(
           rawFixed.value.coordinateFrame,
-          TaiyinSiderealCoordinateFrame.fixedMeanEclipticAtEpoch,
+          SiderealCoordinateFrame.fixedMeanEclipticAtEpoch,
         );
         expect(j2000Position.value.referenceEpoch, isNull);
         expect(fixedPosition.value.referenceEpoch, equals(j2000Epoch));
@@ -738,7 +730,7 @@ void main() {
         expect(
           j2000Epoch,
           equals(
-            TaiyinSiderealReferenceEpoch.tt(
+            SiderealReferenceEpoch.tt(
               JulianDate<TtScale>.fromDouble(2451545.0),
             ),
           ),
@@ -753,17 +745,17 @@ void main() {
 
         expect(
           () => context.astrology.siderealCoordinatesAtTt(
-            TaiyinBody.sun,
+            Body.sun,
             tt,
-            referencePlane: TaiyinSiderealReferencePlane.meanEclipticAtEpoch,
+            referencePlane: SiderealReferencePlane.meanEclipticAtEpoch,
           ),
           throwsArgumentError,
         );
         expect(
           () => context.astrology.siderealCoordinatesAtTt(
-            TaiyinBody.sun,
+            Body.sun,
             tt,
-            referencePlane: TaiyinSiderealReferencePlane.meanEclipticJ2000,
+            referencePlane: SiderealReferencePlane.meanEclipticJ2000,
             referenceEpoch: j2000Epoch,
           ),
           throwsArgumentError,
@@ -771,10 +763,10 @@ void main() {
       });
 
       test('calculates lunar nodes and explicit apogee conventions', () {
-        final meanFlags = {TaiyinPositionFlag.noNutation};
+        final meanFlags = {PositionFlag.noNutation};
         final physicalFlags = {
-          TaiyinPositionFlag.truePosition,
-          TaiyinPositionFlag.noNutation,
+          PositionFlag.truePosition,
+          PositionFlag.noNutation,
         };
         final trueAscending = context.astrology.lunarTrueNodeAtTt(
           tt,
@@ -782,7 +774,7 @@ void main() {
         );
         final trueDescending = context.astrology.lunarTrueNodeAtTt(
           tt,
-          kind: TaiyinLunarNodeKind.descending,
+          kind: LunarNodeKind.descending,
           flags: physicalFlags,
         );
         final trueUt1 = context.astrology.lunarTrueNodeAtUt1(
@@ -795,7 +787,7 @@ void main() {
         );
         final trueDescendingUt1 = context.astrology.lunarTrueNodeAtUt1(
           ut1,
-          kind: TaiyinLunarNodeKind.descending,
+          kind: LunarNodeKind.descending,
           flags: physicalFlags,
         );
         final meanAscending = context.astrology.lunarMeanNodeAtTt(
@@ -804,7 +796,7 @@ void main() {
         );
         final meanDescending = context.astrology.lunarMeanNodeAtTt(
           tt,
-          kind: TaiyinLunarNodeKind.descending,
+          kind: LunarNodeKind.descending,
           flags: meanFlags,
         );
         final meanUt1 = context.astrology.lunarMeanNodeAtUt1(
@@ -813,12 +805,12 @@ void main() {
         );
         final meanDescendingUt1 = context.astrology.lunarMeanNodeAtUt1(
           ut1,
-          kind: TaiyinLunarNodeKind.descending,
+          kind: LunarNodeKind.descending,
           flags: meanFlags,
         );
         final meanEquatorial = context.astrology.lunarMeanNodeAtTt(
           tt,
-          flags: {TaiyinPositionFlag.equatorial},
+          flags: {PositionFlag.equatorial},
         );
         final meanApogee = context.astrology.lunarMeanApogeeAtTt(
           tt,
@@ -847,9 +839,9 @@ void main() {
 
         expect(
           trueAscending.value.referenceFrame,
-          TaiyinApparentFrame.meanEclipticOfDate,
+          ApparentFrame.meanEclipticOfDate,
         );
-        expect(trueAscending.value.kind, TaiyinLunarNodeKind.ascending);
+        expect(trueAscending.value.kind, LunarNodeKind.ascending);
         expect(
           _normalizeSignedRadians(
             trueDescending.value.longitudeRadians -
@@ -888,7 +880,7 @@ void main() {
 
         expect(
           meanAscending.value.referenceFrame,
-          TaiyinApparentFrame.meanEclipticOfDate,
+          ApparentFrame.meanEclipticOfDate,
         );
         expect(
           meanAscending.value.longitudeRadians * 180 / math.pi,
@@ -911,13 +903,10 @@ void main() {
         );
         expect(
           meanEquatorial.value.referenceFrame,
-          TaiyinApparentFrame.trueEquatorOfDate,
+          ApparentFrame.trueEquatorOfDate,
         );
 
-        expect(
-          meanApogee.value.definition,
-          TaiyinLunarApsisDefinition.delaunayMean,
-        );
+        expect(meanApogee.value.definition, LunarApsisDefinition.delaunayMean);
         expect(meanApogee.value.distanceAu, isNull);
         expect(meanApogee.value.distanceRateAuPerDay, isNull);
         expect(
@@ -932,7 +921,7 @@ void main() {
 
         expect(
           osculatingApogee.value.definition,
-          TaiyinLunarApsisDefinition.osculatingTwoBody,
+          LunarApsisDefinition.osculatingTwoBody,
         );
         expect(osculatingApogee.value.distanceAu, greaterThan(0));
         expect(osculatingApogee.value.distanceRateAuPerDay!.isFinite, isTrue);
@@ -951,7 +940,7 @@ void main() {
 
         expect(
           fittedApogee.value.definition,
-          TaiyinLunarApsisDefinition.de441FittedNatural,
+          LunarApsisDefinition.de441FittedNatural,
         );
         expect(fittedApogee.value.extrapolated, isFalse);
         expect(fittedApogee.value.distanceAu, greaterThan(0));
@@ -983,28 +972,28 @@ void main() {
         expect(
           () => context.astrology.lunarTrueNodeAtTt(
             tt,
-            flags: {TaiyinPositionFlag.radians},
+            flags: {PositionFlag.radians},
           ),
           throwsArgumentError,
         );
         expect(
           () => context.astrology.lunarTrueNodeAtTt(
             tt,
-            flags: {TaiyinPositionFlag.topocentric},
+            flags: {PositionFlag.topocentric},
           ),
           throwsArgumentError,
         );
         expect(
           () => context.astrology.lunarMeanNodeAtTt(
             tt,
-            flags: {TaiyinPositionFlag.truePosition},
+            flags: {PositionFlag.truePosition},
           ),
           throwsArgumentError,
         );
         expect(
           () => context.astrology.lunarFittedApogeeAtTt(
             tt,
-            flags: {TaiyinPositionFlag.noAberration},
+            flags: {PositionFlag.noAberration},
           ),
           throwsArgumentError,
         );
@@ -1012,7 +1001,7 @@ void main() {
 
       test('calculates and locates houses from a configured observer', () {
         context.configuration.setObserverLocation(
-          const TaiyinObserverLocation(
+          const ObserverLocation(
             longitudeDegrees: 116.3833,
             latitudeDegrees: 39.9167,
           ),
@@ -1035,8 +1024,8 @@ void main() {
           houses.cuspLongitudesRadians[0] + firstSpan / 2,
         );
 
-        expect(houses.requestedSystem, TaiyinHouseSystem.porphyry);
-        expect(houses.resolvedSystem, TaiyinHouseSystem.porphyry);
+        expect(houses.requestedSystem, HouseSystem.porphyry);
+        expect(houses.resolvedSystem, HouseSystem.porphyry);
         expect(houses.flags, isEmpty);
         expect(
           houses.ascendantRadians * 180 / math.pi,
@@ -1081,27 +1070,24 @@ void main() {
         'maps house fallbacks and suppresses discontinuous whole-sign rates',
         () {
           context.configuration.setObserverLocation(
-            const TaiyinObserverLocation(
-              longitudeDegrees: 0,
-              latitudeDegrees: 70,
-            ),
+            const ObserverLocation(longitudeDegrees: 0, latitudeDegrees: 70),
           );
           final fallback = context.astrology.housesAtUt1(
             ut1,
-            system: TaiyinHouseSystem.placidus,
+            system: HouseSystem.placidus,
           );
           final porphyry = context.astrology.housesAtUt1(
             ut1,
-            system: TaiyinHouseSystem.porphyry,
+            system: HouseSystem.porphyry,
           );
 
-          expect(fallback.requestedSystem, TaiyinHouseSystem.placidus);
-          expect(fallback.resolvedSystem, TaiyinHouseSystem.porphyry);
+          expect(fallback.requestedSystem, HouseSystem.placidus);
+          expect(fallback.resolvedSystem, HouseSystem.porphyry);
           expect(
             fallback.flags,
             containsAll({
-              TaiyinHouseResultFlag.usedFallback,
-              TaiyinHouseResultFlag.fallbackPorphyry,
+              HouseResultFlag.usedFallback,
+              HouseResultFlag.fallbackPorphyry,
             }),
           );
           for (var index = 0; index < 12; index++) {
@@ -1115,10 +1101,7 @@ void main() {
           }
 
           final ingress = _findWholeSignIngress(context, ut1);
-          expect(
-            ingress.flags,
-            contains(TaiyinHouseResultFlag.speedUnavailable),
-          );
+          expect(ingress.flags, contains(HouseResultFlag.speedUnavailable));
           expect(ingress.armcRateRadiansPerDay.isNaN, isTrue);
           expect(ingress.cuspLongitudeRatesRadiansPerDay[0].isNaN, isTrue);
         },
@@ -1129,10 +1112,10 @@ void main() {
           armcRadians: 123.456 * math.pi / 180,
           observerLatitudeRadians: 39.9167 * math.pi / 180,
           trueObliquityRadians: 23.436 * math.pi / 180,
-          system: TaiyinHouseSystem.placidus,
+          system: HouseSystem.placidus,
         );
 
-        expect(houses.resolvedSystem, TaiyinHouseSystem.placidus);
+        expect(houses.resolvedSystem, HouseSystem.placidus);
         expect(
           houses.cuspLongitudesRadians[0] * 180 / math.pi,
           closeTo(206.656040425304212, 1e-9),
@@ -1146,13 +1129,13 @@ void main() {
         () {
           expect(
             () => context.astrology.housesAtUt1(ut1),
-            throwsA(isA<TaiyinException>()),
+            throwsA(isA<EphemerisError>()),
           );
           expect(
             () => context.astrology.siderealPositionAtTt(
-              TaiyinBody.sun,
+              Body.sun,
               tt,
-              flags: {TaiyinPositionFlag.xyz},
+              flags: {PositionFlag.xyz},
             ),
             throwsArgumentError,
           );
@@ -1181,7 +1164,7 @@ void main() {
             throwsRangeError,
           );
           expect(
-            () => TaiyinHousePosition(
+            () => HousePosition(
               houseNumber: 0,
               fraction: 0,
               continuousHousePosition: 0,
@@ -1215,14 +1198,14 @@ double _normalizeSignedRadians(double value) {
   return normalized > math.pi ? normalized - 2 * math.pi : normalized;
 }
 
-TaiyinHouses _findWholeSignIngress(
-  TaiyinContext context,
+Houses _findWholeSignIngress(
+  EphemerisContext context,
   JulianDate<Ut1Scale> start,
 ) {
   var lowerJulianDate = start.toDouble();
   var lower = context.astrology.housesAtUt1(
     JulianDate<Ut1Scale>.fromDouble(lowerJulianDate),
-    system: TaiyinHouseSystem.wholeSign,
+    system: HouseSystem.wholeSign,
   );
   var upperJulianDate = double.nan;
 
@@ -1230,7 +1213,7 @@ TaiyinHouses _findWholeSignIngress(
     final sampleJulianDate = start.toDouble() + sample * 5 / 1440;
     final candidate = context.astrology.housesAtUt1(
       JulianDate<Ut1Scale>.fromDouble(sampleJulianDate),
-      system: TaiyinHouseSystem.wholeSign,
+      system: HouseSystem.wholeSign,
     );
     if (_angularDistance(
           candidate.cuspLongitudesRadians[0],
@@ -1251,7 +1234,7 @@ TaiyinHouses _findWholeSignIngress(
     final middleJulianDate = (lowerJulianDate + upperJulianDate) / 2;
     final middle = context.astrology.housesAtUt1(
       JulianDate<Ut1Scale>.fromDouble(middleJulianDate),
-      system: TaiyinHouseSystem.wholeSign,
+      system: HouseSystem.wholeSign,
     );
     if (_angularDistance(
           middle.cuspLongitudesRadians[0],
@@ -1266,7 +1249,7 @@ TaiyinHouses _findWholeSignIngress(
   }
   return context.astrology.housesAtUt1(
     JulianDate<Ut1Scale>.fromDouble((lowerJulianDate + upperJulianDate) / 2),
-    system: TaiyinHouseSystem.wholeSign,
+    system: HouseSystem.wholeSign,
   );
 }
 

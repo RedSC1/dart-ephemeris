@@ -6,13 +6,13 @@ import 'support/native_library.dart';
 
 void main() {
   group(
-    'TaiyinSolarTimeApi native integration',
+    'SolarTimeApi native integration',
     () {
-      late TaiyinContext context;
+      late EphemerisContext context;
       final ut1 = JulianDate<Ut1Scale>.fromDouble(2460311.0);
 
       setUp(() {
-        context = Taiyin.open(libraryPath: libraryPath).createContext();
+        context = Ephemeris.open(libraryPath: libraryPath).createContext();
       });
 
       tearDown(() {

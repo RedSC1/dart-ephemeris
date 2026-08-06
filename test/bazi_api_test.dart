@@ -5,13 +5,13 @@ import 'support/native_library.dart';
 
 void main() {
   group(
-    'TaiyinBaziApi native integration',
+    'BaziApi native integration',
     () {
-      late Taiyin runtime;
-      late TaiyinContext context;
+      late Ephemeris runtime;
+      late EphemerisContext context;
 
       setUp(() {
-        runtime = Taiyin.open(libraryPath: libraryPath);
+        runtime = Ephemeris.open(libraryPath: libraryPath);
         context = runtime.createContext();
       });
 
@@ -19,7 +19,7 @@ void main() {
         context.close();
       });
 
-      TaiyinBaziChart chartFor2024() {
+      BaziChart chartFor2024() {
         final pillars = context.chineseCalendar.fourPillars(
           instantUtc: JulianDate<UtcScale>.fromDouble(2460351.0),
           virtualTime: AstroDateTime(2024, 2, 10, 12),
@@ -31,15 +31,15 @@ void main() {
         final jiaZi = context.ganzhi.make(stemId: 0, branchId: 0);
         final kongWang = context.bazi.getKongWang(jiaZi);
         // 甲子旬空戌亥.
-        expect(kongWang.a, TaiyinEarthlyBranch.xu);
-        expect(kongWang.b, TaiyinEarthlyBranch.hai);
+        expect(kongWang.a, EarthlyBranch.xu);
+        expect(kongWang.b, EarthlyBranch.hai);
       });
 
       test('computes the ten god of a stem relative to the day master', () {
         // 甲 day master vs 丁 target is 伤官.
         expect(
           context.bazi.getTenGod(dayStemId: 0, targetStemId: 3),
-          TaiyinBaziTenGod.shangGuan,
+          BaziTenGod.shangGuan,
         );
       });
 
@@ -52,17 +52,11 @@ void main() {
 
       test('computes stem and branch relations', () {
         final stemRel = context.bazi.calcStemRelation(0, 5); // 甲己
-        expect(
-          stemRel.flags,
-          contains(TaiyinBaziStemRelationFlags.combination),
-        );
-        expect(stemRel.combinedElementId, TaiyinBaziWuxing.earth);
+        expect(stemRel.flags, contains(BaziStemRelationFlags.combination));
+        expect(stemRel.combinedElementId, BaziWuxing.earth);
 
         final branchRel = context.bazi.calcBranchRelation(0, 1); // 子丑
-        expect(
-          branchRel.flags,
-          contains(TaiyinBaziBranchRelationFlags.combination),
-        );
+        expect(branchRel.flags, contains(BaziBranchRelationFlags.combination));
       });
 
       test('derives a chart from the four pillars', () {
@@ -90,7 +84,7 @@ void main() {
           birthJdUt: JulianDate<Ut1Scale>.fromDouble(2460351.0),
           birthCivilTime: AstroDateTime(2024, 2, 10, 12),
           chart: chart,
-          gender: TaiyinBaziGender.male,
+          gender: BaziGender.male,
           calendar: context.chineseCalendar,
         );
         expect(qiyun.diagnostic.status, 0);
@@ -124,7 +118,7 @@ void main() {
         expect(entries, hasLength(5));
         for (var index = 0; index < entries.length; index++) {
           expect(entries[index].age, 1 + index);
-          expect(entries[index].ganzhi, isA<TaiyinGanzhi>());
+          expect(entries[index].ganzhi, isA<Ganzhi>());
         }
       });
 
@@ -134,7 +128,7 @@ void main() {
         );
         expect(relations, isNotEmpty);
         for (final relation in relations) {
-          expect(relation.kind, isA<TaiyinBaziRelationKind>());
+          expect(relation.kind, isA<BaziRelationKind>());
           expect(relation.pillarMask, isNotEmpty);
         }
       });
@@ -144,10 +138,10 @@ void main() {
         final set = context.bazi.collectTargetShenSha(
           chart: chart,
           target: chart.yearPillar,
-          targetKind: TaiyinBaziShenShaTargetKind.year,
-          gender: TaiyinBaziGender.male,
+          targetKind: BaziShenShaTargetKind.year,
+          gender: BaziGender.male,
         );
-        expect(set, isA<Set<TaiyinBaziShenShaId>>());
+        expect(set, isA<Set<BaziShenShaId>>());
         expect(
           set.every((id) => id.id >= 0 && id.id <= 65),
           isTrue,
@@ -158,7 +152,7 @@ void main() {
       test('returns renyuan siling segments for a month branch', () {
         final segments = context.bazi.getRenyuanSilingSegments(
           2,
-          TaiyinBaziRenyuanSilingTableModel.common,
+          BaziRenyuanSilingTableModel.common,
         );
         expect(segments, isNotEmpty);
         expect(segments.length, lessThanOrEqualTo(3));

@@ -25,7 +25,7 @@ typedef _DartCustomDependencyPosition =
       Pointer<taiyin_ephemeris_diagnostic>,
     );
 
-final class _TaiyinCustomTargetRequestScope {
+final class _CustomTargetRequestScope {
   bool isActive = true;
 
   void invalidate() {
@@ -33,12 +33,12 @@ final class _TaiyinCustomTargetRequestScope {
   }
 }
 
-/// Inputs supplied by Taiyin when evaluating a custom target.
+/// Inputs supplied by Ephemeris when evaluating a custom target.
 ///
 /// A request borrows its native calculation context and is valid only for the
 /// duration of the evaluator call.
-final class TaiyinCustomTargetRequest {
-  const TaiyinCustomTargetRequest._({
+final class CustomTargetRequest {
+  const CustomTargetRequest._({
     required this.target,
     required this.julianDateTdb,
     required this.julianDateTt,
@@ -46,38 +46,38 @@ final class TaiyinCustomTargetRequest {
     required Pointer<taiyin_context> context,
     required Pointer<NativeFunction<_NativeCustomDependencyPosition>>
     dependencyPosition,
-    required _TaiyinCustomTargetRequestScope scope,
+    required _CustomTargetRequestScope scope,
   }) : _context = context,
        _dependencyPosition = dependencyPosition,
        _scope = scope;
 
-  final TaiyinCustomTarget target;
+  final CustomTarget target;
   final JulianDate<TdbScale> julianDateTdb;
   final JulianDate<TtScale> julianDateTt;
   final int rawFlags;
   final Pointer<taiyin_context> _context;
   final Pointer<NativeFunction<_NativeCustomDependencyPosition>>
   _dependencyPosition;
-  final _TaiyinCustomTargetRequestScope _scope;
+  final _CustomTargetRequestScope _scope;
 
-  Set<TaiyinPositionFlag> get flags => Set.unmodifiable({
-    for (final flag in TaiyinPositionFlag.values)
+  Set<PositionFlag> get flags => Set.unmodifiable({
+    for (final flag in PositionFlag.values)
       if ((rawFlags & flag.mask) != 0) flag,
   });
 
-  bool hasFlag(TaiyinPositionFlag flag) => (rawFlags & flag.mask) != 0;
+  bool hasFlag(PositionFlag flag) => (rawFlags & flag.mask) != 0;
 
   /// Calculates another target with the borrowed context and callback epoch.
   ///
-  /// A native failure is rethrown as [TaiyinCustomEvaluatorFailure], so it
+  /// A native failure is rethrown as [CustomEvaluatorFailure], so it
   /// automatically becomes the custom evaluator's status unless caught.
   List<double> positionOf(
-    TaiyinTarget dependency, {
-    Set<TaiyinPositionFlag> flags = const {},
+    Target dependency, {
+    Set<PositionFlag> flags = const {},
   }) {
     if (!_scope.isActive) {
       throw StateError(
-        'This TaiyinCustomTargetRequest is no longer valid. '
+        'This CustomTargetRequest is no longer valid. '
         'positionOf() may only be called synchronously while its evaluator '
         'is running.',
       );
@@ -99,7 +99,7 @@ final class TaiyinCustomTargetRequest {
         diagnostic,
       );
       if (status != _taiyinStatusOk) {
-        throw TaiyinCustomEvaluatorFailure(status);
+        throw CustomEvaluatorFailure(status);
       }
       return List<double>.unmodifiable([
         for (var index = 0; index < 6; index++) output[index],
@@ -112,42 +112,42 @@ final class TaiyinCustomTargetRequest {
 ///
 /// The returned list must contain exactly six finite values. Components 0–2
 /// are coordinates and components 3–5 are rates; their frame and units follow
-/// [TaiyinCustomTargetRequest.flags].
-typedef TaiyinCustomPositionEvaluator =
-    List<double> Function(TaiyinCustomTargetRequest request);
+/// [CustomTargetRequest.flags].
+typedef CustomPositionEvaluator =
+    List<double> Function(CustomTargetRequest request);
 
 /// Calculates an exact Cartesian state for a custom target.
 ///
-/// When omitted during registration, Taiyin derives the state with its native
+/// When omitted during registration, Ephemeris derives the state with its native
 /// finite-difference fallback.
-typedef TaiyinCustomStateEvaluator =
-    TaiyinCartesianState Function(TaiyinCustomTargetRequest request);
+typedef CustomStateEvaluator =
+    CartesianState Function(CustomTargetRequest request);
 
 /// A deliberate non-success status returned by a custom target evaluator.
-final class TaiyinCustomEvaluatorFailure implements Exception {
-  const TaiyinCustomEvaluatorFailure(this.status)
+final class CustomEvaluatorFailure implements Exception {
+  const CustomEvaluatorFailure(this.status)
     : assert(status != 0, 'A failure status must be non-zero.');
 
   final int status;
 
   @override
-  String toString() => 'TaiyinCustomEvaluatorFailure($status)';
+  String toString() => 'CustomEvaluatorFailure($status)';
 }
 
 /// Owns one process-wide Dart-backed custom-target registration.
 ///
 /// Call [close] before discarding the registration. Closing first removes the
 /// native callback pointers and only then releases the Dart callbacks.
-final class TaiyinCustomTargetRegistration {
-  TaiyinCustomTargetRegistration._(
+final class CustomTargetRegistration {
+  CustomTargetRegistration._(
     this.target,
     this._nativeState,
     this._position,
     this._state,
   );
 
-  final TaiyinCustomTarget target;
-  final _TaiyinNativeLibraryState _nativeState;
+  final CustomTarget target;
+  final _NativeLibraryState _nativeState;
   final NativeCallable<taiyin_native_position_evaluator_fnFunction> _position;
   final NativeCallable<taiyin_native_state_evaluator_fnFunction>? _state;
   bool _closed = false;
@@ -182,14 +182,14 @@ final class TaiyinCustomTargetRegistration {
   }
 }
 
-TaiyinCustomTargetRegistration _registerCustomTarget(
+CustomTargetRegistration _registerCustomTarget(
   DynamicLibrary library,
-  _TaiyinNativeLibraryState nativeState,
+  _NativeLibraryState nativeState,
   int targetId,
-  TaiyinCustomPositionEvaluator positionEvaluator,
-  TaiyinCustomStateEvaluator? stateEvaluator,
+  CustomPositionEvaluator positionEvaluator,
+  CustomStateEvaluator? stateEvaluator,
 ) {
-  final target = TaiyinCustomTarget(targetId);
+  final target = CustomTarget(targetId);
   if (nativeState.customTargetRegistrations.containsKey(targetId)) {
     throw ArgumentError.value(
       targetId,
@@ -235,7 +235,7 @@ TaiyinCustomTargetRegistration _registerCustomTarget(
     _checkStatus(nativeState.bindings, status);
   }
 
-  final registration = TaiyinCustomTargetRegistration._(
+  final registration = CustomTargetRegistration._(
     target,
     nativeState,
     registeredPosition,
@@ -246,7 +246,7 @@ TaiyinCustomTargetRegistration _registerCustomTarget(
 }
 
 void _closeCustomTargetRegistrationsAfterNativeClear(
-  _TaiyinNativeLibraryState nativeState,
+  _NativeLibraryState nativeState,
 ) {
   final registrations = nativeState.customTargetRegistrations.values.toList();
   nativeState.customTargetRegistrations.clear();
@@ -257,7 +257,7 @@ void _closeCustomTargetRegistrationsAfterNativeClear(
 
 NativeCallable<taiyin_native_position_evaluator_fnFunction>
 _createCustomPositionCallable(
-  TaiyinCustomPositionEvaluator evaluator,
+  CustomPositionEvaluator evaluator,
   int dependencyPositionAddress,
 ) {
   final frozenEvaluator = evaluator;
@@ -279,11 +279,11 @@ _createCustomPositionCallable(
         for (var index = 0; index < 6; index++) {
           output[index] = 0;
         }
-        final requestScope = _TaiyinCustomTargetRequestScope();
+        final requestScope = _CustomTargetRequestScope();
         try {
           final values = frozenEvaluator(
-            TaiyinCustomTargetRequest._(
-              target: TaiyinCustomTarget(callbackTargetId),
+            CustomTargetRequest._(
+              target: CustomTarget(callbackTargetId),
               julianDateTdb: readJulianDate<TdbScale>(jdTdb.ref),
               julianDateTt: readJulianDate<TtScale>(jdTt.ref),
               rawFlags: flags,
@@ -314,7 +314,7 @@ _createCustomPositionCallable(
             readJulianDate<TdbScale>(jdTdb.ref),
           );
           return _taiyinStatusOk;
-        } on TaiyinCustomEvaluatorFailure catch (error) {
+        } on CustomEvaluatorFailure catch (error) {
           final status = error.status == 0
               ? _taiyinErrorInvalidArgument
               : error.status;
@@ -342,7 +342,7 @@ _createCustomPositionCallable(
 
 NativeCallable<taiyin_native_state_evaluator_fnFunction>
 _createCustomStateCallable(
-  TaiyinCustomStateEvaluator evaluator,
+  CustomStateEvaluator evaluator,
   int dependencyPositionAddress,
 ) {
   final frozenEvaluator = evaluator;
@@ -361,11 +361,11 @@ _createCustomStateCallable(
         Pointer<Void> userData,
       ) {
         if (output == nullptr) return _taiyinErrorInvalidArgument;
-        final requestScope = _TaiyinCustomTargetRequestScope();
+        final requestScope = _CustomTargetRequestScope();
         try {
           final state = frozenEvaluator(
-            TaiyinCustomTargetRequest._(
-              target: TaiyinCustomTarget(callbackTargetId),
+            CustomTargetRequest._(
+              target: CustomTarget(callbackTargetId),
               julianDateTdb: readJulianDate<TdbScale>(jdTdb.ref),
               julianDateTt: readJulianDate<TtScale>(jdTt.ref),
               rawFlags: flags,
@@ -394,7 +394,7 @@ _createCustomStateCallable(
             readJulianDate<TdbScale>(jdTdb.ref),
           );
           return _taiyinStatusOk;
-        } on TaiyinCustomEvaluatorFailure catch (error) {
+        } on CustomEvaluatorFailure catch (error) {
           final status = error.status == 0
               ? _taiyinErrorInvalidArgument
               : error.status;
@@ -441,8 +441,8 @@ void _finishCustomDiagnostic(
     ..component_method_id = -1;
 }
 
-bool _isFiniteCustomState(TaiyinCartesianState state) {
-  return <TaiyinVector3>[
+bool _isFiniteCustomState(CartesianState state) {
+  return <Vector3>[
     state.positionAu,
     state.velocityAuPerDay,
     state.accelerationAuPerDay2,
@@ -453,7 +453,7 @@ bool _isFiniteCustomState(TaiyinCartesianState state) {
 
 void _writeCustomState(
   Pointer<taiyin_cartesian_state> output,
-  TaiyinCartesianState state,
+  CartesianState state,
 ) {
   output.ref
     ..position_au.x = state.positionAu.x

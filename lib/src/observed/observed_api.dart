@@ -12,26 +12,26 @@ typedef _ObservedCalculation =
 typedef _ObservedStatusChecker =
     void Function(
       int status,
-      TaiyinEphemerisDiagnostic? diagnostic,
-      List<TaiyinEphemerisDiagnostic> diagnostics,
+      EphemerisDiagnostic? diagnostic,
+      List<EphemerisDiagnostic> diagnostics,
     );
 
 /// Apparent and observed positions for major solar-system bodies.
 ///
 /// Native observed-position batches contain at most ten bodies. Horizontal
-/// output requires [TaiyinObservedFlag.topocentric] and a context observer
-/// location. See [TaiyinContextConfiguration] for observer and atmosphere
+/// output requires [ObservedFlag.topocentric] and a context observer
+/// location. See [ContextConfiguration] for observer and atmosphere
 /// configuration.
 ///
 /// A failure for any requested body makes the native batch fail. Batch-level
-/// failures throw [TaiyinException]; partial results are not returned.
+/// failures throw [EphemerisError]; partial results are not returned.
 ///
 /// The native observed API does not currently propagate its internal
 /// time-scale diagnostic into the returned ephemeris diagnostic. Consequently,
-/// time-scale fields such as [TaiyinEphemerisDiagnostic.timeScaleRoute] retain
+/// time-scale fields such as [EphemerisDiagnostic.timeScaleRoute] retain
 /// their default values for both UT1 and UTC observed calculations.
-final class TaiyinObservedApi {
-  TaiyinObservedApi._(
+final class ObservedApi {
+  ObservedApi._(
     this._bindings,
     this._context,
     this._ensureOpen,
@@ -49,10 +49,10 @@ final class TaiyinObservedApi {
   /// Delta-T model. It does not apply EOP-backed celestial-pole offsets. Prefer
   /// [atUtc] when EOP data is available and maximum topocentric precision is
   /// required.
-  TaiyinObservedPosition atUt1(
-    TaiyinBody body,
+  ObservedPosition atUt1(
+    Body body,
     JulianDate<Ut1Scale> julianDate, {
-    Set<TaiyinObservedFlag> flags = const {},
+    Set<ObservedFlag> flags = const {},
   }) {
     return batchAtUt1([body], julianDate, flags: flags).single;
   }
@@ -60,10 +60,10 @@ final class TaiyinObservedApi {
   /// Calculates observed positions at a UT1 Julian date.
   ///
   /// This has the same model-based precision behavior as [atUt1].
-  List<TaiyinObservedPosition> batchAtUt1(
-    List<TaiyinBody> bodies,
+  List<ObservedPosition> batchAtUt1(
+    List<Body> bodies,
     JulianDate<Ut1Scale> julianDate, {
-    Set<TaiyinObservedFlag> flags = const {},
+    Set<ObservedFlag> flags = const {},
   }) {
     _ensureOpen();
     return _calculate(
@@ -86,10 +86,10 @@ final class TaiyinObservedApi {
   ///
   /// The native runtime must have Earth-orientation data covering [utc]. This
   /// route uses EOP-backed time scales and celestial-pole offsets.
-  TaiyinObservedPosition atUtc(
-    TaiyinBody body,
+  ObservedPosition atUtc(
+    Body body,
     AstroDateTime utc, {
-    Set<TaiyinObservedFlag> flags = const {},
+    Set<ObservedFlag> flags = const {},
   }) {
     return batchAtUtc([body], utc, flags: flags).single;
   }
@@ -98,10 +98,10 @@ final class TaiyinObservedApi {
   ///
   /// The native runtime must have Earth-orientation data covering [utc]. This
   /// route uses EOP-backed time scales and celestial-pole offsets.
-  List<TaiyinObservedPosition> batchAtUtc(
-    List<TaiyinBody> bodies,
+  List<ObservedPosition> batchAtUtc(
+    List<Body> bodies,
     AstroDateTime utc, {
-    Set<TaiyinObservedFlag> flags = const {},
+    Set<ObservedFlag> flags = const {},
   }) {
     _ensureOpen();
     return using((arena) {
@@ -123,9 +123,9 @@ final class TaiyinObservedApi {
     });
   }
 
-  List<TaiyinObservedPosition> _calculate(
-    List<TaiyinBody> bodies,
-    Set<TaiyinObservedFlag> flags,
+  List<ObservedPosition> _calculate(
+    List<Body> bodies,
+    Set<ObservedFlag> flags,
     _ObservedCalculation calculate,
   ) {
     if (bodies.isEmpty) return const [];
@@ -139,7 +139,7 @@ final class TaiyinObservedApi {
     _validateBodies(bodies);
     _validateFlags(flags);
 
-    final frozenFlags = Set<TaiyinObservedFlag>.unmodifiable(flags);
+    final frozenFlags = Set<ObservedFlag>.unmodifiable(flags);
     final mask = frozenFlags.fold(0, (value, flag) => value | flag.mask);
     return using((arena) {
       final bodyIds = arena<Int32>(bodies.length);
@@ -179,18 +179,18 @@ final class TaiyinObservedApi {
     });
   }
 
-  void _validateBodies(List<TaiyinBody> bodies) {
+  void _validateBodies(List<Body> bodies) {
     const supported = {
-      TaiyinBody.sun,
-      TaiyinBody.moon,
-      TaiyinBody.mercury,
-      TaiyinBody.venus,
-      TaiyinBody.mars,
-      TaiyinBody.jupiter,
-      TaiyinBody.saturn,
-      TaiyinBody.uranus,
-      TaiyinBody.neptune,
-      TaiyinBody.pluto,
+      Body.sun,
+      Body.moon,
+      Body.mercury,
+      Body.venus,
+      Body.mars,
+      Body.jupiter,
+      Body.saturn,
+      Body.uranus,
+      Body.neptune,
+      Body.pluto,
     };
     for (final body in bodies) {
       if (!supported.contains(body)) {
@@ -203,28 +203,28 @@ final class TaiyinObservedApi {
     }
   }
 
-  void _validateFlags(Set<TaiyinObservedFlag> flags) {
+  void _validateFlags(Set<ObservedFlag> flags) {
     final wantsHorizontal =
-        flags.contains(TaiyinObservedFlag.horizontal) ||
-        flags.contains(TaiyinObservedFlag.refraction);
-    if (wantsHorizontal && !flags.contains(TaiyinObservedFlag.topocentric)) {
+        flags.contains(ObservedFlag.horizontal) ||
+        flags.contains(ObservedFlag.refraction);
+    if (wantsHorizontal && !flags.contains(ObservedFlag.topocentric)) {
       throw ArgumentError(
         'Horizontal and refracted output require the topocentric flag.',
       );
     }
   }
 
-  TaiyinObservedPosition _readObservedPosition(
+  ObservedPosition _readObservedPosition(
     taiyin_observed_position value,
-    TaiyinBody body,
-    Set<TaiyinObservedFlag> flags,
+    Body body,
+    Set<ObservedFlag> flags,
   ) {
     final wantsHorizontal =
-        flags.contains(TaiyinObservedFlag.horizontal) ||
-        flags.contains(TaiyinObservedFlag.refraction);
-    final wantsSpeed = flags.contains(TaiyinObservedFlag.speed);
-    final wantsRefraction = flags.contains(TaiyinObservedFlag.refraction);
-    return TaiyinObservedPosition(
+        flags.contains(ObservedFlag.horizontal) ||
+        flags.contains(ObservedFlag.refraction);
+    final wantsSpeed = flags.contains(ObservedFlag.speed);
+    final wantsRefraction = flags.contains(ObservedFlag.refraction);
+    return ObservedPosition(
       body: body,
       status: value.status,
       diagnostic: _readObservedDiagnostic(value.diagnostic),
@@ -243,11 +243,11 @@ final class TaiyinObservedApi {
     );
   }
 
-  TaiyinApparentPosition _readApparentPosition(
+  ApparentPosition _readApparentPosition(
     taiyin_apparent_position value,
-    TaiyinBody body,
+    Body body,
   ) {
-    return TaiyinApparentPosition(
+    return ApparentPosition(
       body: body,
       bodyMaskBit: value.body_mask_bit,
       status: value.status,
@@ -262,8 +262,8 @@ final class TaiyinObservedApi {
     );
   }
 
-  TaiyinCartesianState _readObservedState(taiyin_cartesian_state value) {
-    return TaiyinCartesianState(
+  CartesianState _readObservedState(taiyin_cartesian_state value) {
+    return CartesianState(
       positionAu: _readObservedVector(value.position_au),
       velocityAuPerDay: _readObservedVector(value.velocity_au_per_day),
       accelerationAuPerDay2: _readObservedVector(
@@ -272,29 +272,27 @@ final class TaiyinObservedApi {
     );
   }
 
-  TaiyinVector3 _readObservedVector(taiyin_vector3 value) {
-    return TaiyinVector3(value.x, value.y, value.z);
+  Vector3 _readObservedVector(taiyin_vector3 value) {
+    return Vector3(value.x, value.y, value.z);
   }
 
-  TaiyinHorizontalCoordinates _readHorizontal(
-    taiyin_horizontal_coordinates value,
-  ) {
-    return TaiyinHorizontalCoordinates(
+  HorizontalCoordinates _readHorizontal(taiyin_horizontal_coordinates value) {
+    return HorizontalCoordinates(
       azimuthRadians: value.azimuth_rad,
       altitudeRadians: value.altitude_rad,
       distanceAu: value.distance_au,
     );
   }
 
-  TaiyinHorizontalRates _readHorizontalRates(taiyin_horizontal_rates value) {
-    return TaiyinHorizontalRates(
+  HorizontalRates _readHorizontalRates(taiyin_horizontal_rates value) {
+    return HorizontalRates(
       azimuthRadiansPerDay: value.azimuth_rate_rad_per_day,
       altitudeRadiansPerDay: value.altitude_rate_rad_per_day,
       distanceAuPerDay: value.distance_rate_au_per_day,
     );
   }
 
-  TaiyinEphemerisDiagnostic _readObservedDiagnostic(
+  EphemerisDiagnostic _readObservedDiagnostic(
     taiyin_ephemeris_diagnostic value,
   ) {
     return _readEphemerisDiagnostic(value);

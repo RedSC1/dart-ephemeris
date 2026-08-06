@@ -4,8 +4,8 @@ import 'package:taiyin/taiyin.dart';
 
 /// Three ways to make the C core call back into Dart.
 ///
-/// Taiyin can ask Dart to supply values for three kinds of pluggable model.
-/// Each one is registered process-wide on [Taiyin], then used like a built-in.
+/// Ephemeris can ask Dart to supply values for three kinds of pluggable model.
+/// Each one is registered process-wide on [Ephemeris], then used like a built-in.
 ///
 /// 1. **Custom target** (`targetId < 0`): a synthetic body whose position /
 ///    state is computed by a Dart evaluator. It can participate in any
@@ -24,20 +24,20 @@ import 'package:taiyin/taiyin.dart';
 /// dart run example/custom_callbacks_example.dart ../taiyin-ephemeris/build-bazi/libtaiyin.dylib
 /// ```
 void main(List<String> arguments) {
-  final taiyin = Taiyin.open(libraryPath: arguments.firstOrNull);
-  final context = taiyin.createContext();
+  final ephemeris = Ephemeris.open(libraryPath: arguments.firstOrNull);
+  final context = ephemeris.createContext();
 
   // The three registrations. Each is process-wide, so this main isolate owns
   // them; worker isolates see them through the negative / >=10000 IDs alone.
-  final comet = taiyin.registerCustomTarget(
+  final comet = ephemeris.registerCustomTarget(
     -42,
     positionEvaluator: _cometPosition,
   );
-  final mcEqualHouses = taiyin.registerCustomHouseSystemModel(
+  final mcEqualHouses = ephemeris.registerCustomHouseSystemModel(
     10001,
     evaluator: _mcEqualHouses,
   );
-  final fixedAyanamsha = taiyin.registerCustomAyanamshaModel(
+  final fixedAyanamsha = ephemeris.registerCustomAyanamshaModel(
     10000,
     evaluator: _fixed24DegreeAyanamsha,
   );
@@ -47,9 +47,9 @@ void main(List<String> arguments) {
 
     // 1. Custom target: a synthetic comet in a circular inclined orbit.
     final cometState = context.position.atTt(
-      TaiyinCustomTarget(-42),
+      CustomTarget(-42),
       jd,
-      flags: const {TaiyinPositionFlag.xyz, TaiyinPositionFlag.speed},
+      flags: const {PositionFlag.xyz, PositionFlag.speed},
     );
     print(
       'comet at AU:      '
@@ -58,11 +58,11 @@ void main(List<String> arguments) {
     );
 
     // The custom target also works in a batch with built-in bodies.
-    final bodies = <TaiyinTarget>[TaiyinBody.sun, TaiyinCustomTarget(-42)];
+    final bodies = <Target>[Body.sun, CustomTarget(-42)];
     final batch = context.position.batchAtTt(
       bodies,
       jd,
-      flags: const {TaiyinPositionFlag.xyz},
+      flags: const {PositionFlag.xyz},
     );
     for (var index = 0; index < bodies.length; index++) {
       print(
@@ -75,14 +75,14 @@ void main(List<String> arguments) {
     //    of the ascendant. housesAtTt uses the context observer, so point it
     //    at a location first.
     context.configuration.setObserverLocation(
-      const TaiyinObserverLocation(
+      const ObserverLocation(
         longitudeDegrees: 116.4074, // Beijing
         latitudeDegrees: 39.9042,
       ),
     );
     final houses = context.astrology.housesAtTt(
       jd,
-      system: TaiyinCustomHouseSystemModel(10001),
+      system: CustomHouseSystemModel(10001),
     );
     print(
       'custom houses:     '
@@ -92,9 +92,9 @@ void main(List<String> arguments) {
 
     // 3. Custom ayanamsha: a fixed 24-degree offset.
     final sidereal = context.astrology.siderealPositionAtTt(
-      TaiyinBody.sun,
+      Body.sun,
       jd,
-      ayanamsha: TaiyinCustomAyanamshaModel(10000),
+      ayanamsha: CustomAyanamshaModel(10000),
     );
     print(
       'sun sidereal lon:   ${sidereal.value.siderealLongitudeRadians.toStringAsFixed(6)} rad '
@@ -117,8 +117,8 @@ void main(List<String> arguments) {
 /// immutable. The returned list must contain exactly six finite values:
 /// components 0–2 are coordinates and 3–5 are their daily rates. The frame and
 /// units follow `request.flags` — with `xyz` + `speed`, Cartesian AU and
-/// AU/day, matching [TaiyinPositionFlag] semantics.
-List<double> _cometPosition(TaiyinCustomTargetRequest request) {
+/// AU/day, matching [PositionFlag] semantics.
+List<double> _cometPosition(CustomTargetRequest request) {
   const radiusAu = 3.5;
   const periodDays = 730.5;
   final meanAnomaly =
@@ -136,11 +136,11 @@ List<double> _cometPosition(TaiyinCustomTargetRequest request) {
 
 /// Equal houses anchored at the midheaven.
 ///
-/// The evaluator receives the rotation already solved by Taiyin and must
+/// The evaluator receives the rotation already solved by Ephemeris and must
 /// return exactly twelve finite cusp longitudes in radians (zero-indexed:
-/// index `i` is the cusp of house `i + 1`). Taiyin applies its normal cusp
+/// index `i` is the cusp of house `i + 1`). Ephemeris applies its normal cusp
 /// validation and fallback policy afterward.
-List<double> _mcEqualHouses(TaiyinCustomHouseSystemRequest request) {
+List<double> _mcEqualHouses(CustomHouseSystemRequest request) {
   final mc = request.midheavenRadians;
   return <double>[
     for (var house = 0; house < 12; house++)
@@ -150,9 +150,9 @@ List<double> _mcEqualHouses(TaiyinCustomHouseSystemRequest request) {
 
 /// A fixed 24-degree ayanamsha, returned in radians.
 ///
-/// The returned value must be finite; Taiyin normalizes it into `[0, 2π)`
+/// The returned value must be finite; Ephemeris normalizes it into `[0, 2π)`
 /// before publishing it to the requesting calculation.
-double _fixed24DegreeAyanamsha(TaiyinCustomAyanamshaRequest request) {
+double _fixed24DegreeAyanamsha(CustomAyanamshaRequest request) {
   return 24 * math.pi / 180;
 }
 

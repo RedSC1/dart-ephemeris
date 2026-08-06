@@ -2,12 +2,12 @@ part of '../taiyin.dart';
 
 /// Owns one native Chinese-calendar context.
 ///
-/// Create one through [TaiyinContext.createChineseCalendar], or use
-/// [TaiyinContext.chineseCalendar] for the cached default configuration.
+/// Create one through [EphemerisContext.createChineseCalendar], or use
+/// [EphemerisContext.chineseCalendar] for the cached default configuration.
 /// Call [close] before discarding the handle; closing the owning
-/// [TaiyinContext] closes its cached calendar context first.
-final class TaiyinChineseCalendarContext implements Finalizable {
-  TaiyinChineseCalendarContext._(
+/// [EphemerisContext] closes its cached calendar context first.
+final class ChineseCalendarContext implements Finalizable {
+  ChineseCalendarContext._(
     this._bindings,
     this._context,
     this._finalizer,
@@ -17,12 +17,12 @@ final class TaiyinChineseCalendarContext implements Finalizable {
     _finalizer.attach(this, _context.cast(), detach: this);
   }
 
-  factory TaiyinChineseCalendarContext._create(
-    _TaiyinNativeLibraryState nativeState,
+  factory ChineseCalendarContext._create(
+    _NativeLibraryState nativeState,
     TaiyinBindings bindings,
     Pointer<taiyin_context> astronomyContext,
-    TaiyinChineseCalendarConfig config,
-    TaiyinContext owner,
+    ChineseCalendarConfig config,
+    EphemerisContext owner,
   ) {
     final context = using((arena) {
       final nativeConfig = _writeChineseCalendarConfig(bindings, arena, config);
@@ -37,7 +37,7 @@ final class TaiyinChineseCalendarContext implements Finalizable {
       );
       return output.value;
     });
-    return TaiyinChineseCalendarContext._(
+    return ChineseCalendarContext._(
       bindings,
       context,
       nativeState.chineseCalendarFinalizer,
@@ -50,7 +50,7 @@ final class TaiyinChineseCalendarContext implements Finalizable {
   final Pointer<taiyin_chinese_calendar_context> _context;
   final NativeFinalizer _finalizer;
   final int _capabilities;
-  final TaiyinContext _owner;
+  final EphemerisContext _owner;
   bool _closed = false;
 
   bool get isClosed => _closed;
@@ -66,7 +66,7 @@ final class TaiyinChineseCalendarContext implements Finalizable {
 
   void _ensureOpen() {
     if (_closed) {
-      throw StateError('This TaiyinChineseCalendarContext has been closed.');
+      throw StateError('This ChineseCalendarContext has been closed.');
     }
     // This context borrows the owning context's native astronomy state, so it
     // must not outlive the owner.
@@ -75,9 +75,7 @@ final class TaiyinChineseCalendarContext implements Finalizable {
 
   /// Computes the full winter-solstice-based Chinese calendar year containing
   /// [jdUt].
-  TaiyinEphemerisResult<TaiyinChineseCalendarYear> calcYearUt(
-    JulianDate<Ut1Scale> jdUt,
-  ) {
+  EphemerisResult<ChineseCalendarYear> calcYearUt(JulianDate<Ut1Scale> jdUt) {
     _ensureOpen();
     return using((arena) {
       final output = arena<taiyin_chinese_calendar_year>();
@@ -92,7 +90,7 @@ final class TaiyinChineseCalendarContext implements Finalizable {
       );
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(_bindings, status, diagnostic: mappedDiagnostic);
-      return TaiyinEphemerisResult(
+      return EphemerisResult(
         value: _readCalendarYear(output.ref),
         diagnostic: mappedDiagnostic,
       );
@@ -102,7 +100,7 @@ final class TaiyinChineseCalendarContext implements Finalizable {
   /// Returns one solar term by its spring-equinox-based index (sxwnl
   /// convention): 0 = spring equinox, 18 = the winter solstice of [civilYear],
   /// 19–23 = 小寒…惊蛰 earlier in the same civil year.
-  TaiyinEphemerisResult<TaiyinChineseSolarTermEvent> getSpecificJieQiUt({
+  EphemerisResult<ChineseSolarTermEvent> getSpecificJieQiUt({
     required int civilYear,
     required int termIndexFromVernalEquinox,
   }) {
@@ -121,7 +119,7 @@ final class TaiyinChineseCalendarContext implements Finalizable {
       );
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(_bindings, status, diagnostic: mappedDiagnostic);
-      return TaiyinEphemerisResult(
+      return EphemerisResult(
         value: _readSolarTermEvent(output.ref),
         diagnostic: mappedDiagnostic,
       );
@@ -129,7 +127,7 @@ final class TaiyinChineseCalendarContext implements Finalizable {
   }
 
   /// Returns the previous solar term at or before [jdUt].
-  TaiyinEphemerisResult<TaiyinChineseSolarTermEvent> getPrevJieQiUt(
+  EphemerisResult<ChineseSolarTermEvent> getPrevJieQiUt(
     JulianDate<Ut1Scale> jdUt,
   ) {
     return _solarTermSearch(
@@ -145,7 +143,7 @@ final class TaiyinChineseCalendarContext implements Finalizable {
   }
 
   /// Returns the next solar term strictly after [jdUt].
-  TaiyinEphemerisResult<TaiyinChineseSolarTermEvent> getNextJieQiUt(
+  EphemerisResult<ChineseSolarTermEvent> getNextJieQiUt(
     JulianDate<Ut1Scale> jdUt,
   ) {
     return _solarTermSearch(
@@ -161,7 +159,7 @@ final class TaiyinChineseCalendarContext implements Finalizable {
   }
 
   /// Returns the previous 节 (the twelve major terms) at or before [jdUt].
-  TaiyinEphemerisResult<TaiyinChineseSolarTermEvent> getPrevJieUt(
+  EphemerisResult<ChineseSolarTermEvent> getPrevJieUt(
     JulianDate<Ut1Scale> jdUt,
   ) {
     return _solarTermSearch(
@@ -177,7 +175,7 @@ final class TaiyinChineseCalendarContext implements Finalizable {
   }
 
   /// Returns the next 节 (the twelve major terms) strictly after [jdUt].
-  TaiyinEphemerisResult<TaiyinChineseSolarTermEvent> getNextJieUt(
+  EphemerisResult<ChineseSolarTermEvent> getNextJieUt(
     JulianDate<Ut1Scale> jdUt,
   ) {
     return _solarTermSearch(
@@ -193,7 +191,7 @@ final class TaiyinChineseCalendarContext implements Finalizable {
   }
 
   /// Returns the previous 气 (the twelve minor terms) at or before [jdUt].
-  TaiyinEphemerisResult<TaiyinChineseSolarTermEvent> getPrevQiUt(
+  EphemerisResult<ChineseSolarTermEvent> getPrevQiUt(
     JulianDate<Ut1Scale> jdUt,
   ) {
     return _solarTermSearch(
@@ -209,7 +207,7 @@ final class TaiyinChineseCalendarContext implements Finalizable {
   }
 
   /// Returns the next 气 (the twelve minor terms) strictly after [jdUt].
-  TaiyinEphemerisResult<TaiyinChineseSolarTermEvent> getNextQiUt(
+  EphemerisResult<ChineseSolarTermEvent> getNextQiUt(
     JulianDate<Ut1Scale> jdUt,
   ) {
     return _solarTermSearch(
@@ -225,7 +223,7 @@ final class TaiyinChineseCalendarContext implements Finalizable {
   }
 
   /// Converts a solar (Gregorian) date to a Chinese lunar date.
-  TaiyinEphemerisResult<TaiyinLunarDate> fromSolar(TaiyinSolarDate solar) {
+  EphemerisResult<LunarDate> fromSolar(SolarDate solar) {
     _ensureOpen();
     return using((arena) {
       final nativeSolar = _writeSolarDate(_bindings, arena, solar);
@@ -241,7 +239,7 @@ final class TaiyinChineseCalendarContext implements Finalizable {
       );
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(_bindings, status, diagnostic: mappedDiagnostic);
-      return TaiyinEphemerisResult(
+      return EphemerisResult(
         value: _readLunarDate(output.ref),
         diagnostic: mappedDiagnostic,
       );
@@ -249,7 +247,7 @@ final class TaiyinChineseCalendarContext implements Finalizable {
   }
 
   /// Converts a Chinese lunar date to a solar (Gregorian) date.
-  TaiyinEphemerisResult<TaiyinSolarDate> fromLunar(TaiyinLunarDate lunar) {
+  EphemerisResult<SolarDate> fromLunar(LunarDate lunar) {
     _ensureOpen();
     return using((arena) {
       final nativeLunar = _writeLunarDate(_bindings, arena, lunar);
@@ -265,7 +263,7 @@ final class TaiyinChineseCalendarContext implements Finalizable {
       );
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(_bindings, status, diagnostic: mappedDiagnostic);
-      return TaiyinEphemerisResult(
+      return EphemerisResult(
         value: _readSolarDate(output.ref),
         diagnostic: mappedDiagnostic,
       );
@@ -273,7 +271,7 @@ final class TaiyinChineseCalendarContext implements Finalizable {
   }
 
   /// Returns the number of days in a lunar month.
-  TaiyinEphemerisResult<int> getMonthDays({
+  EphemerisResult<int> getMonthDays({
     required int lunarYear,
     required int month,
     required bool isLeap,
@@ -293,10 +291,7 @@ final class TaiyinChineseCalendarContext implements Finalizable {
       );
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(_bindings, status, diagnostic: mappedDiagnostic);
-      return TaiyinEphemerisResult(
-        value: output.value,
-        diagnostic: mappedDiagnostic,
-      );
+      return EphemerisResult(value: output.value, diagnostic: mappedDiagnostic);
     });
   }
 
@@ -306,10 +301,10 @@ final class TaiyinChineseCalendarContext implements Finalizable {
   /// absolute astronomical boundaries (立春 and the twelve 节).
   /// [virtualTime] is the caller-resolved civil clock used for the nominal
   /// year, day, and hour pillars.
-  TaiyinEphemerisResult<TaiyinGanzhiFourPillars> fourPillars({
+  EphemerisResult<GanzhiFourPillars> fourPillars({
     required JulianDate<UtcScale> instantUtc,
     required AstroDateTime virtualTime,
-    TaiyinGanzhiRatHourMode ratHourMode = TaiyinGanzhiRatHourMode.noSplit,
+    GanzhiRatHourMode ratHourMode = GanzhiRatHourMode.noSplit,
   }) {
     _ensureOpen();
     // four-pillars needs the Ganzhi extension; the native entry point is
@@ -342,19 +337,19 @@ final class TaiyinChineseCalendarContext implements Finalizable {
       );
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(_bindings, status, diagnostic: mappedDiagnostic);
-      return TaiyinEphemerisResult(
-        value: TaiyinGanzhiFourPillars(
-          year: TaiyinGanzhi.fromNative(output.ref.year),
-          month: TaiyinGanzhi.fromNative(output.ref.month),
-          day: TaiyinGanzhi.fromNative(output.ref.day),
-          hour: TaiyinGanzhi.fromNative(output.ref.hour),
+      return EphemerisResult(
+        value: GanzhiFourPillars(
+          year: Ganzhi.fromNative(output.ref.year),
+          month: Ganzhi.fromNative(output.ref.month),
+          day: Ganzhi.fromNative(output.ref.day),
+          hour: Ganzhi.fromNative(output.ref.hour),
         ),
         diagnostic: mappedDiagnostic,
       );
     });
   }
 
-  TaiyinEphemerisResult<TaiyinChineseSolarTermEvent> _solarTermSearch(
+  EphemerisResult<ChineseSolarTermEvent> _solarTermSearch(
     int Function(
       Pointer<taiyin_split_julian_date>,
       Pointer<taiyin_chinese_solar_term_event>,
@@ -376,7 +371,7 @@ final class TaiyinChineseCalendarContext implements Finalizable {
       );
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(_bindings, status, diagnostic: mappedDiagnostic);
-      return TaiyinEphemerisResult(
+      return EphemerisResult(
         value: _readSolarTermEvent(output.ref),
         diagnostic: mappedDiagnostic,
       );
@@ -387,7 +382,7 @@ final class TaiyinChineseCalendarContext implements Finalizable {
 Pointer<taiyin_chinese_calendar_config> _writeChineseCalendarConfig(
   TaiyinBindings bindings,
   Arena arena,
-  TaiyinChineseCalendarConfig config,
+  ChineseCalendarConfig config,
 ) {
   final native = arena<taiyin_chinese_calendar_config>();
   bindings.taiyin_chinese_calendar_config_init(native);
@@ -402,7 +397,7 @@ Pointer<taiyin_chinese_calendar_config> _writeChineseCalendarConfig(
 Pointer<taiyin_solar_date> _writeSolarDate(
   TaiyinBindings bindings,
   Arena arena,
-  TaiyinSolarDate value,
+  SolarDate value,
 ) {
   final native = arena<taiyin_solar_date>();
   bindings.taiyin_solar_date_init(native);
@@ -416,7 +411,7 @@ Pointer<taiyin_solar_date> _writeSolarDate(
 Pointer<taiyin_lunar_date> _writeLunarDate(
   TaiyinBindings bindings,
   Arena arena,
-  TaiyinLunarDate value,
+  LunarDate value,
 ) {
   final native = arena<taiyin_lunar_date>();
   bindings.taiyin_lunar_date_init(native);
@@ -430,25 +425,25 @@ Pointer<taiyin_lunar_date> _writeLunarDate(
   return native;
 }
 
-TaiyinSolarDate _readSolarDate(taiyin_solar_date value) {
-  return TaiyinSolarDate(year: value.year, month: value.month, day: value.day);
+SolarDate _readSolarDate(taiyin_solar_date value) {
+  return SolarDate(year: value.year, month: value.month, day: value.day);
 }
 
-TaiyinLunarDate _readLunarDate(taiyin_lunar_date value) {
-  return TaiyinLunarDate(
+LunarDate _readLunarDate(taiyin_lunar_date value) {
+  return LunarDate(
     year: value.year,
     month: value.month,
     day: value.day,
     isLeap: value.is_leap != 0,
     monthDays: value.month_days,
-    monthName: TaiyinChineseCalendarMonthName.fromId(value.month_name),
+    monthName: ChineseCalendarMonthName.fromId(value.month_name),
   );
 }
 
-TaiyinChineseSolarTermEvent _readSolarTermEvent(
+ChineseSolarTermEvent _readSolarTermEvent(
   taiyin_chinese_solar_term_event value,
 ) {
-  return TaiyinChineseSolarTermEvent(
+  return ChineseSolarTermEvent(
     indexFromWinterSolstice: value.index_from_winter_solstice,
     targetLongitudeRadians: value.target_longitude_rad,
     jdUt: readJulianDate<Ut1Scale>(value.jd_ut),
@@ -456,24 +451,20 @@ TaiyinChineseSolarTermEvent _readSolarTermEvent(
   );
 }
 
-TaiyinChineseNewMoonEvent _readNewMoonEvent(
-  taiyin_chinese_new_moon_event value,
-) {
-  return TaiyinChineseNewMoonEvent(
+ChineseNewMoonEvent _readNewMoonEvent(taiyin_chinese_new_moon_event value) {
+  return ChineseNewMoonEvent(
     jdUt: readJulianDate<Ut1Scale>(value.jd_ut),
     civilDayNumber: value.civil_day_number,
   );
 }
 
-TaiyinChineseCalendarMonth _readCalendarMonth(
-  taiyin_chinese_calendar_month value,
-) {
-  return TaiyinChineseCalendarMonth(
+ChineseCalendarMonth _readCalendarMonth(taiyin_chinese_calendar_month value) {
+  return ChineseCalendarMonth(
     lunarYear: value.lunar_year,
     month: value.month,
     isLeap: value.is_leap != 0,
     dayCount: value.day_count,
-    monthName: TaiyinChineseCalendarMonthName.fromId(value.month_name),
+    monthName: ChineseCalendarMonthName.fromId(value.month_name),
     firstCivilDayNumber: value.first_civil_day_number,
     astronomicalNewMoonJdUt: readJulianDate<Ut1Scale>(
       value.astronomical_new_moon_jd_ut,
@@ -481,10 +472,8 @@ TaiyinChineseCalendarMonth _readCalendarMonth(
   );
 }
 
-TaiyinChineseCalendarYear _readCalendarYear(
-  taiyin_chinese_calendar_year value,
-) {
-  return TaiyinChineseCalendarYear(
+ChineseCalendarYear _readCalendarYear(taiyin_chinese_calendar_year value) {
+  return ChineseCalendarYear(
     solarTerms: [
       for (var index = 0; index < value.solar_term_count; index++)
         _readSolarTermEvent(value.solar_terms[index]),

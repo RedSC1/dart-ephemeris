@@ -5,13 +5,13 @@ import 'support/native_library.dart';
 
 void main() {
   group(
-    'TaiyinChineseCalendarApi native integration',
+    'ChineseCalendarApi native integration',
     () {
-      late Taiyin runtime;
-      late TaiyinContext context;
+      late Ephemeris runtime;
+      late EphemerisContext context;
 
       setUp(() {
-        runtime = Taiyin.open(libraryPath: libraryPath);
+        runtime = Ephemeris.open(libraryPath: libraryPath);
         context = runtime.createContext();
       });
 
@@ -41,7 +41,7 @@ void main() {
 
       test('converts a solar date to the Chinese lunar calendar', () {
         final result = context.chineseCalendar.fromSolar(
-          TaiyinSolarDate(year: 2024, month: 2, day: 10),
+          SolarDate(year: 2024, month: 2, day: 10),
         );
 
         expect(result.diagnostic.status, 0);
@@ -79,7 +79,7 @@ void main() {
 
       test('supports custom calendar configurations', () {
         final custom = context.createChineseCalendar(
-          config: const TaiyinChineseCalendarConfig.utcOffset(0),
+          config: const ChineseCalendarConfig.utcOffset(0),
         );
         final year = custom
             .calcYearUt(JulianDate<Ut1Scale>.fromDouble(2460348.0))

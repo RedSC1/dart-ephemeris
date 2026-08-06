@@ -1,7 +1,7 @@
 part of '../taiyin.dart';
 
 typedef _EclipseStatusChecker =
-    void Function(int status, TaiyinEphemerisDiagnostic? diagnostic);
+    void Function(int status, EphemerisDiagnostic? diagnostic);
 typedef _LunarTtCalculation =
     int Function(
       Pointer<taiyin_lunar_eclipse_result_tt> output,
@@ -123,10 +123,10 @@ const _solarRouteMaximumSampleCount = 4096;
 /// Calculates and searches lunar eclipses.
 ///
 /// A local method samples the observer location already configured on the
-/// owning [TaiyinContext]. Native calculation coordinates and contact times
+/// owning [EphemerisContext]. Native calculation coordinates and contact times
 /// cross the ABI-5 boundary as split Julian dates.
-final class TaiyinEclipseApi {
-  TaiyinEclipseApi._(
+final class EclipseApi {
+  EclipseApi._(
     this._bindings,
     this._context,
     this._ensureOpen,
@@ -139,10 +139,10 @@ final class TaiyinEclipseApi {
   final _EclipseStatusChecker _checkStatus;
 
   /// Solves the lunar-eclipse lunation nearest [estimate].
-  TaiyinEphemerisResult<TaiyinLunarEclipseResult<TtScale>> solveLunarAtTt(
+  EphemerisResult<LunarEclipseResult<TtScale>> solveLunarAtTt(
     JulianDate<TtScale> estimate, {
-    Set<TaiyinPositionFlag> positionFlags = const {},
-    Set<TaiyinLunarEclipseSolveOption> options = const {},
+    Set<PositionFlag> positionFlags = const {},
+    Set<LunarEclipseSolveOption> options = const {},
   }) {
     _ensureOpen();
     final mask = _solveMask(positionFlags, options);
@@ -161,10 +161,10 @@ final class TaiyinEclipseApi {
   }
 
   /// Solves the lunar-eclipse lunation nearest [estimate].
-  TaiyinEphemerisResult<TaiyinLunarEclipseResult<Ut1Scale>> solveLunarAtUt1(
+  EphemerisResult<LunarEclipseResult<Ut1Scale>> solveLunarAtUt1(
     JulianDate<Ut1Scale> estimate, {
-    Set<TaiyinPositionFlag> positionFlags = const {},
-    Set<TaiyinLunarEclipseSolveOption> options = const {},
+    Set<PositionFlag> positionFlags = const {},
+    Set<LunarEclipseSolveOption> options = const {},
   }) {
     _ensureOpen();
     final mask = _solveMask(positionFlags, options);
@@ -183,11 +183,11 @@ final class TaiyinEclipseApi {
   }
 
   /// Finds the next matching lunar eclipse from [start].
-  TaiyinEphemerisResult<TaiyinLunarEclipseResult<TtScale>> nextLunarAtTt(
+  EphemerisResult<LunarEclipseResult<TtScale>> nextLunarAtTt(
     JulianDate<TtScale> start, {
-    Set<TaiyinEclipseKind> kinds = const {},
-    Set<TaiyinPositionFlag> positionFlags = const {},
-    Set<TaiyinLunarEclipseSearchOption> options = const {},
+    Set<EclipseKind> kinds = const {},
+    Set<PositionFlag> positionFlags = const {},
+    Set<LunarEclipseSearchOption> options = const {},
   }) {
     _ensureOpen();
     final kindMask = _lunarKindMask(kinds);
@@ -209,12 +209,12 @@ final class TaiyinEclipseApi {
 
   /// Finds the next matching lunar eclipse from [start].
   ///
-  /// Pass [TaiyinLunarEclipseSearchOption.backward] to search backwards.
-  TaiyinEphemerisResult<TaiyinLunarEclipseResult<Ut1Scale>> nextLunarAtUt1(
+  /// Pass [LunarEclipseSearchOption.backward] to search backwards.
+  EphemerisResult<LunarEclipseResult<Ut1Scale>> nextLunarAtUt1(
     JulianDate<Ut1Scale> start, {
-    Set<TaiyinEclipseKind> kinds = const {},
-    Set<TaiyinPositionFlag> positionFlags = const {},
-    Set<TaiyinLunarEclipseSearchOption> options = const {},
+    Set<EclipseKind> kinds = const {},
+    Set<PositionFlag> positionFlags = const {},
+    Set<LunarEclipseSearchOption> options = const {},
   }) {
     _ensureOpen();
     final kindMask = _lunarKindMask(kinds);
@@ -239,14 +239,13 @@ final class TaiyinEclipseApi {
   ///
   /// Native code reports insufficient [maxResults] capacity as an error rather
   /// than silently dropping later eclipses.
-  TaiyinEphemerisResult<List<TaiyinLunarEclipseResult<TtScale>>>
-  lunarEclipsesAtTt(
+  EphemerisResult<List<LunarEclipseResult<TtScale>>> lunarEclipsesAtTt(
     JulianDate<TtScale> start,
     JulianDate<TtScale> end, {
     int maxResults = 16,
-    Set<TaiyinEclipseKind> kinds = const {},
-    Set<TaiyinPositionFlag> positionFlags = const {},
-    Set<TaiyinLunarEclipseSearchOption> options = const {},
+    Set<EclipseKind> kinds = const {},
+    Set<PositionFlag> positionFlags = const {},
+    Set<LunarEclipseSearchOption> options = const {},
   }) {
     _ensureOpen();
     _requireInterval(start, end);
@@ -274,14 +273,13 @@ final class TaiyinEclipseApi {
 
   /// Finds all matching lunar eclipses in the positive-length,
   /// endpoint-inclusive [start], [end] range.
-  TaiyinEphemerisResult<List<TaiyinLunarEclipseResult<Ut1Scale>>>
-  lunarEclipsesAtUt1(
+  EphemerisResult<List<LunarEclipseResult<Ut1Scale>>> lunarEclipsesAtUt1(
     JulianDate<Ut1Scale> start,
     JulianDate<Ut1Scale> end, {
     int maxResults = 16,
-    Set<TaiyinEclipseKind> kinds = const {},
-    Set<TaiyinPositionFlag> positionFlags = const {},
-    Set<TaiyinLunarEclipseSearchOption> options = const {},
+    Set<EclipseKind> kinds = const {},
+    Set<PositionFlag> positionFlags = const {},
+    Set<LunarEclipseSearchOption> options = const {},
   }) {
     _ensureOpen();
     _requireInterval(start, end);
@@ -311,10 +309,9 @@ final class TaiyinEclipseApi {
   ///
   /// The context must have a geographic observer. A non-empty eclipse must
   /// include contact data, so search with `includeContacts` before calling.
-  TaiyinEphemerisResult<TaiyinLocalLunarEclipseResult<TtScale>>
-  localLunarVisibilityAtTt(
-    TaiyinLunarEclipseResult<TtScale> eclipse, {
-    Set<TaiyinLocalLunarEclipseVisibilityOption> options = const {},
+  EphemerisResult<LocalLunarEclipseResult<TtScale>> localLunarVisibilityAtTt(
+    LunarEclipseResult<TtScale> eclipse, {
+    Set<LocalLunarEclipseVisibilityOption> options = const {},
   }) {
     _ensureOpen();
     _requireLocalContacts(eclipse);
@@ -334,10 +331,9 @@ final class TaiyinEclipseApi {
   }
 
   /// Derives local visibility for a UT1 global [eclipse].
-  TaiyinEphemerisResult<TaiyinLocalLunarEclipseResult<Ut1Scale>>
-  localLunarVisibilityAtUt1(
-    TaiyinLunarEclipseResult<Ut1Scale> eclipse, {
-    Set<TaiyinLocalLunarEclipseVisibilityOption> options = const {},
+  EphemerisResult<LocalLunarEclipseResult<Ut1Scale>> localLunarVisibilityAtUt1(
+    LunarEclipseResult<Ut1Scale> eclipse, {
+    Set<LocalLunarEclipseVisibilityOption> options = const {},
   }) {
     _ensureOpen();
     _requireLocalContacts(eclipse);
@@ -358,13 +354,12 @@ final class TaiyinEclipseApi {
 
   /// Finds the next matching lunar eclipse and its visibility at the context
   /// observer.
-  TaiyinEphemerisResult<TaiyinLocalLunarEclipseResult<TtScale>>
-  nextLocalLunarAtTt(
+  EphemerisResult<LocalLunarEclipseResult<TtScale>> nextLocalLunarAtTt(
     JulianDate<TtScale> start, {
-    Set<TaiyinEclipseKind> kinds = const {},
-    Set<TaiyinPositionFlag> positionFlags = const {},
-    Set<TaiyinLunarEclipseSearchOption> options = const {},
-    Set<TaiyinLocalLunarEclipseVisibilityOption> visibilityOptions = const {},
+    Set<EclipseKind> kinds = const {},
+    Set<PositionFlag> positionFlags = const {},
+    Set<LunarEclipseSearchOption> options = const {},
+    Set<LocalLunarEclipseVisibilityOption> visibilityOptions = const {},
   }) {
     _ensureOpen();
     final kindMask = _lunarKindMask(kinds);
@@ -389,13 +384,12 @@ final class TaiyinEclipseApi {
 
   /// Finds the next matching lunar eclipse and its visibility at the context
   /// observer.
-  TaiyinEphemerisResult<TaiyinLocalLunarEclipseResult<Ut1Scale>>
-  nextLocalLunarAtUt1(
+  EphemerisResult<LocalLunarEclipseResult<Ut1Scale>> nextLocalLunarAtUt1(
     JulianDate<Ut1Scale> start, {
-    Set<TaiyinEclipseKind> kinds = const {},
-    Set<TaiyinPositionFlag> positionFlags = const {},
-    Set<TaiyinLunarEclipseSearchOption> options = const {},
-    Set<TaiyinLocalLunarEclipseVisibilityOption> visibilityOptions = const {},
+    Set<EclipseKind> kinds = const {},
+    Set<PositionFlag> positionFlags = const {},
+    Set<LunarEclipseSearchOption> options = const {},
+    Set<LocalLunarEclipseVisibilityOption> visibilityOptions = const {},
   }) {
     _ensureOpen();
     final kindMask = _lunarKindMask(kinds);
@@ -418,7 +412,7 @@ final class TaiyinEclipseApi {
     });
   }
 
-  TaiyinEphemerisResult<TaiyinLunarEclipseResult<TtScale>> _lunarTt(
+  EphemerisResult<LunarEclipseResult<TtScale>> _lunarTt(
     _LunarTtCalculation calculate,
   ) {
     return using((arena) {
@@ -430,14 +424,14 @@ final class TaiyinEclipseApi {
       final status = calculate(output, diagnostic);
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
-      return TaiyinEphemerisResult(
+      return EphemerisResult(
         value: _readLunarTt(output.ref),
         diagnostic: mappedDiagnostic,
       );
     });
   }
 
-  TaiyinEphemerisResult<TaiyinLunarEclipseResult<Ut1Scale>> _lunarUt(
+  EphemerisResult<LunarEclipseResult<Ut1Scale>> _lunarUt(
     _LunarUtCalculation calculate,
   ) {
     return using((arena) {
@@ -449,14 +443,14 @@ final class TaiyinEclipseApi {
       final status = calculate(output, diagnostic);
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
-      return TaiyinEphemerisResult(
+      return EphemerisResult(
         value: _readLunarUt(output.ref),
         diagnostic: mappedDiagnostic,
       );
     });
   }
 
-  TaiyinEphemerisResult<List<TaiyinLunarEclipseResult<TtScale>>> _lunarTtArray(
+  EphemerisResult<List<LunarEclipseResult<TtScale>>> _lunarTtArray(
     int capacity,
     _LunarTtArrayCalculation calculate,
   ) {
@@ -472,7 +466,7 @@ final class TaiyinEclipseApi {
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
       final resultCount = _validatedResultCount(count.value, capacity);
-      return TaiyinEphemerisResult(
+      return EphemerisResult(
         value: List.unmodifiable([
           for (var index = 0; index < resultCount; index++)
             _readLunarTt((output + index).ref),
@@ -482,7 +476,7 @@ final class TaiyinEclipseApi {
     });
   }
 
-  TaiyinEphemerisResult<List<TaiyinLunarEclipseResult<Ut1Scale>>> _lunarUtArray(
+  EphemerisResult<List<LunarEclipseResult<Ut1Scale>>> _lunarUtArray(
     int capacity,
     _LunarUtArrayCalculation calculate,
   ) {
@@ -498,7 +492,7 @@ final class TaiyinEclipseApi {
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
       final resultCount = _validatedResultCount(count.value, capacity);
-      return TaiyinEphemerisResult(
+      return EphemerisResult(
         value: List.unmodifiable([
           for (var index = 0; index < resultCount; index++)
             _readLunarUt((output + index).ref),
@@ -508,7 +502,7 @@ final class TaiyinEclipseApi {
     });
   }
 
-  TaiyinEphemerisResult<TaiyinLocalLunarEclipseResult<TtScale>> _localLunarTt(
+  EphemerisResult<LocalLunarEclipseResult<TtScale>> _localLunarTt(
     _LocalLunarTtCalculation calculate,
   ) {
     return using((arena) {
@@ -520,14 +514,14 @@ final class TaiyinEclipseApi {
       final status = calculate(output, diagnostic);
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
-      return TaiyinEphemerisResult(
+      return EphemerisResult(
         value: _readLocalLunarTt(output.ref),
         diagnostic: mappedDiagnostic,
       );
     });
   }
 
-  TaiyinEphemerisResult<TaiyinLocalLunarEclipseResult<Ut1Scale>> _localLunarUt(
+  EphemerisResult<LocalLunarEclipseResult<Ut1Scale>> _localLunarUt(
     _LocalLunarUtCalculation calculate,
   ) {
     return using((arena) {
@@ -539,18 +533,18 @@ final class TaiyinEclipseApi {
       final status = calculate(output, diagnostic);
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
-      return TaiyinEphemerisResult(
+      return EphemerisResult(
         value: _readLocalLunarUt(output.ref),
         diagnostic: mappedDiagnostic,
       );
     });
   }
 
-  TaiyinLunarEclipseResult<TtScale> _readLunarTt(
+  LunarEclipseResult<TtScale> _readLunarTt(
     taiyin_lunar_eclipse_result_tt value,
   ) {
-    return TaiyinLunarEclipseResult(
-      kinds: TaiyinEclipseKind.fromMask(value.kind),
+    return LunarEclipseResult(
+      kinds: EclipseKind.fromMask(value.kind),
       maximum: _ttOrNull(value.maximum_jd_tt),
       deltaTSeconds: null,
       umbralMagnitude: _finiteOrNull(value.umbral_magnitude),
@@ -560,17 +554,17 @@ final class TaiyinEclipseApi {
       penumbraRadiusRadians: _finiteOrNull(value.penumbra_radius_rad),
       moonRadiusRadians: _finiteOrNull(value.moon_radius_rad),
       contacts: {
-        for (final contact in TaiyinLunarEclipseContact.values)
+        for (final contact in LunarEclipseContact.values)
           contact: _ttOrNull(value.contact_jd_tt[contact.nativeIndex]),
       },
     );
   }
 
-  TaiyinLunarEclipseResult<Ut1Scale> _readLunarUt(
+  LunarEclipseResult<Ut1Scale> _readLunarUt(
     taiyin_lunar_eclipse_result_ut value,
   ) {
-    return TaiyinLunarEclipseResult(
-      kinds: TaiyinEclipseKind.fromMask(value.kind),
+    return LunarEclipseResult(
+      kinds: EclipseKind.fromMask(value.kind),
       maximum: _ut1OrNull(value.maximum_jd_ut),
       deltaTSeconds: _finiteOrNull(value.delta_t_seconds),
       umbralMagnitude: _finiteOrNull(value.umbral_magnitude),
@@ -580,18 +574,18 @@ final class TaiyinEclipseApi {
       penumbraRadiusRadians: _finiteOrNull(value.penumbra_radius_rad),
       moonRadiusRadians: _finiteOrNull(value.moon_radius_rad),
       contacts: {
-        for (final contact in TaiyinLunarEclipseContact.values)
+        for (final contact in LunarEclipseContact.values)
           contact: _ut1OrNull(value.contact_jd_ut[contact.nativeIndex]),
       },
     );
   }
 
-  TaiyinLocalLunarEclipseResult<TtScale> _readLocalLunarTt(
+  LocalLunarEclipseResult<TtScale> _readLocalLunarTt(
     taiyin_local_lunar_eclipse_result_tt value,
   ) {
-    return TaiyinLocalLunarEclipseResult(
-      kinds: TaiyinEclipseKind.fromMask(value.eclipse_kind),
-      visibility: TaiyinLocalLunarEclipseVisibilityFlag.fromMask(
+    return LocalLunarEclipseResult(
+      kinds: EclipseKind.fromMask(value.eclipse_kind),
+      visibility: LocalLunarEclipseVisibilityFlag.fromMask(
         value.visibility_flags,
       ),
       maximum: _ttOrNull(value.maximum_jd_tt),
@@ -599,7 +593,7 @@ final class TaiyinEclipseApi {
       umbralMagnitude: _finiteOrNull(value.umbral_magnitude),
       penumbralMagnitude: _finiteOrNull(value.penumbral_magnitude),
       contacts: {
-        for (final contact in TaiyinLunarEclipseContact.values)
+        for (final contact in LunarEclipseContact.values)
           contact: _readLocalContact<TtScale>(
             _ttOrNull(value.contact_jd_tt[contact.nativeIndex]),
             value.contact_moon_altitude_deg[contact.nativeIndex],
@@ -611,12 +605,12 @@ final class TaiyinEclipseApi {
     );
   }
 
-  TaiyinLocalLunarEclipseResult<Ut1Scale> _readLocalLunarUt(
+  LocalLunarEclipseResult<Ut1Scale> _readLocalLunarUt(
     taiyin_local_lunar_eclipse_result_ut value,
   ) {
-    return TaiyinLocalLunarEclipseResult(
-      kinds: TaiyinEclipseKind.fromMask(value.eclipse_kind),
-      visibility: TaiyinLocalLunarEclipseVisibilityFlag.fromMask(
+    return LocalLunarEclipseResult(
+      kinds: EclipseKind.fromMask(value.eclipse_kind),
+      visibility: LocalLunarEclipseVisibilityFlag.fromMask(
         value.visibility_flags,
       ),
       maximum: _ut1OrNull(value.maximum_jd_ut),
@@ -624,7 +618,7 @@ final class TaiyinEclipseApi {
       umbralMagnitude: _finiteOrNull(value.umbral_magnitude),
       penumbralMagnitude: _finiteOrNull(value.penumbral_magnitude),
       contacts: {
-        for (final contact in TaiyinLunarEclipseContact.values)
+        for (final contact in LunarEclipseContact.values)
           contact: _readLocalContact<Ut1Scale>(
             _ut1OrNull(value.contact_jd_ut[contact.nativeIndex]),
             value.contact_moon_altitude_deg[contact.nativeIndex],
@@ -636,13 +630,13 @@ final class TaiyinEclipseApi {
     );
   }
 
-  TaiyinLocalLunarEclipseContact<S>? _readLocalContact<S extends TimeScale>(
+  LocalLunarEclipseContact<S>? _readLocalContact<S extends TimeScale>(
     JulianDate<S>? coordinate,
     double altitudeDegrees,
     double azimuthDegrees,
   ) {
     if (coordinate == null) return null;
-    return TaiyinLocalLunarEclipseContact(
+    return LocalLunarEclipseContact(
       coordinate: coordinate,
       moonAltitudeDegrees: _finiteOrNull(altitudeDegrees),
       moonAzimuthDegrees: _finiteOrNull(azimuthDegrees),
@@ -682,7 +676,7 @@ final class TaiyinEclipseApi {
 
   Pointer<taiyin_lunar_eclipse_result_tt> _writeLunarTt(
     Arena arena,
-    TaiyinLunarEclipseResult<TtScale> value,
+    LunarEclipseResult<TtScale> value,
   ) {
     final output = arena<taiyin_lunar_eclipse_result_tt>();
     _bindings.taiyin_lunar_eclipse_result_tt_init(output);
@@ -698,9 +692,9 @@ final class TaiyinEclipseApi {
     final contactJd = _lastJdArrayPointer(
       output,
       sizeOf<taiyin_lunar_eclipse_result_tt>(),
-      TaiyinLunarEclipseContact.values.length,
+      LunarEclipseContact.values.length,
     );
-    for (final contact in TaiyinLunarEclipseContact.values) {
+    for (final contact in LunarEclipseContact.values) {
       contactJd[contact.nativeIndex] = _writeJdOrInvalid(
         arena,
         value.contacts[contact],
@@ -711,7 +705,7 @@ final class TaiyinEclipseApi {
 
   Pointer<taiyin_lunar_eclipse_result_ut> _writeLunarUt(
     Arena arena,
-    TaiyinLunarEclipseResult<Ut1Scale> value,
+    LunarEclipseResult<Ut1Scale> value,
   ) {
     final output = arena<taiyin_lunar_eclipse_result_ut>();
     _bindings.taiyin_lunar_eclipse_result_ut_init(output);
@@ -728,9 +722,9 @@ final class TaiyinEclipseApi {
     final contactJd = _lastJdArrayPointer(
       output,
       sizeOf<taiyin_lunar_eclipse_result_ut>(),
-      TaiyinLunarEclipseContact.values.length,
+      LunarEclipseContact.values.length,
     );
-    for (final contact in TaiyinLunarEclipseContact.values) {
+    for (final contact in LunarEclipseContact.values) {
       contactJd[contact.nativeIndex] = _writeJdOrInvalid(
         arena,
         value.contacts[contact],
@@ -740,8 +734,8 @@ final class TaiyinEclipseApi {
   }
 
   int _solveMask(
-    Set<TaiyinPositionFlag> positionFlags,
-    Set<TaiyinLunarEclipseSolveOption> options,
+    Set<PositionFlag> positionFlags,
+    Set<LunarEclipseSolveOption> options,
   ) {
     _requireSupportedPositionFlags(positionFlags);
     return _mergeDisjointMasks(
@@ -751,13 +745,12 @@ final class TaiyinEclipseApi {
   }
 
   int _searchMask(
-    Set<TaiyinPositionFlag> positionFlags,
-    Set<TaiyinLunarEclipseSearchOption> options, {
+    Set<PositionFlag> positionFlags,
+    Set<LunarEclipseSearchOption> options, {
     required bool allowBackward,
   }) {
     _requireSupportedPositionFlags(positionFlags);
-    if (!allowBackward &&
-        options.contains(TaiyinLunarEclipseSearchOption.backward)) {
+    if (!allowBackward && options.contains(LunarEclipseSearchOption.backward)) {
       throw ArgumentError.value(
         options,
         'options',
@@ -770,13 +763,11 @@ final class TaiyinEclipseApi {
     );
   }
 
-  int _localVisibilityMask(
-    Set<TaiyinLocalLunarEclipseVisibilityOption> options,
-  ) {
+  int _localVisibilityMask(Set<LocalLunarEclipseVisibilityOption> options) {
     return options.fold(0, (mask, option) => mask | option.mask);
   }
 
-  int _positionMask(Set<TaiyinPositionFlag> positionFlags) {
+  int _positionMask(Set<PositionFlag> positionFlags) {
     return positionFlags.fold(0, (mask, flag) => mask | flag.mask);
   }
 
@@ -785,11 +776,11 @@ final class TaiyinEclipseApi {
     return maskA | maskB;
   }
 
-  int _lunarKindMask(Set<TaiyinEclipseKind> kinds) {
+  int _lunarKindMask(Set<EclipseKind> kinds) {
     const supported = {
-      TaiyinEclipseKind.penumbral,
-      TaiyinEclipseKind.partial,
-      TaiyinEclipseKind.total,
+      EclipseKind.penumbral,
+      EclipseKind.partial,
+      EclipseKind.total,
     };
     final unsupported = kinds.difference(supported);
     if (unsupported.isNotEmpty) {
@@ -802,12 +793,12 @@ final class TaiyinEclipseApi {
     return _kindMask(kinds);
   }
 
-  int _kindMask(Set<TaiyinEclipseKind> kinds) {
+  int _kindMask(Set<EclipseKind> kinds) {
     return kinds.fold(0, (mask, kind) => mask | kind.mask);
   }
 
-  void _requireSupportedPositionFlags(Set<TaiyinPositionFlag> flags) {
-    const supported = {TaiyinPositionFlag.truePosition};
+  void _requireSupportedPositionFlags(Set<PositionFlag> flags) {
+    const supported = {PositionFlag.truePosition};
     final unsupported = flags.difference(supported);
     if (unsupported.isNotEmpty) {
       throw ArgumentError.value(
@@ -819,10 +810,10 @@ final class TaiyinEclipseApi {
   }
 
   void _requireLocalContacts<S extends TimeScale>(
-    TaiyinLunarEclipseResult<S> eclipse,
+    LunarEclipseResult<S> eclipse,
   ) {
     if (!eclipse.hasEclipse) return;
-    final greatest = eclipse.contacts[TaiyinLunarEclipseContact.greatest];
+    final greatest = eclipse.contacts[LunarEclipseContact.greatest];
     final contactCount = eclipse.contacts.values
         .whereType<JulianDate<S>>()
         .length;
@@ -831,7 +822,7 @@ final class TaiyinEclipseApi {
         eclipse,
         'eclipse',
         'must include a greatest and at least one other contact; search with '
-            'TaiyinLunarEclipseSearchOption.includeContacts',
+            'LunarEclipseSearchOption.includeContacts',
       );
     }
   }
@@ -897,10 +888,10 @@ final class TaiyinEclipseApi {
   double? _finiteOrNull(double value) => value.isFinite ? value : null;
 
   /// Solves the solar-eclipse lunation nearest [estimate].
-  TaiyinEphemerisResult<TaiyinSolarEclipseResult<TtScale>> solveSolarAtTt(
+  EphemerisResult<SolarEclipseResult<TtScale>> solveSolarAtTt(
     JulianDate<TtScale> estimate, {
-    Set<TaiyinPositionFlag> positionFlags = const {},
-    Set<TaiyinSolarEclipseSolveOption> options = const {},
+    Set<PositionFlag> positionFlags = const {},
+    Set<SolarEclipseSolveOption> options = const {},
   }) {
     _ensureOpen();
     final mask = _solarSolveMask(positionFlags, options);
@@ -919,10 +910,10 @@ final class TaiyinEclipseApi {
   }
 
   /// Solves the solar-eclipse lunation nearest [estimate].
-  TaiyinEphemerisResult<TaiyinSolarEclipseResult<Ut1Scale>> solveSolarAtUt1(
+  EphemerisResult<SolarEclipseResult<Ut1Scale>> solveSolarAtUt1(
     JulianDate<Ut1Scale> estimate, {
-    Set<TaiyinPositionFlag> positionFlags = const {},
-    Set<TaiyinSolarEclipseSolveOption> options = const {},
+    Set<PositionFlag> positionFlags = const {},
+    Set<SolarEclipseSolveOption> options = const {},
   }) {
     _ensureOpen();
     final mask = _solarSolveMask(positionFlags, options);
@@ -941,11 +932,11 @@ final class TaiyinEclipseApi {
   }
 
   /// Finds the next matching global solar eclipse from [start].
-  TaiyinEphemerisResult<TaiyinSolarEclipseResult<TtScale>> nextSolarAtTt(
+  EphemerisResult<SolarEclipseResult<TtScale>> nextSolarAtTt(
     JulianDate<TtScale> start, {
-    Set<TaiyinEclipseKind> kinds = const {},
-    Set<TaiyinPositionFlag> positionFlags = const {},
-    Set<TaiyinSolarEclipseSearchOption> options = const {},
+    Set<EclipseKind> kinds = const {},
+    Set<PositionFlag> positionFlags = const {},
+    Set<SolarEclipseSearchOption> options = const {},
   }) {
     _ensureOpen();
     final mask = _solarSearchMask(positionFlags, options, allowBackward: true);
@@ -966,12 +957,12 @@ final class TaiyinEclipseApi {
 
   /// Finds the next matching global solar eclipse from [start].
   ///
-  /// Pass [TaiyinSolarEclipseSearchOption.backward] to search backwards.
-  TaiyinEphemerisResult<TaiyinSolarEclipseResult<Ut1Scale>> nextSolarAtUt1(
+  /// Pass [SolarEclipseSearchOption.backward] to search backwards.
+  EphemerisResult<SolarEclipseResult<Ut1Scale>> nextSolarAtUt1(
     JulianDate<Ut1Scale> start, {
-    Set<TaiyinEclipseKind> kinds = const {},
-    Set<TaiyinPositionFlag> positionFlags = const {},
-    Set<TaiyinSolarEclipseSearchOption> options = const {},
+    Set<EclipseKind> kinds = const {},
+    Set<PositionFlag> positionFlags = const {},
+    Set<SolarEclipseSearchOption> options = const {},
   }) {
     _ensureOpen();
     final mask = _solarSearchMask(positionFlags, options, allowBackward: true);
@@ -992,14 +983,13 @@ final class TaiyinEclipseApi {
 
   /// Finds all matching solar eclipses in the positive-length,
   /// endpoint-inclusive [start], [end] range.
-  TaiyinEphemerisResult<List<TaiyinSolarEclipseResult<TtScale>>>
-  solarEclipsesAtTt(
+  EphemerisResult<List<SolarEclipseResult<TtScale>>> solarEclipsesAtTt(
     JulianDate<TtScale> start,
     JulianDate<TtScale> end, {
     int maxResults = 16,
-    Set<TaiyinEclipseKind> kinds = const {},
-    Set<TaiyinPositionFlag> positionFlags = const {},
-    Set<TaiyinSolarEclipseSearchOption> options = const {},
+    Set<EclipseKind> kinds = const {},
+    Set<PositionFlag> positionFlags = const {},
+    Set<SolarEclipseSearchOption> options = const {},
   }) {
     _ensureOpen();
     _requireInterval(start, end);
@@ -1026,14 +1016,13 @@ final class TaiyinEclipseApi {
 
   /// Finds all matching solar eclipses in the positive-length,
   /// endpoint-inclusive [start], [end] range.
-  TaiyinEphemerisResult<List<TaiyinSolarEclipseResult<Ut1Scale>>>
-  solarEclipsesAtUt1(
+  EphemerisResult<List<SolarEclipseResult<Ut1Scale>>> solarEclipsesAtUt1(
     JulianDate<Ut1Scale> start,
     JulianDate<Ut1Scale> end, {
     int maxResults = 16,
-    Set<TaiyinEclipseKind> kinds = const {},
-    Set<TaiyinPositionFlag> positionFlags = const {},
-    Set<TaiyinSolarEclipseSearchOption> options = const {},
+    Set<EclipseKind> kinds = const {},
+    Set<PositionFlag> positionFlags = const {},
+    Set<SolarEclipseSearchOption> options = const {},
   }) {
     _ensureOpen();
     _requireInterval(start, end);
@@ -1063,11 +1052,10 @@ final class TaiyinEclipseApi {
   /// A geographic observer location must be configured on the context.
   ///
   /// Contacts are always requested for this local result.
-  TaiyinEphemerisResult<TaiyinLocalSolarEclipseResult<TtScale>>
-  solveLocalSolarAtTt(
+  EphemerisResult<LocalSolarEclipseResult<TtScale>> solveLocalSolarAtTt(
     JulianDate<TtScale> estimate, {
-    Set<TaiyinPositionFlag> positionFlags = const {},
-    Set<TaiyinSolarEclipseSolveOption> options = const {},
+    Set<PositionFlag> positionFlags = const {},
+    Set<SolarEclipseSolveOption> options = const {},
   }) {
     _ensureOpen();
     final mask = _withSolarContacts(_solarSolveMask(positionFlags, options));
@@ -1090,11 +1078,10 @@ final class TaiyinEclipseApi {
   /// A geographic observer location must be configured on the context.
   ///
   /// Contacts are always requested for this local result.
-  TaiyinEphemerisResult<TaiyinLocalSolarEclipseResult<Ut1Scale>>
-  solveLocalSolarAtUt1(
+  EphemerisResult<LocalSolarEclipseResult<Ut1Scale>> solveLocalSolarAtUt1(
     JulianDate<Ut1Scale> estimate, {
-    Set<TaiyinPositionFlag> positionFlags = const {},
-    Set<TaiyinSolarEclipseSolveOption> options = const {},
+    Set<PositionFlag> positionFlags = const {},
+    Set<SolarEclipseSolveOption> options = const {},
   }) {
     _ensureOpen();
     final mask = _withSolarContacts(_solarSolveMask(positionFlags, options));
@@ -1117,13 +1104,12 @@ final class TaiyinEclipseApi {
   /// A geographic observer location must be configured on the context.
   ///
   /// Contacts are always requested. Pass
-  /// [TaiyinSolarEclipseSearchOption.backward] to search backwards.
-  TaiyinEphemerisResult<TaiyinLocalSolarEclipseResult<TtScale>>
-  nextLocalSolarAtTt(
+  /// [SolarEclipseSearchOption.backward] to search backwards.
+  EphemerisResult<LocalSolarEclipseResult<TtScale>> nextLocalSolarAtTt(
     JulianDate<TtScale> start, {
-    Set<TaiyinEclipseKind> kinds = const {},
-    Set<TaiyinPositionFlag> positionFlags = const {},
-    Set<TaiyinSolarEclipseSearchOption> options = const {},
+    Set<EclipseKind> kinds = const {},
+    Set<PositionFlag> positionFlags = const {},
+    Set<SolarEclipseSearchOption> options = const {},
   }) {
     _ensureOpen();
     final mask = _withSolarContacts(
@@ -1149,13 +1135,12 @@ final class TaiyinEclipseApi {
   /// A geographic observer location must be configured on the context.
   ///
   /// Contacts are always requested. Pass
-  /// [TaiyinSolarEclipseSearchOption.backward] to search backwards.
-  TaiyinEphemerisResult<TaiyinLocalSolarEclipseResult<Ut1Scale>>
-  nextLocalSolarAtUt1(
+  /// [SolarEclipseSearchOption.backward] to search backwards.
+  EphemerisResult<LocalSolarEclipseResult<Ut1Scale>> nextLocalSolarAtUt1(
     JulianDate<Ut1Scale> start, {
-    Set<TaiyinEclipseKind> kinds = const {},
-    Set<TaiyinPositionFlag> positionFlags = const {},
-    Set<TaiyinSolarEclipseSearchOption> options = const {},
+    Set<EclipseKind> kinds = const {},
+    Set<PositionFlag> positionFlags = const {},
+    Set<SolarEclipseSearchOption> options = const {},
   }) {
     _ensureOpen();
     final mask = _withSolarContacts(
@@ -1179,7 +1164,7 @@ final class TaiyinEclipseApi {
   /// Calculates instantaneous local solar-eclipse geometry at [coordinate].
   ///
   /// A geographic observer location must be configured on the context.
-  TaiyinEphemerisResult<TaiyinLocalSolarEclipseCircumstances<TtScale>>
+  EphemerisResult<LocalSolarEclipseCircumstances<TtScale>>
   localSolarCircumstancesAtTt(JulianDate<TtScale> coordinate) {
     _ensureOpen();
     return using((arena) {
@@ -1198,7 +1183,7 @@ final class TaiyinEclipseApi {
   /// Calculates instantaneous local solar-eclipse geometry at [coordinate].
   ///
   /// A geographic observer location must be configured on the context.
-  TaiyinEphemerisResult<TaiyinLocalSolarEclipseCircumstances<Ut1Scale>>
+  EphemerisResult<LocalSolarEclipseCircumstances<Ut1Scale>>
   localSolarCircumstancesAtUt1(JulianDate<Ut1Scale> coordinate) {
     _ensureOpen();
     return using((arena) {
@@ -1219,8 +1204,7 @@ final class TaiyinEclipseApi {
   /// [timeOffsetHours] is retained as the conventional Besselian time offset
   /// in the returned value. The physical calculation crosses the current
   /// scalar-Julian-date C ABI boundary.
-  TaiyinEphemerisResult<TaiyinSolarBesselianElements>
-  solarBesselianElementsAtTt(
+  EphemerisResult<SolarBesselianElements> solarBesselianElementsAtTt(
     JulianDate<TtScale> coordinate, {
     double timeOffsetHours = 0,
   }) {
@@ -1241,7 +1225,7 @@ final class TaiyinEclipseApi {
       );
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
-      return TaiyinEphemerisResult(
+      return EphemerisResult(
         value: _readSolarBesselianElements(output.ref),
         diagnostic: mappedDiagnostic,
       );
@@ -1252,8 +1236,7 @@ final class TaiyinEclipseApi {
   ///
   /// [spanHours] and [sampleStepHours] must be positive. The native model
   /// permits polynomial [degree] values from 1 through 7.
-  TaiyinEphemerisResult<TaiyinSolarBesselianPolynomial>
-  solarBesselianPolynomialAtTt(
+  EphemerisResult<SolarBesselianPolynomial> solarBesselianPolynomialAtTt(
     JulianDate<TtScale> coordinate, {
     required double spanHours,
     required double sampleStepHours,
@@ -1280,7 +1263,7 @@ final class TaiyinEclipseApi {
       );
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
-      return TaiyinEphemerisResult(
+      return EphemerisResult(
         value: _readSolarBesselianPolynomial(output.ref),
         diagnostic: mappedDiagnostic,
       );
@@ -1289,9 +1272,9 @@ final class TaiyinEclipseApi {
 
   /// Evaluates a fitted solar Besselian [polynomial] at [timeOffsetHours].
   ///
-  /// [timeOffsetHours] is relative to [TaiyinSolarBesselianPolynomial.referenceEpoch].
-  TaiyinSolarBesselianElements evaluateSolarBesselianPolynomial(
-    TaiyinSolarBesselianPolynomial polynomial,
+  /// [timeOffsetHours] is relative to [SolarBesselianPolynomial.referenceEpoch].
+  SolarBesselianElements evaluateSolarBesselianPolynomial(
+    SolarBesselianPolynomial polynomial,
     double timeOffsetHours,
   ) {
     _ensureOpen();
@@ -1317,12 +1300,12 @@ final class TaiyinEclipseApi {
 
   /// Calculates the global solar-eclipse route geometry at TT [coordinate].
   ///
-  /// Only [TaiyinPositionFlag.truePosition] and
-  /// [TaiyinSolarEclipseRouteOption.lunarLimbCorrection] are supported.
-  TaiyinEphemerisResult<TaiyinSolarEclipseRouteRow> solarEclipseRouteRowAtTt(
+  /// Only [PositionFlag.truePosition] and
+  /// [SolarEclipseRouteOption.lunarLimbCorrection] are supported.
+  EphemerisResult<SolarEclipseRouteRow> solarEclipseRouteRowAtTt(
     JulianDate<TtScale> coordinate, {
-    Set<TaiyinPositionFlag> positionFlags = const {},
-    Set<TaiyinSolarEclipseRouteOption> options = const {},
+    Set<PositionFlag> positionFlags = const {},
+    Set<SolarEclipseRouteOption> options = const {},
   }) {
     _ensureOpen();
     final mask = _solarRouteMask(positionFlags, options);
@@ -1342,12 +1325,12 @@ final class TaiyinEclipseApi {
 
   /// Calculates the global solar-eclipse route geometry at UT1 [coordinate].
   ///
-  /// Only [TaiyinPositionFlag.truePosition] and
-  /// [TaiyinSolarEclipseRouteOption.lunarLimbCorrection] are supported.
-  TaiyinEphemerisResult<TaiyinSolarEclipseRouteRow> solarEclipseRouteRowAtUt1(
+  /// Only [PositionFlag.truePosition] and
+  /// [SolarEclipseRouteOption.lunarLimbCorrection] are supported.
+  EphemerisResult<SolarEclipseRouteRow> solarEclipseRouteRowAtUt1(
     JulianDate<Ut1Scale> coordinate, {
-    Set<TaiyinPositionFlag> positionFlags = const {},
-    Set<TaiyinSolarEclipseRouteOption> options = const {},
+    Set<PositionFlag> positionFlags = const {},
+    Set<SolarEclipseRouteOption> options = const {},
   }) {
     _ensureOpen();
     final mask = _solarRouteMask(positionFlags, options);
@@ -1370,13 +1353,13 @@ final class TaiyinEclipseApi {
   /// Both endpoints are included when they land on [stepMinutes]. The range
   /// may contain one coordinate. Rows with no Earth-intersecting route branch
   /// are omitted by native code.
-  TaiyinEphemerisResult<List<TaiyinSolarEclipseRouteRow>> solarEclipseRouteAtTt(
+  EphemerisResult<List<SolarEclipseRouteRow>> solarEclipseRouteAtTt(
     JulianDate<TtScale> start,
     JulianDate<TtScale> end, {
     required double stepMinutes,
     int maxRows = 256,
-    Set<TaiyinPositionFlag> positionFlags = const {},
-    Set<TaiyinSolarEclipseRouteOption> options = const {},
+    Set<PositionFlag> positionFlags = const {},
+    Set<SolarEclipseRouteOption> options = const {},
   }) {
     _ensureOpen();
     _requireRouteInterval(start, end);
@@ -1407,14 +1390,13 @@ final class TaiyinEclipseApi {
   /// Both endpoints are included when they land on [stepMinutes]. The range
   /// may contain one coordinate. Rows with no Earth-intersecting route branch
   /// are omitted by native code.
-  TaiyinEphemerisResult<List<TaiyinSolarEclipseRouteRow>>
-  solarEclipseRouteAtUt1(
+  EphemerisResult<List<SolarEclipseRouteRow>> solarEclipseRouteAtUt1(
     JulianDate<Ut1Scale> start,
     JulianDate<Ut1Scale> end, {
     required double stepMinutes,
     int maxRows = 256,
-    Set<TaiyinPositionFlag> positionFlags = const {},
-    Set<TaiyinSolarEclipseRouteOption> options = const {},
+    Set<PositionFlag> positionFlags = const {},
+    Set<SolarEclipseRouteOption> options = const {},
   }) {
     _ensureOpen();
     _requireRouteInterval(start, end);
@@ -1445,12 +1427,12 @@ final class TaiyinEclipseApi {
   ///
   /// [routeSampleCount] controls the sampling density for every curve and
   /// must be between 32 and 4096. Points are grouped by curve kind.
-  TaiyinEphemerisResult<List<TaiyinSolarEclipseRouteCurvePoint>>
+  EphemerisResult<List<SolarEclipseRouteCurvePoint>>
   solarEclipseRouteCurvesAtTt(
     JulianDate<TtScale> coordinate, {
     int routeSampleCount = _solarRouteDefaultSampleCount,
-    Set<TaiyinPositionFlag> positionFlags = const {},
-    Set<TaiyinSolarEclipseRouteOption> options = const {},
+    Set<PositionFlag> positionFlags = const {},
+    Set<SolarEclipseRouteOption> options = const {},
   }) {
     _ensureOpen();
     _requireRouteSampleCount(routeSampleCount);
@@ -1474,12 +1456,12 @@ final class TaiyinEclipseApi {
 
   /// Computes the complete time-tagged solar-eclipse map curves near UT1
   /// [coordinate].
-  TaiyinEphemerisResult<List<TaiyinSolarEclipseRouteCurvePoint>>
+  EphemerisResult<List<SolarEclipseRouteCurvePoint>>
   solarEclipseRouteCurvesAtUt1(
     JulianDate<Ut1Scale> coordinate, {
     int routeSampleCount = _solarRouteDefaultSampleCount,
-    Set<TaiyinPositionFlag> positionFlags = const {},
-    Set<TaiyinSolarEclipseRouteOption> options = const {},
+    Set<PositionFlag> positionFlags = const {},
+    Set<SolarEclipseRouteOption> options = const {},
   }) {
     _ensureOpen();
     _requireRouteSampleCount(routeSampleCount);
@@ -1505,12 +1487,11 @@ final class TaiyinEclipseApi {
   ///
   /// Use [solarEclipseRouteMapProductAtTt] when penumbral and half-magnitude
   /// polygons are also required.
-  TaiyinEphemerisResult<TaiyinSolarEclipseRouteProduct>
-  solarEclipseRouteProductAtTt(
+  EphemerisResult<SolarEclipseRouteProduct> solarEclipseRouteProductAtTt(
     JulianDate<TtScale> coordinate, {
     int routeSampleCount = _solarRouteDefaultSampleCount,
-    Set<TaiyinPositionFlag> positionFlags = const {},
-    Set<TaiyinSolarEclipseRouteOption> options = const {},
+    Set<PositionFlag> positionFlags = const {},
+    Set<SolarEclipseRouteOption> options = const {},
   }) {
     _ensureOpen();
     _requireRouteSampleCount(routeSampleCount);
@@ -1537,12 +1518,11 @@ final class TaiyinEclipseApi {
   ///
   /// Use [solarEclipseRouteMapProductAtUt1] when penumbral and half-magnitude
   /// polygons are also required.
-  TaiyinEphemerisResult<TaiyinSolarEclipseRouteProduct>
-  solarEclipseRouteProductAtUt1(
+  EphemerisResult<SolarEclipseRouteProduct> solarEclipseRouteProductAtUt1(
     JulianDate<Ut1Scale> coordinate, {
     int routeSampleCount = _solarRouteDefaultSampleCount,
-    Set<TaiyinPositionFlag> positionFlags = const {},
-    Set<TaiyinSolarEclipseRouteOption> options = const {},
+    Set<PositionFlag> positionFlags = const {},
+    Set<SolarEclipseRouteOption> options = const {},
   }) {
     _ensureOpen();
     _requireRouteSampleCount(routeSampleCount);
@@ -1569,12 +1549,11 @@ final class TaiyinEclipseApi {
   ///
   /// The returned point sequence contains the core, penumbral, and
   /// half-magnitude polygons in that order when those layers exist.
-  TaiyinEphemerisResult<TaiyinSolarEclipseRouteProduct>
-  solarEclipseRouteMapProductAtTt(
+  EphemerisResult<SolarEclipseRouteProduct> solarEclipseRouteMapProductAtTt(
     JulianDate<TtScale> coordinate, {
     int routeSampleCount = _solarRouteDefaultSampleCount,
-    Set<TaiyinPositionFlag> positionFlags = const {},
-    Set<TaiyinSolarEclipseRouteOption> options = const {},
+    Set<PositionFlag> positionFlags = const {},
+    Set<SolarEclipseRouteOption> options = const {},
   }) {
     _ensureOpen();
     _requireRouteSampleCount(routeSampleCount);
@@ -1598,12 +1577,11 @@ final class TaiyinEclipseApi {
   }
 
   /// Builds all available solar-eclipse map polygons near UT1 [coordinate].
-  TaiyinEphemerisResult<TaiyinSolarEclipseRouteProduct>
-  solarEclipseRouteMapProductAtUt1(
+  EphemerisResult<SolarEclipseRouteProduct> solarEclipseRouteMapProductAtUt1(
     JulianDate<Ut1Scale> coordinate, {
     int routeSampleCount = _solarRouteDefaultSampleCount,
-    Set<TaiyinPositionFlag> positionFlags = const {},
-    Set<TaiyinSolarEclipseRouteOption> options = const {},
+    Set<PositionFlag> positionFlags = const {},
+    Set<SolarEclipseRouteOption> options = const {},
   }) {
     _ensureOpen();
     _requireRouteSampleCount(routeSampleCount);
@@ -1632,8 +1610,7 @@ final class TaiyinEclipseApi {
   /// [longitudeDegrees] and [latitudeDegrees] select the reference location
   /// used to resolve the central-path kind; they do not need to match the
   /// context observer.
-  TaiyinEphemerisResult<TaiyinLocalSolarEclipseBoundary>
-  localSolarEclipseBoundaryAtTt(
+  EphemerisResult<LocalSolarEclipseBoundary> localSolarEclipseBoundaryAtTt(
     JulianDate<TtScale> coordinate, {
     required double longitudeDegrees,
     required double latitudeDegrees,
@@ -1658,8 +1635,7 @@ final class TaiyinEclipseApi {
 
   /// Computes the local Earth intersections of the solar shadow at UT1
   /// [coordinate].
-  TaiyinEphemerisResult<TaiyinLocalSolarEclipseBoundary>
-  localSolarEclipseBoundaryAtUt1(
+  EphemerisResult<LocalSolarEclipseBoundary> localSolarEclipseBoundaryAtUt1(
     JulianDate<Ut1Scale> coordinate, {
     required double longitudeDegrees,
     required double latitudeDegrees,
@@ -1682,7 +1658,7 @@ final class TaiyinEclipseApi {
     });
   }
 
-  TaiyinEphemerisResult<TaiyinSolarEclipseResult<TtScale>> _solarTt(
+  EphemerisResult<SolarEclipseResult<TtScale>> _solarTt(
     _SolarTtCalculation calculate,
   ) {
     return using((arena) {
@@ -1694,14 +1670,14 @@ final class TaiyinEclipseApi {
       final status = calculate(output, diagnostic);
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
-      return TaiyinEphemerisResult(
+      return EphemerisResult(
         value: _readSolarTt(output.ref),
         diagnostic: mappedDiagnostic,
       );
     });
   }
 
-  TaiyinEphemerisResult<TaiyinSolarEclipseResult<Ut1Scale>> _solarUt(
+  EphemerisResult<SolarEclipseResult<Ut1Scale>> _solarUt(
     _SolarUtCalculation calculate,
   ) {
     return using((arena) {
@@ -1713,14 +1689,14 @@ final class TaiyinEclipseApi {
       final status = calculate(output, diagnostic);
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
-      return TaiyinEphemerisResult(
+      return EphemerisResult(
         value: _readSolarUt(output.ref),
         diagnostic: mappedDiagnostic,
       );
     });
   }
 
-  TaiyinEphemerisResult<List<TaiyinSolarEclipseResult<TtScale>>> _solarTtArray(
+  EphemerisResult<List<SolarEclipseResult<TtScale>>> _solarTtArray(
     int capacity,
     _SolarTtArrayCalculation calculate,
   ) {
@@ -1736,7 +1712,7 @@ final class TaiyinEclipseApi {
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
       final resultCount = _validatedResultCount(count.value, capacity);
-      return TaiyinEphemerisResult(
+      return EphemerisResult(
         value: List.unmodifiable([
           for (var index = 0; index < resultCount; index++)
             _readSolarTt((output + index).ref),
@@ -1746,7 +1722,7 @@ final class TaiyinEclipseApi {
     });
   }
 
-  TaiyinEphemerisResult<List<TaiyinSolarEclipseResult<Ut1Scale>>> _solarUtArray(
+  EphemerisResult<List<SolarEclipseResult<Ut1Scale>>> _solarUtArray(
     int capacity,
     _SolarUtArrayCalculation calculate,
   ) {
@@ -1762,7 +1738,7 @@ final class TaiyinEclipseApi {
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
       final resultCount = _validatedResultCount(count.value, capacity);
-      return TaiyinEphemerisResult(
+      return EphemerisResult(
         value: List.unmodifiable([
           for (var index = 0; index < resultCount; index++)
             _readSolarUt((output + index).ref),
@@ -1772,7 +1748,7 @@ final class TaiyinEclipseApi {
     });
   }
 
-  TaiyinEphemerisResult<TaiyinSolarEclipseRouteRow> _solarRouteRow(
+  EphemerisResult<SolarEclipseRouteRow> _solarRouteRow(
     _SolarRouteRowCalculation calculate,
   ) {
     return using((arena) {
@@ -1784,14 +1760,14 @@ final class TaiyinEclipseApi {
       final status = calculate(output, diagnostic);
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
-      return TaiyinEphemerisResult(
+      return EphemerisResult(
         value: _readSolarEclipseRouteRow(output.ref),
         diagnostic: mappedDiagnostic,
       );
     });
   }
 
-  TaiyinEphemerisResult<List<TaiyinSolarEclipseRouteRow>> _solarRouteRows(
+  EphemerisResult<List<SolarEclipseRouteRow>> _solarRouteRows(
     int capacity,
     _SolarRouteRowsCalculation calculate,
   ) {
@@ -1807,7 +1783,7 @@ final class TaiyinEclipseApi {
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
       final resultCount = _validatedResultCount(count.value, capacity);
-      return TaiyinEphemerisResult(
+      return EphemerisResult(
         value: List.unmodifiable([
           for (var index = 0; index < resultCount; index++)
             _readSolarEclipseRouteRow((output + index).ref),
@@ -1817,8 +1793,9 @@ final class TaiyinEclipseApi {
     });
   }
 
-  TaiyinEphemerisResult<List<TaiyinSolarEclipseRouteCurvePoint>>
-  _solarRouteCurves(_SolarRouteCurvesCalculation calculate) {
+  EphemerisResult<List<SolarEclipseRouteCurvePoint>> _solarRouteCurves(
+    _SolarRouteCurvesCalculation calculate,
+  ) {
     return using((arena) {
       final count = arena<Size>();
       final diagnostic = arena<taiyin_ephemeris_diagnostic>();
@@ -1833,8 +1810,8 @@ final class TaiyinEclipseApi {
         );
       }
       if (requiredCount == 0) {
-        return TaiyinEphemerisResult(
-          value: const <TaiyinSolarEclipseRouteCurvePoint>[],
+        return EphemerisResult(
+          value: const <SolarEclipseRouteCurvePoint>[],
           diagnostic: countDiagnostic,
         );
       }
@@ -1854,7 +1831,7 @@ final class TaiyinEclipseApi {
         requiredCount,
         'solar eclipse route curve',
       );
-      return TaiyinEphemerisResult(
+      return EphemerisResult(
         value: List.unmodifiable([
           for (var index = 0; index < requiredCount; index++)
             _readSolarEclipseRouteCurvePoint(output[index]),
@@ -1864,7 +1841,7 @@ final class TaiyinEclipseApi {
     });
   }
 
-  TaiyinEphemerisResult<TaiyinSolarEclipseRouteProduct> _solarRouteProduct(
+  EphemerisResult<SolarEclipseRouteProduct> _solarRouteProduct(
     _SolarRouteProductCalculation calculate,
   ) {
     return using((arena) {
@@ -1884,9 +1861,9 @@ final class TaiyinEclipseApi {
         );
       }
       if (requiredCount == 0) {
-        return TaiyinEphemerisResult(
-          value: TaiyinSolarEclipseRouteProduct(
-            points: const <TaiyinSolarEclipseRouteProductPoint>[],
+        return EphemerisResult(
+          value: SolarEclipseRouteProduct(
+            points: const <SolarEclipseRouteProductPoint>[],
             summary: _readSolarEclipseRouteProductSummary(summary.ref),
           ),
           diagnostic: countDiagnostic,
@@ -1916,8 +1893,8 @@ final class TaiyinEclipseApi {
         requiredCount,
         'solar eclipse route product',
       );
-      return TaiyinEphemerisResult(
-        value: TaiyinSolarEclipseRouteProduct(
+      return EphemerisResult(
+        value: SolarEclipseRouteProduct(
           points: [
             for (var index = 0; index < requiredCount; index++)
               _readSolarEclipseRouteProductPoint(output[index]),
@@ -1929,7 +1906,7 @@ final class TaiyinEclipseApi {
     });
   }
 
-  TaiyinEphemerisResult<TaiyinLocalSolarEclipseBoundary> _localSolarBoundary(
+  EphemerisResult<LocalSolarEclipseBoundary> _localSolarBoundary(
     _LocalSolarBoundaryCalculation calculate,
   ) {
     return using((arena) {
@@ -1941,14 +1918,14 @@ final class TaiyinEclipseApi {
       final status = calculate(output, diagnostic);
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
-      return TaiyinEphemerisResult(
+      return EphemerisResult(
         value: _readLocalSolarEclipseBoundary(output.ref),
         diagnostic: mappedDiagnostic,
       );
     });
   }
 
-  TaiyinEphemerisResult<TaiyinLocalSolarEclipseResult<TtScale>> _localSolarTt(
+  EphemerisResult<LocalSolarEclipseResult<TtScale>> _localSolarTt(
     _LocalSolarTtCalculation calculate,
   ) {
     return using((arena) {
@@ -1960,14 +1937,14 @@ final class TaiyinEclipseApi {
       final status = calculate(output, diagnostic);
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
-      return TaiyinEphemerisResult(
+      return EphemerisResult(
         value: _readLocalSolarTt(output.ref),
         diagnostic: mappedDiagnostic,
       );
     });
   }
 
-  TaiyinEphemerisResult<TaiyinLocalSolarEclipseResult<Ut1Scale>> _localSolarUt(
+  EphemerisResult<LocalSolarEclipseResult<Ut1Scale>> _localSolarUt(
     _LocalSolarUtCalculation calculate,
   ) {
     return using((arena) {
@@ -1979,14 +1956,14 @@ final class TaiyinEclipseApi {
       final status = calculate(output, diagnostic);
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
-      return TaiyinEphemerisResult(
+      return EphemerisResult(
         value: _readLocalSolarUt(output.ref),
         diagnostic: mappedDiagnostic,
       );
     });
   }
 
-  TaiyinEphemerisResult<TaiyinLocalSolarEclipseCircumstances<TtScale>>
+  EphemerisResult<LocalSolarEclipseCircumstances<TtScale>>
   _solarCircumstancesTt(_SolarCircumstancesTtCalculation calculate) {
     return using((arena) {
       final output = arena<taiyin_local_solar_eclipse_circumstances_tt>();
@@ -1998,8 +1975,8 @@ final class TaiyinEclipseApi {
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
       final value = output.ref;
-      return TaiyinEphemerisResult(
-        value: TaiyinLocalSolarEclipseCircumstances(
+      return EphemerisResult(
+        value: LocalSolarEclipseCircumstances(
           coordinate: readJulianDate<TtScale>(value.jd_tt),
           deltaTSeconds: null,
           magnitude: value.magnitude,
@@ -2015,7 +1992,7 @@ final class TaiyinEclipseApi {
     });
   }
 
-  TaiyinEphemerisResult<TaiyinLocalSolarEclipseCircumstances<Ut1Scale>>
+  EphemerisResult<LocalSolarEclipseCircumstances<Ut1Scale>>
   _solarCircumstancesUt(_SolarCircumstancesUtCalculation calculate) {
     return using((arena) {
       final output = arena<taiyin_local_solar_eclipse_circumstances_ut>();
@@ -2027,8 +2004,8 @@ final class TaiyinEclipseApi {
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
       final value = output.ref;
-      return TaiyinEphemerisResult(
-        value: TaiyinLocalSolarEclipseCircumstances(
+      return EphemerisResult(
+        value: LocalSolarEclipseCircumstances(
           coordinate: readJulianDate<Ut1Scale>(value.jd_ut),
           deltaTSeconds: _finiteOrNull(value.delta_t_seconds),
           magnitude: value.magnitude,
@@ -2044,11 +2021,11 @@ final class TaiyinEclipseApi {
     });
   }
 
-  TaiyinSolarEclipseResult<TtScale> _readSolarTt(
+  SolarEclipseResult<TtScale> _readSolarTt(
     taiyin_solar_eclipse_result_tt value,
   ) {
-    return TaiyinSolarEclipseResult(
-      kinds: TaiyinEclipseKind.fromMask(value.kind),
+    return SolarEclipseResult(
+      kinds: EclipseKind.fromMask(value.kind),
       maximum: _ttOrNull(value.maximum_jd_tt),
       deltaTSeconds: null,
       axisDistanceKilometers: _finiteOrNull(value.axis_distance_km),
@@ -2059,17 +2036,17 @@ final class TaiyinEclipseApi {
       maximumLatitudeDegrees: _finiteOrNull(value.maximum_latitude_deg),
       maximumLongitudeDegrees: _finiteOrNull(value.maximum_longitude_deg),
       contacts: {
-        for (final contact in TaiyinSolarEclipseContact.values)
+        for (final contact in SolarEclipseContact.values)
           contact: _ttOrNull(value.contact_jd_tt[contact.nativeIndex]),
       },
     );
   }
 
-  TaiyinSolarEclipseResult<Ut1Scale> _readSolarUt(
+  SolarEclipseResult<Ut1Scale> _readSolarUt(
     taiyin_solar_eclipse_result_ut value,
   ) {
-    return TaiyinSolarEclipseResult(
-      kinds: TaiyinEclipseKind.fromMask(value.kind),
+    return SolarEclipseResult(
+      kinds: EclipseKind.fromMask(value.kind),
       maximum: _ut1OrNull(value.maximum_jd_ut),
       deltaTSeconds: _finiteOrNull(value.delta_t_seconds),
       axisDistanceKilometers: _finiteOrNull(value.axis_distance_km),
@@ -2080,20 +2057,20 @@ final class TaiyinEclipseApi {
       maximumLatitudeDegrees: _finiteOrNull(value.maximum_latitude_deg),
       maximumLongitudeDegrees: _finiteOrNull(value.maximum_longitude_deg),
       contacts: {
-        for (final contact in TaiyinSolarEclipseContact.values)
+        for (final contact in SolarEclipseContact.values)
           contact: _ut1OrNull(value.contact_jd_ut[contact.nativeIndex]),
       },
     );
   }
 
-  TaiyinLocalSolarEclipseResult<TtScale> _readLocalSolarTt(
+  LocalSolarEclipseResult<TtScale> _readLocalSolarTt(
     taiyin_local_solar_eclipse_result_tt value,
   ) {
     // The C ABI deliberately packs eclipse-kind bits (0--6) and local
     // visibility bits (7--12) into this single field.
-    return TaiyinLocalSolarEclipseResult(
-      kinds: TaiyinEclipseKind.fromMask(value.kind),
-      visibility: TaiyinLocalSolarEclipseVisibilityFlag.fromMask(value.kind),
+    return LocalSolarEclipseResult(
+      kinds: EclipseKind.fromMask(value.kind),
+      visibility: LocalSolarEclipseVisibilityFlag.fromMask(value.kind),
       maximum: _ttOrNull(value.maximum_jd_tt),
       deltaTSeconds: null,
       magnitude: _finiteOrNull(value.magnitude),
@@ -2101,7 +2078,7 @@ final class TaiyinEclipseApi {
       sunAltitudeDegrees: _finiteOrNull(value.sun_altitude_deg),
       sunAzimuthDegrees: _finiteOrNull(value.sun_azimuth_deg),
       contacts: {
-        for (final contact in TaiyinLocalSolarEclipseContact.values)
+        for (final contact in LocalSolarEclipseContact.values)
           contact: _ttOrNull(value.contact_jd_tt[contact.nativeIndex]),
       },
       positionAngleC1Degrees: _finiteOrNull(value.position_angle_c1_deg),
@@ -2115,13 +2092,13 @@ final class TaiyinEclipseApi {
     );
   }
 
-  TaiyinLocalSolarEclipseResult<Ut1Scale> _readLocalSolarUt(
+  LocalSolarEclipseResult<Ut1Scale> _readLocalSolarUt(
     taiyin_local_solar_eclipse_result_ut value,
   ) {
     // See [_readLocalSolarTt]: both masks are read from the packed C field.
-    return TaiyinLocalSolarEclipseResult(
-      kinds: TaiyinEclipseKind.fromMask(value.kind),
-      visibility: TaiyinLocalSolarEclipseVisibilityFlag.fromMask(value.kind),
+    return LocalSolarEclipseResult(
+      kinds: EclipseKind.fromMask(value.kind),
+      visibility: LocalSolarEclipseVisibilityFlag.fromMask(value.kind),
       maximum: _ut1OrNull(value.maximum_jd_ut),
       deltaTSeconds: _finiteOrNull(value.delta_t_seconds),
       magnitude: _finiteOrNull(value.magnitude),
@@ -2129,7 +2106,7 @@ final class TaiyinEclipseApi {
       sunAltitudeDegrees: _finiteOrNull(value.sun_altitude_deg),
       sunAzimuthDegrees: _finiteOrNull(value.sun_azimuth_deg),
       contacts: {
-        for (final contact in TaiyinLocalSolarEclipseContact.values)
+        for (final contact in LocalSolarEclipseContact.values)
           contact: _ut1OrNull(value.contact_jd_ut[contact.nativeIndex]),
       },
       positionAngleC1Degrees: _finiteOrNull(value.position_angle_c1_deg),
@@ -2143,10 +2120,10 @@ final class TaiyinEclipseApi {
     );
   }
 
-  TaiyinSolarEclipseRouteRow _readSolarEclipseRouteRow(
+  SolarEclipseRouteRow _readSolarEclipseRouteRow(
     taiyin_solar_eclipse_route_row value,
   ) {
-    return TaiyinSolarEclipseRouteRow(
+    return SolarEclipseRouteRow(
       coordinateTt: _requireTtRouteCoordinate(value.jd_tt, 'jd_tt'),
       coordinateUt1: _requireUt1RouteCoordinate(value.jd_ut, 'jd_ut'),
       centerLine: _readSolarEclipseRoutePoint(value.center_line),
@@ -2171,10 +2148,10 @@ final class TaiyinEclipseApi {
     );
   }
 
-  TaiyinSolarEclipseRoutePoint _readSolarEclipseRoutePoint(
+  SolarEclipseRoutePoint _readSolarEclipseRoutePoint(
     taiyin_solar_eclipse_path_point value,
   ) {
-    return TaiyinSolarEclipseRoutePoint(
+    return SolarEclipseRoutePoint(
       coordinateTt: _ttOrNull(value.jd_tt),
       coordinateUt1: _ut1OrNull(value.jd_ut),
       latitudeDegrees: _finiteOrNull(value.latitude_deg),
@@ -2185,13 +2162,13 @@ final class TaiyinEclipseApi {
     );
   }
 
-  TaiyinSolarEclipseRouteCurvePoint _readSolarEclipseRouteCurvePoint(
+  SolarEclipseRouteCurvePoint _readSolarEclipseRouteCurvePoint(
     taiyin_solar_eclipse_route_curve_point value,
   ) {
-    return TaiyinSolarEclipseRouteCurvePoint(
+    return SolarEclipseRouteCurvePoint(
       coordinateTt: _requireTtRouteCoordinate(value.jd_tt, 'curve.jd_tt'),
       coordinateUt1: _requireUt1RouteCoordinate(value.jd_ut, 'curve.jd_ut'),
-      kind: TaiyinSolarEclipseRouteCurveKind.fromNativeIndex(value.curve_kind),
+      kind: SolarEclipseRouteCurveKind.fromNativeIndex(value.curve_kind),
       latitudeDegrees: _requireFiniteNativeRouteCoordinate(
         value.latitude_deg,
         'curve.latitude_deg',
@@ -2203,16 +2180,14 @@ final class TaiyinEclipseApi {
     );
   }
 
-  TaiyinSolarEclipseRouteProductPoint _readSolarEclipseRouteProductPoint(
+  SolarEclipseRouteProductPoint _readSolarEclipseRouteProductPoint(
     taiyin_solar_eclipse_route_product_point value,
   ) {
-    return TaiyinSolarEclipseRouteProductPoint(
+    return SolarEclipseRouteProductPoint(
       coordinateTt: _requireTtRouteCoordinate(value.jd_tt, 'product.jd_tt'),
       coordinateUt1: _requireUt1RouteCoordinate(value.jd_ut, 'product.jd_ut'),
-      kind: TaiyinSolarEclipseRouteProductPointKind.fromNativeIndex(
-        value.point_kind,
-      ),
-      sourceCurveKind: TaiyinSolarEclipseRouteCurveKind.fromNativeIndex(
+      kind: SolarEclipseRouteProductPointKind.fromNativeIndex(value.point_kind),
+      sourceCurveKind: SolarEclipseRouteCurveKind.fromNativeIndex(
         value.source_curve_kind,
       ),
       latitudeDegrees: _requireFiniteNativeRouteCoordinate(
@@ -2230,11 +2205,11 @@ final class TaiyinEclipseApi {
     );
   }
 
-  TaiyinSolarEclipseRouteProductSummary _readSolarEclipseRouteProductSummary(
+  SolarEclipseRouteProductSummary _readSolarEclipseRouteProductSummary(
     taiyin_solar_eclipse_route_product_summary value,
   ) {
-    return TaiyinSolarEclipseRouteProductSummary(
-      flags: TaiyinSolarEclipseRouteProductFlag.fromMask(value.flags),
+    return SolarEclipseRouteProductSummary(
+      flags: SolarEclipseRouteProductFlag.fromMask(value.flags),
       curvePointCount: value.curve_point_count,
       centerLineCount: value.center_line_count,
       coreNorthCount: value.core_north_count,
@@ -2260,11 +2235,11 @@ final class TaiyinEclipseApi {
     );
   }
 
-  TaiyinLocalSolarEclipseBoundary _readLocalSolarEclipseBoundary(
+  LocalSolarEclipseBoundary _readLocalSolarEclipseBoundary(
     taiyin_local_solar_eclipse_boundary value,
   ) {
-    return TaiyinLocalSolarEclipseBoundary(
-      centerKinds: TaiyinEclipseKind.fromMask(value.center_kind),
+    return LocalSolarEclipseBoundary(
+      centerKinds: EclipseKind.fromMask(value.center_kind),
       centerLongitudeDegrees: _finiteOrNull(value.center_longitude_deg),
       centerLatitudeDegrees: _finiteOrNull(value.center_latitude_deg),
       umbraNorthLongitudeDegrees: _finiteOrNull(
@@ -2291,10 +2266,10 @@ final class TaiyinEclipseApi {
     );
   }
 
-  TaiyinSolarBesselianElements _readSolarBesselianElements(
+  SolarBesselianElements _readSolarBesselianElements(
     taiyin_solar_besselian_elements value,
   ) {
-    return TaiyinSolarBesselianElements(
+    return SolarBesselianElements(
       tHours: value.t_hours,
       x: value.x,
       y: value.y,
@@ -2311,10 +2286,10 @@ final class TaiyinEclipseApi {
     );
   }
 
-  TaiyinSolarBesselianPolynomial _readSolarBesselianPolynomial(
+  SolarBesselianPolynomial _readSolarBesselianPolynomial(
     taiyin_solar_besselian_polynomial value,
   ) {
-    return TaiyinSolarBesselianPolynomial(
+    return SolarBesselianPolynomial(
       referenceEpoch: readJulianDate<TtScale>(value.t0_jd_tt),
       spanHours: value.span_hours,
       sampleStepHours: value.sample_step_hours,
@@ -2339,7 +2314,7 @@ final class TaiyinEclipseApi {
     return [
       for (
         var index = 0;
-        index < TaiyinSolarBesselianPolynomial.coefficientCount;
+        index < SolarBesselianPolynomial.coefficientCount;
         index++
       )
         values[index],
@@ -2349,7 +2324,7 @@ final class TaiyinEclipseApi {
   void _writeSolarBesselianPolynomial(
     Arena arena,
     taiyin_solar_besselian_polynomial native,
-    TaiyinSolarBesselianPolynomial value,
+    SolarBesselianPolynomial value,
   ) {
     native
       ..t0_jd_tt = writeJulianDate(arena, value.referenceEpoch).ref
@@ -2362,7 +2337,7 @@ final class TaiyinEclipseApi {
       ..tan_f2 = value.tanF2;
     for (
       var index = 0;
-      index < TaiyinSolarBesselianPolynomial.coefficientCount;
+      index < SolarBesselianPolynomial.coefficientCount;
       index++
     ) {
       native.x[index] = value.xCoefficients[index];
@@ -2379,7 +2354,7 @@ final class TaiyinEclipseApi {
 
   void _writeSolarBesselianElements(
     taiyin_solar_besselian_elements native,
-    TaiyinSolarBesselianElements value,
+    SolarBesselianElements value,
   ) {
     native
       ..t_hours = value.tHours
@@ -2398,8 +2373,8 @@ final class TaiyinEclipseApi {
   }
 
   int _solarSolveMask(
-    Set<TaiyinPositionFlag> positionFlags,
-    Set<TaiyinSolarEclipseSolveOption> options,
+    Set<PositionFlag> positionFlags,
+    Set<SolarEclipseSolveOption> options,
   ) {
     _requireSupportedPositionFlags(positionFlags);
     return _mergeDisjointMasks(
@@ -2409,13 +2384,12 @@ final class TaiyinEclipseApi {
   }
 
   int _solarSearchMask(
-    Set<TaiyinPositionFlag> positionFlags,
-    Set<TaiyinSolarEclipseSearchOption> options, {
+    Set<PositionFlag> positionFlags,
+    Set<SolarEclipseSearchOption> options, {
     required bool allowBackward,
   }) {
     _requireSupportedPositionFlags(positionFlags);
-    if (!allowBackward &&
-        options.contains(TaiyinSolarEclipseSearchOption.backward)) {
+    if (!allowBackward && options.contains(SolarEclipseSearchOption.backward)) {
       throw ArgumentError.value(
         options,
         'options',
@@ -2429,8 +2403,8 @@ final class TaiyinEclipseApi {
   }
 
   int _solarRouteMask(
-    Set<TaiyinPositionFlag> positionFlags,
-    Set<TaiyinSolarEclipseRouteOption> options,
+    Set<PositionFlag> positionFlags,
+    Set<SolarEclipseRouteOption> options,
   ) {
     _requireSupportedPositionFlags(positionFlags);
     return _mergeDisjointMasks(
@@ -2496,12 +2470,11 @@ final class TaiyinEclipseApi {
   }
 
   void _requireBesselianDegree(int degree) {
-    if (degree < 1 ||
-        degree >= TaiyinSolarBesselianPolynomial.coefficientCount) {
+    if (degree < 1 || degree >= SolarBesselianPolynomial.coefficientCount) {
       throw RangeError.range(
         degree,
         1,
-        TaiyinSolarBesselianPolynomial.coefficientCount - 1,
+        SolarBesselianPolynomial.coefficientCount - 1,
         'degree',
       );
     }
@@ -2516,12 +2489,12 @@ final class TaiyinEclipseApi {
     }
   }
 
-  int _solarKindMask(Set<TaiyinEclipseKind> kinds) {
+  int _solarKindMask(Set<EclipseKind> kinds) {
     const supported = {
-      TaiyinEclipseKind.partial,
-      TaiyinEclipseKind.total,
-      TaiyinEclipseKind.annular,
-      TaiyinEclipseKind.hybrid,
+      EclipseKind.partial,
+      EclipseKind.total,
+      EclipseKind.annular,
+      EclipseKind.hybrid,
     };
     final unsupported = kinds.difference(supported);
     if (unsupported.isNotEmpty) {

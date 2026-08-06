@@ -1,7 +1,7 @@
 import '../position/position_api.dart';
 
 /// Options for an observed-position calculation.
-enum TaiyinObservedFlag {
+enum ObservedFlag {
   /// Calculate velocity and horizontal-coordinate rates.
   speed(1 << 0),
 
@@ -35,15 +35,15 @@ enum TaiyinObservedFlag {
   /// Do not use standard-atmosphere fallback for refraction.
   strictMeteorology(1 << 32);
 
-  const TaiyinObservedFlag(this.mask);
+  const ObservedFlag(this.mask);
 
   /// The bit used by the Taiyin C ABI.
   final int mask;
 }
 
 /// Horizontal coordinates in radians and astronomical units.
-final class TaiyinHorizontalCoordinates {
-  const TaiyinHorizontalCoordinates({
+final class HorizontalCoordinates {
+  const HorizontalCoordinates({
     required this.azimuthRadians,
     required this.altitudeRadians,
     required this.distanceAu,
@@ -55,8 +55,8 @@ final class TaiyinHorizontalCoordinates {
 }
 
 /// Time derivatives of horizontal coordinates.
-final class TaiyinHorizontalRates {
-  const TaiyinHorizontalRates({
+final class HorizontalRates {
+  const HorizontalRates({
     required this.azimuthRadiansPerDay,
     required this.altitudeRadiansPerDay,
     required this.distanceAuPerDay,
@@ -68,8 +68,8 @@ final class TaiyinHorizontalRates {
 }
 
 /// Geometric and apparent state for one major solar-system body.
-final class TaiyinApparentPosition {
-  const TaiyinApparentPosition({
+final class ApparentPosition {
+  const ApparentPosition({
     required this.body,
     required this.bodyMaskBit,
     required this.status,
@@ -83,22 +83,22 @@ final class TaiyinApparentPosition {
     required this.cacheHit,
   });
 
-  final TaiyinBody body;
+  final Body body;
   final int bodyMaskBit;
   final int status;
-  final TaiyinEphemerisDiagnostic diagnostic;
+  final EphemerisDiagnostic diagnostic;
 
   /// Geometric position and velocity.
   ///
   /// The observed-position native path disables acceleration, so
-  /// [TaiyinCartesianState.accelerationAuPerDay2] is always zero here.
-  final TaiyinCartesianState geometricState;
+  /// [CartesianState.accelerationAuPerDay2] is always zero here.
+  final CartesianState geometricState;
 
   /// Apparent position and velocity after the requested corrections.
   ///
   /// The observed-position native path disables acceleration, so
-  /// [TaiyinCartesianState.accelerationAuPerDay2] is always zero here.
-  final TaiyinCartesianState apparentState;
+  /// [CartesianState.accelerationAuPerDay2] is always zero here.
+  final CartesianState apparentState;
   final double longitudeRadians;
   final double latitudeRadians;
   final double distanceAu;
@@ -107,35 +107,35 @@ final class TaiyinApparentPosition {
 }
 
 /// A complete observed position for one major solar-system body.
-final class TaiyinObservedPosition {
-  TaiyinObservedPosition({
+final class ObservedPosition {
+  ObservedPosition({
     required this.body,
     required this.status,
     required this.diagnostic,
     required this.apparent,
-    required Set<TaiyinObservedFlag> flags,
+    required Set<ObservedFlag> flags,
     this.horizontal,
     this.horizontalRates,
     this.refractedHorizontal,
     this.refractedHorizontalRates,
   }) : flags = Set.unmodifiable(flags);
 
-  final TaiyinBody body;
+  final Body body;
   final int status;
-  final TaiyinEphemerisDiagnostic diagnostic;
-  final TaiyinApparentPosition apparent;
-  final Set<TaiyinObservedFlag> flags;
+  final EphemerisDiagnostic diagnostic;
+  final ApparentPosition apparent;
+  final Set<ObservedFlag> flags;
 
   /// Unrefracted horizontal coordinates, when horizontal output was requested.
-  final TaiyinHorizontalCoordinates? horizontal;
+  final HorizontalCoordinates? horizontal;
 
   /// Unrefracted horizontal rates, when horizontal output and speed were
   /// requested.
-  final TaiyinHorizontalRates? horizontalRates;
+  final HorizontalRates? horizontalRates;
 
   /// Refracted horizontal coordinates, when refraction was requested.
-  final TaiyinHorizontalCoordinates? refractedHorizontal;
+  final HorizontalCoordinates? refractedHorizontal;
 
   /// Refracted horizontal rates, when refraction and speed were requested.
-  final TaiyinHorizontalRates? refractedHorizontalRates;
+  final HorizontalRates? refractedHorizontalRates;
 }

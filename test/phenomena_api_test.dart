@@ -10,21 +10,21 @@ void main() {
   const semiAnalyticLunarAngleTolerance = (6 / 3600) * degreesToRadians;
 
   group(
-    'TaiyinPhenomenaApi native integration',
+    'PhenomenaApi native integration',
     () {
-      late TaiyinContext context;
+      late EphemerisContext context;
 
       setUp(() {
-        context = Taiyin.open(libraryPath: libraryPath).createContext();
+        context = Ephemeris.open(libraryPath: libraryPath).createContext();
         context.configuration
           ..useSolarDeflector()
           ..setApparentConfig(
-            TaiyinApparentConfig(
+            ApparentConfig(
               flags: {
-                TaiyinApparentFlag.spherical,
-                TaiyinApparentFlag.lightTime,
-                TaiyinApparentFlag.aberration,
-                TaiyinApparentFlag.deflection,
+                ApparentFlag.spherical,
+                ApparentFlag.lightTime,
+                ApparentFlag.aberration,
+                ApparentFlag.deflection,
               },
             ),
           );
@@ -37,9 +37,9 @@ void main() {
       test(
         'matches the first-quarter Moon oracle on the semi-analytical route',
         () {
-          context.configuration.setRouteRule(TaiyinRouteRule.semiAnalytic);
+          context.configuration.setRouteRule(RouteRule.semiAnalytic);
           final result = context.phenomena.atUt1(
-            TaiyinBody.moon,
+            Body.moon,
             JulianDate<Ut1Scale>.fromDouble(2460416.2916666665),
           );
           final value = result.value;
@@ -74,18 +74,18 @@ void main() {
               1e-6 * degreesToRadians,
             ),
           );
-          expect(value.body, TaiyinBody.moon);
-          expect(value.origin, TaiyinPhenomenaOrigin.geocentric);
+          expect(value.body, Body.moon);
+          expect(value.origin, PhenomenaOrigin.geocentric);
           expect(result.diagnostic.status, 0);
-          expect(result.diagnostic.targetId, TaiyinBody.moon.id);
+          expect(result.diagnostic.targetId, Body.moon.id);
         },
       );
 
       test('covers the TT route and nullable non-lunar parallax', () {
         final result = context.phenomena.atTt(
-          TaiyinBody.sun,
+          Body.sun,
           JulianDate<TtScale>.fromDouble(2460409.2508),
-          flags: {TaiyinPositionFlag.truePosition},
+          flags: {PositionFlag.truePosition},
         );
 
         expect(result.value.phaseAngleRadians, 0.0);
@@ -94,8 +94,8 @@ void main() {
         expect(result.value.apparentDiameterRadians.isFinite, isTrue);
         expect(result.value.apparentMagnitude.isFinite, isTrue);
         expect(result.value.geocentricHorizontalParallaxRadians, isNull);
-        expect(result.value.origin, TaiyinPhenomenaOrigin.geocentric);
-        expect(result.value.flags, contains(TaiyinPositionFlag.truePosition));
+        expect(result.value.origin, PhenomenaOrigin.geocentric);
+        expect(result.value.flags, contains(PositionFlag.truePosition));
         expect(result.diagnostic.status, 0);
       });
 
@@ -104,10 +104,10 @@ void main() {
         () {
           final ut1 = JulianDate<Ut1Scale>.fromDouble(2460409.25);
           final tt = context.solarTime.equationOfTimeAtUt1(ut1).value.tt;
-          final geocentric = context.phenomena.atUt1(TaiyinBody.moon, ut1);
+          final geocentric = context.phenomena.atUt1(Body.moon, ut1);
 
           context.configuration.setSimpleTopocentricObserver(
-            const TaiyinObserverLocation(
+            const ObserverLocation(
               longitudeDegrees: -104.9903,
               latitudeDegrees: 39.7392,
               heightMeters: 1609.3,
@@ -116,12 +116,12 @@ void main() {
             tt: tt,
           );
           final topocentric = context.phenomena.atUt1(
-            TaiyinBody.moon,
+            Body.moon,
             ut1,
-            origin: TaiyinPhenomenaOrigin.topocentric,
+            origin: PhenomenaOrigin.topocentric,
           );
 
-          expect(topocentric.value.origin, TaiyinPhenomenaOrigin.topocentric);
+          expect(topocentric.value.origin, PhenomenaOrigin.topocentric);
           expect(
             topocentric.value.geocentricHorizontalParallaxRadians,
             closeTo(
@@ -141,27 +141,24 @@ void main() {
       test('rejects unsupported bodies and use after close', () {
         final ut1 = JulianDate<Ut1Scale>.fromDouble(2460409.25);
         expect(
-          () => context.phenomena.atUt1(TaiyinBody.earth, ut1),
+          () => context.phenomena.atUt1(Body.earth, ut1),
           throwsArgumentError,
         );
         expect(
-          () => context.phenomena.atUt1(TaiyinBody.jupiterBarycenter, ut1),
+          () => context.phenomena.atUt1(Body.jupiterBarycenter, ut1),
           throwsArgumentError,
         );
         expect(
           () => context.phenomena.atUt1(
-            TaiyinBody.moon,
+            Body.moon,
             ut1,
-            flags: {TaiyinPositionFlag.topocentric},
+            flags: {PositionFlag.topocentric},
           ),
           throwsArgumentError,
         );
 
         context.close();
-        expect(
-          () => context.phenomena.atUt1(TaiyinBody.moon, ut1),
-          throwsStateError,
-        );
+        expect(() => context.phenomena.atUt1(Body.moon, ut1), throwsStateError);
       });
     },
     skip: nativeLibraryAvailable

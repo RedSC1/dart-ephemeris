@@ -3,10 +3,10 @@ import '../time/time_scale.dart';
 
 /// Search options for lunar occultations.
 ///
-/// Search options are distinct from [TaiyinPositionFlag] corrections. Type
+/// Search options are distinct from [PositionFlag] corrections. Type
 /// filters are combined as a union: an event matching any selected filter is
 /// eligible.
-enum TaiyinOccultationSearchOption {
+enum OccultationSearchOption {
   backward(1 << 32),
   oneCandidate(1 << 33),
   filterPartial(1 << 40),
@@ -16,41 +16,41 @@ enum TaiyinOccultationSearchOption {
   filterNoncentral(1 << 44),
   lunarLimbCorrection(1 << 45);
 
-  const TaiyinOccultationSearchOption(this.mask);
+  const OccultationSearchOption(this.mask);
 
   /// Bit used by the Taiyin C ABI.
   final int mask;
 }
 
 /// Options used when calculating local occultation visibility or location.
-enum TaiyinOccultationVisibilityOption {
+enum OccultationVisibilityOption {
   /// Uses the configured atmospheric refraction model for horizontal samples.
   refraction(1 << 34);
 
-  const TaiyinOccultationVisibilityOption(this.mask);
+  const OccultationVisibilityOption(this.mask);
 
   /// Bit used by the Taiyin C ABI.
   final int mask;
 }
 
 /// Target family of a lunar occultation.
-enum TaiyinLunarOccultationKind {
+enum LunarOccultationKind {
   none(0),
   lunarStar(1),
   lunarBody(2),
   unknown(-1);
 
-  const TaiyinLunarOccultationKind(this.id);
+  const LunarOccultationKind(this.id);
 
   final int id;
 
-  static TaiyinLunarOccultationKind fromId(int id) {
+  static LunarOccultationKind fromId(int id) {
     return values.where((value) => value.id == id).firstOrNull ?? unknown;
   }
 }
 
 /// Classifications that can apply to a lunar occultation.
-enum TaiyinOccultationType {
+enum OccultationType {
   partial(1 << 0),
   total(1 << 1),
   annular(1 << 2),
@@ -59,32 +59,32 @@ enum TaiyinOccultationType {
   noncentral(1 << 5),
   centralityUnavailable(1 << 6);
 
-  const TaiyinOccultationType(this.mask);
+  const OccultationType(this.mask);
 
   final int mask;
 
-  static Set<TaiyinOccultationType> fromMask(int mask) {
+  static Set<OccultationType> fromMask(int mask) {
     return Set.unmodifiable(values.where((value) => (mask & value.mask) != 0));
   }
 }
 
 /// Visibility state at one local occultation sample.
-enum TaiyinOccultationSampleFlag {
+enum OccultationSampleFlag {
   moonAboveHorizon(1 << 0),
   targetAboveHorizon(1 << 1),
   sunBelowHorizon(1 << 2);
 
-  const TaiyinOccultationSampleFlag(this.mask);
+  const OccultationSampleFlag(this.mask);
 
   final int mask;
 
-  static Set<TaiyinOccultationSampleFlag> fromMask(int mask) {
+  static Set<OccultationSampleFlag> fromMask(int mask) {
     return Set.unmodifiable(values.where((value) => (mask & value.mask) != 0));
   }
 }
 
 /// Aggregate local-visibility state for an occultation.
-enum TaiyinOccultationVisibilityFlag {
+enum OccultationVisibilityFlag {
   hasVisibleSample(1 << 0),
   maximumVisible(1 << 1),
   hasDarkSample(1 << 2),
@@ -92,11 +92,11 @@ enum TaiyinOccultationVisibilityFlag {
   hasVisibleInterval(1 << 4),
   hasDarkInterval(1 << 5);
 
-  const TaiyinOccultationVisibilityFlag(this.mask);
+  const OccultationVisibilityFlag(this.mask);
 
   final int mask;
 
-  static Set<TaiyinOccultationVisibilityFlag> fromMask(int mask) {
+  static Set<OccultationVisibilityFlag> fromMask(int mask) {
     return Set.unmodifiable(values.where((value) => (mask & value.mask) != 0));
   }
 }
@@ -105,8 +105,8 @@ enum TaiyinOccultationVisibilityFlag {
 ///
 /// Native code uses non-finite values when a measure does not apply. Dart maps
 /// those values to `null`.
-final class TaiyinLunarOccultationPhenomena {
-  const TaiyinLunarOccultationPhenomena({
+final class LunarOccultationPhenomena {
+  const LunarOccultationPhenomena({
     required this.angularDistanceRadians,
     required this.diameterRatio,
     required this.magnitude,
@@ -125,10 +125,10 @@ final class TaiyinLunarOccultationPhenomena {
 ///
 /// All dates are split native UT1 Julian dates; a missing contact maps from
 /// the native non-finite sentinel to `null`.
-final class TaiyinLunarOccultationResult {
-  TaiyinLunarOccultationResult({
+final class LunarOccultationResult {
+  LunarOccultationResult({
     required this.kind,
-    required Set<TaiyinOccultationType> types,
+    required Set<OccultationType> types,
     required this.coordinate,
     required this.begin,
     required this.end,
@@ -148,8 +148,8 @@ final class TaiyinLunarOccultationResult {
     required this.evaluationCount,
   }) : types = Set.unmodifiable(types);
 
-  final TaiyinLunarOccultationKind kind;
-  final Set<TaiyinOccultationType> types;
+  final LunarOccultationKind kind;
+  final Set<OccultationType> types;
   final JulianDate<Ut1Scale> coordinate;
   final JulianDate<Ut1Scale>? begin;
   final JulianDate<Ut1Scale>? end;
@@ -161,7 +161,7 @@ final class TaiyinLunarOccultationResult {
   final double moonRadiusRadians;
   final double targetRadiusRadians;
   final double marginRadians;
-  final TaiyinLunarOccultationPhenomena phenomena;
+  final LunarOccultationPhenomena phenomena;
   final JulianDate<Ut1Scale>? candidate;
   final JulianDate<Ut1Scale>? nextSearch;
   final int candidateCount;
@@ -170,8 +170,8 @@ final class TaiyinLunarOccultationResult {
 }
 
 /// One valid interval during which a local occultation is visible.
-final class TaiyinLunarOccultationVisibilityInterval {
-  const TaiyinLunarOccultationVisibilityInterval({
+final class LunarOccultationVisibilityInterval {
+  const LunarOccultationVisibilityInterval({
     required this.begin,
     required this.end,
   });
@@ -181,8 +181,8 @@ final class TaiyinLunarOccultationVisibilityInterval {
 }
 
 /// Horizontal coordinates and sky-state flags at one occultation contact.
-final class TaiyinLunarOccultationVisibilitySample {
-  TaiyinLunarOccultationVisibilitySample({
+final class LunarOccultationVisibilitySample {
+  LunarOccultationVisibilitySample({
     required this.coordinate,
     required this.moonAltitudeRadians,
     required this.moonAzimuthRadians,
@@ -190,7 +190,7 @@ final class TaiyinLunarOccultationVisibilitySample {
     required this.targetAzimuthRadians,
     required this.sunAltitudeRadians,
     required this.sunAzimuthRadians,
-    required Set<TaiyinOccultationSampleFlag> flags,
+    required Set<OccultationSampleFlag> flags,
   }) : flags = Set.unmodifiable(flags);
 
   final JulianDate<Ut1Scale> coordinate;
@@ -200,12 +200,12 @@ final class TaiyinLunarOccultationVisibilitySample {
   final double targetAzimuthRadians;
   final double sunAltitudeRadians;
   final double sunAzimuthRadians;
-  final Set<TaiyinOccultationSampleFlag> flags;
+  final Set<OccultationSampleFlag> flags;
 }
 
 /// Local visibility summary for a previously found lunar occultation.
-final class TaiyinLunarOccultationLocalVisibility {
-  TaiyinLunarOccultationLocalVisibility({
+final class LunarOccultationLocalVisibility {
+  LunarOccultationLocalVisibility({
     required this.firstContact,
     required this.secondContact,
     required this.maximum,
@@ -217,10 +217,9 @@ final class TaiyinLunarOccultationLocalVisibility {
     required this.visibleEnd,
     required this.darkVisibleBegin,
     required this.darkVisibleEnd,
-    required List<TaiyinLunarOccultationVisibilityInterval> visibleIntervals,
-    required List<TaiyinLunarOccultationVisibilityInterval>
-    darkVisibleIntervals,
-    required Set<TaiyinOccultationVisibilityFlag> flags,
+    required List<LunarOccultationVisibilityInterval> visibleIntervals,
+    required List<LunarOccultationVisibilityInterval> darkVisibleIntervals,
+    required Set<OccultationVisibilityFlag> flags,
   }) : visibleIntervals = List.unmodifiable(visibleIntervals),
        darkVisibleIntervals = List.unmodifiable(darkVisibleIntervals),
        flags = Set.unmodifiable(flags);
@@ -228,28 +227,28 @@ final class TaiyinLunarOccultationLocalVisibility {
   /// Mirrors `TAIYIN_C_OCCULTATION_MAX_VISIBILITY_INTERVALS`.
   static const int maxIntervals = 8;
 
-  final TaiyinLunarOccultationVisibilitySample? firstContact;
-  final TaiyinLunarOccultationVisibilitySample? secondContact;
-  final TaiyinLunarOccultationVisibilitySample? maximum;
-  final TaiyinLunarOccultationVisibilitySample? thirdContact;
-  final TaiyinLunarOccultationVisibilitySample? fourthContact;
+  final LunarOccultationVisibilitySample? firstContact;
+  final LunarOccultationVisibilitySample? secondContact;
+  final LunarOccultationVisibilitySample? maximum;
+  final LunarOccultationVisibilitySample? thirdContact;
+  final LunarOccultationVisibilitySample? fourthContact;
   final JulianDate<Ut1Scale>? targetRise;
   final JulianDate<Ut1Scale>? targetSet;
   final JulianDate<Ut1Scale>? visibleBegin;
   final JulianDate<Ut1Scale>? visibleEnd;
   final JulianDate<Ut1Scale>? darkVisibleBegin;
   final JulianDate<Ut1Scale>? darkVisibleEnd;
-  final List<TaiyinLunarOccultationVisibilityInterval> visibleIntervals;
-  final List<TaiyinLunarOccultationVisibilityInterval> darkVisibleIntervals;
-  final Set<TaiyinOccultationVisibilityFlag> flags;
+  final List<LunarOccultationVisibilityInterval> visibleIntervals;
+  final List<LunarOccultationVisibilityInterval> darkVisibleIntervals;
+  final Set<OccultationVisibilityFlag> flags;
 }
 
 /// A point on a global occultation path or visible-region polygon.
 ///
 /// Native count fields include only valid entries. The Dart API therefore
 /// rejects a malformed result with an invalid entry inside that count.
-final class TaiyinLunarOccultationPathPoint {
-  const TaiyinLunarOccultationPathPoint({
+final class LunarOccultationPathPoint {
+  const LunarOccultationPathPoint({
     required this.valid,
     required this.coordinate,
     required this.longitudeDegrees,
@@ -265,24 +264,24 @@ final class TaiyinLunarOccultationPathPoint {
 }
 
 /// Global location of occultation maximum or its derived path products.
-final class TaiyinLunarOccultationWhereResult {
-  TaiyinLunarOccultationWhereResult({
+final class LunarOccultationWhereResult {
+  LunarOccultationWhereResult({
     required this.centerLineHitsEarth,
-    required Set<TaiyinOccultationType> types,
+    required Set<OccultationType> types,
     required this.coordinate,
     required this.centerLineBegin,
     required this.centerLineEnd,
-    required List<TaiyinLunarOccultationPathPoint> centerLinePath,
+    required List<LunarOccultationPathPoint> centerLinePath,
     required this.centerLineMinLongitudeDegrees,
     required this.centerLineMaxLongitudeDegrees,
     required this.centerLineMinLatitudeDegrees,
     required this.centerLineMaxLatitudeDegrees,
     required this.centerLinePathDistanceKilometers,
-    required List<TaiyinLunarOccultationPathPoint> outerNorthPath,
-    required List<TaiyinLunarOccultationPathPoint> outerSouthPath,
+    required List<LunarOccultationPathPoint> outerNorthPath,
+    required List<LunarOccultationPathPoint> outerSouthPath,
     required this.outerLimitMeanWidthKilometers,
     required this.outerLimitMaxWidthKilometers,
-    required List<TaiyinLunarOccultationPathPoint> visibleRegionPolygon,
+    required List<LunarOccultationPathPoint> visibleRegionPolygon,
     required this.visibleRegionMinLongitudeDegrees,
     required this.visibleRegionMaxLongitudeDegrees,
     required this.visibleRegionMinLatitudeDegrees,
@@ -294,7 +293,7 @@ final class TaiyinLunarOccultationWhereResult {
     required this.marginRadians,
     required this.phenomena,
     required this.localSample,
-    required Set<TaiyinOccultationVisibilityFlag> visibilityFlags,
+    required Set<OccultationVisibilityFlag> visibilityFlags,
   }) : types = Set.unmodifiable(types),
        centerLinePath = List.unmodifiable(centerLinePath),
        outerNorthPath = List.unmodifiable(outerNorthPath),
@@ -309,31 +308,31 @@ final class TaiyinLunarOccultationWhereResult {
   static const int maxPolygonPoints = 32;
 
   final bool centerLineHitsEarth;
-  final Set<TaiyinOccultationType> types;
+  final Set<OccultationType> types;
   final JulianDate<Ut1Scale>? coordinate;
   final JulianDate<Ut1Scale>? centerLineBegin;
   final JulianDate<Ut1Scale>? centerLineEnd;
-  final List<TaiyinLunarOccultationPathPoint> centerLinePath;
+  final List<LunarOccultationPathPoint> centerLinePath;
   final double? centerLineMinLongitudeDegrees;
   final double? centerLineMaxLongitudeDegrees;
   final double? centerLineMinLatitudeDegrees;
   final double? centerLineMaxLatitudeDegrees;
   final double? centerLinePathDistanceKilometers;
-  final List<TaiyinLunarOccultationPathPoint> outerNorthPath;
-  final List<TaiyinLunarOccultationPathPoint> outerSouthPath;
+  final List<LunarOccultationPathPoint> outerNorthPath;
+  final List<LunarOccultationPathPoint> outerSouthPath;
   final double? outerLimitMeanWidthKilometers;
   final double? outerLimitMaxWidthKilometers;
-  final List<TaiyinLunarOccultationPathPoint> visibleRegionPolygon;
+  final List<LunarOccultationPathPoint> visibleRegionPolygon;
   final double? visibleRegionMinLongitudeDegrees;
   final double? visibleRegionMaxLongitudeDegrees;
   final double? visibleRegionMinLatitudeDegrees;
   final double? visibleRegionMaxLatitudeDegrees;
-  final TaiyinLunarOccultationPathPoint? maximumLocation;
+  final LunarOccultationPathPoint? maximumLocation;
   final double? separationRadians;
   final double? moonRadiusRadians;
   final double? targetRadiusRadians;
   final double? marginRadians;
-  final TaiyinLunarOccultationPhenomena phenomena;
-  final TaiyinLunarOccultationVisibilitySample? localSample;
-  final Set<TaiyinOccultationVisibilityFlag> visibilityFlags;
+  final LunarOccultationPhenomena phenomena;
+  final LunarOccultationVisibilitySample? localSample;
+  final Set<OccultationVisibilityFlag> visibilityFlags;
 }

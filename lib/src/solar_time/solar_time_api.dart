@@ -1,14 +1,14 @@
 part of '../taiyin.dart';
 
 typedef _SolarTimeStatusChecker =
-    void Function(int status, TaiyinEphemerisDiagnostic? diagnostic);
+    void Function(int status, EphemerisDiagnostic? diagnostic);
 
 /// Equation-of-time calculations and local solar-time conversions.
 ///
 /// These physical calculations consume and produce split [JulianDate] values
 /// end to end, preserving the full low-order fraction across the FFI boundary.
-final class TaiyinSolarTimeApi {
-  TaiyinSolarTimeApi._(
+final class SolarTimeApi {
+  SolarTimeApi._(
     this._bindings,
     this._context,
     this._ensureOpen,
@@ -21,7 +21,7 @@ final class TaiyinSolarTimeApi {
   final _SolarTimeStatusChecker _checkStatus;
 
   /// Calculates the equation of time from a UT1 coordinate.
-  TaiyinEphemerisResult<TaiyinEquationOfTime> equationOfTimeAtUt1(
+  EphemerisResult<EquationOfTime> equationOfTimeAtUt1(
     JulianDate<Ut1Scale> ut1,
   ) {
     _ensureOpen();
@@ -36,9 +36,7 @@ final class TaiyinSolarTimeApi {
   }
 
   /// Calculates the equation of time from a TT coordinate.
-  TaiyinEphemerisResult<TaiyinEquationOfTime> equationOfTimeAtTt(
-    JulianDate<TtScale> tt,
-  ) {
+  EphemerisResult<EquationOfTime> equationOfTimeAtTt(JulianDate<TtScale> tt) {
     _ensureOpen();
     return _equationOfTime(
       (arena, output, diagnostic) => _bindings.taiyin_calc_equation_of_time_tt(
@@ -51,7 +49,7 @@ final class TaiyinSolarTimeApi {
   }
 
   /// Converts local mean solar time to local apparent solar time.
-  TaiyinEphemerisResult<LocalApparentSolarTime> meanToApparent(
+  EphemerisResult<LocalApparentSolarTime> meanToApparent(
     LocalMeanSolarTime localMean,
   ) {
     _ensureOpen();
@@ -72,7 +70,7 @@ final class TaiyinSolarTimeApi {
   }
 
   /// Converts local apparent solar time to local mean solar time.
-  TaiyinEphemerisResult<LocalMeanSolarTime> apparentToMean(
+  EphemerisResult<LocalMeanSolarTime> apparentToMean(
     LocalApparentSolarTime localApparent,
   ) {
     _ensureOpen();
@@ -92,7 +90,7 @@ final class TaiyinSolarTimeApi {
     );
   }
 
-  TaiyinEphemerisResult<TaiyinEquationOfTime> _equationOfTime(
+  EphemerisResult<EquationOfTime> _equationOfTime(
     int Function(
       Arena,
       Pointer<taiyin_equation_of_time_result>,
@@ -110,8 +108,8 @@ final class TaiyinSolarTimeApi {
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
       final value = output.ref;
-      return TaiyinEphemerisResult(
-        value: TaiyinEquationOfTime(
+      return EphemerisResult(
+        value: EquationOfTime(
           ut1: readJulianDate<Ut1Scale>(value.jd_ut),
           tt: readJulianDate<TtScale>(value.jd_tt),
           equationDays: value.equation_days,
@@ -129,7 +127,7 @@ final class TaiyinSolarTimeApi {
   ///
   /// The callback writes one split Julian date through its
   /// `Pointer<taiyin_split_julian_date>` output.
-  TaiyinEphemerisResult<Output> _convert<OutputScale extends TimeScale, Output>(
+  EphemerisResult<Output> _convert<OutputScale extends TimeScale, Output>(
     int Function(
       Arena,
       Pointer<taiyin_split_julian_date>,
@@ -145,7 +143,7 @@ final class TaiyinSolarTimeApi {
       final status = convert(arena, output, diagnostic);
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
-      return TaiyinEphemerisResult(
+      return EphemerisResult(
         value: buildOutput(readJulianDate<OutputScale>(output.ref)),
         diagnostic: mappedDiagnostic,
       );

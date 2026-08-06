@@ -36,19 +36,19 @@ typedef _StateCalculation =
       Pointer<taiyin_ephemeris_diagnostic> diagnostic,
     );
 typedef _PositionStatusChecker =
-    void Function(int status, TaiyinEphemerisDiagnostic? diagnostic);
+    void Function(int status, EphemerisDiagnostic? diagnostic);
 
-/// Position and Cartesian-state calculations backed by Taiyin.
+/// Position and Cartesian-state calculations backed by Ephemeris.
 ///
 /// Julian dates cross the native boundary as split `taiyin_split_julian_date`
 /// structs, preserving the full day-number/fraction precision. Batch methods
 /// preserve one result and diagnostic per requested body when individual
-/// targets fail. Callers should inspect [TaiyinEphemerisDiagnostic.status] on
+/// targets fail. Callers should inspect [EphemerisDiagnostic.status] on
 /// every returned item. Failures that occur before native per-target
 /// diagnostics are available still throw.
-final class TaiyinPositionApi {
-  /// Internal constructor used by an owning [TaiyinContext].
-  TaiyinPositionApi.internal(
+final class PositionApi {
+  /// Internal constructor used by an owning [EphemerisContext].
+  PositionApi.internal(
     this._bindings,
     this._context,
     this._ensureOpen,
@@ -61,10 +61,10 @@ final class TaiyinPositionApi {
   final _PositionStatusChecker _checkStatus;
 
   /// Calculates one body at a TT Julian date.
-  TaiyinEphemerisResult<TaiyinPosition> atTt(
-    TaiyinTarget body,
+  EphemerisResult<Position> atTt(
+    Target body,
     JulianDate<TtScale> julianDate, {
-    Set<TaiyinPositionFlag> flags = const {},
+    Set<PositionFlag> flags = const {},
   }) {
     _ensureOpen();
     return _position(
@@ -81,10 +81,10 @@ final class TaiyinPositionApi {
   }
 
   /// Calculates one body at a UT1 Julian date using Taiyin's time policy.
-  TaiyinEphemerisResult<TaiyinPosition> atUt1(
-    TaiyinTarget body,
+  EphemerisResult<Position> atUt1(
+    Target body,
     JulianDate<Ut1Scale> julianDate, {
-    Set<TaiyinPositionFlag> flags = const {},
+    Set<PositionFlag> flags = const {},
   }) {
     _ensureOpen();
     return _position(
@@ -101,11 +101,11 @@ final class TaiyinPositionApi {
   }
 
   /// Calculates one body with explicit TDB and TT coordinates.
-  TaiyinEphemerisResult<TaiyinPosition> atTdb(
-    TaiyinTarget body,
+  EphemerisResult<Position> atTdb(
+    Target body,
     JulianDate<TdbScale> tdb,
     JulianDate<TtScale> tt, {
-    Set<TaiyinPositionFlag> flags = const {},
+    Set<PositionFlag> flags = const {},
   }) {
     _ensureOpen();
     return _position(
@@ -123,11 +123,11 @@ final class TaiyinPositionApi {
   }
 
   /// Calculates one body at UT1 with an explicit TT−UT1 value.
-  TaiyinEphemerisResult<TaiyinPosition> atUt1WithDeltaT(
-    TaiyinTarget body,
+  EphemerisResult<Position> atUt1WithDeltaT(
+    Target body,
     JulianDate<Ut1Scale> julianDate,
     double deltaTSeconds, {
-    Set<TaiyinPositionFlag> flags = const {},
+    Set<PositionFlag> flags = const {},
   }) {
     _ensureOpen();
     _requireFinite(deltaTSeconds, 'deltaTSeconds');
@@ -147,10 +147,10 @@ final class TaiyinPositionApi {
   }
 
   /// Calculates one body from a UTC calendar value.
-  TaiyinEphemerisResult<TaiyinPosition> atUtc(
-    TaiyinTarget body,
+  EphemerisResult<Position> atUtc(
+    Target body,
     AstroDateTime utc, {
-    Set<TaiyinPositionFlag> flags = const {},
+    Set<PositionFlag> flags = const {},
   }) {
     _ensureOpen();
     return using((arena) {
@@ -170,10 +170,10 @@ final class TaiyinPositionApi {
   }
 
   /// Calculates several bodies at one TT Julian date.
-  List<TaiyinEphemerisResult<TaiyinPosition>> batchAtTt(
-    List<TaiyinTarget> bodies,
+  List<EphemerisResult<Position>> batchAtTt(
+    List<Target> bodies,
     JulianDate<TtScale> julianDate, {
-    Set<TaiyinPositionFlag> flags = const {},
+    Set<PositionFlag> flags = const {},
   }) {
     _ensureOpen();
     return _positions(
@@ -193,10 +193,10 @@ final class TaiyinPositionApi {
   }
 
   /// Calculates several bodies at one UT1 Julian date.
-  List<TaiyinEphemerisResult<TaiyinPosition>> batchAtUt1(
-    List<TaiyinTarget> bodies,
+  List<EphemerisResult<Position>> batchAtUt1(
+    List<Target> bodies,
     JulianDate<Ut1Scale> julianDate, {
-    Set<TaiyinPositionFlag> flags = const {},
+    Set<PositionFlag> flags = const {},
   }) {
     _ensureOpen();
     return _positions(
@@ -216,11 +216,11 @@ final class TaiyinPositionApi {
   }
 
   /// Calculates several bodies with explicit TDB and TT coordinates.
-  List<TaiyinEphemerisResult<TaiyinPosition>> batchAtTdb(
-    List<TaiyinTarget> bodies,
+  List<EphemerisResult<Position>> batchAtTdb(
+    List<Target> bodies,
     JulianDate<TdbScale> tdb,
     JulianDate<TtScale> tt, {
-    Set<TaiyinPositionFlag> flags = const {},
+    Set<PositionFlag> flags = const {},
   }) {
     _ensureOpen();
     return _positions(
@@ -241,11 +241,11 @@ final class TaiyinPositionApi {
   }
 
   /// Calculates several bodies at UT1 with an explicit TT−UT1 value.
-  List<TaiyinEphemerisResult<TaiyinPosition>> batchAtUt1WithDeltaT(
-    List<TaiyinTarget> bodies,
+  List<EphemerisResult<Position>> batchAtUt1WithDeltaT(
+    List<Target> bodies,
     JulianDate<Ut1Scale> julianDate,
     double deltaTSeconds, {
-    Set<TaiyinPositionFlag> flags = const {},
+    Set<PositionFlag> flags = const {},
   }) {
     _ensureOpen();
     _requireFinite(deltaTSeconds, 'deltaTSeconds');
@@ -267,10 +267,10 @@ final class TaiyinPositionApi {
   }
 
   /// Calculates several bodies from one UTC calendar value.
-  List<TaiyinEphemerisResult<TaiyinPosition>> batchAtUtc(
-    List<TaiyinTarget> bodies,
+  List<EphemerisResult<Position>> batchAtUtc(
+    List<Target> bodies,
     AstroDateTime utc, {
-    Set<TaiyinPositionFlag> flags = const {},
+    Set<PositionFlag> flags = const {},
   }) {
     _ensureOpen();
     return using((arena) {
@@ -295,12 +295,12 @@ final class TaiyinPositionApi {
   /// Calculates a Cartesian state at a TT Julian date.
   ///
   /// Cartesian position, velocity, and acceleration are always returned, so
-  /// [TaiyinPositionFlag.xyz] and [TaiyinPositionFlag.speed] are implied and
+  /// [PositionFlag.xyz] and [PositionFlag.speed] are implied and
   /// have no effect. Frame and apparent-correction flags still apply.
-  TaiyinEphemerisResult<TaiyinCartesianState> stateAtTt(
-    TaiyinTarget body,
+  EphemerisResult<CartesianState> stateAtTt(
+    Target body,
     JulianDate<TtScale> julianDate, {
-    Set<TaiyinPositionFlag> flags = const {},
+    Set<PositionFlag> flags = const {},
   }) {
     _ensureOpen();
     return _state(
@@ -319,10 +319,10 @@ final class TaiyinPositionApi {
   /// Calculates a Cartesian state at a UT1 Julian date.
   ///
   /// Position and derivative flags behave as described by [stateAtTt].
-  TaiyinEphemerisResult<TaiyinCartesianState> stateAtUt1(
-    TaiyinTarget body,
+  EphemerisResult<CartesianState> stateAtUt1(
+    Target body,
     JulianDate<Ut1Scale> julianDate, {
-    Set<TaiyinPositionFlag> flags = const {},
+    Set<PositionFlag> flags = const {},
   }) {
     _ensureOpen();
     return _state(
@@ -341,11 +341,11 @@ final class TaiyinPositionApi {
   /// Calculates a Cartesian state with explicit TDB and TT coordinates.
   ///
   /// Position and derivative flags behave as described by [stateAtTt].
-  TaiyinEphemerisResult<TaiyinCartesianState> stateAtTdb(
-    TaiyinTarget body,
+  EphemerisResult<CartesianState> stateAtTdb(
+    Target body,
     JulianDate<TdbScale> tdb,
     JulianDate<TtScale> tt, {
-    Set<TaiyinPositionFlag> flags = const {},
+    Set<PositionFlag> flags = const {},
   }) {
     _ensureOpen();
     return _state(
@@ -365,11 +365,11 @@ final class TaiyinPositionApi {
   /// Calculates a Cartesian state at UT1 with an explicit TT−UT1 value.
   ///
   /// Position and derivative flags behave as described by [stateAtTt].
-  TaiyinEphemerisResult<TaiyinCartesianState> stateAtUt1WithDeltaT(
-    TaiyinTarget body,
+  EphemerisResult<CartesianState> stateAtUt1WithDeltaT(
+    Target body,
     JulianDate<Ut1Scale> julianDate,
     double deltaTSeconds, {
-    Set<TaiyinPositionFlag> flags = const {},
+    Set<PositionFlag> flags = const {},
   }) {
     _ensureOpen();
     _requireFinite(deltaTSeconds, 'deltaTSeconds');
@@ -391,10 +391,10 @@ final class TaiyinPositionApi {
   /// Calculates a Cartesian state from a UTC calendar value.
   ///
   /// Position and derivative flags behave as described by [stateAtTt].
-  TaiyinEphemerisResult<TaiyinCartesianState> stateAtUtc(
-    TaiyinTarget body,
+  EphemerisResult<CartesianState> stateAtUtc(
+    Target body,
     AstroDateTime utc, {
-    Set<TaiyinPositionFlag> flags = const {},
+    Set<PositionFlag> flags = const {},
   }) {
     _ensureOpen();
     return using((arena) {
@@ -413,11 +413,11 @@ final class TaiyinPositionApi {
     });
   }
 
-  TaiyinEphemerisResult<TaiyinPosition> _position(
-    Set<TaiyinPositionFlag> flags,
+  EphemerisResult<Position> _position(
+    Set<PositionFlag> flags,
     _SinglePositionCalculation calculate,
   ) {
-    final frozenFlags = Set<TaiyinPositionFlag>.unmodifiable(flags);
+    final frozenFlags = Set<PositionFlag>.unmodifiable(flags);
     final mask = _flagMask(frozenFlags);
     return using((arena) {
       final output = arena<Double>(6);
@@ -426,8 +426,8 @@ final class TaiyinPositionApi {
       final status = calculate(arena, mask, output, diagnostic);
       final mappedDiagnostic = _readDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
-      return TaiyinEphemerisResult(
-        value: TaiyinPosition._([
+      return EphemerisResult(
+        value: Position._([
           for (var index = 0; index < 6; index++) output[index],
         ], frozenFlags),
         diagnostic: mappedDiagnostic,
@@ -435,13 +435,13 @@ final class TaiyinPositionApi {
     });
   }
 
-  List<TaiyinEphemerisResult<TaiyinPosition>> _positions(
-    List<TaiyinTarget> bodies,
-    Set<TaiyinPositionFlag> flags,
+  List<EphemerisResult<Position>> _positions(
+    List<Target> bodies,
+    Set<PositionFlag> flags,
     _BatchPositionCalculation calculate,
   ) {
     if (bodies.isEmpty) return const [];
-    final frozenFlags = Set<TaiyinPositionFlag>.unmodifiable(flags);
+    final frozenFlags = Set<PositionFlag>.unmodifiable(flags);
     final mask = _flagMask(frozenFlags);
     return using((arena) {
       final targetIds = arena<Int32>(bodies.length);
@@ -459,10 +459,10 @@ final class TaiyinPositionApi {
         output,
         diagnostics,
       );
-      final results = List<TaiyinEphemerisResult<TaiyinPosition>>.unmodifiable([
+      final results = List<EphemerisResult<Position>>.unmodifiable([
         for (var bodyIndex = 0; bodyIndex < bodies.length; bodyIndex++)
-          TaiyinEphemerisResult(
-            value: TaiyinPosition._([
+          EphemerisResult(
+            value: Position._([
               for (var valueIndex = 0; valueIndex < 6; valueIndex++)
                 output[bodyIndex * 6 + valueIndex],
             ], frozenFlags),
@@ -477,8 +477,8 @@ final class TaiyinPositionApi {
     });
   }
 
-  TaiyinEphemerisResult<TaiyinCartesianState> _state(
-    Set<TaiyinPositionFlag> flags,
+  EphemerisResult<CartesianState> _state(
+    Set<PositionFlag> flags,
     _StateCalculation calculate,
   ) {
     final mask = _flagMask(flags);
@@ -492,8 +492,8 @@ final class TaiyinPositionApi {
       final mappedDiagnostic = _readDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
       final state = output.ref;
-      return TaiyinEphemerisResult(
-        value: TaiyinCartesianState(
+      return EphemerisResult(
+        value: CartesianState(
           positionAu: _readVector(state.position_au),
           velocityAuPerDay: _readVector(state.velocity_au_per_day),
           accelerationAuPerDay2: _readVector(state.acceleration_au_per_day2),
@@ -503,16 +503,16 @@ final class TaiyinPositionApi {
     });
   }
 
-  TaiyinEphemerisDiagnostic _readDiagnostic(taiyin_ephemeris_diagnostic value) {
+  EphemerisDiagnostic _readDiagnostic(taiyin_ephemeris_diagnostic value) {
     final timeScaleFlags = {
       for (final flag in TimeScaleDiagnosticFlag.values)
         if ((value.time_scale_flags & flag.mask) != 0) flag,
     };
-    return TaiyinEphemerisDiagnostic(
+    return EphemerisDiagnostic(
       status: value.status,
       targetId: value.target_id,
       centerId: value.center_id,
-      frame: TaiyinApparentFrame.fromId(value.frame),
+      frame: ApparentFrame.fromId(value.frame),
       rawFrameId: value.frame,
       julianDateTdb: readJulianDate<TdbScale>(value.jd_tdb),
       candidateCount: value.candidate_count,
@@ -535,11 +535,11 @@ final class TaiyinPositionApi {
     );
   }
 
-  TaiyinVector3 _readVector(taiyin_vector3 value) {
-    return TaiyinVector3(value.x, value.y, value.z);
+  Vector3 _readVector(taiyin_vector3 value) {
+    return Vector3(value.x, value.y, value.z);
   }
 
-  int _flagMask(Set<TaiyinPositionFlag> flags) {
+  int _flagMask(Set<PositionFlag> flags) {
     return flags.fold(0, (value, flag) => value | flag.mask);
   }
 

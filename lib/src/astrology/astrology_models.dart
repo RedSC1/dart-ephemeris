@@ -3,13 +3,13 @@ import '../time/julian_date.dart';
 import '../time/time_scale.dart';
 
 /// An ayanamsha definition recognized by the process-wide native registry.
-abstract interface class TaiyinAyanamshaModel {
+abstract interface class AyanamshaModel {
   /// Stable identifier used by Taiyin's C ABI.
   int get id;
 }
 
 /// A built-in sidereal ayanamsha definition.
-enum TaiyinAyanamsha implements TaiyinAyanamshaModel {
+enum Ayanamsha implements AyanamshaModel {
   faganBradley(0),
   lahiri(1),
   raman(3),
@@ -17,7 +17,7 @@ enum TaiyinAyanamsha implements TaiyinAyanamshaModel {
   galacticCenter0Sagittarius(17),
   trueChitra(27);
 
-  const TaiyinAyanamsha(this.id);
+  const Ayanamsha(this.id);
 
   /// Stable identifier used by Taiyin's C ABI.
   @override
@@ -27,11 +27,11 @@ enum TaiyinAyanamsha implements TaiyinAyanamshaModel {
 /// A process-wide custom ayanamsha model identifier.
 ///
 /// Obtain an owned Dart-backed registration from
-/// [Taiyin.registerCustomAyanamshaModel]. Constructing this value directly is
+/// [Ephemeris.registerCustomAyanamshaModel]. Constructing this value directly is
 /// also useful in a worker isolate to refer to an already registered native
 /// model, but it does not register a callback or own its lifecycle.
-final class TaiyinCustomAyanamshaModel implements TaiyinAyanamshaModel {
-  TaiyinCustomAyanamshaModel(int id) : id = _validateId(id);
+final class CustomAyanamshaModel implements AyanamshaModel {
+  CustomAyanamshaModel(int id) : id = _validateId(id);
 
   @override
   final int id;
@@ -49,26 +49,26 @@ final class TaiyinCustomAyanamshaModel implements TaiyinAyanamshaModel {
 
   @override
   bool operator ==(Object other) =>
-      other is TaiyinCustomAyanamshaModel && other.id == id;
+      other is CustomAyanamshaModel && other.id == id;
 
   @override
   int get hashCode => id.hashCode;
 
   @override
-  String toString() => 'TaiyinCustomAyanamshaModel($id)';
+  String toString() => 'CustomAyanamshaModel($id)';
 }
 
 /// A native position target supplied by Taiyin's astrology extension.
 ///
-/// Call [Taiyin.registerBuiltinAstrologyTargets] during setup before using one
+/// Call [Ephemeris.registerBuiltinAstrologyTargets] during setup before using one
 /// of these targets with a position or state calculation.
 ///
 /// The four node targets are direction-only. Their generic spherical-position
 /// distance and distance-rate slots are `double.nan`; Cartesian output is
-/// likewise unavailable. Use [TaiyinAstrologyApi.lunarTrueNodeAtTt] or
-/// [TaiyinAstrologyApi.lunarMeanNodeAtTt] when a node direction is all that is
+/// likewise unavailable. Use [AstrologyApi.lunarTrueNodeAtTt] or
+/// [AstrologyApi.lunarMeanNodeAtTt] when a node direction is all that is
 /// required.
-enum TaiyinAstrologyTarget implements TaiyinTarget {
+enum AstrologyTarget implements Target {
   trueNode(-100001),
   trueDescendingNode(-100002),
   meanNode(-100003),
@@ -77,7 +77,7 @@ enum TaiyinAstrologyTarget implements TaiyinTarget {
   osculatingLilith(-100006),
   fittedLilith(-100007);
 
-  const TaiyinAstrologyTarget(this.id);
+  const AstrologyTarget(this.id);
 
   /// Stable identifier used by Taiyin's C ABI.
   @override
@@ -87,12 +87,12 @@ enum TaiyinAstrologyTarget implements TaiyinTarget {
 /// Relates a historical ayanamsha definition to the selected precession model.
 ///
 /// The native ABI encodes non-default policies as high-word sidereal flags.
-enum TaiyinSiderealPrecessionPolicy {
+enum SiderealPrecessionPolicy {
   compensateToReference(0),
   rawReferenceOffset(1 << 36),
   useReferencePrecession(1 << 37);
 
-  const TaiyinSiderealPrecessionPolicy(this.nativeFlagMask);
+  const SiderealPrecessionPolicy(this.nativeFlagMask);
 
   /// High-word flag passed to Taiyin's C ABI.
   final int nativeFlagMask;
@@ -102,11 +102,11 @@ enum TaiyinSiderealPrecessionPolicy {
 ///
 /// Equatorial sidereal-coordinate calls deliberately override this selection
 /// and return the tropical mean or true equator of date instead.
-enum TaiyinSiderealReferencePlane {
+enum SiderealReferencePlane {
   /// The ordinary sidereal zodiac on the mean ecliptic of the calculation date.
   meanEclipticOfDate(0, false),
 
-  /// A mean ecliptic fixed at [TaiyinSiderealReferenceEpoch].
+  /// A mean ecliptic fixed at [SiderealReferenceEpoch].
   meanEclipticAtEpoch(1 << 32, true),
 
   /// The solar-system invariable plane, oriented at a reference epoch.
@@ -115,7 +115,7 @@ enum TaiyinSiderealReferencePlane {
   /// The fixed, non-nutated mean ecliptic of J2000.0.
   meanEclipticJ2000(1 << 34, false);
 
-  const TaiyinSiderealReferencePlane(
+  const SiderealReferencePlane(
     this.nativeFlagMask,
     this.requiresReferenceEpoch,
   );
@@ -123,24 +123,24 @@ enum TaiyinSiderealReferencePlane {
   /// High-word flag passed to Taiyin's C ABI.
   final int nativeFlagMask;
 
-  /// Whether this plane requires a finite [TaiyinSiderealReferenceEpoch].
+  /// Whether this plane requires a finite [SiderealReferenceEpoch].
   final bool requiresReferenceEpoch;
 }
 
 /// A typed epoch that orients a fixed sidereal reference plane.
 ///
-/// Use [TaiyinSiderealReferenceEpoch.tt] for a TT epoch or
-/// [TaiyinSiderealReferenceEpoch.ut1] for a UT1 epoch. The native ABI accepts
+/// Use [SiderealReferenceEpoch.tt] for a TT epoch or
+/// [SiderealReferenceEpoch.ut1] for a UT1 epoch. The native ABI accepts
 /// the epoch as a split-JD struct; when no reference plane is selected a null
 /// pointer is sent instead.
-sealed class TaiyinSiderealReferenceEpoch {
-  const TaiyinSiderealReferenceEpoch._();
+sealed class SiderealReferenceEpoch {
+  const SiderealReferenceEpoch._();
 
-  factory TaiyinSiderealReferenceEpoch.tt(JulianDate<TtScale> coordinate) =
-      TaiyinSiderealReferenceEpochTt;
+  factory SiderealReferenceEpoch.tt(JulianDate<TtScale> coordinate) =
+      SiderealReferenceEpochTt;
 
-  factory TaiyinSiderealReferenceEpoch.ut1(JulianDate<Ut1Scale> coordinate) =
-      TaiyinSiderealReferenceEpochUt1;
+  factory SiderealReferenceEpoch.ut1(JulianDate<Ut1Scale> coordinate) =
+      SiderealReferenceEpochUt1;
 
   /// Scalar Julian date equivalent of this epoch, for scalar consumers.
   double get nativeJulianDate;
@@ -149,11 +149,10 @@ sealed class TaiyinSiderealReferenceEpoch {
   bool get isUt1;
 }
 
-/// A TT reference epoch for [TaiyinSiderealReferencePlane.meanEclipticAtEpoch]
-/// or [TaiyinSiderealReferencePlane.solarSystemInvariable].
-final class TaiyinSiderealReferenceEpochTt
-    extends TaiyinSiderealReferenceEpoch {
-  const TaiyinSiderealReferenceEpochTt(this.coordinate) : super._();
+/// A TT reference epoch for [SiderealReferencePlane.meanEclipticAtEpoch]
+/// or [SiderealReferencePlane.solarSystemInvariable].
+final class SiderealReferenceEpochTt extends SiderealReferenceEpoch {
+  const SiderealReferenceEpochTt(this.coordinate) : super._();
 
   final JulianDate<TtScale> coordinate;
 
@@ -165,21 +164,20 @@ final class TaiyinSiderealReferenceEpochTt
 
   @override
   bool operator ==(Object other) =>
-      other is TaiyinSiderealReferenceEpochTt && other.coordinate == coordinate;
+      other is SiderealReferenceEpochTt && other.coordinate == coordinate;
 
   @override
-  int get hashCode => Object.hash(TaiyinSiderealReferenceEpochTt, coordinate);
+  int get hashCode => Object.hash(SiderealReferenceEpochTt, coordinate);
 
   @override
-  String toString() => 'TaiyinSiderealReferenceEpoch.tt($coordinate)';
+  String toString() => 'SiderealReferenceEpoch.tt($coordinate)';
 }
 
 /// A UT1 reference epoch for
-/// [TaiyinSiderealReferencePlane.meanEclipticAtEpoch] or
-/// [TaiyinSiderealReferencePlane.solarSystemInvariable].
-final class TaiyinSiderealReferenceEpochUt1
-    extends TaiyinSiderealReferenceEpoch {
-  const TaiyinSiderealReferenceEpochUt1(this.coordinate) : super._();
+/// [SiderealReferencePlane.meanEclipticAtEpoch] or
+/// [SiderealReferencePlane.solarSystemInvariable].
+final class SiderealReferenceEpochUt1 extends SiderealReferenceEpoch {
+  const SiderealReferenceEpochUt1(this.coordinate) : super._();
 
   final JulianDate<Ut1Scale> coordinate;
 
@@ -191,14 +189,13 @@ final class TaiyinSiderealReferenceEpochUt1
 
   @override
   bool operator ==(Object other) =>
-      other is TaiyinSiderealReferenceEpochUt1 &&
-      other.coordinate == coordinate;
+      other is SiderealReferenceEpochUt1 && other.coordinate == coordinate;
 
   @override
-  int get hashCode => Object.hash(TaiyinSiderealReferenceEpochUt1, coordinate);
+  int get hashCode => Object.hash(SiderealReferenceEpochUt1, coordinate);
 
   @override
-  String toString() => 'TaiyinSiderealReferenceEpoch.ut1($coordinate)';
+  String toString() => 'SiderealReferenceEpoch.ut1($coordinate)';
 }
 
 /// The output reference frame used by a generic sidereal-coordinate result.
@@ -206,7 +203,7 @@ final class TaiyinSiderealReferenceEpochUt1
 /// The ecliptic variant has a sidereal origin. Equatorial variants follow the
 /// conventional Swiss Ephemeris-compatible behavior and are tropical
 /// mean/true equators of date instead.
-enum TaiyinSiderealCoordinateFrame {
+enum SiderealCoordinateFrame {
   meanEclipticOfDate(0),
   meanEquatorOfDate(1),
   trueEquatorOfDate(2),
@@ -215,24 +212,24 @@ enum TaiyinSiderealCoordinateFrame {
   j2000Ecliptic(5),
   unknown(-1);
 
-  const TaiyinSiderealCoordinateFrame(this.id);
+  const SiderealCoordinateFrame(this.id);
 
   /// Stable identifier returned by Taiyin's C ABI.
   final int id;
 
-  static TaiyinSiderealCoordinateFrame fromId(int id) {
+  static SiderealCoordinateFrame fromId(int id) {
     return values.where((value) => value.id == id).firstOrNull ?? unknown;
   }
 }
 
 /// A house-system definition recognized by the process-wide native registry.
-abstract interface class TaiyinHouseSystemModel {
+abstract interface class HouseSystemModel {
   /// Stable identifier used by Taiyin's C ABI.
   int get id;
 }
 
 /// A built-in astrological house system.
-enum TaiyinHouseSystem implements TaiyinHouseSystemModel {
+enum HouseSystem implements HouseSystemModel {
   wholeSign(0),
   equal(1),
   porphyry(2),
@@ -244,13 +241,13 @@ enum TaiyinHouseSystem implements TaiyinHouseSystemModel {
   polichPage(8),
   morinus(9);
 
-  const TaiyinHouseSystem(this.id);
+  const HouseSystem(this.id);
 
   /// Stable identifier used by Taiyin's C ABI.
   @override
   final int id;
 
-  static TaiyinHouseSystem? fromIdOrNull(int id) {
+  static HouseSystem? fromIdOrNull(int id) {
     for (final value in values) {
       if (value.id == id) return value;
     }
@@ -261,11 +258,11 @@ enum TaiyinHouseSystem implements TaiyinHouseSystemModel {
 /// A process-wide custom house-system model identifier.
 ///
 /// Obtain an owned Dart-backed registration from
-/// [Taiyin.registerCustomHouseSystemModel]. Constructing this value directly
+/// [Ephemeris.registerCustomHouseSystemModel]. Constructing this value directly
 /// only identifies an already registered native model; it does not register a
 /// callback or own its lifecycle.
-final class TaiyinCustomHouseSystemModel implements TaiyinHouseSystemModel {
-  TaiyinCustomHouseSystemModel(int id) : id = _validateId(id);
+final class CustomHouseSystemModel implements HouseSystemModel {
+  CustomHouseSystemModel(int id) : id = _validateId(id);
 
   @override
   final int id;
@@ -283,17 +280,17 @@ final class TaiyinCustomHouseSystemModel implements TaiyinHouseSystemModel {
 
   @override
   bool operator ==(Object other) =>
-      other is TaiyinCustomHouseSystemModel && other.id == id;
+      other is CustomHouseSystemModel && other.id == id;
 
   @override
   int get hashCode => id.hashCode;
 
   @override
-  String toString() => 'TaiyinCustomHouseSystemModel($id)';
+  String toString() => 'CustomHouseSystemModel($id)';
 }
 
 /// A condition reported while calculating time-based astrological houses.
-enum TaiyinHouseResultFlag {
+enum HouseResultFlag {
   usedFallback(1 << 0),
   fallbackPorphyry(1 << 1),
 
@@ -303,25 +300,25 @@ enum TaiyinHouseResultFlag {
   /// are `NaN` without setting this flag.
   speedUnavailable(1 << 2);
 
-  const TaiyinHouseResultFlag(this.mask);
+  const HouseResultFlag(this.mask);
 
   /// Bit used by Taiyin's C ABI.
   final int mask;
 }
 
 /// The requested lunar-node direction.
-enum TaiyinLunarNodeKind {
+enum LunarNodeKind {
   ascending(0),
   descending(1);
 
-  const TaiyinLunarNodeKind(this.id);
+  const LunarNodeKind(this.id);
 
   /// Stable value used by Taiyin's C ABI.
   final int id;
 }
 
 /// The convention used to define a lunar apogee result.
-enum TaiyinLunarApsisDefinition {
+enum LunarApsisDefinition {
   /// A conventional direction derived from IERS 2003 Delaunay arguments.
   delaunayMean(0),
 
@@ -332,19 +329,19 @@ enum TaiyinLunarApsisDefinition {
   de441FittedNatural(2),
   unknown(-1);
 
-  const TaiyinLunarApsisDefinition(this.id);
+  const LunarApsisDefinition(this.id);
 
   /// Stable value returned by Taiyin's C ABI.
   final int id;
 
-  static TaiyinLunarApsisDefinition fromId(int id) {
+  static LunarApsisDefinition fromId(int id) {
     return values.where((value) => value.id == id).firstOrNull ?? unknown;
   }
 }
 
 /// Unshifted and sidereal ecliptic longitudes for one target.
-final class TaiyinSiderealPosition {
-  TaiyinSiderealPosition({
+final class SiderealPosition {
+  SiderealPosition({
     required this.target,
     required this.ayanamsha,
     required this.precessionPolicy,
@@ -358,21 +355,21 @@ final class TaiyinSiderealPosition {
     required this.distanceAu,
     required this.tropicalLongitudeRateRadiansPerDay,
     required this.siderealLongitudeRateRadiansPerDay,
-    required Set<TaiyinPositionFlag> flags,
+    required Set<PositionFlag> flags,
   }) : flags = Set.unmodifiable(flags);
 
-  final TaiyinTarget target;
-  final TaiyinAyanamshaModel ayanamsha;
-  final TaiyinSiderealPrecessionPolicy precessionPolicy;
+  final Target target;
+  final AyanamshaModel ayanamsha;
+  final SiderealPrecessionPolicy precessionPolicy;
 
   /// Requested ecliptic reference-plane policy.
-  final TaiyinSiderealReferencePlane referencePlane;
+  final SiderealReferencePlane referencePlane;
 
   /// Epoch used to orient [referencePlane], when that plane requires one.
-  final TaiyinSiderealReferenceEpoch? referenceEpoch;
+  final SiderealReferenceEpoch? referenceEpoch;
 
   /// Ecliptic coordinate frame used by these longitudes.
-  final TaiyinSiderealCoordinateFrame coordinateFrame;
+  final SiderealCoordinateFrame coordinateFrame;
 
   /// Raw native frame ID, retained when a newer native library adds a frame.
   final int rawCoordinateFrameId;
@@ -403,7 +400,7 @@ final class TaiyinSiderealPosition {
   /// longitude on that plane, not a tropical ecliptic-of-date rate.
   ///
   /// This is `double.nan` unless [flags] contains
-  /// [TaiyinPositionFlag.speed]. This result intentionally contains longitude
+  /// [PositionFlag.speed]. This result intentionally contains longitude
   /// rates only, not latitude or distance rates.
   final double tropicalLongitudeRateRadiansPerDay;
 
@@ -414,36 +411,36 @@ final class TaiyinSiderealPosition {
   /// Sidereal ecliptic-longitude rate in radians per day.
   ///
   /// This is `double.nan` unless [flags] contains
-  /// [TaiyinPositionFlag.speed]. This result intentionally contains longitude
+  /// [PositionFlag.speed]. This result intentionally contains longitude
   /// rates only, not latitude or distance rates.
   final double siderealLongitudeRateRadiansPerDay;
 
   /// Native position options resolved for this ecliptic calculation.
   ///
-  /// [TaiyinPositionFlag.radians] is always present. Longitude rates are
-  /// available only when this set contains [TaiyinPositionFlag.speed].
-  final Set<TaiyinPositionFlag> flags;
+  /// [PositionFlag.radians] is always present. Longitude rates are
+  /// available only when this set contains [PositionFlag.speed].
+  final Set<PositionFlag> flags;
 }
 
 /// Generic sidereal coordinates in a selected ecliptic or tropical equatorial
 /// frame.
 ///
 /// [values] use the usual six-value position convention. Without
-/// [TaiyinPositionFlag.xyz], values 0–2 are longitude/right ascension,
+/// [PositionFlag.xyz], values 0–2 are longitude/right ascension,
 /// latitude/declination, and distance; values 3–5 are the corresponding rates
-/// when [TaiyinPositionFlag.speed] is present. With `xyz`, they are Cartesian
+/// when [PositionFlag.speed] is present. With `xyz`, they are Cartesian
 /// position and velocity. The Dart API always adds
-/// [TaiyinPositionFlag.radians], so angular spherical values are always in
-/// radians. Without [TaiyinPositionFlag.speed], values 3–5 are `0.0`, as in
+/// [PositionFlag.radians], so angular spherical values are always in
+/// radians. Without [PositionFlag.speed], values 3–5 are `0.0`, as in
 /// the generic native-position convention; this differs from
-/// [TaiyinSiderealPosition], whose unavailable rate fields are `double.nan`.
+/// [SiderealPosition], whose unavailable rate fields are `double.nan`.
 /// Without
-/// [TaiyinPositionFlag.equatorial], the frame is selected by [referencePlane].
+/// [PositionFlag.equatorial], the frame is selected by [referencePlane].
 /// With it, the result follows Swiss Ephemeris-compatible behavior:
-/// tropical mean equator of date with [TaiyinPositionFlag.noNutation], or
+/// tropical mean equator of date with [PositionFlag.noNutation], or
 /// tropical true equator of date without it.
-final class TaiyinSiderealCoordinates {
-  TaiyinSiderealCoordinates({
+final class SiderealCoordinates {
+  SiderealCoordinates({
     required this.target,
     required this.ayanamsha,
     required this.precessionPolicy,
@@ -452,7 +449,7 @@ final class TaiyinSiderealCoordinates {
     required this.coordinateFrame,
     required this.rawCoordinateFrameId,
     required List<double> values,
-    required Set<TaiyinPositionFlag> flags,
+    required Set<PositionFlag> flags,
   }) : values = List.unmodifiable(values),
        flags = Set.unmodifiable(flags) {
     if (values.length != 6) {
@@ -460,21 +457,21 @@ final class TaiyinSiderealCoordinates {
     }
   }
 
-  final TaiyinTarget target;
-  final TaiyinAyanamshaModel ayanamsha;
-  final TaiyinSiderealPrecessionPolicy precessionPolicy;
+  final Target target;
+  final AyanamshaModel ayanamsha;
+  final SiderealPrecessionPolicy precessionPolicy;
 
   /// Requested ecliptic reference-plane policy.
   ///
   /// This is ignored by an equatorial output request; [coordinateFrame] always
   /// identifies the frame actually returned by the native calculation.
-  final TaiyinSiderealReferencePlane referencePlane;
+  final SiderealReferencePlane referencePlane;
 
   /// Epoch used to orient [referencePlane], when that plane requires one.
-  final TaiyinSiderealReferenceEpoch? referenceEpoch;
+  final SiderealReferenceEpoch? referenceEpoch;
 
   /// Output coordinate frame used by these values.
-  final TaiyinSiderealCoordinateFrame coordinateFrame;
+  final SiderealCoordinateFrame coordinateFrame;
 
   /// Unrecognized C ABI coordinate-frame ID, if any.
   ///
@@ -486,19 +483,19 @@ final class TaiyinSiderealCoordinates {
 
   /// Resolved native position options for this calculation.
   ///
-  /// This always includes [TaiyinPositionFlag.radians].
-  final Set<TaiyinPositionFlag> flags;
+  /// This always includes [PositionFlag.radians].
+  final Set<PositionFlag> flags;
 
   List<double> get coordinates => values.sublist(0, 3);
 
   /// Velocity or angular-rate slots, or three `0.0` values without `speed`.
   List<double> get rates => values.sublist(3, 6);
-  bool get isCartesian => flags.contains(TaiyinPositionFlag.xyz);
-  bool get isEquatorial => flags.contains(TaiyinPositionFlag.equatorial);
-  bool get isRadians => flags.contains(TaiyinPositionFlag.radians);
+  bool get isCartesian => flags.contains(PositionFlag.xyz);
+  bool get isEquatorial => flags.contains(PositionFlag.equatorial);
+  bool get isRadians => flags.contains(PositionFlag.radians);
 
   @override
-  String toString() => 'TaiyinSiderealCoordinates($values)';
+  String toString() => 'SiderealCoordinates($values)';
 }
 
 /// A geocentric lunar-node direction and its instantaneous longitude rate.
@@ -506,18 +503,18 @@ final class TaiyinSiderealCoordinates {
 /// The node is an angular direction, not a physical body position. Its
 /// longitude is measured in [referenceFrame]; this is right ascension for an
 /// equatorial frame. Results are always in radians and radians per day.
-final class TaiyinLunarNodePosition {
-  TaiyinLunarNodePosition({
+final class LunarNodePosition {
+  LunarNodePosition({
     required this.kind,
     required this.referenceFrame,
     required this.rawReferenceFrameId,
     required this.longitudeRadians,
     required this.longitudeRateRadiansPerDay,
-    required Set<TaiyinPositionFlag> flags,
+    required Set<PositionFlag> flags,
   }) : flags = Set.unmodifiable(flags);
 
-  final TaiyinLunarNodeKind kind;
-  final TaiyinApparentFrame referenceFrame;
+  final LunarNodeKind kind;
+  final ApparentFrame referenceFrame;
 
   /// Raw native frame ID, retained if a newer native library adds a frame.
   final int rawReferenceFrameId;
@@ -525,11 +522,11 @@ final class TaiyinLunarNodePosition {
   final double longitudeRateRadiansPerDay;
 
   /// Accepted native physical-correction and frame-selection options.
-  final Set<TaiyinPositionFlag> flags;
+  final Set<PositionFlag> flags;
 
   @override
   String toString() =>
-      'TaiyinLunarNodePosition(kind: $kind, frame: $referenceFrame, '
+      'LunarNodePosition(kind: $kind, frame: $referenceFrame, '
       'longitudeRadians: $longitudeRadians, '
       'longitudeRateRadiansPerDay: $longitudeRateRadiansPerDay)';
 }
@@ -537,10 +534,10 @@ final class TaiyinLunarNodePosition {
 /// A lunar apogee direction under one explicit astronomical convention.
 ///
 /// Angular values are radians and radians per day. [distanceAu] and
-/// [distanceRateAuPerDay] are null for [TaiyinLunarApsisDefinition.delaunayMean],
+/// [distanceRateAuPerDay] are null for [LunarApsisDefinition.delaunayMean],
 /// which is a conventional direction rather than a physical point.
-final class TaiyinLunarApsisPosition {
-  TaiyinLunarApsisPosition({
+final class LunarApsisPosition {
+  LunarApsisPosition({
     required this.referenceFrame,
     required this.rawReferenceFrameId,
     required this.definition,
@@ -552,14 +549,14 @@ final class TaiyinLunarApsisPosition {
     required this.distanceAu,
     required this.distanceRateAuPerDay,
     required this.extrapolated,
-    required Set<TaiyinPositionFlag> flags,
+    required Set<PositionFlag> flags,
   }) : flags = Set.unmodifiable(flags);
 
-  final TaiyinApparentFrame referenceFrame;
+  final ApparentFrame referenceFrame;
 
   /// Raw native frame ID, retained if a newer native library adds a frame.
   final int rawReferenceFrameId;
-  final TaiyinLunarApsisDefinition definition;
+  final LunarApsisDefinition definition;
 
   /// Raw native definition ID, retained if a newer library adds one.
   final int rawDefinitionId;
@@ -576,23 +573,23 @@ final class TaiyinLunarApsisPosition {
   final bool extrapolated;
 
   /// Accepted native physical-correction and frame-selection options.
-  final Set<TaiyinPositionFlag> flags;
+  final Set<PositionFlag> flags;
 
   @override
   String toString() =>
-      'TaiyinLunarApsisPosition(definition: $definition, '
+      'LunarApsisPosition(definition: $definition, '
       'frame: $referenceFrame, longitudeRadians: $longitudeRadians, '
       'latitudeRadians: $latitudeRadians, distanceAu: $distanceAu, '
       'extrapolated: $extrapolated)';
 }
 
 /// Twelve house cusps and derived angular points.
-final class TaiyinHouses {
-  TaiyinHouses({
+final class Houses {
+  Houses({
     required this.requestedSystemId,
     required this.resolvedSystemId,
     required this.rawFlags,
-    required Set<TaiyinHouseResultFlag> flags,
+    required Set<HouseResultFlag> flags,
     required this.armcRadians,
     required this.ascendantRadians,
     required this.midheavenRadians,
@@ -629,7 +626,7 @@ final class TaiyinHouses {
   final int requestedSystemId;
   final int resolvedSystemId;
   final int rawFlags;
-  final Set<TaiyinHouseResultFlag> flags;
+  final Set<HouseResultFlag> flags;
   final double armcRadians;
   final double ascendantRadians;
   final double midheavenRadians;
@@ -650,31 +647,31 @@ final class TaiyinHouses {
   ///
   /// This is zero-indexed in the same way as [cuspLongitudesRadians]. Values
   /// are `NaN` for direct ARMC calculations and when
-  /// [TaiyinHouseResultFlag.speedUnavailable] is set.
+  /// [HouseResultFlag.speedUnavailable] is set.
   final List<double> cuspLongitudeRatesRadiansPerDay;
 
   /// The requested system's ID as a built-in or custom type tag.
   ///
   /// A custom result only identifies an ID; it does not imply that this Dart
   /// isolate owns or has registered that callback.
-  TaiyinHouseSystemModel? get requestedSystem =>
+  HouseSystemModel? get requestedSystem =>
       _houseSystemModelFromId(requestedSystemId);
 
   /// The resolved system's ID as a built-in or custom type tag.
   ///
   /// See [requestedSystem] for the ownership semantics of custom IDs.
-  TaiyinHouseSystemModel? get resolvedSystem =>
+  HouseSystemModel? get resolvedSystem =>
       _houseSystemModelFromId(resolvedSystemId);
 
-  static TaiyinHouseSystemModel? _houseSystemModelFromId(int id) {
-    return TaiyinHouseSystem.fromIdOrNull(id) ??
-        (id >= 10000 ? TaiyinCustomHouseSystemModel(id) : null);
+  static HouseSystemModel? _houseSystemModelFromId(int id) {
+    return HouseSystem.fromIdOrNull(id) ??
+        (id >= 10000 ? CustomHouseSystemModel(id) : null);
   }
 }
 
 /// The house containing an ecliptic longitude.
-final class TaiyinHousePosition {
-  TaiyinHousePosition({
+final class HousePosition {
+  HousePosition({
     required this.houseNumber,
     required this.fraction,
     required this.continuousHousePosition,

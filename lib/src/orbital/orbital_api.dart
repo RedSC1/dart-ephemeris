@@ -1,13 +1,13 @@
 part of '../taiyin.dart';
 
 typedef _OrbitalStatusChecker =
-    void Function(int status, TaiyinEphemerisDiagnostic? diagnostic);
+    void Function(int status, EphemerisDiagnostic? diagnostic);
 
 const int _taiyinOrbitalReverseMask = 1 << 32;
 
 /// Osculating-orbit calculations and physical orbital-event searches.
-final class TaiyinOrbitalApi {
-  TaiyinOrbitalApi._(
+final class OrbitalApi {
+  OrbitalApi._(
     this._bindings,
     this._context,
     this._ensureOpen,
@@ -20,10 +20,10 @@ final class TaiyinOrbitalApi {
   final _OrbitalStatusChecker _checkStatus;
 
   /// Calculates osculating elements at a TT coordinate.
-  TaiyinEphemerisResult<TaiyinOsculatingOrbit> osculatingAtTt(
-    TaiyinBody body,
+  EphemerisResult<OsculatingOrbit> osculatingAtTt(
+    Body body,
     JulianDate<TtScale> tt, {
-    TaiyinApparentFrame referenceFrame = TaiyinApparentFrame.j2000Ecliptic,
+    ApparentFrame referenceFrame = ApparentFrame.j2000Ecliptic,
     bool allowBarycenterApproximation = false,
   }) {
     _ensureOpen();
@@ -45,10 +45,10 @@ final class TaiyinOrbitalApi {
   }
 
   /// Calculates osculating elements at a UT1 coordinate.
-  TaiyinEphemerisResult<TaiyinOsculatingOrbit> osculatingAtUt1(
-    TaiyinBody body,
+  EphemerisResult<OsculatingOrbit> osculatingAtUt1(
+    Body body,
     JulianDate<Ut1Scale> ut1, {
-    TaiyinApparentFrame referenceFrame = TaiyinApparentFrame.j2000Ecliptic,
+    ApparentFrame referenceFrame = ApparentFrame.j2000Ecliptic,
     bool allowBarycenterApproximation = false,
   }) {
     _ensureOpen();
@@ -70,10 +70,10 @@ final class TaiyinOrbitalApi {
   }
 
   /// Constructs instantaneous osculating reference points at TT.
-  TaiyinEphemerisResult<TaiyinOrbitReferencePoints> referencePointsAtTt(
-    TaiyinBody body,
+  EphemerisResult<OrbitReferencePoints> referencePointsAtTt(
+    Body body,
     JulianDate<TtScale> tt, {
-    TaiyinApparentFrame referenceFrame = TaiyinApparentFrame.j2000Ecliptic,
+    ApparentFrame referenceFrame = ApparentFrame.j2000Ecliptic,
     bool allowBarycenterApproximation = false,
   }) {
     _ensureOpen();
@@ -95,10 +95,10 @@ final class TaiyinOrbitalApi {
   }
 
   /// Constructs instantaneous osculating reference points at UT1.
-  TaiyinEphemerisResult<TaiyinOrbitReferencePoints> referencePointsAtUt1(
-    TaiyinBody body,
+  EphemerisResult<OrbitReferencePoints> referencePointsAtUt1(
+    Body body,
     JulianDate<Ut1Scale> ut1, {
-    TaiyinApparentFrame referenceFrame = TaiyinApparentFrame.j2000Ecliptic,
+    ApparentFrame referenceFrame = ApparentFrame.j2000Ecliptic,
     bool allowBarycenterApproximation = false,
   }) {
     _ensureOpen();
@@ -120,12 +120,11 @@ final class TaiyinOrbitalApi {
   }
 
   /// Searches from a TT coordinate for a pericenter or apocenter.
-  TaiyinEphemerisResult<TaiyinApsisEvent<TtScale>> searchApsisFromTt(
-    TaiyinBody body,
-    TaiyinApsisKind kind,
+  EphemerisResult<ApsisEvent<TtScale>> searchApsisFromTt(
+    Body body,
+    ApsisKind kind,
     JulianDate<TtScale> start, {
-    TaiyinOrbitalSearchDirection direction =
-        TaiyinOrbitalSearchDirection.forward,
+    OrbitalSearchDirection direction = OrbitalSearchDirection.forward,
     bool allowBarycenterApproximation = false,
   }) {
     _ensureOpen();
@@ -148,12 +147,11 @@ final class TaiyinOrbitalApi {
   }
 
   /// Searches from a UT1 coordinate for a pericenter or apocenter.
-  TaiyinEphemerisResult<TaiyinApsisEvent<Ut1Scale>> searchApsisFromUt1(
-    TaiyinBody body,
-    TaiyinApsisKind kind,
+  EphemerisResult<ApsisEvent<Ut1Scale>> searchApsisFromUt1(
+    Body body,
+    ApsisKind kind,
     JulianDate<Ut1Scale> start, {
-    TaiyinOrbitalSearchDirection direction =
-        TaiyinOrbitalSearchDirection.forward,
+    OrbitalSearchDirection direction = OrbitalSearchDirection.forward,
     bool allowBarycenterApproximation = false,
   }) {
     _ensureOpen();
@@ -176,13 +174,12 @@ final class TaiyinOrbitalApi {
   }
 
   /// Searches from a TT coordinate for a reference-plane crossing.
-  TaiyinEphemerisResult<TaiyinPlaneNodeEvent<TtScale>> searchPlaneNodeFromTt(
-    TaiyinBody body,
-    TaiyinPlaneNodeKind kind,
+  EphemerisResult<PlaneNodeEvent<TtScale>> searchPlaneNodeFromTt(
+    Body body,
+    PlaneNodeKind kind,
     JulianDate<TtScale> start, {
-    TaiyinApparentFrame referenceFrame = TaiyinApparentFrame.j2000Ecliptic,
-    TaiyinOrbitalSearchDirection direction =
-        TaiyinOrbitalSearchDirection.forward,
+    ApparentFrame referenceFrame = ApparentFrame.j2000Ecliptic,
+    OrbitalSearchDirection direction = OrbitalSearchDirection.forward,
     bool allowBarycenterApproximation = false,
   }) {
     _ensureOpen();
@@ -207,13 +204,12 @@ final class TaiyinOrbitalApi {
   }
 
   /// Searches from a UT1 coordinate for a reference-plane crossing.
-  TaiyinEphemerisResult<TaiyinPlaneNodeEvent<Ut1Scale>> searchPlaneNodeFromUt1(
-    TaiyinBody body,
-    TaiyinPlaneNodeKind kind,
+  EphemerisResult<PlaneNodeEvent<Ut1Scale>> searchPlaneNodeFromUt1(
+    Body body,
+    PlaneNodeKind kind,
     JulianDate<Ut1Scale> start, {
-    TaiyinApparentFrame referenceFrame = TaiyinApparentFrame.j2000Ecliptic,
-    TaiyinOrbitalSearchDirection direction =
-        TaiyinOrbitalSearchDirection.forward,
+    ApparentFrame referenceFrame = ApparentFrame.j2000Ecliptic,
+    OrbitalSearchDirection direction = OrbitalSearchDirection.forward,
     bool allowBarycenterApproximation = false,
   }) {
     _ensureOpen();
@@ -237,9 +233,9 @@ final class TaiyinOrbitalApi {
     );
   }
 
-  TaiyinEphemerisResult<TaiyinOsculatingOrbit> _osculating(
-    TaiyinBody body,
-    TaiyinApparentFrame referenceFrame,
+  EphemerisResult<OsculatingOrbit> _osculating(
+    Body body,
+    ApparentFrame referenceFrame,
     bool allowBarycenterApproximation,
     int Function(
       Arena,
@@ -266,11 +262,11 @@ final class TaiyinOrbitalApi {
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
       final value = output.ref;
-      return TaiyinEphemerisResult(
-        value: TaiyinOsculatingOrbit(
+      return EphemerisResult(
+        value: OsculatingOrbit(
           body: _bodyFromId(value.body_id),
           center: _bodyFromId(value.center_id),
-          referenceFrame: TaiyinApparentFrame.fromId(value.reference_frame_id),
+          referenceFrame: ApparentFrame.fromId(value.reference_frame_id),
           rawReferenceFrameId: value.reference_frame_id,
           gravitationalParameterAu3PerDay2:
               value.gravitational_parameter_au3_per_day2,
@@ -294,9 +290,9 @@ final class TaiyinOrbitalApi {
     });
   }
 
-  TaiyinEphemerisResult<TaiyinOrbitReferencePoints> _referencePoints(
-    TaiyinBody body,
-    TaiyinApparentFrame referenceFrame,
+  EphemerisResult<OrbitReferencePoints> _referencePoints(
+    Body body,
+    ApparentFrame referenceFrame,
     bool allowBarycenterApproximation,
     int Function(
       Arena,
@@ -323,13 +319,13 @@ final class TaiyinOrbitalApi {
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
       final value = output.ref;
-      return TaiyinEphemerisResult(
-        value: TaiyinOrbitReferencePoints(
+      return EphemerisResult(
+        value: OrbitReferencePoints(
           body: _bodyFromId(value.body_id),
           center: _bodyFromId(value.center_id),
-          referenceFrame: TaiyinApparentFrame.fromId(value.reference_frame_id),
+          referenceFrame: ApparentFrame.fromId(value.reference_frame_id),
           rawReferenceFrameId: value.reference_frame_id,
-          model: TaiyinOrbitReferencePointModel.fromId(value.model_id),
+          model: OrbitReferencePointModel.fromId(value.model_id),
           rawModelId: value.model_id,
           ascendingNode: _readReferencePoint(value.ascending_node),
           descendingNode: _readReferencePoint(value.descending_node),
@@ -343,11 +339,10 @@ final class TaiyinOrbitalApi {
     });
   }
 
-  TaiyinEphemerisResult<TaiyinApsisEvent<Scale>>
-  _searchApsis<Scale extends TimeScale>(
-    TaiyinBody body,
-    TaiyinApsisKind kind,
-    TaiyinOrbitalSearchDirection direction,
+  EphemerisResult<ApsisEvent<Scale>> _searchApsis<Scale extends TimeScale>(
+    Body body,
+    ApsisKind kind,
+    OrbitalSearchDirection direction,
     bool allowBarycenterApproximation,
     int Function(
       Arena,
@@ -373,11 +368,11 @@ final class TaiyinOrbitalApi {
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
       final value = output.ref;
-      return TaiyinEphemerisResult(
-        value: TaiyinApsisEvent<Scale>(
+      return EphemerisResult(
+        value: ApsisEvent<Scale>(
           body: _bodyFromId(value.body_id),
           center: _bodyFromId(value.center_id),
-          kind: TaiyinApsisKind.fromId(value.kind),
+          kind: ApsisKind.fromId(value.kind),
           coordinate: readJulianDate<Scale>(value.jd),
           distanceAu: value.distance_au,
           radialVelocityAuPerDay: value.radial_velocity_au_per_day,
@@ -391,12 +386,12 @@ final class TaiyinOrbitalApi {
     });
   }
 
-  TaiyinEphemerisResult<TaiyinPlaneNodeEvent<Scale>>
+  EphemerisResult<PlaneNodeEvent<Scale>>
   _searchPlaneNode<Scale extends TimeScale>(
-    TaiyinBody body,
-    TaiyinPlaneNodeKind kind,
-    TaiyinApparentFrame referenceFrame,
-    TaiyinOrbitalSearchDirection direction,
+    Body body,
+    PlaneNodeKind kind,
+    ApparentFrame referenceFrame,
+    OrbitalSearchDirection direction,
     bool allowBarycenterApproximation,
     int Function(
       Arena,
@@ -423,13 +418,13 @@ final class TaiyinOrbitalApi {
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
       final value = output.ref;
-      return TaiyinEphemerisResult(
-        value: TaiyinPlaneNodeEvent<Scale>(
+      return EphemerisResult(
+        value: PlaneNodeEvent<Scale>(
           body: _bodyFromId(value.body_id),
           center: _bodyFromId(value.center_id),
-          referenceFrame: TaiyinApparentFrame.fromId(value.reference_frame_id),
+          referenceFrame: ApparentFrame.fromId(value.reference_frame_id),
           rawReferenceFrameId: value.reference_frame_id,
-          kind: TaiyinPlaneNodeKind.fromId(value.kind),
+          kind: PlaneNodeKind.fromId(value.kind),
           coordinate: readJulianDate<Scale>(value.jd),
           referencePlaneAngleRadians: value.reference_plane_angle_rad,
           distanceAu: value.distance_au,
@@ -445,22 +440,22 @@ final class TaiyinOrbitalApi {
 
   int _flags(
     bool allowBarycenterApproximation, {
-    TaiyinOrbitalSearchDirection? direction,
+    OrbitalSearchDirection? direction,
   }) {
     var result = allowBarycenterApproximation
-        ? TaiyinPositionFlag.allowBarycenterApproximation.mask
+        ? PositionFlag.allowBarycenterApproximation.mask
         : 0;
-    if (direction == TaiyinOrbitalSearchDirection.reverse) {
+    if (direction == OrbitalSearchDirection.reverse) {
       result |= _taiyinOrbitalReverseMask;
     }
     return result;
   }
 
-  TaiyinOrbitReferencePoint _readReferencePoint(
+  OrbitReferencePoint _readReferencePoint(
     taiyin_body_orbit_reference_point value,
   ) {
-    return TaiyinOrbitReferencePoint(
-      positionAu: TaiyinVector3(
+    return OrbitReferencePoint(
+      positionAu: Vector3(
         value.position_au.x,
         value.position_au.y,
         value.position_au.z,
@@ -471,15 +466,15 @@ final class TaiyinOrbitalApi {
     );
   }
 
-  TaiyinBody _bodyFromId(int id) {
-    return TaiyinBody.values.firstWhere(
+  Body _bodyFromId(int id) {
+    return Body.values.firstWhere(
       (body) => body.id == id,
-      orElse: () => throw StateError('Unknown Taiyin body ID: $id'),
+      orElse: () => throw StateError('Unknown Ephemeris body ID: $id'),
     );
   }
 
-  void _requireReferenceFrame(TaiyinApparentFrame frame) {
-    if (frame == TaiyinApparentFrame.unknown) {
+  void _requireReferenceFrame(ApparentFrame frame) {
+    if (frame == ApparentFrame.unknown) {
       throw ArgumentError.value(
         frame,
         'referenceFrame',
@@ -488,27 +483,27 @@ final class TaiyinOrbitalApi {
     }
   }
 
-  void _requireOrbitalBody(TaiyinBody body) {
+  void _requireOrbitalBody(Body body) {
     const supported = {
-      TaiyinBody.mercuryBarycenter,
-      TaiyinBody.venusBarycenter,
-      TaiyinBody.earthMoonBarycenter,
-      TaiyinBody.marsBarycenter,
-      TaiyinBody.jupiterBarycenter,
-      TaiyinBody.saturnBarycenter,
-      TaiyinBody.uranusBarycenter,
-      TaiyinBody.neptuneBarycenter,
-      TaiyinBody.plutoBarycenter,
-      TaiyinBody.mercury,
-      TaiyinBody.venus,
-      TaiyinBody.moon,
-      TaiyinBody.earth,
-      TaiyinBody.mars,
-      TaiyinBody.jupiter,
-      TaiyinBody.saturn,
-      TaiyinBody.uranus,
-      TaiyinBody.neptune,
-      TaiyinBody.pluto,
+      Body.mercuryBarycenter,
+      Body.venusBarycenter,
+      Body.earthMoonBarycenter,
+      Body.marsBarycenter,
+      Body.jupiterBarycenter,
+      Body.saturnBarycenter,
+      Body.uranusBarycenter,
+      Body.neptuneBarycenter,
+      Body.plutoBarycenter,
+      Body.mercury,
+      Body.venus,
+      Body.moon,
+      Body.earth,
+      Body.mars,
+      Body.jupiter,
+      Body.saturn,
+      Body.uranus,
+      Body.neptune,
+      Body.pluto,
     };
     if (!supported.contains(body)) {
       throw ArgumentError.value(

@@ -3,14 +3,14 @@ import '../time/time_scale.dart';
 import 'lunar_eclipse_models.dart';
 
 /// The five fixed global solar-eclipse contact slots.
-enum TaiyinSolarEclipseContact {
+enum SolarEclipseContact {
   partialBegin(0),
   centralBegin(1),
   greatest(2),
   centralEnd(3),
   partialEnd(4);
 
-  const TaiyinSolarEclipseContact(this.nativeIndex);
+  const SolarEclipseContact(this.nativeIndex);
 
   /// Index in the fixed native contact array.
   final int nativeIndex;
@@ -18,36 +18,36 @@ enum TaiyinSolarEclipseContact {
 
 /// The five fixed contact slots in a local solar-eclipse result.
 ///
-/// Unlike [TaiyinSolarEclipseContact], local contacts are C1, C2, C3, C4,
+/// Unlike [SolarEclipseContact], local contacts are C1, C2, C3, C4,
 /// and greatest eclipse, respectively.
-enum TaiyinLocalSolarEclipseContact {
+enum LocalSolarEclipseContact {
   partialBegin(0),
   centralBegin(1),
   centralEnd(2),
   partialEnd(3),
   greatest(4);
 
-  const TaiyinLocalSolarEclipseContact(this.nativeIndex);
+  const LocalSolarEclipseContact(this.nativeIndex);
 
   /// Index in the fixed native contact array.
   final int nativeIndex;
 }
 
 /// Options for solving one global or local solar-eclipse lunation.
-enum TaiyinSolarEclipseSolveOption {
+enum SolarEclipseSolveOption {
   /// Requests global contact values where the operation supports them.
   includeContacts(1 << 33),
 
   /// Uses the loaded TLL1 lunar limb model when polishing contacts.
   lunarLimbCorrection(1 << 38);
 
-  const TaiyinSolarEclipseSolveOption(this.mask);
+  const SolarEclipseSolveOption(this.mask);
 
   final int mask;
 }
 
 /// Options for finding solar eclipses.
-enum TaiyinSolarEclipseSearchOption {
+enum SolarEclipseSearchOption {
   /// Requests global contact values where the operation supports them.
   includeContacts(1 << 33),
 
@@ -57,17 +57,17 @@ enum TaiyinSolarEclipseSearchOption {
   /// Uses the loaded TLL1 lunar limb model when polishing contacts.
   lunarLimbCorrection(1 << 38);
 
-  const TaiyinSolarEclipseSearchOption(this.mask);
+  const SolarEclipseSearchOption(this.mask);
 
   final int mask;
 }
 
 /// Options for global solar-eclipse route calculations.
-enum TaiyinSolarEclipseRouteOption {
+enum SolarEclipseRouteOption {
   /// Uses the loaded TLL1 lunar limb model for non-center path limits.
   lunarLimbCorrection(1 << 38);
 
-  const TaiyinSolarEclipseRouteOption(this.mask);
+  const SolarEclipseRouteOption(this.mask);
 
   final int mask;
 }
@@ -76,7 +76,7 @@ enum TaiyinSolarEclipseRouteOption {
 ///
 /// Solar eclipses have no separate penumbral phase, so lunar-only penumbral
 /// begin and end visibility flags are intentionally not represented here.
-enum TaiyinLocalSolarEclipseVisibilityFlag {
+enum LocalSolarEclipseVisibilityFlag {
   visibleAtObserver(1 << 7),
   maximumVisible(1 << 8),
   partialBeginVisible(1 << 9),
@@ -84,19 +84,19 @@ enum TaiyinLocalSolarEclipseVisibilityFlag {
   centralEndVisible(1 << 11),
   partialEndVisible(1 << 12);
 
-  const TaiyinLocalSolarEclipseVisibilityFlag(this.mask);
+  const LocalSolarEclipseVisibilityFlag(this.mask);
 
   final int mask;
 
-  static Set<TaiyinLocalSolarEclipseVisibilityFlag> fromMask(int mask) {
+  static Set<LocalSolarEclipseVisibilityFlag> fromMask(int mask) {
     return Set.unmodifiable(values.where((value) => (mask & value.mask) != 0));
   }
 }
 
 /// A global solar eclipse, or the explicit no-eclipse result for one lunation.
-final class TaiyinSolarEclipseResult<S extends TimeScale> {
-  TaiyinSolarEclipseResult({
-    required Set<TaiyinEclipseKind> kinds,
+final class SolarEclipseResult<S extends TimeScale> {
+  SolarEclipseResult({
+    required Set<EclipseKind> kinds,
     required this.maximum,
     required this.deltaTSeconds,
     required this.axisDistanceKilometers,
@@ -106,11 +106,11 @@ final class TaiyinSolarEclipseResult<S extends TimeScale> {
     required this.centralMarginKilometers,
     required this.maximumLatitudeDegrees,
     required this.maximumLongitudeDegrees,
-    required Map<TaiyinSolarEclipseContact, JulianDate<S>?> contacts,
+    required Map<SolarEclipseContact, JulianDate<S>?> contacts,
   }) : kinds = Set.unmodifiable(kinds),
        contacts = Map.unmodifiable(contacts);
 
-  final Set<TaiyinEclipseKind> kinds;
+  final Set<EclipseKind> kinds;
 
   /// Scalar-JD coordinate of greatest eclipse, if a solar eclipse occurs.
   final JulianDate<S>? maximum;
@@ -126,24 +126,24 @@ final class TaiyinSolarEclipseResult<S extends TimeScale> {
   final double? centralMarginKilometers;
   final double? maximumLatitudeDegrees;
   final double? maximumLongitudeDegrees;
-  final Map<TaiyinSolarEclipseContact, JulianDate<S>?> contacts;
+  final Map<SolarEclipseContact, JulianDate<S>?> contacts;
 
   /// Whether native code found a solar eclipse at this lunation.
   bool get hasEclipse => kinds.isNotEmpty;
 }
 
 /// A solar eclipse at the observer location configured on a context.
-final class TaiyinLocalSolarEclipseResult<S extends TimeScale> {
-  TaiyinLocalSolarEclipseResult({
-    required Set<TaiyinEclipseKind> kinds,
-    required Set<TaiyinLocalSolarEclipseVisibilityFlag> visibility,
+final class LocalSolarEclipseResult<S extends TimeScale> {
+  LocalSolarEclipseResult({
+    required Set<EclipseKind> kinds,
+    required Set<LocalSolarEclipseVisibilityFlag> visibility,
     required this.maximum,
     required this.deltaTSeconds,
     required this.magnitude,
     required this.obscuration,
     required this.sunAltitudeDegrees,
     required this.sunAzimuthDegrees,
-    required Map<TaiyinLocalSolarEclipseContact, JulianDate<S>?> contacts,
+    required Map<LocalSolarEclipseContact, JulianDate<S>?> contacts,
     required this.positionAngleC1Degrees,
     required this.positionAngleC4Degrees,
     required this.vertexAngleC1Degrees,
@@ -156,15 +156,15 @@ final class TaiyinLocalSolarEclipseResult<S extends TimeScale> {
        visibility = Set.unmodifiable(visibility),
        contacts = Map.unmodifiable(contacts);
 
-  final Set<TaiyinEclipseKind> kinds;
-  final Set<TaiyinLocalSolarEclipseVisibilityFlag> visibility;
+  final Set<EclipseKind> kinds;
+  final Set<LocalSolarEclipseVisibilityFlag> visibility;
   final JulianDate<S>? maximum;
   final double? deltaTSeconds;
   final double? magnitude;
   final double? obscuration;
   final double? sunAltitudeDegrees;
   final double? sunAzimuthDegrees;
-  final Map<TaiyinLocalSolarEclipseContact, JulianDate<S>?> contacts;
+  final Map<LocalSolarEclipseContact, JulianDate<S>?> contacts;
   final double? positionAngleC1Degrees;
   final double? positionAngleC4Degrees;
   final double? vertexAngleC1Degrees;
@@ -178,8 +178,8 @@ final class TaiyinLocalSolarEclipseResult<S extends TimeScale> {
 }
 
 /// Instantaneous local solar-eclipse geometry at a configured observer.
-final class TaiyinLocalSolarEclipseCircumstances<S extends TimeScale> {
-  const TaiyinLocalSolarEclipseCircumstances({
+final class LocalSolarEclipseCircumstances<S extends TimeScale> {
+  const LocalSolarEclipseCircumstances({
     required this.coordinate,
     required this.deltaTSeconds,
     required this.magnitude,
@@ -206,8 +206,8 @@ final class TaiyinLocalSolarEclipseCircumstances<S extends TimeScale> {
 ///
 /// A route limit that does not intersect Earth has null coordinates and
 /// geometry. Both native time coordinates are retained when available.
-final class TaiyinSolarEclipseRoutePoint {
-  const TaiyinSolarEclipseRoutePoint({
+final class SolarEclipseRoutePoint {
+  const SolarEclipseRoutePoint({
     required this.coordinateTt,
     required this.coordinateUt1,
     required this.latitudeDegrees,
@@ -231,8 +231,8 @@ final class TaiyinSolarEclipseRoutePoint {
 }
 
 /// Global solar-eclipse path geometry at one TT/UT1 coordinate pair.
-final class TaiyinSolarEclipseRouteRow {
-  const TaiyinSolarEclipseRouteRow({
+final class SolarEclipseRouteRow {
+  const SolarEclipseRouteRow({
     required this.coordinateTt,
     required this.coordinateUt1,
     required this.centerLine,
@@ -250,13 +250,13 @@ final class TaiyinSolarEclipseRouteRow {
 
   final JulianDate<TtScale> coordinateTt;
   final JulianDate<Ut1Scale> coordinateUt1;
-  final TaiyinSolarEclipseRoutePoint centerLine;
-  final TaiyinSolarEclipseRoutePoint penumbralNorthLimit;
-  final TaiyinSolarEclipseRoutePoint penumbralSouthLimit;
-  final TaiyinSolarEclipseRoutePoint northLimit;
-  final TaiyinSolarEclipseRoutePoint southLimit;
-  final TaiyinSolarEclipseRoutePoint halfMagnitudeNorthLimit;
-  final TaiyinSolarEclipseRoutePoint halfMagnitudeSouthLimit;
+  final SolarEclipseRoutePoint centerLine;
+  final SolarEclipseRoutePoint penumbralNorthLimit;
+  final SolarEclipseRoutePoint penumbralSouthLimit;
+  final SolarEclipseRoutePoint northLimit;
+  final SolarEclipseRoutePoint southLimit;
+  final SolarEclipseRoutePoint halfMagnitudeNorthLimit;
+  final SolarEclipseRoutePoint halfMagnitudeSouthLimit;
   final double? pathWidthKilometers;
   final double? durationSeconds;
   final double? sunAltitudeDegrees;
@@ -274,7 +274,7 @@ final class TaiyinSolarEclipseRouteRow {
 /// Identifies one curve in a global solar-eclipse map.
 ///
 /// Points returned by a route-curve calculation are grouped by this value.
-enum TaiyinSolarEclipseRouteCurveKind {
+enum SolarEclipseRouteCurveKind {
   partialBeginA(0),
   partialBeginB(1),
   partialEndA(2),
@@ -300,12 +300,12 @@ enum TaiyinSolarEclipseRouteCurveKind {
   halfMagnitudeSunsetA(22),
   halfMagnitudeSunsetB(23);
 
-  const TaiyinSolarEclipseRouteCurveKind(this.nativeIndex);
+  const SolarEclipseRouteCurveKind(this.nativeIndex);
 
   /// Numeric value used by the Taiyin C ABI.
   final int nativeIndex;
 
-  static TaiyinSolarEclipseRouteCurveKind fromNativeIndex(int index) {
+  static SolarEclipseRouteCurveKind fromNativeIndex(int index) {
     for (final value in values) {
       if (value.nativeIndex == index) return value;
     }
@@ -314,8 +314,8 @@ enum TaiyinSolarEclipseRouteCurveKind {
 }
 
 /// One time-tagged geographic sample of a solar-eclipse map curve.
-final class TaiyinSolarEclipseRouteCurvePoint {
-  const TaiyinSolarEclipseRouteCurvePoint({
+final class SolarEclipseRouteCurvePoint {
+  const SolarEclipseRouteCurvePoint({
     required this.coordinateTt,
     required this.coordinateUt1,
     required this.kind,
@@ -325,13 +325,13 @@ final class TaiyinSolarEclipseRouteCurvePoint {
 
   final JulianDate<TtScale> coordinateTt;
   final JulianDate<Ut1Scale> coordinateUt1;
-  final TaiyinSolarEclipseRouteCurveKind kind;
+  final SolarEclipseRouteCurveKind kind;
   final double latitudeDegrees;
   final double longitudeDegrees;
 }
 
 /// Flags describing which layers are present in a solar-eclipse route product.
-enum TaiyinSolarEclipseRouteProductFlag {
+enum SolarEclipseRouteProductFlag {
   hasCenterLine(1 << 0),
   hasCoreLimits(1 << 1),
   hasPenumbralLimits(1 << 2),
@@ -341,17 +341,17 @@ enum TaiyinSolarEclipseRouteProductFlag {
   hasPenumbralPolygon(1 << 6),
   hasHalfMagnitudePolygon(1 << 7);
 
-  const TaiyinSolarEclipseRouteProductFlag(this.mask);
+  const SolarEclipseRouteProductFlag(this.mask);
 
   final int mask;
 
-  static Set<TaiyinSolarEclipseRouteProductFlag> fromMask(int mask) {
+  static Set<SolarEclipseRouteProductFlag> fromMask(int mask) {
     return Set.unmodifiable(values.where((value) => (mask & value.mask) != 0));
   }
 }
 
 /// Role of a point within a polygonal solar-eclipse route product.
-enum TaiyinSolarEclipseRouteProductPointKind {
+enum SolarEclipseRouteProductPointKind {
   coreNorth(0),
   coreSouth(1),
   polygonClose(2),
@@ -362,11 +362,11 @@ enum TaiyinSolarEclipseRouteProductPointKind {
   coreBeginHorizon(7),
   coreEndHorizon(8);
 
-  const TaiyinSolarEclipseRouteProductPointKind(this.nativeIndex);
+  const SolarEclipseRouteProductPointKind(this.nativeIndex);
 
   final int nativeIndex;
 
-  static TaiyinSolarEclipseRouteProductPointKind fromNativeIndex(int index) {
+  static SolarEclipseRouteProductPointKind fromNativeIndex(int index) {
     for (final value in values) {
       if (value.nativeIndex == index) return value;
     }
@@ -379,8 +379,8 @@ enum TaiyinSolarEclipseRouteProductPointKind {
 /// [longitudeDegrees] is normalized for conventional geographic display while
 /// [unwrappedLongitudeDegrees] preserves path continuity across the
 /// antimeridian.
-final class TaiyinSolarEclipseRouteProductPoint {
-  const TaiyinSolarEclipseRouteProductPoint({
+final class SolarEclipseRouteProductPoint {
+  const SolarEclipseRouteProductPoint({
     required this.coordinateTt,
     required this.coordinateUt1,
     required this.kind,
@@ -392,17 +392,17 @@ final class TaiyinSolarEclipseRouteProductPoint {
 
   final JulianDate<TtScale> coordinateTt;
   final JulianDate<Ut1Scale> coordinateUt1;
-  final TaiyinSolarEclipseRouteProductPointKind kind;
-  final TaiyinSolarEclipseRouteCurveKind sourceCurveKind;
+  final SolarEclipseRouteProductPointKind kind;
+  final SolarEclipseRouteCurveKind sourceCurveKind;
   final double latitudeDegrees;
   final double longitudeDegrees;
   final double unwrappedLongitudeDegrees;
 }
 
 /// Metadata accompanying a solar-eclipse route product.
-final class TaiyinSolarEclipseRouteProductSummary {
-  TaiyinSolarEclipseRouteProductSummary({
-    required Set<TaiyinSolarEclipseRouteProductFlag> flags,
+final class SolarEclipseRouteProductSummary {
+  SolarEclipseRouteProductSummary({
+    required Set<SolarEclipseRouteProductFlag> flags,
     required this.curvePointCount,
     required this.centerLineCount,
     required this.coreNorthCount,
@@ -423,12 +423,12 @@ final class TaiyinSolarEclipseRouteProductSummary {
     required this.maximumUnwrappedLongitudeDegrees,
   }) : flags = Set.unmodifiable(flags);
 
-  final Set<TaiyinSolarEclipseRouteProductFlag> flags;
+  final Set<SolarEclipseRouteProductFlag> flags;
 
   /// Number of source route-curve samples used to construct this product.
   ///
   /// This diagnostic count does not necessarily equal the number of returned
-  /// [TaiyinSolarEclipseRouteProduct.points].
+  /// [SolarEclipseRouteProduct.points].
   final int curvePointCount;
   final int centerLineCount;
   final int coreNorthCount;
@@ -462,24 +462,24 @@ final class TaiyinSolarEclipseRouteProductSummary {
 /// Map products concatenate up to three independently closed rings in this
 /// order: core, penumbral, then half-magnitude. Slice [points] using the
 /// three polygon-point counts in [summary]; every non-empty slice ends with a
-/// [TaiyinSolarEclipseRouteProductPointKind.polygonClose] point.
-final class TaiyinSolarEclipseRouteProduct {
-  TaiyinSolarEclipseRouteProduct({
-    required Iterable<TaiyinSolarEclipseRouteProductPoint> points,
+/// [SolarEclipseRouteProductPointKind.polygonClose] point.
+final class SolarEclipseRouteProduct {
+  SolarEclipseRouteProduct({
+    required Iterable<SolarEclipseRouteProductPoint> points,
     required this.summary,
   }) : points = List.unmodifiable(points);
 
-  final List<TaiyinSolarEclipseRouteProductPoint> points;
-  final TaiyinSolarEclipseRouteProductSummary summary;
+  final List<SolarEclipseRouteProductPoint> points;
+  final SolarEclipseRouteProductSummary summary;
 }
 
 /// Local Earth-intersection boundaries of the solar shadow at one instant.
 ///
 /// Every coordinate and [umbraWidthKilometers] is null when that particular
 /// shadow feature does not intersect Earth at the requested instant.
-final class TaiyinLocalSolarEclipseBoundary {
-  TaiyinLocalSolarEclipseBoundary({
-    required Set<TaiyinEclipseKind> centerKinds,
+final class LocalSolarEclipseBoundary {
+  LocalSolarEclipseBoundary({
+    required Set<EclipseKind> centerKinds,
     required this.centerLongitudeDegrees,
     required this.centerLatitudeDegrees,
     required this.umbraNorthLongitudeDegrees,
@@ -493,7 +493,7 @@ final class TaiyinLocalSolarEclipseBoundary {
     required this.umbraWidthKilometers,
   }) : centerKinds = Set.unmodifiable(centerKinds);
 
-  final Set<TaiyinEclipseKind> centerKinds;
+  final Set<EclipseKind> centerKinds;
   final double? centerLongitudeDegrees;
   final double? centerLatitudeDegrees;
   final double? umbraNorthLongitudeDegrees;
@@ -515,8 +515,8 @@ final class TaiyinLocalSolarEclipseBoundary {
 /// [tHours] is the Besselian time offset associated with the coordinate. The
 /// other values retain the conventional Besselian names used by eclipse-path
 /// references; angular fields are expressed in degrees.
-final class TaiyinSolarBesselianElements {
-  const TaiyinSolarBesselianElements({
+final class SolarBesselianElements {
+  const SolarBesselianElements({
     required this.tHours,
     required this.x,
     required this.y,
@@ -553,8 +553,8 @@ final class TaiyinSolarBesselianElements {
 /// [degree] are meaningful; later entries are normalized to zero to preserve
 /// the fixed native layout. [maxResidual] records the largest fit residual at
 /// native sample coordinates.
-final class TaiyinSolarBesselianPolynomial {
-  TaiyinSolarBesselianPolynomial({
+final class SolarBesselianPolynomial {
+  SolarBesselianPolynomial({
     required this.referenceEpoch,
     required this.spanHours,
     required this.sampleStepHours,
@@ -649,8 +649,8 @@ final class TaiyinSolarBesselianPolynomial {
   final double f2Degrees;
   final double tanF1;
   final double tanF2;
-  final TaiyinSolarBesselianElements center;
-  final TaiyinSolarBesselianElements maxResidual;
+  final SolarBesselianElements center;
+  final SolarBesselianElements maxResidual;
 }
 
 List<double> _freezeBesselianCoefficients(
@@ -659,11 +659,11 @@ List<double> _freezeBesselianCoefficients(
   int degree,
 ) {
   final values = List<double>.of(source, growable: false);
-  if (values.length != TaiyinSolarBesselianPolynomial.coefficientCount) {
+  if (values.length != SolarBesselianPolynomial.coefficientCount) {
     throw ArgumentError.value(
       source,
       name,
-      'must contain ${TaiyinSolarBesselianPolynomial.coefficientCount} terms',
+      'must contain ${SolarBesselianPolynomial.coefficientCount} terms',
     );
   }
   if (values.any((value) => !value.isFinite)) {

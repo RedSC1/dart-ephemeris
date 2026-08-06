@@ -1,7 +1,7 @@
 part of '../taiyin.dart';
 
 typedef _OccultationStatusChecker =
-    void Function(int status, TaiyinEphemerisDiagnostic? diagnostic);
+    void Function(int status, EphemerisDiagnostic? diagnostic);
 typedef _OccultationSearchCalculation =
     int Function(
       Arena arena,
@@ -26,10 +26,10 @@ typedef _OccultationWhereCalculation =
 /// Searches lunar occultations and derives local visibility or global paths.
 ///
 /// Local searches and local-visibility calculations use the observer already
-/// configured on the owning [TaiyinContext]. Native inputs and all returned
+/// configured on the owning [EphemerisContext]. Native inputs and all returned
 /// dates cross the ABI as split UT1 Julian dates.
-final class TaiyinOccultationApi {
-  TaiyinOccultationApi._(
+final class OccultationApi {
+  OccultationApi._(
     this._bindings,
     this._context,
     this._ensureOpen,
@@ -43,19 +43,19 @@ final class TaiyinOccultationApi {
 
   // Native lunar-occultation searches do not define these as target bodies.
   static final Set<int> _unsupportedBodyTargetIds = Set.unmodifiable({
-    TaiyinBody.solarSystemBarycenter.id,
-    TaiyinBody.earthMoonBarycenter.id,
-    TaiyinBody.sun.id,
-    TaiyinBody.moon.id,
-    TaiyinBody.earth.id,
+    Body.solarSystemBarycenter.id,
+    Body.earthMoonBarycenter.id,
+    Body.sun.id,
+    Body.moon.id,
+    Body.earth.id,
   });
 
   /// Finds the next geocentric lunar occultation of a catalogued star.
-  TaiyinEphemerisResult<TaiyinLunarOccultationResult> nextGeocentricStarAtUt1(
+  EphemerisResult<LunarOccultationResult> nextGeocentricStarAtUt1(
     String starKey,
     JulianDate<Ut1Scale> start, {
-    Set<TaiyinPositionFlag> positionFlags = const {},
-    Set<TaiyinOccultationSearchOption> options = const {},
+    Set<PositionFlag> positionFlags = const {},
+    Set<OccultationSearchOption> options = const {},
   }) {
     _ensureOpen();
     _requireStarKey(starKey);
@@ -76,11 +76,11 @@ final class TaiyinOccultationApi {
   /// Finds the next local lunar occultation of a catalogued star.
   ///
   /// The context must have a configured geographic observer.
-  TaiyinEphemerisResult<TaiyinLunarOccultationResult> nextLocalStarAtUt1(
+  EphemerisResult<LunarOccultationResult> nextLocalStarAtUt1(
     String starKey,
     JulianDate<Ut1Scale> start, {
-    Set<TaiyinPositionFlag> positionFlags = const {},
-    Set<TaiyinOccultationSearchOption> options = const {},
+    Set<PositionFlag> positionFlags = const {},
+    Set<OccultationSearchOption> options = const {},
   }) {
     _ensureOpen();
     _requireStarKey(starKey);
@@ -103,12 +103,12 @@ final class TaiyinOccultationApi {
   ///
   /// Omit [targetRadiusKilometers] to use native physical-disc data. Supplying
   /// zero models a point source; a positive value uses that explicit radius.
-  TaiyinEphemerisResult<TaiyinLunarOccultationResult> nextGeocentricBodyAtUt1(
-    TaiyinTarget target,
+  EphemerisResult<LunarOccultationResult> nextGeocentricBodyAtUt1(
+    Target target,
     JulianDate<Ut1Scale> start, {
     double? targetRadiusKilometers,
-    Set<TaiyinPositionFlag> positionFlags = const {},
-    Set<TaiyinOccultationSearchOption> options = const {},
+    Set<PositionFlag> positionFlags = const {},
+    Set<OccultationSearchOption> options = const {},
   }) {
     _ensureOpen();
     _requireBodyTarget(target);
@@ -146,12 +146,12 @@ final class TaiyinOccultationApi {
   ///
   /// The context must have a configured geographic observer. See
   /// [nextGeocentricBodyAtUt1] for [targetRadiusKilometers] semantics.
-  TaiyinEphemerisResult<TaiyinLunarOccultationResult> nextLocalBodyAtUt1(
-    TaiyinTarget target,
+  EphemerisResult<LunarOccultationResult> nextLocalBodyAtUt1(
+    Target target,
     JulianDate<Ut1Scale> start, {
     double? targetRadiusKilometers,
-    Set<TaiyinPositionFlag> positionFlags = const {},
-    Set<TaiyinOccultationSearchOption> options = const {},
+    Set<PositionFlag> positionFlags = const {},
+    Set<OccultationSearchOption> options = const {},
   }) {
     _ensureOpen();
     _requireBodyTarget(target);
@@ -188,15 +188,14 @@ final class TaiyinOccultationApi {
   ///
   /// The occultation must have come from a lunar-star search and the context
   /// must retain its local observer configuration.
-  TaiyinEphemerisResult<TaiyinLunarOccultationLocalVisibility>
-  localStarVisibilityAtUt1(
+  EphemerisResult<LunarOccultationLocalVisibility> localStarVisibilityAtUt1(
     String starKey,
-    TaiyinLunarOccultationResult occultation, {
-    Set<TaiyinOccultationVisibilityOption> options = const {},
+    LunarOccultationResult occultation, {
+    Set<OccultationVisibilityOption> options = const {},
   }) {
     _ensureOpen();
     _requireStarKey(starKey);
-    _requireKind(occultation, TaiyinLunarOccultationKind.lunarStar);
+    _requireKind(occultation, LunarOccultationKind.lunarStar);
     final mask = _visibilityMask(options);
     return _visibility(occultation, (
       arena,
@@ -218,15 +217,14 @@ final class TaiyinOccultationApi {
   }
 
   /// Calculates local visibility samples for a body [occultation].
-  TaiyinEphemerisResult<TaiyinLunarOccultationLocalVisibility>
-  localBodyVisibilityAtUt1(
-    TaiyinTarget target,
-    TaiyinLunarOccultationResult occultation, {
-    Set<TaiyinOccultationVisibilityOption> options = const {},
+  EphemerisResult<LunarOccultationLocalVisibility> localBodyVisibilityAtUt1(
+    Target target,
+    LunarOccultationResult occultation, {
+    Set<OccultationVisibilityOption> options = const {},
   }) {
     _ensureOpen();
     _requireBodyTarget(target);
-    _requireKind(occultation, TaiyinLunarOccultationKind.lunarBody);
+    _requireKind(occultation, LunarOccultationKind.lunarBody);
     final mask = _visibilityMask(options);
     return _visibility(occultation, (_, nativeOccultation, output, diagnostic) {
       return _bindings
@@ -242,15 +240,15 @@ final class TaiyinOccultationApi {
   }
 
   /// Calculates the global location and derived paths for a star occultation.
-  TaiyinEphemerisResult<TaiyinLunarOccultationWhereResult> starWhereAtUt1(
+  EphemerisResult<LunarOccultationWhereResult> starWhereAtUt1(
     String starKey,
-    TaiyinLunarOccultationResult occultation, {
-    Set<TaiyinPositionFlag> positionFlags = const {},
-    Set<TaiyinOccultationVisibilityOption> visibilityOptions = const {},
+    LunarOccultationResult occultation, {
+    Set<PositionFlag> positionFlags = const {},
+    Set<OccultationVisibilityOption> visibilityOptions = const {},
   }) {
     _ensureOpen();
     _requireStarKey(starKey);
-    _requireKind(occultation, TaiyinLunarOccultationKind.lunarStar);
+    _requireKind(occultation, LunarOccultationKind.lunarStar);
     final mask = _whereMask(positionFlags, visibilityOptions);
     return _where(occultation, (arena, nativeOccultation, output, diagnostic) {
       final nativeStarKey = starKey.toNativeUtf8(allocator: arena).cast<Char>();
@@ -269,16 +267,16 @@ final class TaiyinOccultationApi {
   ///
   /// Supply the same [targetRadiusKilometers] used for the search when the
   /// event was found with a custom target radius.
-  TaiyinEphemerisResult<TaiyinLunarOccultationWhereResult> bodyWhereAtUt1(
-    TaiyinTarget target,
-    TaiyinLunarOccultationResult occultation, {
+  EphemerisResult<LunarOccultationWhereResult> bodyWhereAtUt1(
+    Target target,
+    LunarOccultationResult occultation, {
     double? targetRadiusKilometers,
-    Set<TaiyinPositionFlag> positionFlags = const {},
-    Set<TaiyinOccultationVisibilityOption> visibilityOptions = const {},
+    Set<PositionFlag> positionFlags = const {},
+    Set<OccultationVisibilityOption> visibilityOptions = const {},
   }) {
     _ensureOpen();
     _requireBodyTarget(target);
-    _requireKind(occultation, TaiyinLunarOccultationKind.lunarBody);
+    _requireKind(occultation, LunarOccultationKind.lunarBody);
     _requireNonnegativeOptional(
       targetRadiusKilometers,
       'targetRadiusKilometers',
@@ -308,7 +306,7 @@ final class TaiyinOccultationApi {
     });
   }
 
-  TaiyinEphemerisResult<TaiyinLunarOccultationResult> _search(
+  EphemerisResult<LunarOccultationResult> _search(
     _OccultationSearchCalculation calculate,
   ) {
     return using((arena) {
@@ -320,15 +318,15 @@ final class TaiyinOccultationApi {
       final status = calculate(arena, output, diagnostic);
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
-      return TaiyinEphemerisResult(
+      return EphemerisResult(
         value: _readOccultation(output.ref),
         diagnostic: mappedDiagnostic,
       );
     });
   }
 
-  TaiyinEphemerisResult<TaiyinLunarOccultationLocalVisibility> _visibility(
-    TaiyinLunarOccultationResult occultation,
+  EphemerisResult<LunarOccultationLocalVisibility> _visibility(
+    LunarOccultationResult occultation,
     _OccultationVisibilityCalculation calculate,
   ) {
     return using((arena) {
@@ -341,15 +339,15 @@ final class TaiyinOccultationApi {
       final status = calculate(arena, nativeOccultation, output, diagnostic);
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
-      return TaiyinEphemerisResult(
+      return EphemerisResult(
         value: _readLocalVisibility(output.ref),
         diagnostic: mappedDiagnostic,
       );
     });
   }
 
-  TaiyinEphemerisResult<TaiyinLunarOccultationWhereResult> _where(
-    TaiyinLunarOccultationResult occultation,
+  EphemerisResult<LunarOccultationWhereResult> _where(
+    LunarOccultationResult occultation,
     _OccultationWhereCalculation calculate,
   ) {
     return using((arena) {
@@ -362,19 +360,19 @@ final class TaiyinOccultationApi {
       final status = calculate(arena, nativeOccultation, output, diagnostic);
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
-      return TaiyinEphemerisResult(
+      return EphemerisResult(
         value: _readWhere(output.ref),
         diagnostic: mappedDiagnostic,
       );
     });
   }
 
-  TaiyinLunarOccultationResult _readOccultation(
+  LunarOccultationResult _readOccultation(
     taiyin_lunar_occultation_result value,
   ) {
-    return TaiyinLunarOccultationResult(
-      kind: TaiyinLunarOccultationKind.fromId(value.kind),
-      types: TaiyinOccultationType.fromMask(value.type_flags),
+    return LunarOccultationResult(
+      kind: LunarOccultationKind.fromId(value.kind),
+      types: OccultationType.fromMask(value.type_flags),
       coordinate: _requiredUt1(value.jd_ut, 'occultation maximum'),
       begin: _ut1OrNull(value.begin_jd_ut),
       end: _ut1OrNull(value.end_jd_ut),
@@ -395,10 +393,10 @@ final class TaiyinOccultationApi {
     );
   }
 
-  TaiyinLunarOccultationPhenomena _readPhenomena(
+  LunarOccultationPhenomena _readPhenomena(
     taiyin_lunar_occultation_phenomena value,
   ) {
-    return TaiyinLunarOccultationPhenomena(
+    return LunarOccultationPhenomena(
       angularDistanceRadians: _finiteOrNull(value.angular_distance_rad),
       diameterRatio: _finiteOrNull(value.diameter_ratio),
       magnitude: _finiteOrNull(value.magnitude),
@@ -407,10 +405,10 @@ final class TaiyinOccultationApi {
     );
   }
 
-  TaiyinLunarOccultationLocalVisibility _readLocalVisibility(
+  LunarOccultationLocalVisibility _readLocalVisibility(
     taiyin_lunar_occultation_local_visibility value,
   ) {
-    return TaiyinLunarOccultationLocalVisibility(
+    return LunarOccultationLocalVisibility(
       firstContact: _readVisibilitySample(value.first_contact),
       secondContact: _readVisibilitySample(value.second_contact),
       maximum: _readVisibilitySample(value.maximum),
@@ -432,15 +430,15 @@ final class TaiyinOccultationApi {
         value.dark_visible_interval_count,
         'darkVisibleIntervalCount',
       ),
-      flags: TaiyinOccultationVisibilityFlag.fromMask(value.visibility_flags),
+      flags: OccultationVisibilityFlag.fromMask(value.visibility_flags),
     );
   }
 
-  TaiyinLunarOccultationVisibilitySample? _readVisibilitySample(
+  LunarOccultationVisibilitySample? _readVisibilitySample(
     taiyin_lunar_occultation_visibility_sample value,
   ) {
     if (value.valid == 0) return null;
-    return TaiyinLunarOccultationVisibilitySample(
+    return LunarOccultationVisibilitySample(
       coordinate: _requiredUt1(value.jd_ut, 'visibility sample'),
       moonAltitudeRadians: value.moon_altitude_rad,
       moonAzimuthRadians: value.moon_azimuth_rad,
@@ -448,18 +446,18 @@ final class TaiyinOccultationApi {
       targetAzimuthRadians: value.target_azimuth_rad,
       sunAltitudeRadians: value.sun_altitude_rad,
       sunAzimuthRadians: value.sun_azimuth_rad,
-      flags: TaiyinOccultationSampleFlag.fromMask(value.visibility_flags),
+      flags: OccultationSampleFlag.fromMask(value.visibility_flags),
     );
   }
 
-  List<TaiyinLunarOccultationVisibilityInterval> _readIntervals(
+  List<LunarOccultationVisibilityInterval> _readIntervals(
     Array<taiyin_lunar_occultation_visibility_interval> values,
     int count,
     String name,
   ) {
     final safeCount = _validatedCount(
       count,
-      TaiyinLunarOccultationLocalVisibility.maxIntervals,
+      LunarOccultationLocalVisibility.maxIntervals,
       name,
     );
     return List.unmodifiable([
@@ -468,32 +466,32 @@ final class TaiyinOccultationApi {
     ]);
   }
 
-  TaiyinLunarOccultationVisibilityInterval _readInterval(
+  LunarOccultationVisibilityInterval _readInterval(
     taiyin_lunar_occultation_visibility_interval value,
     String name,
     int index,
   ) {
     _requireValidEntry(value.valid, '$name[$index]');
-    return TaiyinLunarOccultationVisibilityInterval(
+    return LunarOccultationVisibilityInterval(
       begin: _requiredUt1(value.begin_jd_ut, '$name[$index].begin'),
       end: _requiredUt1(value.end_jd_ut, '$name[$index].end'),
     );
   }
 
-  TaiyinLunarOccultationWhereResult _readWhere(
+  LunarOccultationWhereResult _readWhere(
     taiyin_lunar_occultation_where_result value,
   ) {
     final coordinate = _ut1OrNull(value.jd_ut);
-    return TaiyinLunarOccultationWhereResult(
+    return LunarOccultationWhereResult(
       centerLineHitsEarth: value.center_line_hits_earth != 0,
-      types: TaiyinOccultationType.fromMask(value.type_flags),
+      types: OccultationType.fromMask(value.type_flags),
       coordinate: coordinate,
       centerLineBegin: _ut1OrNull(value.center_line_begin_jd_ut),
       centerLineEnd: _ut1OrNull(value.center_line_end_jd_ut),
       centerLinePath: _readPath(
         value.center_line_path,
         value.center_line_path_count,
-        TaiyinLunarOccultationWhereResult.maxPathPoints,
+        LunarOccultationWhereResult.maxPathPoints,
         'centerLinePathCount',
       ),
       centerLineMinLongitudeDegrees: _finiteOrNull(
@@ -514,13 +512,13 @@ final class TaiyinOccultationApi {
       outerNorthPath: _readPath(
         value.outer_north_path,
         value.outer_limit_path_count,
-        TaiyinLunarOccultationWhereResult.maxPathPoints,
+        LunarOccultationWhereResult.maxPathPoints,
         'outerLimitPathCount',
       ),
       outerSouthPath: _readPath(
         value.outer_south_path,
         value.outer_limit_path_count,
-        TaiyinLunarOccultationWhereResult.maxPathPoints,
+        LunarOccultationWhereResult.maxPathPoints,
         'outerLimitPathCount',
       ),
       outerLimitMeanWidthKilometers: _finiteOrNull(
@@ -532,7 +530,7 @@ final class TaiyinOccultationApi {
       visibleRegionPolygon: _readPath(
         value.visible_region_polygon,
         value.visible_region_polygon_count,
-        TaiyinLunarOccultationWhereResult.maxPolygonPoints,
+        LunarOccultationWhereResult.maxPolygonPoints,
         'visibleRegionPolygonCount',
       ),
       visibleRegionMinLongitudeDegrees: _finiteOrNull(
@@ -554,13 +552,13 @@ final class TaiyinOccultationApi {
       marginRadians: _finiteOrNull(value.margin_rad),
       phenomena: _readPhenomena(value.phenomena),
       localSample: _readVisibilitySample(value.local_sample),
-      visibilityFlags: TaiyinOccultationVisibilityFlag.fromMask(
+      visibilityFlags: OccultationVisibilityFlag.fromMask(
         value.visibility_flags,
       ),
     );
   }
 
-  TaiyinLunarOccultationPathPoint? _readMaximumLocation(
+  LunarOccultationPathPoint? _readMaximumLocation(
     taiyin_lunar_occultation_where_result value,
     JulianDate<Ut1Scale>? coordinate,
   ) {
@@ -573,7 +571,7 @@ final class TaiyinOccultationApi {
         height == null) {
       return null;
     }
-    return TaiyinLunarOccultationPathPoint(
+    return LunarOccultationPathPoint(
       valid: true,
       coordinate: coordinate,
       longitudeDegrees: longitude,
@@ -582,7 +580,7 @@ final class TaiyinOccultationApi {
     );
   }
 
-  List<TaiyinLunarOccultationPathPoint> _readPath(
+  List<LunarOccultationPathPoint> _readPath(
     Array<taiyin_lunar_occultation_path_point> values,
     int count,
     int capacity,
@@ -595,13 +593,13 @@ final class TaiyinOccultationApi {
     ]);
   }
 
-  TaiyinLunarOccultationPathPoint _readPathPoint(
+  LunarOccultationPathPoint _readPathPoint(
     taiyin_lunar_occultation_path_point value,
     String name,
     int index,
   ) {
     _requireValidEntry(value.valid, '$name[$index]');
-    return TaiyinLunarOccultationPathPoint(
+    return LunarOccultationPathPoint(
       valid: true,
       coordinate: _ut1OrNull(value.jd_ut),
       longitudeDegrees: _finiteOrNull(value.longitude_deg),
@@ -612,7 +610,7 @@ final class TaiyinOccultationApi {
 
   Pointer<taiyin_lunar_occultation_result> _writeOccultation(
     Arena arena,
-    TaiyinLunarOccultationResult value,
+    LunarOccultationResult value,
   ) {
     final output = arena<taiyin_lunar_occultation_result>();
     _bindings.taiyin_lunar_occultation_result_init(output);
@@ -646,8 +644,8 @@ final class TaiyinOccultationApi {
   }
 
   int _searchMask(
-    Set<TaiyinPositionFlag> positionFlags,
-    Set<TaiyinOccultationSearchOption> options,
+    Set<PositionFlag> positionFlags,
+    Set<OccultationSearchOption> options,
   ) {
     _requireSupportedPositionFlags(positionFlags);
     return _mergeDisjointMasks(
@@ -657,8 +655,8 @@ final class TaiyinOccultationApi {
   }
 
   int _whereMask(
-    Set<TaiyinPositionFlag> positionFlags,
-    Set<TaiyinOccultationVisibilityOption> visibilityOptions,
+    Set<PositionFlag> positionFlags,
+    Set<OccultationVisibilityOption> visibilityOptions,
   ) {
     _requireSupportedPositionFlags(positionFlags);
     return _mergeDisjointMasks(
@@ -667,7 +665,7 @@ final class TaiyinOccultationApi {
     );
   }
 
-  int _positionMask(Set<TaiyinPositionFlag> flags) {
+  int _positionMask(Set<PositionFlag> flags) {
     return flags.fold(0, (mask, flag) => mask | flag.mask);
   }
 
@@ -679,16 +677,16 @@ final class TaiyinOccultationApi {
     return positionMask | optionMask;
   }
 
-  int _visibilityMask(Set<TaiyinOccultationVisibilityOption> options) {
+  int _visibilityMask(Set<OccultationVisibilityOption> options) {
     return options.fold(0, (mask, option) => mask | option.mask);
   }
 
-  void _requireSupportedPositionFlags(Set<TaiyinPositionFlag> flags) {
+  void _requireSupportedPositionFlags(Set<PositionFlag> flags) {
     const supported = {
-      TaiyinPositionFlag.truePosition,
-      TaiyinPositionFlag.astrometric,
-      TaiyinPositionFlag.noAberration,
-      TaiyinPositionFlag.noGravitationalDeflection,
+      PositionFlag.truePosition,
+      PositionFlag.astrometric,
+      PositionFlag.noAberration,
+      PositionFlag.noGravitationalDeflection,
     };
     final unsupported = flags.difference(supported);
     if (unsupported.isNotEmpty) {
@@ -711,7 +709,7 @@ final class TaiyinOccultationApi {
     }
   }
 
-  void _requireBodyTarget(TaiyinTarget target) {
+  void _requireBodyTarget(Target target) {
     if (_unsupportedBodyTargetIds.contains(target.id)) {
       throw ArgumentError.value(
         target,
@@ -723,8 +721,8 @@ final class TaiyinOccultationApi {
   }
 
   void _requireKind(
-    TaiyinLunarOccultationResult occultation,
-    TaiyinLunarOccultationKind expected,
+    LunarOccultationResult occultation,
+    LunarOccultationKind expected,
   ) {
     if (occultation.kind != expected) {
       throw ArgumentError.value(

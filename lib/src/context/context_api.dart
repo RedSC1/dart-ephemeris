@@ -1,11 +1,11 @@
 part of '../taiyin.dart';
 
-/// Mutable configuration owned by one Taiyin calculation context.
+/// Mutable configuration owned by one Ephemeris calculation context.
 ///
 /// Finish configuration before using the owning context concurrently. Cloned
-/// [TaiyinContext] instances receive an independent copy of this state.
-final class TaiyinContextConfiguration {
-  TaiyinContextConfiguration._(
+/// [EphemerisContext] instances receive an independent copy of this state.
+final class ContextConfiguration {
+  ContextConfiguration._(
     this._bindings,
     this._context,
     this._ensureOpen,
@@ -24,7 +24,7 @@ final class TaiyinContextConfiguration {
   }
 
   /// Sets the geographic observer location.
-  void setObserverLocation(TaiyinObserverLocation location) {
+  void setObserverLocation(ObserverLocation location) {
     _ensureOpen();
     _validateLocation(location);
     using((arena) {
@@ -42,7 +42,7 @@ final class TaiyinContextConfiguration {
   }
 
   /// Sets complete atmospheric conditions.
-  void setAtmosphere(TaiyinAtmosphere atmosphere) {
+  void setAtmosphere(Atmosphere atmosphere) {
     _ensureOpen();
     _validateAtmosphere(atmosphere);
     using((arena) {
@@ -83,7 +83,7 @@ final class TaiyinContextConfiguration {
   /// Replaces fallback behavior for missing atmospheric values.
   ///
   /// Passing an empty set clears all atmosphere-policy flags.
-  void setAtmospherePolicy(Set<TaiyinAtmospherePolicyFlag> flags) {
+  void setAtmospherePolicy(Set<AtmospherePolicyFlag> flags) {
     _ensureOpen();
     final mask = flags.fold(0, (value, flag) => value | flag.mask);
     _checkStatus(
@@ -107,7 +107,7 @@ final class TaiyinContextConfiguration {
 
   /// Configures a geocentric observer and its ephemeris center.
   ///
-  /// The arguments are native body IDs rather than [TaiyinBody] values so
+  /// The arguments are native body IDs rather than [Body] values so
   /// custom registered targets remain usable.
   void setGeocentricObserver({required int observerId, required int centerId}) {
     _ensureOpen();
@@ -123,7 +123,7 @@ final class TaiyinContextConfiguration {
   }
 
   /// Sets an explicit ICRF topocentric observer offset.
-  void setTopocentricObserverOffset(TaiyinCartesianState offset) {
+  void setTopocentricObserverOffset(CartesianState offset) {
     _ensureOpen();
     _validateState(offset);
     using((arena) {
@@ -146,7 +146,7 @@ final class TaiyinContextConfiguration {
 
   /// Computes a simple topocentric offset from UT1 and TT coordinates.
   void setSimpleTopocentricObserver(
-    TaiyinObserverLocation location, {
+    ObserverLocation location, {
     required JulianDate<Ut1Scale> ut1,
     required JulianDate<TtScale> tt,
   }) {
@@ -167,7 +167,7 @@ final class TaiyinContextConfiguration {
 
   /// Computes an EOP-backed topocentric offset from UTC and TT coordinates.
   void setPreciseTopocentricObserver(
-    TaiyinObserverLocation location, {
+    ObserverLocation location, {
     required JulianDate<UtcScale> utc,
     required JulianDate<TtScale> tt,
   }) {
@@ -187,7 +187,7 @@ final class TaiyinContextConfiguration {
   }
 
   /// Selects a native ephemeris route-rule table.
-  void setRouteRule(TaiyinRouteRule routeRule) {
+  void setRouteRule(RouteRule routeRule) {
     _ensureOpen();
     _checkStatus(
       _bindings.taiyin_context_set_route_rule(_context, routeRule.id),
@@ -195,7 +195,7 @@ final class TaiyinContextConfiguration {
   }
 
   /// Sets astronomy model selection as one coherent configuration.
-  void setAstroModels(TaiyinAstroModelConfig config) {
+  void setAstroModels(AstroModelConfig config) {
     _ensureOpen();
     using((arena) {
       final native = arena<taiyin_astro_model_config>();
@@ -211,7 +211,7 @@ final class TaiyinContextConfiguration {
   }
 
   /// Sets apparent-position correction and output options.
-  void setApparentConfig(TaiyinApparentConfig config) {
+  void setApparentConfig(ApparentConfig config) {
     _ensureOpen();
     _validateApparentConfig(config);
     using((arena) {
@@ -256,14 +256,14 @@ final class TaiyinContextConfiguration {
     );
   }
 
-  void setRefractionModel(TaiyinRefractionModel model) {
+  void setRefractionModel(RefractionModel model) {
     _ensureOpen();
     _checkStatus(
       _bindings.taiyin_context_set_refraction_model(_context, model.id),
     );
   }
 
-  void setHeliacalVisibilityModel(TaiyinHeliacalVisibilityModel model) {
+  void setHeliacalVisibilityModel(HeliacalVisibilityModel model) {
     _ensureOpen();
     _checkStatus(
       _bindings.taiyin_context_set_heliacal_visibility_model(
@@ -287,7 +287,7 @@ final class TaiyinContextConfiguration {
 
   /// Replaces the context's gravitational deflector list.
   void setDeflectors(
-    List<TaiyinApparentDeflector> deflectors, {
+    List<ApparentDeflector> deflectors, {
     int solarDeflectorIndex = -1,
   }) {
     _ensureOpen();
@@ -351,7 +351,7 @@ final class TaiyinContextConfiguration {
 
   /// Enables Shapiro delay and its required light-time correction.
   void enableShapiroDelay({
-    TaiyinShapiroDelayModel model = TaiyinShapiroDelayModel.standard,
+    ShapiroDelayModel model = ShapiroDelayModel.standard,
   }) {
     _ensureOpen();
     _checkStatus(
@@ -366,8 +366,8 @@ final class TaiyinContextConfiguration {
 
   /// Selects the Earth-shadow and lunar-radius eclipse models.
   void setEclipseModels({
-    required TaiyinEclipseShadowModel shadow,
-    required TaiyinEclipseMoonRadiusModel moonRadius,
+    required EclipseShadowModel shadow,
+    required EclipseMoonRadiusModel moonRadius,
   }) {
     _ensureOpen();
     _checkStatus(
@@ -381,7 +381,7 @@ final class TaiyinContextConfiguration {
 
   Pointer<taiyin_observer_location> _writeLocation(
     Arena arena,
-    TaiyinObserverLocation location,
+    ObserverLocation location,
   ) {
     final native = arena<taiyin_observer_location>();
     _bindings.taiyin_observer_location_init(native);
@@ -392,7 +392,7 @@ final class TaiyinContextConfiguration {
     return native;
   }
 
-  void _validateLocation(TaiyinObserverLocation value) {
+  void _validateLocation(ObserverLocation value) {
     _requireFinite(value.longitudeDegrees, 'longitudeDegrees');
     _requireFinite(value.latitudeDegrees, 'latitudeDegrees');
     _requireFinite(value.heightMeters, 'heightMeters');
@@ -401,15 +401,15 @@ final class TaiyinContextConfiguration {
     }
   }
 
-  void _validateAtmosphere(TaiyinAtmosphere value) {
+  void _validateAtmosphere(Atmosphere value) {
     _requireFinite(value.pressureMillibars, 'pressureMillibars');
     _requireFinite(value.temperatureCelsius, 'temperatureCelsius');
     _requireFinite(value.relativeHumidityPercent, 'relativeHumidityPercent');
     _requireFinite(value.wavelengthMicrometers, 'wavelengthMicrometers');
   }
 
-  void _validateApparentConfig(TaiyinApparentConfig value) {
-    if (value.outputFrame == TaiyinApparentFrame.unknown) {
+  void _validateApparentConfig(ApparentConfig value) {
+    if (value.outputFrame == ApparentFrame.unknown) {
       throw ArgumentError.value(value.outputFrame, 'outputFrame');
     }
     if (value.maxLightTimeIterations < 0 ||
@@ -438,15 +438,15 @@ final class TaiyinContextConfiguration {
         'must be positive',
       );
     }
-    if (value.flags.contains(TaiyinApparentFlag.shapiroDelay) &&
-        !value.flags.contains(TaiyinApparentFlag.lightTime)) {
+    if (value.flags.contains(ApparentFlag.shapiroDelay) &&
+        !value.flags.contains(ApparentFlag.lightTime)) {
       throw ArgumentError(
         'Shapiro delay requires the light-time correction flag.',
       );
     }
   }
 
-  void _validateDeflector(TaiyinApparentDeflector value) {
+  void _validateDeflector(ApparentDeflector value) {
     _requireInt32(value.bodyId, 'bodyId');
     _requireFinite(value.schwarzschildRadiusAu, 'schwarzschildRadiusAu');
     _requireFinite(value.limit, 'limit');
@@ -463,7 +463,7 @@ final class TaiyinContextConfiguration {
     }
   }
 
-  void _validateState(TaiyinCartesianState value) {
+  void _validateState(CartesianState value) {
     for (final coordinate in [
       ...value.positionAu.values,
       ...value.velocityAuPerDay.values,
@@ -473,7 +473,7 @@ final class TaiyinContextConfiguration {
     }
   }
 
-  void _writeVector(taiyin_vector3 native, TaiyinVector3 value) {
+  void _writeVector(taiyin_vector3 native, Vector3 value) {
     native
       ..x = value.x
       ..y = value.y

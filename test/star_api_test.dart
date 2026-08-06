@@ -12,19 +12,19 @@ void main() {
   const majorBodiesPath = '$nativeDataRoot/ephemerides/opm2/major-bodies/600y';
 
   group(
-    'Taiyin Star API native integration',
+    'Ephemeris Star API native integration',
     () {
-      late Taiyin runtime;
-      late TaiyinContext context;
+      late Ephemeris runtime;
+      late EphemerisContext context;
       late Directory temporaryDirectory;
       final tt = JulianDate<TtScale>.fromDouble(2460409.0);
       final ut1 = JulianDate<Ut1Scale>.fromDouble(2460409.0);
       final tdb = JulianDate<TdbScale>.fromDouble(2460409.0);
 
       setUp(() {
-        runtime = Taiyin.open(
+        runtime = Ephemeris.open(
           libraryPath: libraryPath,
-          options: const TaiyinRuntimeOptions(
+          options: const RuntimeOptions(
             sourcePaths: [majorBodiesPath],
             loadPackagedData: false,
           ),
@@ -50,7 +50,7 @@ void main() {
         expect(runtime.starCatalog.magnitudeOf('Spica').isFinite, isTrue);
         expect(
           () => runtime.starCatalog.magnitudeOf('missing-star'),
-          throwsA(isA<TaiyinException>()),
+          throwsA(isA<EphemerisError>()),
         );
 
         runtime.starCatalog.clear();
@@ -100,9 +100,9 @@ star.0.magnitude=5.5
 
       test('covers TDB, TT, UT1, and explicit Delta-T positions', () {
         const flags = {
-          TaiyinPositionFlag.xyz,
-          TaiyinPositionFlag.speed,
-          TaiyinPositionFlag.truePosition,
+          PositionFlag.xyz,
+          PositionFlag.speed,
+          PositionFlag.truePosition,
         };
         final results = [
           context.stars.atTdb('spica', tdb, tt, flags: flags),
@@ -123,7 +123,7 @@ star.0.magnitude=5.5
 
       test('batch time routes preserve keys and match single results', () {
         const keys = ['spica', 'antares'];
-        const flags = {TaiyinPositionFlag.xyz, TaiyinPositionFlag.truePosition};
+        const flags = {PositionFlag.xyz, PositionFlag.truePosition};
         final batches = [
           context.stars.batchAtTdb(keys, tdb, tt, flags: flags),
           context.stars.batchAtTt(keys, tt, flags: flags),
@@ -163,7 +163,7 @@ star.0.magnitude=5.5
           final batch = context.stars.batchAtTt(
             const ['spica', 'missing-star'],
             tt,
-            flags: {TaiyinPositionFlag.xyz},
+            flags: {PositionFlag.xyz},
           );
 
           expect(batch, hasLength(2));
@@ -178,10 +178,7 @@ star.0.magnitude=5.5
       );
 
       test('calculates single and batch observed star positions', () {
-        const flags = {
-          TaiyinObservedFlag.speed,
-          TaiyinObservedFlag.truePosition,
-        };
+        const flags = {ObservedFlag.speed, ObservedFlag.truePosition};
         final single = context.stars.observedAtUt1('spica', ut1, flags: flags);
         final batch = context.stars.observedBatchAtUt1(
           const ['spica', 'antares'],
@@ -216,7 +213,7 @@ star.0.magnitude=5.5
 
       test('maps topocentric horizontal observed star output', () {
         context.configuration.setObserverLocation(
-          const TaiyinObserverLocation(
+          const ObserverLocation(
             longitudeDegrees: 116.391,
             latitudeDegrees: 39.907,
             heightMeters: 50,
@@ -226,10 +223,10 @@ star.0.magnitude=5.5
           'spica',
           ut1,
           flags: {
-            TaiyinObservedFlag.speed,
-            TaiyinObservedFlag.topocentric,
-            TaiyinObservedFlag.horizontal,
-            TaiyinObservedFlag.truePosition,
+            ObservedFlag.speed,
+            ObservedFlag.topocentric,
+            ObservedFlag.horizontal,
+            ObservedFlag.truePosition,
           },
         );
 
@@ -248,7 +245,7 @@ star.0.magnitude=5.5
             'missing-star',
           ], ut1),
           throwsA(
-            isA<TaiyinException>().having(
+            isA<EphemerisError>().having(
               (error) => error.status,
               'status',
               isNot(0),
@@ -261,7 +258,7 @@ star.0.magnitude=5.5
             'missing-star-two',
           ], ut1),
           throwsA(
-            isA<TaiyinException>()
+            isA<EphemerisError>()
                 .having(
                   (error) => error.diagnostics,
                   'all diagnostics',
@@ -280,7 +277,7 @@ star.0.magnitude=5.5
           () => context.stars.observedAtUt1(
             'spica',
             ut1,
-            flags: {TaiyinObservedFlag.horizontal},
+            flags: {ObservedFlag.horizontal},
           ),
           throwsArgumentError,
         );
@@ -311,7 +308,7 @@ star.0.magnitude=5.5
           () => runtime.starCatalog.addTsc1(
             '${temporaryDirectory.path}/missing.tsc1',
           ),
-          throwsA(isA<TaiyinException>()),
+          throwsA(isA<EphemerisError>()),
         );
 
         context.close();

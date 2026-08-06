@@ -9,15 +9,15 @@ void main() {
       '../taiyin-ephemeris/data/ephemerides/opm2/major-bodies/600y';
 
   group(
-    'TaiyinEventsApi native integration',
+    'EventsApi native integration',
     () {
-      late Taiyin runtime;
-      late TaiyinContext context;
+      late Ephemeris runtime;
+      late EphemerisContext context;
 
       setUp(() {
-        runtime = Taiyin.open(
+        runtime = Ephemeris.open(
           libraryPath: libraryPath,
-          options: const TaiyinRuntimeOptions(
+          options: const RuntimeOptions(
             sourcePaths: [majorBodiesPath],
             loadPackagedData: false,
             loadBuiltinEop: false,
@@ -26,23 +26,23 @@ void main() {
         context = runtime.createContext();
         context.configuration
           ..setGeocentricObserver(
-            observerId: TaiyinBody.earth.id,
-            centerId: TaiyinBody.earth.id,
+            observerId: Body.earth.id,
+            centerId: Body.earth.id,
           )
           ..setStandardAtmosphere()
           ..useSolarDeflector()
           ..setApparentConfig(
-            TaiyinApparentConfig(
+            ApparentConfig(
               flags: {
-                TaiyinApparentFlag.spherical,
-                TaiyinApparentFlag.lightTime,
-                TaiyinApparentFlag.aberration,
-                TaiyinApparentFlag.deflection,
+                ApparentFlag.spherical,
+                ApparentFlag.lightTime,
+                ApparentFlag.aberration,
+                ApparentFlag.deflection,
               },
-              outputFrame: TaiyinApparentFrame.trueEclipticOfDate,
+              outputFrame: ApparentFrame.trueEclipticOfDate,
             ),
           )
-          ..setRouteRule(TaiyinRouteRule.opm2);
+          ..setRouteRule(RouteRule.opm2);
       });
 
       tearDown(() => context.close());
@@ -56,7 +56,7 @@ void main() {
         final reverseSolar = context.events.solarLongitudeAtUt1(
           0,
           JulianDate<Ut1Scale>.fromDouble(2460395),
-          options: {TaiyinEventSearchOption.reverse},
+          options: {EventSearchOption.reverse},
         );
         final solarTt = context.events.solarLongitudeAtTt(
           0,
@@ -94,14 +94,11 @@ void main() {
           isTrue,
         );
         expect(
-          context.events.recommendedLongitudeSearchStepDays(TaiyinBody.mercury),
+          context.events.recommendedLongitudeSearchStepDays(Body.mercury),
           greaterThan(0),
         );
         expect(
-          context.events.recommendedAspectSearchStepDays(
-            TaiyinBody.moon,
-            TaiyinBody.sun,
-          ),
+          context.events.recommendedAspectSearchStepDays(Body.moon, Body.sun),
           greaterThan(0),
         );
       });
@@ -113,58 +110,58 @@ void main() {
         final ttEnd = JulianDate<TtScale>.fromDouble(2460420.5);
 
         final longitudeUt1 = context.events.longitudeCrossingsAtUt1(
-          TaiyinBody.sun,
+          Body.sun,
           0,
           utStart,
           JulianDate<Ut1Scale>.fromDouble(2460395),
           maxStepDays: 2,
         );
         final longitudeTt = context.events.longitudeCrossingsAtTt(
-          TaiyinBody.sun,
+          Body.sun,
           0,
           ttStart,
           JulianDate<TtScale>.fromDouble(2460395),
           maxStepDays: 2,
         );
         final stationsUt1 = context.events.longitudeStationsAtUt1(
-          TaiyinBody.mercury,
+          Body.mercury,
           JulianDate<Ut1Scale>.fromDouble(2452878.5),
           JulianDate<Ut1Scale>.fromDouble(2452882.5),
           maxStepDays: 0.25,
         );
         final stationsTt = context.events.longitudeStationsAtTt(
-          TaiyinBody.mercury,
+          Body.mercury,
           JulianDate<TtScale>.fromDouble(2452878.5),
           JulianDate<TtScale>.fromDouble(2452882.5),
           maxStepDays: 0.25,
         );
         final aspectsUt1 = context.events.aspectCrossingsAtUt1(
-          TaiyinBody.moon,
-          TaiyinBody.sun,
+          Body.moon,
+          Body.sun,
           0,
           utStart,
           utEnd,
           maxStepDays: 1,
         );
         final aspectsTt = context.events.aspectCrossingsAtTt(
-          TaiyinBody.moon,
-          TaiyinBody.sun,
+          Body.moon,
+          Body.sun,
           math.pi / 2,
           ttStart,
           JulianDate<TtScale>.fromDouble(2460395.5),
           maxStepDays: 0.5,
         );
         final exactUt1 = context.events.exactAspectsAtUt1(
-          TaiyinBody.moon,
-          TaiyinBody.sun,
+          Body.moon,
+          Body.sun,
           [math.pi / 2],
           utStart,
           utEnd,
           maxStepDays: 0.5,
         );
         final exactTt = context.events.exactAspectsAtTt(
-          TaiyinBody.moon,
-          TaiyinBody.sun,
+          Body.moon,
+          Body.sun,
           [math.pi / 2],
           ttStart,
           ttEnd,
@@ -223,35 +220,35 @@ void main() {
             maxStepDays: 1,
             maxResults: 1,
           ),
-          throwsA(isA<TaiyinException>()),
+          throwsA(isA<EphemerisError>()),
         );
       });
 
       test('searches extrema and global and local solar transits', () {
         final elongation = context.events.greatestElongationAtUt1(
-          TaiyinBody.mercury,
+          Body.mercury,
           JulianDate<Ut1Scale>.fromDouble(2460369.5),
           JulianDate<Ut1Scale>.fromDouble(2460414.5),
         );
         final minimumUt1 = context.events.minimumAngularSeparationAtUt1(
-          TaiyinBody.moon,
-          TaiyinBody.sun,
+          Body.moon,
+          Body.sun,
           JulianDate<Ut1Scale>.fromDouble(2460408.5),
           JulianDate<Ut1Scale>.fromDouble(2460410),
           maxStepDays: 0.05,
         );
         final minimumTt = context.events.minimumAngularSeparationAtTt(
-          TaiyinBody.moon,
-          TaiyinBody.sun,
+          Body.moon,
+          Body.sun,
           JulianDate<TtScale>.fromDouble(2460408.5),
           JulianDate<TtScale>.fromDouble(2460410),
           maxStepDays: 0.05,
         );
         final transit = context.events.nextSolarTransitAtUt1(
-          TaiyinBody.mercury,
+          Body.mercury,
           JulianDate<Ut1Scale>.fromDouble(2458799),
         );
-        const newYork = TaiyinObserverLocation(
+        const newYork = ObserverLocation(
           longitudeDegrees: -74.0060,
           latitudeDegrees: 40.7128,
           heightMeters: 10,
@@ -261,12 +258,12 @@ void main() {
           newYork,
         );
         final localSearch = context.events.nextLocalSolarTransitAtUt1(
-          TaiyinBody.mercury,
+          Body.mercury,
           JulianDate<Ut1Scale>.fromDouble(2458799),
           newYork,
         );
 
-        expect(elongation.value.kind, TaiyinGreatestElongationKind.eastern);
+        expect(elongation.value.kind, GreatestElongationKind.eastern);
         expect(
           elongation.value.coordinate.toDouble(),
           closeTo(2460394.440334700048, 0.02),
@@ -291,7 +288,7 @@ void main() {
           transit.value.greatest.toDouble(),
           closeTo(2458799.138751322404, 1 / 86400),
         );
-        expect(transit.value.kinds, contains(TaiyinSolarTransitKind.fullDisk));
+        expect(transit.value.kinds, contains(SolarTransitKind.fullDisk));
         expect(transit.value.t1, isNotNull);
         expect(transit.value.t4, isNotNull);
         expect(transit.value.t1!.isBefore(transit.value.greatest), isTrue);
@@ -304,7 +301,7 @@ void main() {
         );
         expect(
           localSearch.value.visibilityFlags,
-          contains(TaiyinSolarTransitVisibilityFlag.visibleAtObserver),
+          contains(SolarTransitVisibilityFlag.visibleAtObserver),
         );
         expect(
           localSearch.value.contactSunAltitudeDegrees.every(
@@ -330,14 +327,14 @@ void main() {
             () => context.events.solarLongitudeAtUt1(
               0,
               start,
-              positionFlags: {TaiyinPositionFlag.xyz},
+              positionFlags: {PositionFlag.xyz},
             ),
             throwsArgumentError,
           );
           expect(
             () => context.events.aspectCrossingsAtUt1(
-              TaiyinBody.sun,
-              TaiyinBody.sun,
+              Body.sun,
+              Body.sun,
               0,
               start,
               end,
@@ -347,8 +344,8 @@ void main() {
           );
           expect(
             () => context.events.exactAspectsAtUt1(
-              TaiyinBody.moon,
-              TaiyinBody.sun,
+              Body.moon,
+              Body.sun,
               const [],
               start,
               end,
@@ -367,20 +364,17 @@ void main() {
             throwsRangeError,
           );
           expect(
-            () => context.events.nextSolarTransitAtUt1(TaiyinBody.mars, start),
+            () => context.events.nextSolarTransitAtUt1(Body.mars, start),
             throwsArgumentError,
           );
           expect(
             () => context.events.nextLocalSolarTransitAtUt1(
-              TaiyinBody.mercury,
+              Body.mercury,
               start,
-              const TaiyinObserverLocation(
-                longitudeDegrees: 0,
-                latitudeDegrees: 0,
-              ),
+              const ObserverLocation(longitudeDegrees: 0, latitudeDegrees: 0),
               options: {
-                TaiyinEventSearchOption.refraction,
-                TaiyinEventSearchOption.noRefraction,
+                EventSearchOption.refraction,
+                EventSearchOption.noRefraction,
               },
             ),
             throwsArgumentError,

@@ -5,13 +5,13 @@ import 'support/native_library.dart';
 
 void main() {
   group(
-    'TaiyinGanzhiApi native integration',
+    'GanzhiApi native integration',
     () {
-      late Taiyin runtime;
-      late TaiyinContext context;
+      late Ephemeris runtime;
+      late EphemerisContext context;
 
       setUp(() {
-        runtime = Taiyin.open(libraryPath: libraryPath);
+        runtime = Ephemeris.open(libraryPath: libraryPath);
         context = runtime.createContext();
       });
 
@@ -22,8 +22,8 @@ void main() {
       test('builds a Ganzhi from stem and branch ids', () {
         final jiaZi = context.ganzhi.make(stemId: 0, branchId: 0);
         expect(jiaZi.raw, 0);
-        expect(jiaZi.stem, TaiyinHeavenlyStem.jia);
-        expect(jiaZi.branch, TaiyinEarthlyBranch.zi);
+        expect(jiaZi.stem, HeavenlyStem.jia);
+        expect(jiaZi.branch, EarthlyBranch.zi);
 
         final wuXu = context.ganzhi.make(stemId: 4, branchId: 10);
         expect(wuXu.raw, (4 << 4) | 10);
@@ -62,13 +62,13 @@ void main() {
         final jiaZi = context.ganzhi.make(stemId: 0, branchId: 0);
         // 甲子/乙丑 share the 海中金 (metal) NaYin id 0.
         expect(context.ganzhi.nayinId(jiaZi), 0);
-        expect(context.ganzhi.nayinElement(jiaZi), TaiyinGanzhiWuxing.metal);
+        expect(context.ganzhi.nayinElement(jiaZi), GanzhiWuxing.metal);
       });
 
       test('rejects invalid stem-branch combinations', () {
         expect(
           () => context.ganzhi.make(stemId: 0, branchId: 1),
-          throwsA(isA<TaiyinException>()),
+          throwsA(isA<EphemerisError>()),
         );
       });
     },

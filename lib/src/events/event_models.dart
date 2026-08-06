@@ -5,32 +5,32 @@ import '../time/time_scale.dart';
 ///
 /// Not every option applies to every method. Longitude searches and global
 /// solar-transit searches accept [reverse].
-/// [TaiyinEventsApi.nextLocalSolarTransitAtUt1] accepts [reverse],
+/// [EventsApi.nextLocalSolarTransitAtUt1] accepts [reverse],
 /// [refraction], and [noRefraction], while
-/// [TaiyinEventsApi.localSolarTransitAtUt1] accepts only the refraction
+/// [EventsApi.localSolarTransitAtUt1] accepts only the refraction
 /// choices. Other event searches reject options.
-enum TaiyinEventSearchOption {
+enum EventSearchOption {
   reverse(1 << 32),
   refraction(1 << 33),
   noRefraction(1 << 34);
 
-  const TaiyinEventSearchOption(this.mask);
+  const EventSearchOption(this.mask);
 
   /// Bit used by the Taiyin C ABI.
   final int mask;
 }
 
 /// Direction of an elongation maximum relative to the Sun.
-enum TaiyinGreatestElongationKind {
+enum GreatestElongationKind {
   eastern(1 << 0),
   western(1 << 1),
   unknown(0);
 
-  const TaiyinGreatestElongationKind(this.mask);
+  const GreatestElongationKind(this.mask);
 
   final int mask;
 
-  static TaiyinGreatestElongationKind fromMask(int mask) {
+  static GreatestElongationKind fromMask(int mask) {
     return values.firstWhere(
       (value) => value.mask == mask,
       orElse: () => unknown,
@@ -39,17 +39,17 @@ enum TaiyinGreatestElongationKind {
 }
 
 /// Physical classification of a solar transit.
-enum TaiyinSolarTransitKind {
+enum SolarTransitKind {
   partial(1 << 0),
   fullDisk(1 << 1);
 
-  const TaiyinSolarTransitKind(this.mask);
+  const SolarTransitKind(this.mask);
 
   final int mask;
 }
 
 /// Whether a local observer can see an individual solar-transit contact.
-enum TaiyinSolarTransitVisibilityFlag {
+enum SolarTransitVisibilityFlag {
   visibleAtObserver(1 << 8),
   t1Visible(1 << 9),
   t2Visible(1 << 10),
@@ -57,18 +57,18 @@ enum TaiyinSolarTransitVisibilityFlag {
   t3Visible(1 << 12),
   t4Visible(1 << 13);
 
-  const TaiyinSolarTransitVisibilityFlag(this.mask);
+  const SolarTransitVisibilityFlag(this.mask);
 
   final int mask;
 
-  static Set<TaiyinSolarTransitVisibilityFlag> fromMask(int mask) {
+  static Set<SolarTransitVisibilityFlag> fromMask(int mask) {
     return Set.unmodifiable(values.where((value) => (mask & value.mask) != 0));
   }
 }
 
 /// A station in ecliptic longitude returned by a bounded event search.
-final class TaiyinLongitudeStation<S extends TimeScale> {
-  const TaiyinLongitudeStation({
+final class LongitudeStation<S extends TimeScale> {
+  const LongitudeStation({
     required this.coordinate,
     required this.longitudeRadians,
   });
@@ -79,8 +79,8 @@ final class TaiyinLongitudeStation<S extends TimeScale> {
 }
 
 /// A matching exact aspect returned by a bounded event search.
-final class TaiyinExactAspectEvent<S extends TimeScale> {
-  const TaiyinExactAspectEvent({
+final class ExactAspectEvent<S extends TimeScale> {
+  const ExactAspectEvent({
     required this.coordinate,
     required this.aspectRadians,
   });
@@ -91,8 +91,8 @@ final class TaiyinExactAspectEvent<S extends TimeScale> {
 }
 
 /// Physical diagnostics embedded in a greatest-elongation result.
-final class TaiyinEventPhenomena {
-  const TaiyinEventPhenomena({
+final class EventPhenomena {
+  const EventPhenomena({
     required this.phaseAngleRadians,
     required this.illuminatedFraction,
     required this.solarElongationRadians,
@@ -115,8 +115,8 @@ final class TaiyinEventPhenomena {
 }
 
 /// A maximum solar elongation of Mercury or Venus in UT1.
-final class TaiyinGreatestElongationEvent {
-  const TaiyinGreatestElongationEvent({
+final class GreatestElongationEvent {
+  const GreatestElongationEvent({
     required this.bodyId,
     required this.coordinate,
     required this.elongationRadians,
@@ -133,15 +133,15 @@ final class TaiyinGreatestElongationEvent {
   final JulianDate<Ut1Scale> coordinate;
   final double elongationRadians;
   final double relativeLongitudeRadians;
-  final TaiyinGreatestElongationKind kind;
+  final GreatestElongationKind kind;
   final int iterationCount;
   final int evaluationCount;
-  final TaiyinEventPhenomena phenomena;
+  final EventPhenomena phenomena;
 }
 
 /// The local minimum of angular separation between two targets.
-final class TaiyinMinimumAngularSeparationEvent<S extends TimeScale> {
-  const TaiyinMinimumAngularSeparationEvent({
+final class MinimumAngularSeparationEvent<S extends TimeScale> {
+  const MinimumAngularSeparationEvent({
     required this.bodyAId,
     required this.bodyBId,
     required this.coordinate,
@@ -163,10 +163,10 @@ final class TaiyinMinimumAngularSeparationEvent<S extends TimeScale> {
 }
 
 /// Global or topocentric contact geometry of a Mercury or Venus solar transit.
-final class TaiyinSolarTransitEvent {
-  TaiyinSolarTransitEvent({
+final class SolarTransitEvent {
+  SolarTransitEvent({
     required this.bodyId,
-    required Set<TaiyinSolarTransitKind> kinds,
+    required Set<SolarTransitKind> kinds,
     required this.greatest,
     required this.minimumSeparationRadians,
     required this.sunRadiusRadians,
@@ -180,7 +180,7 @@ final class TaiyinSolarTransitEvent {
   }) : kinds = Set.unmodifiable(kinds);
 
   final int bodyId;
-  final Set<TaiyinSolarTransitKind> kinds;
+  final Set<SolarTransitKind> kinds;
 
   /// Scalar-JD UT1 coordinate of greatest transit.
   final JulianDate<Ut1Scale> greatest;
@@ -200,17 +200,17 @@ final class TaiyinSolarTransitEvent {
 /// Contact altitudes and azimuths are ordered `T1`, `T2`, greatest, `T3`,
 /// `T4`. Values preserve the native non-finite sentinel where a contact does
 /// not exist.
-final class TaiyinLocalSolarTransitEvent {
+final class LocalSolarTransitEvent {
   /// Mirrors `TAIYIN_SOLAR_TRANSIT_CONTACT_SLOT_COUNT` in the C ABI.
   ///
   /// Update this constant whenever the native header changes the corresponding
   /// array size.
   static const int contactSlotCount = 5;
 
-  TaiyinLocalSolarTransitEvent({
+  LocalSolarTransitEvent({
     required this.global,
     required this.topocentric,
-    required Set<TaiyinSolarTransitVisibilityFlag> visibilityFlags,
+    required Set<SolarTransitVisibilityFlag> visibilityFlags,
     required List<double> contactSunAltitudeDegrees,
     required List<double> contactSunAzimuthDegrees,
     required this.sunrise,
@@ -219,9 +219,9 @@ final class TaiyinLocalSolarTransitEvent {
        contactSunAltitudeDegrees = List.unmodifiable(contactSunAltitudeDegrees),
        contactSunAzimuthDegrees = List.unmodifiable(contactSunAzimuthDegrees);
 
-  final TaiyinSolarTransitEvent global;
-  final TaiyinSolarTransitEvent topocentric;
-  final Set<TaiyinSolarTransitVisibilityFlag> visibilityFlags;
+  final SolarTransitEvent global;
+  final SolarTransitEvent topocentric;
+  final Set<SolarTransitVisibilityFlag> visibilityFlags;
   final List<double> contactSunAltitudeDegrees;
   final List<double> contactSunAzimuthDegrees;
   final JulianDate<Ut1Scale>? sunrise;

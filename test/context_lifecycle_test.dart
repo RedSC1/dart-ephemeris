@@ -7,13 +7,13 @@ import 'support/native_library.dart';
 
 void main() {
   group(
-    'TaiyinContext child-context lifecycle',
+    'EphemerisContext child-context lifecycle',
     () {
-      late Taiyin runtime;
-      late TaiyinContext context;
+      late Ephemeris runtime;
+      late EphemerisContext context;
 
       setUp(() {
-        runtime = Taiyin.open(libraryPath: libraryPath);
+        runtime = Ephemeris.open(libraryPath: libraryPath);
         context = runtime.createContext();
       });
 
@@ -44,7 +44,7 @@ void main() {
           // A caller-created calendar context borrows the owner's native state;
           // closing the owner must invalidate it too, not just the cached one.
           final custom = context.createChineseCalendar(
-            config: const TaiyinChineseCalendarConfig.utcOffset(0),
+            config: const ChineseCalendarConfig.utcOffset(0),
           );
           expect(custom.isClosed, isFalse);
 
@@ -107,7 +107,7 @@ Future<String> _attachWorker(
 void _workerMain(
   ({SendPort sendPort, String libraryPath, JulianDate<Ut1Scale> jd}) message,
 ) {
-  final context = TaiyinContext.attach(libraryPath: message.libraryPath);
+  final context = EphemerisContext.attach(libraryPath: message.libraryPath);
   try {
     final calendar = context.chineseCalendar;
     final year = calendar.calcYearUt(message.jd).value;

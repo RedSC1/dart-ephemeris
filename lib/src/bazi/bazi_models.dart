@@ -1,4 +1,4 @@
-/// BaZi (八字) astrology models backed by the Taiyin BaZi extension.
+/// BaZi (八字) astrology models backed by the Ephemeris BaZi extension.
 library;
 
 import '../ganzhi/ganzhi_models.dart';
@@ -7,18 +7,18 @@ import '../time/julian_date.dart';
 import '../time/time_scale.dart';
 
 /// How the 安命宫 (life-palace) / 安身宫 (body-palace) earth position is derived.
-enum TaiyinBaziEarthPalaceMode {
+enum BaziEarthPalaceMode {
   /// 火土 (fire-earth) palace rules.
   fireEarth(0),
 
   /// 水土 (water-earth) palace rules.
   waterEarth(1);
 
-  const TaiyinBaziEarthPalaceMode(this.id);
+  const BaziEarthPalaceMode(this.id);
 
   final int id;
 
-  static TaiyinBaziEarthPalaceMode fromId(int id) {
+  static BaziEarthPalaceMode fromId(int id) {
     for (final value in values) {
       if (value.id == id) return value;
     }
@@ -27,15 +27,15 @@ enum TaiyinBaziEarthPalaceMode {
 }
 
 /// The birth gender used by the 大运 (da-yun) direction rules.
-enum TaiyinBaziGender {
+enum BaziGender {
   female(0),
   male(1);
 
-  const TaiyinBaziGender(this.id);
+  const BaziGender(this.id);
 
   final int id;
 
-  static TaiyinBaziGender fromId(int id) {
+  static BaziGender fromId(int id) {
     for (final value in values) {
       if (value.id == id) return value;
     }
@@ -44,15 +44,15 @@ enum TaiyinBaziGender {
 }
 
 /// How the 起运 (qi-yun) direction is selected.
-enum TaiyinBaziQiyunDirectionMode {
+enum BaziQiyunDirectionMode {
   /// Derived from the year-pillar stem yin/yang and the birth gender.
   yearStemGender(0);
 
-  const TaiyinBaziQiyunDirectionMode(this.id);
+  const BaziQiyunDirectionMode(this.id);
 
   final int id;
 
-  static TaiyinBaziQiyunDirectionMode fromId(int id) {
+  static BaziQiyunDirectionMode fromId(int id) {
     for (final value in values) {
       if (value.id == id) return value;
     }
@@ -62,7 +62,7 @@ enum TaiyinBaziQiyunDirectionMode {
 
 /// Which year length is used when converting the 起运 (qi-yun) day offset into
 /// a year/month/day offset.
-enum TaiyinBaziQiyunTimeModel {
+enum BaziQiyunTimeModel {
   /// Traditional calendar years (standard 起运 conversion).
   traditionalCalendar(0),
 
@@ -72,11 +72,11 @@ enum TaiyinBaziQiyunTimeModel {
   /// Tropical years of 365.2422 days.
   tropicalYear(2);
 
-  const TaiyinBaziQiyunTimeModel(this.id);
+  const BaziQiyunTimeModel(this.id);
 
   final int id;
 
-  static TaiyinBaziQiyunTimeModel fromId(int id) {
+  static BaziQiyunTimeModel fromId(int id) {
     for (final value in values) {
       if (value.id == id) return value;
     }
@@ -85,7 +85,7 @@ enum TaiyinBaziQiyunTimeModel {
 }
 
 /// Which calendar is used when naming the 大运 (da-yun) boundary years.
-enum TaiyinBaziDayunBoundaryModel {
+enum BaziDayunBoundaryModel {
   /// Civil (proleptic Gregorian/Julian) year boundaries.
   civilYears(0),
 
@@ -95,11 +95,11 @@ enum TaiyinBaziDayunBoundaryModel {
   /// Tropical-year boundaries.
   tropicalYears(2);
 
-  const TaiyinBaziDayunBoundaryModel(this.id);
+  const BaziDayunBoundaryModel(this.id);
 
   final int id;
 
-  static TaiyinBaziDayunBoundaryModel fromId(int id) {
+  static BaziDayunBoundaryModel fromId(int id) {
     for (final value in values) {
       if (value.id == id) return value;
     }
@@ -108,18 +108,18 @@ enum TaiyinBaziDayunBoundaryModel {
 }
 
 /// Which 人元司令 (ren-yuan si-ling) command-day table is used.
-enum TaiyinBaziRenyuanSilingTableModel {
+enum BaziRenyuanSilingTableModel {
   /// 三命通会 table.
   sanMingTongHui(0),
 
   /// The common (standard) table.
   common(1);
 
-  const TaiyinBaziRenyuanSilingTableModel(this.id);
+  const BaziRenyuanSilingTableModel(this.id);
 
   final int id;
 
-  static TaiyinBaziRenyuanSilingTableModel fromId(int id) {
+  static BaziRenyuanSilingTableModel fromId(int id) {
     for (final value in values) {
       if (value.id == id) return value;
     }
@@ -128,18 +128,18 @@ enum TaiyinBaziRenyuanSilingTableModel {
 }
 
 /// How 人元司令 (ren-yuan si-ling) instants are measured.
-enum TaiyinBaziRenyuanSilingTimeModel {
+enum BaziRenyuanSilingTimeModel {
   /// Elapsed full 24-hour days from the governing 节.
   elapsed24Hours(0),
 
   /// Local civil days from the governing 节.
   localCivilDays(1);
 
-  const TaiyinBaziRenyuanSilingTimeModel(this.id);
+  const BaziRenyuanSilingTimeModel(this.id);
 
   final int id;
 
-  static TaiyinBaziRenyuanSilingTimeModel fromId(int id) {
+  static BaziRenyuanSilingTimeModel fromId(int id) {
     for (final value in values) {
       if (value.id == id) return value;
     }
@@ -152,7 +152,7 @@ enum TaiyinBaziRenyuanSilingTimeModel {
 }
 
 /// The origin of a 人元司令 (ren-yuan si-ling) command segment.
-enum TaiyinBaziRenyuanSilingOriginKind {
+enum BaziRenyuanSilingOriginKind {
   /// The segment is governed by a heavenly stem.
   stem(0),
 
@@ -162,11 +162,11 @@ enum TaiyinBaziRenyuanSilingOriginKind {
   /// 坤土 (kun earth).
   kunEarth(2);
 
-  const TaiyinBaziRenyuanSilingOriginKind(this.id);
+  const BaziRenyuanSilingOriginKind(this.id);
 
   final int id;
 
-  static TaiyinBaziRenyuanSilingOriginKind fromId(int id) {
+  static BaziRenyuanSilingOriginKind fromId(int id) {
     for (final value in values) {
       if (value.id == id) return value;
     }
@@ -175,18 +175,18 @@ enum TaiyinBaziRenyuanSilingOriginKind {
 }
 
 /// The five elements (五行).
-enum TaiyinBaziWuxing {
+enum BaziWuxing {
   water(0),
   wood(1),
   metal(2),
   earth(3),
   fire(4);
 
-  const TaiyinBaziWuxing(this.id);
+  const BaziWuxing(this.id);
 
   final int id;
 
-  static TaiyinBaziWuxing fromId(int id) {
+  static BaziWuxing fromId(int id) {
     for (final value in values) {
       if (value.id == id) return value;
     }
@@ -195,7 +195,7 @@ enum TaiyinBaziWuxing {
 }
 
 /// The ten gods (十神).
-enum TaiyinBaziTenGod {
+enum BaziTenGod {
   /// 比肩 (peer).
   biJian(0),
 
@@ -226,11 +226,11 @@ enum TaiyinBaziTenGod {
   /// 正印 (direct seal).
   zhengYin(9);
 
-  const TaiyinBaziTenGod(this.id);
+  const BaziTenGod(this.id);
 
   final int id;
 
-  static TaiyinBaziTenGod fromId(int id) {
+  static BaziTenGod fromId(int id) {
     for (final value in values) {
       if (value.id == id) return value;
     }
@@ -239,7 +239,7 @@ enum TaiyinBaziTenGod {
 }
 
 /// The pillar or palace a 神煞 (shen-sha) target refers to.
-enum TaiyinBaziShenShaTargetKind {
+enum BaziShenShaTargetKind {
   year(0),
   month(1),
   day(2),
@@ -254,11 +254,11 @@ enum TaiyinBaziShenShaTargetKind {
   flowDay(11),
   flowHour(12);
 
-  const TaiyinBaziShenShaTargetKind(this.id);
+  const BaziShenShaTargetKind(this.id);
 
   final int id;
 
-  static TaiyinBaziShenShaTargetKind fromId(int id) {
+  static BaziShenShaTargetKind fromId(int id) {
     for (final value in values) {
       if (value.id == id) return value;
     }
@@ -267,7 +267,7 @@ enum TaiyinBaziShenShaTargetKind {
 }
 
 /// The interaction kind carried by a chart relation.
-enum TaiyinBaziRelationKind {
+enum BaziRelationKind {
   stemCombination(0),
   stemClash(1),
   stemRestraint(2),
@@ -285,11 +285,11 @@ enum TaiyinBaziRelationKind {
   branchHiddenCombination(14),
   branchSeverance(15);
 
-  const TaiyinBaziRelationKind(this.id);
+  const BaziRelationKind(this.id);
 
   final int id;
 
-  static TaiyinBaziRelationKind fromId(int id) {
+  static BaziRelationKind fromId(int id) {
     for (final value in values) {
       if (value.id == id) return value;
     }
@@ -298,7 +298,7 @@ enum TaiyinBaziRelationKind {
 }
 
 /// Bitmask identifying which pillars/palaces a relation connects.
-enum TaiyinBaziRelationPillarFlags {
+enum BaziRelationPillarFlags {
   year(1 << 0),
   month(1 << 1),
   day(1 << 2),
@@ -317,12 +317,12 @@ enum TaiyinBaziRelationPillarFlags {
   /// Composite mask covering every pillar and palace.
   all(0xff);
 
-  const TaiyinBaziRelationPillarFlags(this.mask);
+  const BaziRelationPillarFlags(this.mask);
 
   final int mask;
 
   /// The eight single-pillar flags in id order, excluding the composite masks.
-  static const List<TaiyinBaziRelationPillarFlags> pillars = [
+  static const List<BaziRelationPillarFlags> pillars = [
     year,
     month,
     day,
@@ -334,7 +334,7 @@ enum TaiyinBaziRelationPillarFlags {
   ];
 
   /// Folds a native pillar bitmask into the set of single-pillar flags it sets.
-  static Set<TaiyinBaziRelationPillarFlags> fold(int value) {
+  static Set<BaziRelationPillarFlags> fold(int value) {
     return {
       for (final flag in pillars)
         if ((value & flag.mask) != 0) flag,
@@ -346,7 +346,7 @@ enum TaiyinBaziRelationPillarFlags {
 ///
 /// The numeric ids match the C ABI bitset positions; values are deliberately
 /// not sorted by name because each id is fixed by the native bitset.
-enum TaiyinBaziShenShaId {
+enum BaziShenShaId {
   tianYiGuiRen(0),
   yiMa(1),
   xianChiTaoHua(2),
@@ -414,14 +414,14 @@ enum TaiyinBaziShenShaId {
   guanXingXueTang(64),
   xueTangHuiGui(65);
 
-  const TaiyinBaziShenShaId(this.id);
+  const BaziShenShaId(this.id);
 
   final int id;
 
   /// The C ABI bitset index of this shen-sha.
   int get bitIndex => id;
 
-  static TaiyinBaziShenShaId fromId(int id) {
+  static BaziShenShaId fromId(int id) {
     for (final value in values) {
       if (value.id == id) return value;
     }
@@ -430,16 +430,16 @@ enum TaiyinBaziShenShaId {
 }
 
 /// 天干 relation flags (干合/干冲/干克).
-enum TaiyinBaziStemRelationFlags {
+enum BaziStemRelationFlags {
   combination(1 << 0),
   clash(1 << 1),
   restraint(1 << 2);
 
-  const TaiyinBaziStemRelationFlags(this.mask);
+  const BaziStemRelationFlags(this.mask);
 
   final int mask;
 
-  static Set<TaiyinBaziStemRelationFlags> fold(int value) {
+  static Set<BaziStemRelationFlags> fold(int value) {
     return {
       for (final flag in values)
         if ((value & flag.mask) != 0) flag,
@@ -448,7 +448,7 @@ enum TaiyinBaziStemRelationFlags {
 }
 
 /// 地支 relation flags (六合/六冲/六害/破/刑/自刑/暗合/绝).
-enum TaiyinBaziBranchRelationFlags {
+enum BaziBranchRelationFlags {
   combination(1 << 0),
   clash(1 << 1),
   harm(1 << 2),
@@ -458,11 +458,11 @@ enum TaiyinBaziBranchRelationFlags {
   hiddenCombination(1 << 6),
   severance(1 << 7);
 
-  const TaiyinBaziBranchRelationFlags(this.mask);
+  const BaziBranchRelationFlags(this.mask);
 
   final int mask;
 
-  static Set<TaiyinBaziBranchRelationFlags> fold(int value) {
+  static Set<BaziBranchRelationFlags> fold(int value) {
     return {
       for (final flag in values)
         if ((value & flag.mask) != 0) flag,
@@ -471,16 +471,16 @@ enum TaiyinBaziBranchRelationFlags {
 }
 
 /// 地支 triple relation flags (三合/三会/三刑).
-enum TaiyinBaziBranchTripleRelationFlags {
+enum BaziBranchTripleRelationFlags {
   combination(1 << 0),
   direction(1 << 1),
   punishment(1 << 2);
 
-  const TaiyinBaziBranchTripleRelationFlags(this.mask);
+  const BaziBranchTripleRelationFlags(this.mask);
 
   final int mask;
 
-  static Set<TaiyinBaziBranchTripleRelationFlags> fold(int value) {
+  static Set<BaziBranchTripleRelationFlags> fold(int value) {
     return {
       for (final flag in values)
         if ((value & flag.mask) != 0) flag,
@@ -489,23 +489,23 @@ enum TaiyinBaziBranchTripleRelationFlags {
 }
 
 /// Configuration for a BaZi context.
-final class TaiyinBaziContextConfig {
-  const TaiyinBaziContextConfig({
-    this.earthPalaceMode = TaiyinBaziEarthPalaceMode.fireEarth,
-    this.qiyunDirectionMode = TaiyinBaziQiyunDirectionMode.yearStemGender,
-    this.qiyunTimeModel = TaiyinBaziQiyunTimeModel.traditionalCalendar,
-    this.dayunBoundaryModel = TaiyinBaziDayunBoundaryModel.civilYears,
+final class BaziContextConfig {
+  const BaziContextConfig({
+    this.earthPalaceMode = BaziEarthPalaceMode.fireEarth,
+    this.qiyunDirectionMode = BaziQiyunDirectionMode.yearStemGender,
+    this.qiyunTimeModel = BaziQiyunTimeModel.traditionalCalendar,
+    this.dayunBoundaryModel = BaziDayunBoundaryModel.civilYears,
   });
 
-  final TaiyinBaziEarthPalaceMode earthPalaceMode;
-  final TaiyinBaziQiyunDirectionMode qiyunDirectionMode;
-  final TaiyinBaziQiyunTimeModel qiyunTimeModel;
-  final TaiyinBaziDayunBoundaryModel dayunBoundaryModel;
+  final BaziEarthPalaceMode earthPalaceMode;
+  final BaziQiyunDirectionMode qiyunDirectionMode;
+  final BaziQiyunTimeModel qiyunTimeModel;
+  final BaziDayunBoundaryModel dayunBoundaryModel;
 }
 
 /// A decoded BaZi chart (四柱 + 命宫/身宫/胎元/胎息).
-final class TaiyinBaziChart {
-  const TaiyinBaziChart({
+final class BaziChart {
+  const BaziChart({
     required this.yearPillar,
     required this.monthPillar,
     required this.dayPillar,
@@ -522,14 +522,14 @@ final class TaiyinBaziChart {
     required this.nayinIds,
   });
 
-  final TaiyinGanzhi yearPillar;
-  final TaiyinGanzhi monthPillar;
-  final TaiyinGanzhi dayPillar;
-  final TaiyinGanzhi hourPillar;
-  final TaiyinGanzhi mingGong;
-  final TaiyinGanzhi shenGong;
-  final TaiyinGanzhi taiYuan;
-  final TaiyinGanzhi taiXi;
+  final Ganzhi yearPillar;
+  final Ganzhi monthPillar;
+  final Ganzhi dayPillar;
+  final Ganzhi hourPillar;
+  final Ganzhi mingGong;
+  final Ganzhi shenGong;
+  final Ganzhi taiYuan;
+  final Ganzhi taiXi;
 
   /// Number of hidden stems per pillar (year, month, day, hour).
   final List<int> hiddenStemCount;
@@ -551,64 +551,58 @@ final class TaiyinBaziChart {
 }
 
 /// A single relation between two pillars of a chart.
-final class TaiyinBaziRelation {
-  const TaiyinBaziRelation({
+final class BaziRelation {
+  const BaziRelation({
     required this.kind,
     required this.pillarMask,
     this.combinedElementId,
   });
 
-  final TaiyinBaziRelationKind kind;
+  final BaziRelationKind kind;
 
   /// The pillars/palaces connected by this relation.
-  final Set<TaiyinBaziRelationPillarFlags> pillarMask;
+  final Set<BaziRelationPillarFlags> pillarMask;
 
   /// The combined element when the relation is a combination, otherwise null.
-  final TaiyinBaziWuxing? combinedElementId;
+  final BaziWuxing? combinedElementId;
 }
 
 /// A 天干 relation result (合/冲/克).
-final class TaiyinBaziStemRelationResult {
-  const TaiyinBaziStemRelationResult({
-    required this.flags,
-    this.combinedElementId,
-  });
+final class BaziStemRelationResult {
+  const BaziStemRelationResult({required this.flags, this.combinedElementId});
 
-  final Set<TaiyinBaziStemRelationFlags> flags;
+  final Set<BaziStemRelationFlags> flags;
 
   /// The combined element when the relation is a 干合, otherwise null.
-  final TaiyinBaziWuxing? combinedElementId;
+  final BaziWuxing? combinedElementId;
 }
 
 /// A 地支 relation result (六合/六冲/六害/破/刑/自刑/暗合/绝).
-final class TaiyinBaziBranchRelationResult {
-  const TaiyinBaziBranchRelationResult({
-    required this.flags,
-    this.combinedElementId,
-  });
+final class BaziBranchRelationResult {
+  const BaziBranchRelationResult({required this.flags, this.combinedElementId});
 
-  final Set<TaiyinBaziBranchRelationFlags> flags;
+  final Set<BaziBranchRelationFlags> flags;
 
   /// The combined element when the relation is a 六合, otherwise null.
-  final TaiyinBaziWuxing? combinedElementId;
+  final BaziWuxing? combinedElementId;
 }
 
 /// A 地支 triple relation result (三合/三会/三刑).
-final class TaiyinBaziBranchTripleRelationResult {
-  const TaiyinBaziBranchTripleRelationResult({
+final class BaziBranchTripleRelationResult {
+  const BaziBranchTripleRelationResult({
     required this.flags,
     this.combinedElementId,
   });
 
-  final Set<TaiyinBaziBranchTripleRelationFlags> flags;
+  final Set<BaziBranchTripleRelationFlags> flags;
 
   /// The combined element when the relation is a 三合, otherwise null.
-  final TaiyinBaziWuxing? combinedElementId;
+  final BaziWuxing? combinedElementId;
 }
 
 /// The 起运 (qi-yun) result: the start of the first 大运.
-final class TaiyinBaziQiyunResult {
-  const TaiyinBaziQiyunResult({
+final class BaziQiyunResult {
+  const BaziQiyunResult({
     required this.direction,
     required this.timeModel,
     required this.referenceJieIndex,
@@ -628,7 +622,7 @@ final class TaiyinBaziQiyunResult {
   /// The qi-yun direction: +1 for forward, -1 for reverse.
   final int direction;
 
-  final TaiyinBaziQiyunTimeModel timeModel;
+  final BaziQiyunTimeModel timeModel;
 
   /// Index (from 立春) of the governing 节 used as the reference.
   final int referenceJieIndex;
@@ -652,8 +646,8 @@ final class TaiyinBaziQiyunResult {
 }
 
 /// One 大运 (da-yun) decade.
-final class TaiyinBaziDayun {
-  const TaiyinBaziDayun({
+final class BaziDayun {
+  const BaziDayun({
     required this.index,
     required this.ganzhi,
     required this.startVirtualAge,
@@ -665,7 +659,7 @@ final class TaiyinBaziDayun {
   });
 
   final int index;
-  final TaiyinGanzhi ganzhi;
+  final Ganzhi ganzhi;
   final int startVirtualAge;
   final int endVirtualAge;
   final JulianDate<Ut1Scale> startJdUt;
@@ -675,16 +669,16 @@ final class TaiyinBaziDayun {
 }
 
 /// One 小运 (xiao-yun) year.
-final class TaiyinBaziXiaoyun {
-  const TaiyinBaziXiaoyun({required this.age, required this.ganzhi});
+final class BaziXiaoyun {
+  const BaziXiaoyun({required this.age, required this.ganzhi});
 
   final int age;
-  final TaiyinGanzhi ganzhi;
+  final Ganzhi ganzhi;
 }
 
 /// One 人元司令 (ren-yuan si-ling) command segment.
-final class TaiyinBaziRenyuanSilingSegment {
-  const TaiyinBaziRenyuanSilingSegment({
+final class BaziRenyuanSilingSegment {
+  const BaziRenyuanSilingSegment({
     required this.stemId,
     required this.originKind,
     required this.segmentIndex,
@@ -693,15 +687,15 @@ final class TaiyinBaziRenyuanSilingSegment {
   });
 
   final int stemId;
-  final TaiyinBaziRenyuanSilingOriginKind originKind;
+  final BaziRenyuanSilingOriginKind originKind;
   final int segmentIndex;
   final double startDay;
   final double endDay;
 }
 
 /// The 人元司令 (ren-yuan si-ling) determination for an instant.
-final class TaiyinBaziRenyuanSilingResult {
-  const TaiyinBaziRenyuanSilingResult({
+final class BaziRenyuanSilingResult {
+  const BaziRenyuanSilingResult({
     required this.tableModel,
     required this.timeModel,
     required this.monthBranchId,
@@ -715,11 +709,11 @@ final class TaiyinBaziRenyuanSilingResult {
     required this.previousJieJdUt,
   });
 
-  final TaiyinBaziRenyuanSilingTableModel tableModel;
-  final TaiyinBaziRenyuanSilingTimeModel timeModel;
+  final BaziRenyuanSilingTableModel tableModel;
+  final BaziRenyuanSilingTimeModel timeModel;
   final int monthBranchId;
   final int stemId;
-  final TaiyinBaziRenyuanSilingOriginKind originKind;
+  final BaziRenyuanSilingOriginKind originKind;
   final int segmentIndex;
   final int previousJieIndex;
   final double daysSinceJie;

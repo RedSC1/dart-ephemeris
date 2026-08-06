@@ -2,13 +2,13 @@ import '../time/julian_date.dart';
 import '../time/time_scale.dart';
 
 /// Event requested from a rise/set or meridian-transit visibility search.
-enum TaiyinVisibilityEventKind {
+enum VisibilityEventKind {
   rise(1),
   set(2),
   upperTransit(3),
   lowerTransit(4);
 
-  const TaiyinVisibilityEventKind(this.id);
+  const VisibilityEventKind(this.id);
 
   /// Stable value used by the Taiyin C ABI.
   final int id;
@@ -18,31 +18,31 @@ enum TaiyinVisibilityEventKind {
 }
 
 /// Apparent limb used for a rise or set search.
-enum TaiyinVisibilityLimb {
+enum VisibilityLimb {
   upper(1),
   center(2),
   lower(3);
 
-  const TaiyinVisibilityLimb(this.id);
+  const VisibilityLimb(this.id);
 
   /// Stable value used by the Taiyin C ABI.
   final int id;
 }
 
 /// Solar depression convention used for a twilight search.
-enum TaiyinTwilightKind {
+enum TwilightKind {
   civil(1),
   nautical(2),
   astronomical(3);
 
-  const TaiyinTwilightKind(this.id);
+  const TwilightKind(this.id);
 
   /// Stable value used by the Taiyin C ABI.
   final int id;
 }
 
 /// Classification of a target altitude over a requested search interval.
-enum TaiyinVisibilityAltitudeState {
+enum VisibilityAltitudeState {
   notFound(0),
   crosses(1),
   alwaysAbove(2),
@@ -50,27 +50,27 @@ enum TaiyinVisibilityAltitudeState {
   tangent(4),
   unknown(-1);
 
-  const TaiyinVisibilityAltitudeState(this.id);
+  const VisibilityAltitudeState(this.id);
 
   final int id;
 
-  static TaiyinVisibilityAltitudeState fromId(int id) {
+  static VisibilityAltitudeState fromId(int id) {
     return values.where((value) => value.id == id).firstOrNull ?? unknown;
   }
 }
 
 /// Direction of the altitude crossing reported by a visibility search.
-enum TaiyinVisibilityCrossingDirection {
+enum VisibilityCrossingDirection {
   any(0),
   rising(1),
   setting(2),
   unknown(-1);
 
-  const TaiyinVisibilityCrossingDirection(this.id);
+  const VisibilityCrossingDirection(this.id);
 
   final int id;
 
-  static TaiyinVisibilityCrossingDirection fromId(int id) {
+  static VisibilityCrossingDirection fromId(int id) {
     return values.where((value) => value.id == id).firstOrNull ?? unknown;
   }
 }
@@ -81,13 +81,13 @@ enum TaiyinVisibilityCrossingDirection {
 /// default. Pass [noRefraction] to explicitly disable it. [fixedDiscSize] is
 /// available for solar and lunar searches only; planet and star searches
 /// reject it because their native implementations always use physical discs.
-enum TaiyinVisibilityFlag {
+enum VisibilityFlag {
   refraction(1 << 0),
   fixedDiscSize(1 << 1),
   noRefraction(1 << 2),
   strictMeteorology(1 << 32);
 
-  const TaiyinVisibilityFlag(this.mask);
+  const VisibilityFlag(this.mask);
 
   /// Bit used by the Taiyin C ABI.
   final int mask;
@@ -96,10 +96,10 @@ enum TaiyinVisibilityFlag {
 /// The result of a UT1 visibility search.
 ///
 /// A successful search need not find an event: [coordinate] is `null` for
-/// [TaiyinVisibilityAltitudeState.alwaysAbove],
-/// [TaiyinVisibilityAltitudeState.alwaysBelow], or a non-localizable result.
-final class TaiyinVisibilityEvent {
-  const TaiyinVisibilityEvent({
+/// [VisibilityAltitudeState.alwaysAbove],
+/// [VisibilityAltitudeState.alwaysBelow], or a non-localizable result.
+final class VisibilityEvent {
+  const VisibilityEvent({
     required this.requestedEvent,
     required this.altitudeState,
     required this.crossingDirection,
@@ -113,9 +113,9 @@ final class TaiyinVisibilityEvent {
     required this.refineCount,
   });
 
-  final TaiyinVisibilityEventKind requestedEvent;
-  final TaiyinVisibilityAltitudeState altitudeState;
-  final TaiyinVisibilityCrossingDirection crossingDirection;
+  final VisibilityEventKind requestedEvent;
+  final VisibilityAltitudeState altitudeState;
+  final VisibilityCrossingDirection crossingDirection;
 
   /// UT1 coordinate of the located event, or `null` when none was located.
   final JulianDate<Ut1Scale>? coordinate;
@@ -133,7 +133,7 @@ final class TaiyinVisibilityEvent {
 
   @override
   String toString() {
-    return 'TaiyinVisibilityEvent($requestedEvent, $altitudeState, '
+    return 'VisibilityEvent($requestedEvent, $altitudeState, '
         '$coordinate)';
   }
 }
@@ -142,8 +142,8 @@ final class TaiyinVisibilityEvent {
 ///
 /// [rise] and [set] are `null` when the corresponding event does not occur
 /// near the requested date.
-final class TaiyinSolarRiseSetFastResult {
-  const TaiyinSolarRiseSetFastResult({
+final class SolarRiseSetFastResult {
+  const SolarRiseSetFastResult({
     required this.altitudeState,
     required this.rise,
     required this.set,
@@ -151,7 +151,7 @@ final class TaiyinSolarRiseSetFastResult {
     required this.refineCount,
   });
 
-  final TaiyinVisibilityAltitudeState altitudeState;
+  final VisibilityAltitudeState altitudeState;
   final JulianDate<TtScale>? rise;
   final JulianDate<TtScale>? set;
   final int sampleCount;
@@ -159,8 +159,8 @@ final class TaiyinSolarRiseSetFastResult {
 }
 
 /// Approximate solar meridian transit near a TT date.
-final class TaiyinSolarTransitFastResult {
-  const TaiyinSolarTransitFastResult({
+final class SolarTransitFastResult {
+  const SolarTransitFastResult({
     required this.coordinate,
     required this.altitudeRadians,
     required this.azimuthRadians,

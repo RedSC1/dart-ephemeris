@@ -28,10 +28,10 @@ typedef _ModeledSplitConversion =
       Pointer<taiyin_split_julian_date>,
     );
 
-/// Time-scale conversion and Delta-T operations backed by Taiyin.
-final class TaiyinTime {
-  /// Internal constructor used by an owning [TaiyinContext].
-  TaiyinTime.internal(
+/// Time-scale conversion and Delta-T operations backed by Ephemeris.
+final class Time {
+  /// Internal constructor used by an owning [EphemerisContext].
+  Time.internal(
     this._bindings,
     this._context,
     this._ensureOpen,

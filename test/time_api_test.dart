@@ -4,14 +4,14 @@ import 'support/native_library.dart';
 
 void main() {
   group(
-    'TaiyinTime native integration',
+    'Time native integration',
     () {
-      late TaiyinContext taiyin;
+      late EphemerisContext taiyin;
       late AstroDateTime utcCalendar;
       late JulianDate<UtcScale> utc;
 
       setUp(() {
-        taiyin = Taiyin.open(libraryPath: libraryPath).createContext();
+        taiyin = Ephemeris.open(libraryPath: libraryPath).createContext();
         utcCalendar = AstroDateTime(2000, 1, 1, 0, 0, 0, 123456789);
         utc = utcCalendar.toJulianDate<UtcScale>();
       });

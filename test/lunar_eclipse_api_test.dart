@@ -5,20 +5,20 @@ import 'support/native_library.dart';
 void main() {
   const nativeDataRoot = '../taiyin-ephemeris/data';
   const majorBodiesPath = '$nativeDataRoot/ephemerides/opm2/major-bodies/600y';
-  const beijing = TaiyinObserverLocation(
+  const beijing = ObserverLocation(
     longitudeDegrees: 116.4074,
     latitudeDegrees: 39.9042,
     heightMeters: 43,
   );
 
-  group('TaiyinEclipseApi lunar native integration', () {
-    late Taiyin runtime;
-    late TaiyinContext context;
+  group('EclipseApi lunar native integration', () {
+    late Ephemeris runtime;
+    late EphemerisContext context;
 
     setUp(() {
-      runtime = Taiyin.open(
+      runtime = Ephemeris.open(
         libraryPath: libraryPath,
-        options: const TaiyinRuntimeOptions(
+        options: const RuntimeOptions(
           sourcePaths: [majorBodiesPath],
           loadPackagedData: false,
           loadBuiltinEop: false,
@@ -27,12 +27,12 @@ void main() {
       context = runtime.createContext();
       context.configuration
         ..setGeocentricObserver(
-          observerId: TaiyinBody.earth.id,
-          centerId: TaiyinBody.earth.id,
+          observerId: Body.earth.id,
+          centerId: Body.earth.id,
         )
         ..setObserverLocation(beijing)
         ..setStandardAtmosphere()
-        ..setRouteRule(TaiyinRouteRule.opm2);
+        ..setRouteRule(RouteRule.opm2);
     });
 
     tearDown(() => context.close());
@@ -42,70 +42,70 @@ void main() {
       () {
         final solvedUt = context.eclipses.solveLunarAtUt1(
           JulianDate<Ut1Scale>.fromDouble(2460926.25),
-          options: {TaiyinLunarEclipseSolveOption.includeContacts},
+          options: {LunarEclipseSolveOption.includeContacts},
         );
         final solvedTt = context.eclipses.solveLunarAtTt(
           JulianDate<TtScale>.fromDouble(2460926.26),
-          options: {TaiyinLunarEclipseSolveOption.includeContacts},
+          options: {LunarEclipseSolveOption.includeContacts},
         );
         final nextUt = context.eclipses.nextLunarAtUt1(
           JulianDate<Ut1Scale>.fromDouble(2460926.0),
-          kinds: {TaiyinEclipseKind.total},
-          options: {TaiyinLunarEclipseSearchOption.includeContacts},
+          kinds: {EclipseKind.total},
+          options: {LunarEclipseSearchOption.includeContacts},
         );
         final previousUt = context.eclipses.nextLunarAtUt1(
           JulianDate<Ut1Scale>.fromDouble(2460927.0),
-          kinds: {TaiyinEclipseKind.total},
+          kinds: {EclipseKind.total},
           options: {
-            TaiyinLunarEclipseSearchOption.includeContacts,
-            TaiyinLunarEclipseSearchOption.backward,
+            LunarEclipseSearchOption.includeContacts,
+            LunarEclipseSearchOption.backward,
           },
         );
         final nextTt = context.eclipses.nextLunarAtTt(
           JulianDate<TtScale>.fromDouble(2460926.25),
-          kinds: {TaiyinEclipseKind.total},
-          options: {TaiyinLunarEclipseSearchOption.includeContacts},
+          kinds: {EclipseKind.total},
+          options: {LunarEclipseSearchOption.includeContacts},
         );
         final rangeUt = context.eclipses.lunarEclipsesAtUt1(
           JulianDate<Ut1Scale>.fromDouble(2460926.0),
           JulianDate<Ut1Scale>.fromDouble(2460927.0),
           maxResults: 4,
-          kinds: {TaiyinEclipseKind.total},
-          options: {TaiyinLunarEclipseSearchOption.includeContacts},
+          kinds: {EclipseKind.total},
+          options: {LunarEclipseSearchOption.includeContacts},
         );
         final rangeTt = context.eclipses.lunarEclipsesAtTt(
           JulianDate<TtScale>.fromDouble(2451545.0),
           JulianDate<TtScale>.fromDouble(2452275.0),
           maxResults: 8,
-          options: {TaiyinLunarEclipseSearchOption.includeContacts},
+          options: {LunarEclipseSearchOption.includeContacts},
         );
         final noPenumbral = context.eclipses.lunarEclipsesAtTt(
           JulianDate<TtScale>.fromDouble(2451545.0),
           JulianDate<TtScale>.fromDouble(2452275.0),
           maxResults: 8,
-          options: {TaiyinLunarEclipseSearchOption.excludePenumbral},
+          options: {LunarEclipseSearchOption.excludePenumbral},
         );
 
-        expect(solvedUt.value.kinds, contains(TaiyinEclipseKind.total));
-        expect(solvedTt.value.kinds, contains(TaiyinEclipseKind.total));
+        expect(solvedUt.value.kinds, contains(EclipseKind.total));
+        expect(solvedTt.value.kinds, contains(EclipseKind.total));
         expect(solvedUt.value.deltaTSeconds, greaterThan(60));
         expect(
           solvedUt.value.maximum!.toDouble(),
           closeTo(2460926.258194, 2 / 1440),
         );
         expect(
-          solvedUt.value.contacts[TaiyinLunarEclipseContact.totalBegin],
+          solvedUt.value.contacts[LunarEclipseContact.totalBegin],
           isNotNull,
         );
         expect(
-          solvedUt.value.contacts[TaiyinLunarEclipseContact.totalEnd],
+          solvedUt.value.contacts[LunarEclipseContact.totalEnd],
           isNotNull,
         );
         expect(
           nextUt.value.maximum!.toDouble(),
           closeTo(solvedUt.value.maximum!.toDouble(), 2 / 1440),
         );
-        expect(nextTt.value.kinds, contains(TaiyinEclipseKind.total));
+        expect(nextTt.value.kinds, contains(EclipseKind.total));
         expect(
           nextTt.value.maximum!.toDouble(),
           closeTo(solvedTt.value.maximum!.toDouble(), 2 / 1440),
@@ -115,10 +115,10 @@ void main() {
           closeTo(solvedUt.value.maximum!.toDouble(), 2 / 1440),
         );
         expect(rangeUt.value, hasLength(1));
-        expect(rangeUt.value.single.kinds, contains(TaiyinEclipseKind.total));
+        expect(rangeUt.value.single.kinds, contains(EclipseKind.total));
         expect(rangeTt.value, hasLength(5));
-        expect(rangeTt.value.first.kinds, contains(TaiyinEclipseKind.total));
-        expect(rangeTt.value.last.kinds, contains(TaiyinEclipseKind.penumbral));
+        expect(rangeTt.value.first.kinds, contains(EclipseKind.total));
+        expect(rangeTt.value.last.kinds, contains(EclipseKind.penumbral));
         expect(noPenumbral.value, hasLength(4));
         expect(
           () => context.eclipses.lunarEclipsesAtTt(
@@ -126,7 +126,7 @@ void main() {
             JulianDate<TtScale>.fromDouble(2452275.0),
             maxResults: 1,
           ),
-          throwsA(isA<TaiyinException>()),
+          throwsA(isA<EphemerisError>()),
         );
       },
       skip: !nativeLibraryAvailable,
@@ -137,39 +137,37 @@ void main() {
       () {
         final global = context.eclipses.nextLunarAtUt1(
           JulianDate<Ut1Scale>.fromDouble(2460926.0),
-          kinds: {TaiyinEclipseKind.total},
-          options: {TaiyinLunarEclipseSearchOption.includeContacts},
+          kinds: {EclipseKind.total},
+          options: {LunarEclipseSearchOption.includeContacts},
         );
         final local = context.eclipses.localLunarVisibilityAtUt1(global.value);
         final refracted = context.eclipses.localLunarVisibilityAtUt1(
           global.value,
-          options: {TaiyinLocalLunarEclipseVisibilityOption.refraction},
+          options: {LocalLunarEclipseVisibilityOption.refraction},
         );
         final localSearchUt = context.eclipses.nextLocalLunarAtUt1(
           JulianDate<Ut1Scale>.fromDouble(2460926.0),
-          kinds: {TaiyinEclipseKind.total},
-          visibilityOptions: {
-            TaiyinLocalLunarEclipseVisibilityOption.refraction,
-          },
+          kinds: {EclipseKind.total},
+          visibilityOptions: {LocalLunarEclipseVisibilityOption.refraction},
         );
         final localSearchTt = context.eclipses.nextLocalLunarAtTt(
           JulianDate<TtScale>.fromDouble(2460926.25),
-          kinds: {TaiyinEclipseKind.total},
+          kinds: {EclipseKind.total},
         );
         final globalTt = context.eclipses.nextLunarAtTt(
           JulianDate<TtScale>.fromDouble(2460926.25),
-          kinds: {TaiyinEclipseKind.total},
-          options: {TaiyinLunarEclipseSearchOption.includeContacts},
+          kinds: {EclipseKind.total},
+          options: {LunarEclipseSearchOption.includeContacts},
         );
         final localTt = context.eclipses.localLunarVisibilityAtTt(
           globalTt.value,
         );
 
-        final greatest = TaiyinLunarEclipseContact.greatest;
-        expect(local.value.kinds, contains(TaiyinEclipseKind.total));
+        final greatest = LunarEclipseContact.greatest;
+        expect(local.value.kinds, contains(EclipseKind.total));
         expect(
           local.value.visibility,
-          contains(TaiyinLocalLunarEclipseVisibilityFlag.maximumVisible),
+          contains(LocalLunarEclipseVisibilityFlag.maximumVisible),
         );
         expect(local.value.contacts[greatest], isNotNull);
         expect(
@@ -187,7 +185,7 @@ void main() {
         expect(localSearchUt.value.contacts[greatest], isNotNull);
         expect(
           localSearchTt.value.visibility,
-          contains(TaiyinLocalLunarEclipseVisibilityFlag.maximumVisible),
+          contains(LocalLunarEclipseVisibilityFlag.maximumVisible),
         );
         expect(
           localTt.value.contacts[greatest]!.moonAltitudeDegrees,
@@ -208,7 +206,7 @@ void main() {
         expect(
           () => context.eclipses.nextLunarAtUt1(
             JulianDate<Ut1Scale>.fromDouble(2460926.0),
-            kinds: {TaiyinEclipseKind.annular},
+            kinds: {EclipseKind.annular},
           ),
           throwsArgumentError,
         );
@@ -231,14 +229,14 @@ void main() {
           () => context.eclipses.lunarEclipsesAtUt1(
             JulianDate<Ut1Scale>.fromDouble(2460926.0),
             JulianDate<Ut1Scale>.fromDouble(2460927.0),
-            options: {TaiyinLunarEclipseSearchOption.backward},
+            options: {LunarEclipseSearchOption.backward},
           ),
           throwsArgumentError,
         );
         expect(
           () => context.eclipses.nextLunarAtUt1(
             JulianDate<Ut1Scale>.fromDouble(2460926.0),
-            positionFlags: {TaiyinPositionFlag.xyz},
+            positionFlags: {PositionFlag.xyz},
           ),
           throwsArgumentError,
         );

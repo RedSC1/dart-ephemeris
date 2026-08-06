@@ -1,7 +1,7 @@
 part of '../taiyin.dart';
 
 typedef _AstrologyStatusChecker =
-    void Function(int status, TaiyinEphemerisDiagnostic? diagnostic);
+    void Function(int status, EphemerisDiagnostic? diagnostic);
 typedef _SiderealCalculation =
     int Function(
       Arena arena,
@@ -41,8 +41,8 @@ const int _siderealReferenceEpochUt1Flag = 1 << 35;
 /// structs, preserving the full day-number/fraction precision. Sidereal
 /// reference epochs are likewise passed as split structs, or as a null pointer
 /// when the selected reference plane does not require one.
-final class TaiyinAstrologyApi {
-  TaiyinAstrologyApi._(
+final class AstrologyApi {
+  AstrologyApi._(
     this._bindings,
     this._context,
     this._ensureOpen,
@@ -57,9 +57,9 @@ final class TaiyinAstrologyApi {
   /// Evaluates an ayanamsha at a TT coordinate.
   double ayanamshaAtTt(
     JulianDate<TtScale> tt, {
-    TaiyinAyanamshaModel ayanamsha = TaiyinAyanamsha.faganBradley,
-    TaiyinSiderealPrecessionPolicy precessionPolicy =
-        TaiyinSiderealPrecessionPolicy.compensateToReference,
+    AyanamshaModel ayanamsha = Ayanamsha.faganBradley,
+    SiderealPrecessionPolicy precessionPolicy =
+        SiderealPrecessionPolicy.compensateToReference,
   }) {
     _ensureOpen();
     return using((arena) {
@@ -82,18 +82,18 @@ final class TaiyinAstrologyApi {
   ///
   /// [flags] retain their normal physical-correction semantics. This
   /// specialized result always has ecliptic spherical coordinates, so
-  /// [TaiyinPositionFlag.xyz] and [TaiyinPositionFlag.equatorial] are
-  /// rejected. [TaiyinPositionFlag.radians] is added automatically.
-  TaiyinEphemerisResult<TaiyinSiderealPosition> siderealPositionAtTt(
-    TaiyinTarget target,
+  /// [PositionFlag.xyz] and [PositionFlag.equatorial] are
+  /// rejected. [PositionFlag.radians] is added automatically.
+  EphemerisResult<SiderealPosition> siderealPositionAtTt(
+    Target target,
     JulianDate<TtScale> tt, {
-    TaiyinAyanamshaModel ayanamsha = TaiyinAyanamsha.faganBradley,
-    TaiyinSiderealPrecessionPolicy precessionPolicy =
-        TaiyinSiderealPrecessionPolicy.compensateToReference,
-    TaiyinSiderealReferencePlane referencePlane =
-        TaiyinSiderealReferencePlane.meanEclipticOfDate,
-    TaiyinSiderealReferenceEpoch? referenceEpoch,
-    Set<TaiyinPositionFlag> flags = const {},
+    AyanamshaModel ayanamsha = Ayanamsha.faganBradley,
+    SiderealPrecessionPolicy precessionPolicy =
+        SiderealPrecessionPolicy.compensateToReference,
+    SiderealReferencePlane referencePlane =
+        SiderealReferencePlane.meanEclipticOfDate,
+    SiderealReferenceEpoch? referenceEpoch,
+    Set<PositionFlag> flags = const {},
   }) {
     _ensureOpen();
     final resolvedFlags = _siderealFlags(flags);
@@ -128,16 +128,16 @@ final class TaiyinAstrologyApi {
   /// Calculates sidereal ecliptic coordinates at UT1 using the context policy.
   ///
   /// [flags] follow the same restrictions as [siderealPositionAtTt].
-  TaiyinEphemerisResult<TaiyinSiderealPosition> siderealPositionAtUt1(
-    TaiyinTarget target,
+  EphemerisResult<SiderealPosition> siderealPositionAtUt1(
+    Target target,
     JulianDate<Ut1Scale> ut1, {
-    TaiyinAyanamshaModel ayanamsha = TaiyinAyanamsha.faganBradley,
-    TaiyinSiderealPrecessionPolicy precessionPolicy =
-        TaiyinSiderealPrecessionPolicy.compensateToReference,
-    TaiyinSiderealReferencePlane referencePlane =
-        TaiyinSiderealReferencePlane.meanEclipticOfDate,
-    TaiyinSiderealReferenceEpoch? referenceEpoch,
-    Set<TaiyinPositionFlag> flags = const {},
+    AyanamshaModel ayanamsha = Ayanamsha.faganBradley,
+    SiderealPrecessionPolicy precessionPolicy =
+        SiderealPrecessionPolicy.compensateToReference,
+    SiderealReferencePlane referencePlane =
+        SiderealReferencePlane.meanEclipticOfDate,
+    SiderealReferenceEpoch? referenceEpoch,
+    Set<PositionFlag> flags = const {},
   }) {
     _ensureOpen();
     final resolvedFlags = _siderealFlags(flags);
@@ -172,25 +172,25 @@ final class TaiyinAstrologyApi {
   /// Calculates generic sidereal coordinates at TT.
   ///
   /// This is the coordinate-mode counterpart to [siderealPositionAtTt]. It
-  /// accepts [TaiyinPositionFlag.equatorial], [TaiyinPositionFlag.xyz], and
+  /// accepts [PositionFlag.equatorial], [PositionFlag.xyz], and
   /// their combination. Without `equatorial`, the result is on the sidereal
-  /// selected sidereal reference plane and [TaiyinPositionFlag.noNutation] has
+  /// selected sidereal reference plane and [PositionFlag.noNutation] has
   /// no further effect. With `equatorial`, this follows conventional Swiss
   /// Ephemeris-compatible behavior: the result is tropical mean equator of
   /// date with `noNutation`, or tropical true equator of date without it, and
   /// is independent of [ayanamsha], [precessionPolicy], and [referencePlane].
-  /// [TaiyinPositionFlag.radians] is added automatically. Other position flags
+  /// [PositionFlag.radians] is added automatically. Other position flags
   /// retain their ordinary native physical-correction semantics.
-  TaiyinEphemerisResult<TaiyinSiderealCoordinates> siderealCoordinatesAtTt(
-    TaiyinTarget target,
+  EphemerisResult<SiderealCoordinates> siderealCoordinatesAtTt(
+    Target target,
     JulianDate<TtScale> tt, {
-    TaiyinAyanamshaModel ayanamsha = TaiyinAyanamsha.faganBradley,
-    TaiyinSiderealPrecessionPolicy precessionPolicy =
-        TaiyinSiderealPrecessionPolicy.compensateToReference,
-    TaiyinSiderealReferencePlane referencePlane =
-        TaiyinSiderealReferencePlane.meanEclipticOfDate,
-    TaiyinSiderealReferenceEpoch? referenceEpoch,
-    Set<TaiyinPositionFlag> flags = const {},
+    AyanamshaModel ayanamsha = Ayanamsha.faganBradley,
+    SiderealPrecessionPolicy precessionPolicy =
+        SiderealPrecessionPolicy.compensateToReference,
+    SiderealReferencePlane referencePlane =
+        SiderealReferencePlane.meanEclipticOfDate,
+    SiderealReferenceEpoch? referenceEpoch,
+    Set<PositionFlag> flags = const {},
   }) {
     _ensureOpen();
     final resolvedFlags = _genericSiderealFlags(flags);
@@ -225,16 +225,16 @@ final class TaiyinAstrologyApi {
   /// Calculates generic sidereal coordinates at UT1 using the context policy.
   ///
   /// See [siderealCoordinatesAtTt] for coordinate-mode and frame semantics.
-  TaiyinEphemerisResult<TaiyinSiderealCoordinates> siderealCoordinatesAtUt1(
-    TaiyinTarget target,
+  EphemerisResult<SiderealCoordinates> siderealCoordinatesAtUt1(
+    Target target,
     JulianDate<Ut1Scale> ut1, {
-    TaiyinAyanamshaModel ayanamsha = TaiyinAyanamsha.faganBradley,
-    TaiyinSiderealPrecessionPolicy precessionPolicy =
-        TaiyinSiderealPrecessionPolicy.compensateToReference,
-    TaiyinSiderealReferencePlane referencePlane =
-        TaiyinSiderealReferencePlane.meanEclipticOfDate,
-    TaiyinSiderealReferenceEpoch? referenceEpoch,
-    Set<TaiyinPositionFlag> flags = const {},
+    AyanamshaModel ayanamsha = Ayanamsha.faganBradley,
+    SiderealPrecessionPolicy precessionPolicy =
+        SiderealPrecessionPolicy.compensateToReference,
+    SiderealReferencePlane referencePlane =
+        SiderealReferencePlane.meanEclipticOfDate,
+    SiderealReferenceEpoch? referenceEpoch,
+    Set<PositionFlag> flags = const {},
   }) {
     _ensureOpen();
     final resolvedFlags = _genericSiderealFlags(flags);
@@ -272,10 +272,10 @@ final class TaiyinAstrologyApi {
   /// accepts apparent-correction flags such as `truePosition` and frame
   /// selection through `equatorial` / `noNutation`; it always returns radians
   /// and radians per day, so `radians` and `speed` are not accepted.
-  TaiyinEphemerisResult<TaiyinLunarNodePosition> lunarTrueNodeAtTt(
+  EphemerisResult<LunarNodePosition> lunarTrueNodeAtTt(
     JulianDate<TtScale> tt, {
-    TaiyinLunarNodeKind kind = TaiyinLunarNodeKind.ascending,
-    Set<TaiyinPositionFlag> flags = const {},
+    LunarNodeKind kind = LunarNodeKind.ascending,
+    Set<PositionFlag> flags = const {},
   }) {
     _ensureOpen();
     final resolvedFlags = _lunarPhysicalFlags(flags, 'lunar true node');
@@ -297,10 +297,10 @@ final class TaiyinAstrologyApi {
   /// Calculates the geocentric osculating ("true") lunar node at UT1.
   ///
   /// See [lunarTrueNodeAtTt] for the result and flag contract.
-  TaiyinEphemerisResult<TaiyinLunarNodePosition> lunarTrueNodeAtUt1(
+  EphemerisResult<LunarNodePosition> lunarTrueNodeAtUt1(
     JulianDate<Ut1Scale> ut1, {
-    TaiyinLunarNodeKind kind = TaiyinLunarNodeKind.ascending,
-    Set<TaiyinPositionFlag> flags = const {},
+    LunarNodeKind kind = LunarNodeKind.ascending,
+    Set<PositionFlag> flags = const {},
   }) {
     _ensureOpen();
     final resolvedFlags = _lunarPhysicalFlags(flags, 'lunar true node');
@@ -323,10 +323,10 @@ final class TaiyinAstrologyApi {
   ///
   /// This is a mean-model direction, so only `equatorial` and `noNutation`
   /// select its output frame; physical apparent-correction flags do not apply.
-  TaiyinEphemerisResult<TaiyinLunarNodePosition> lunarMeanNodeAtTt(
+  EphemerisResult<LunarNodePosition> lunarMeanNodeAtTt(
     JulianDate<TtScale> tt, {
-    TaiyinLunarNodeKind kind = TaiyinLunarNodeKind.ascending,
-    Set<TaiyinPositionFlag> flags = const {},
+    LunarNodeKind kind = LunarNodeKind.ascending,
+    Set<PositionFlag> flags = const {},
   }) {
     _ensureOpen();
     final resolvedFlags = _lunarMeanFlags(flags, 'lunar mean node');
@@ -348,10 +348,10 @@ final class TaiyinAstrologyApi {
   /// Calculates the IERS 2003 conventional mean lunar node at UT1.
   ///
   /// See [lunarMeanNodeAtTt] for the result and flag contract.
-  TaiyinEphemerisResult<TaiyinLunarNodePosition> lunarMeanNodeAtUt1(
+  EphemerisResult<LunarNodePosition> lunarMeanNodeAtUt1(
     JulianDate<Ut1Scale> ut1, {
-    TaiyinLunarNodeKind kind = TaiyinLunarNodeKind.ascending,
-    Set<TaiyinPositionFlag> flags = const {},
+    LunarNodeKind kind = LunarNodeKind.ascending,
+    Set<PositionFlag> flags = const {},
   }) {
     _ensureOpen();
     final resolvedFlags = _lunarMeanFlags(flags, 'lunar mean node');
@@ -373,10 +373,10 @@ final class TaiyinAstrologyApi {
   /// Calculates the Delaunay mean lunar apogee (mean Lilith) at TT.
   ///
   /// This conventional direction has no physical distance, so its
-  /// [TaiyinLunarApsisPosition.distanceAu] fields are null.
-  TaiyinEphemerisResult<TaiyinLunarApsisPosition> lunarMeanApogeeAtTt(
+  /// [LunarApsisPosition.distanceAu] fields are null.
+  EphemerisResult<LunarApsisPosition> lunarMeanApogeeAtTt(
     JulianDate<TtScale> tt, {
-    Set<TaiyinPositionFlag> flags = const {},
+    Set<PositionFlag> flags = const {},
   }) {
     _ensureOpen();
     return _lunarApsis(
@@ -395,9 +395,9 @@ final class TaiyinAstrologyApi {
   /// Calculates the Delaunay mean lunar apogee (mean Lilith) at UT1.
   ///
   /// See [lunarMeanApogeeAtTt] for the result and flag contract.
-  TaiyinEphemerisResult<TaiyinLunarApsisPosition> lunarMeanApogeeAtUt1(
+  EphemerisResult<LunarApsisPosition> lunarMeanApogeeAtUt1(
     JulianDate<Ut1Scale> ut1, {
-    Set<TaiyinPositionFlag> flags = const {},
+    Set<PositionFlag> flags = const {},
   }) {
     _ensureOpen();
     return _lunarApsis(
@@ -416,9 +416,9 @@ final class TaiyinAstrologyApi {
   /// Calculates the geocentric osculating lunar apogee at TT.
   ///
   /// This instantaneous two-body apoapsis is commonly called true Lilith.
-  TaiyinEphemerisResult<TaiyinLunarApsisPosition> lunarOsculatingApogeeAtTt(
+  EphemerisResult<LunarApsisPosition> lunarOsculatingApogeeAtTt(
     JulianDate<TtScale> tt, {
-    Set<TaiyinPositionFlag> flags = const {},
+    Set<PositionFlag> flags = const {},
   }) {
     _ensureOpen();
     return _lunarApsis(
@@ -437,9 +437,9 @@ final class TaiyinAstrologyApi {
   /// Calculates the geocentric osculating lunar apogee at UT1.
   ///
   /// See [lunarOsculatingApogeeAtTt] for the result and flag contract.
-  TaiyinEphemerisResult<TaiyinLunarApsisPosition> lunarOsculatingApogeeAtUt1(
+  EphemerisResult<LunarApsisPosition> lunarOsculatingApogeeAtUt1(
     JulianDate<Ut1Scale> ut1, {
-    Set<TaiyinPositionFlag> flags = const {},
+    Set<PositionFlag> flags = const {},
   }) {
     _ensureOpen();
     return _lunarApsis(
@@ -457,13 +457,13 @@ final class TaiyinAstrologyApi {
 
   /// Calculates the DE441 fitted-natural lunar apogee at TT.
   ///
-  /// The result reports [TaiyinLunarApsisPosition.extrapolated] when the
+  /// The result reports [LunarApsisPosition.extrapolated] when the
   /// requested date lies outside the fitted DE441 interval. Unlike the
   /// conventional mean apogee, it includes a physical distance and rate from
   /// the fitted model.
-  TaiyinEphemerisResult<TaiyinLunarApsisPosition> lunarFittedApogeeAtTt(
+  EphemerisResult<LunarApsisPosition> lunarFittedApogeeAtTt(
     JulianDate<TtScale> tt, {
-    Set<TaiyinPositionFlag> flags = const {},
+    Set<PositionFlag> flags = const {},
   }) {
     _ensureOpen();
     return _lunarApsis(
@@ -482,9 +482,9 @@ final class TaiyinAstrologyApi {
   /// Calculates the DE441 fitted-natural lunar apogee at UT1.
   ///
   /// See [lunarFittedApogeeAtTt] for the result and flag contract.
-  TaiyinEphemerisResult<TaiyinLunarApsisPosition> lunarFittedApogeeAtUt1(
+  EphemerisResult<LunarApsisPosition> lunarFittedApogeeAtUt1(
     JulianDate<Ut1Scale> ut1, {
-    Set<TaiyinPositionFlag> flags = const {},
+    Set<PositionFlag> flags = const {},
   }) {
     _ensureOpen();
     return _lunarApsis(
@@ -501,11 +501,11 @@ final class TaiyinAstrologyApi {
   }
 
   /// Calculates houses directly from ARMC, latitude, and true obliquity.
-  TaiyinHouses housesFromArmc({
+  Houses housesFromArmc({
     required double armcRadians,
     required double observerLatitudeRadians,
     required double trueObliquityRadians,
-    TaiyinHouseSystemModel system = TaiyinHouseSystem.porphyry,
+    HouseSystemModel system = HouseSystem.porphyry,
   }) {
     _ensureOpen();
     _requireFinite(armcRadians, 'armcRadians');
@@ -525,9 +525,9 @@ final class TaiyinAstrologyApi {
   }
 
   /// Calculates houses at a UT1 coordinate using the context observer.
-  TaiyinHouses housesAtUt1(
+  Houses housesAtUt1(
     JulianDate<Ut1Scale> ut1, {
-    TaiyinHouseSystemModel system = TaiyinHouseSystem.porphyry,
+    HouseSystemModel system = HouseSystem.porphyry,
   }) {
     _ensureOpen();
     return _houses(
@@ -541,9 +541,9 @@ final class TaiyinAstrologyApi {
   }
 
   /// Calculates houses at a TT coordinate using the context observer.
-  TaiyinHouses housesAtTt(
+  Houses housesAtTt(
     JulianDate<TtScale> tt, {
-    TaiyinHouseSystemModel system = TaiyinHouseSystem.porphyry,
+    HouseSystemModel system = HouseSystem.porphyry,
   }) {
     _ensureOpen();
     return _houses(
@@ -557,8 +557,8 @@ final class TaiyinAstrologyApi {
   }
 
   /// Locates an ecliptic longitude within [houses].
-  TaiyinHousePosition housePositionOf(
-    TaiyinHouses houses,
+  HousePosition housePositionOf(
+    Houses houses,
     double eclipticLongitudeRadians,
   ) {
     _ensureOpen();
@@ -575,7 +575,7 @@ final class TaiyinAstrologyApi {
         ),
         null,
       );
-      return TaiyinHousePosition(
+      return HousePosition(
         houseNumber: output.ref.house_number,
         fraction: output.ref.fraction,
         continuousHousePosition: output.ref.continuous_house_position,
@@ -584,24 +584,24 @@ final class TaiyinAstrologyApi {
   }
 
   /// Whether the native runtime provides [ayanamsha].
-  bool hasAyanamshaModel(TaiyinAyanamshaModel ayanamsha) {
+  bool hasAyanamshaModel(AyanamshaModel ayanamsha) {
     _ensureOpen();
     return _bindings.taiyin_has_ayanamsha_model(ayanamsha.id) != 0;
   }
 
   /// Whether the native runtime provides [system].
-  bool hasHouseSystemModel(TaiyinHouseSystemModel system) {
+  bool hasHouseSystemModel(HouseSystemModel system) {
     _ensureOpen();
     return _bindings.taiyin_has_house_system_model(system.id) != 0;
   }
 
-  TaiyinEphemerisResult<TaiyinSiderealPosition> _siderealPosition(
-    TaiyinTarget target,
-    TaiyinAyanamshaModel ayanamsha,
-    TaiyinSiderealPrecessionPolicy precessionPolicy,
-    TaiyinSiderealReferencePlane referencePlane,
-    TaiyinSiderealReferenceEpoch? referenceEpoch,
-    Set<TaiyinPositionFlag> flags,
+  EphemerisResult<SiderealPosition> _siderealPosition(
+    Target target,
+    AyanamshaModel ayanamsha,
+    SiderealPrecessionPolicy precessionPolicy,
+    SiderealReferencePlane referencePlane,
+    SiderealReferenceEpoch? referenceEpoch,
+    Set<PositionFlag> flags,
     int nativeFlags,
     _SiderealCalculation calculate,
   ) {
@@ -615,14 +615,14 @@ final class TaiyinAstrologyApi {
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
       final value = output.ref;
-      return TaiyinEphemerisResult(
-        value: TaiyinSiderealPosition(
+      return EphemerisResult(
+        value: SiderealPosition(
           target: target,
           ayanamsha: ayanamsha,
           precessionPolicy: precessionPolicy,
           referencePlane: referencePlane,
           referenceEpoch: referenceEpoch,
-          coordinateFrame: TaiyinSiderealCoordinateFrame.fromId(
+          coordinateFrame: SiderealCoordinateFrame.fromId(
             value.coordinate_frame_id,
           ),
           rawCoordinateFrameId: value.coordinate_frame_id,
@@ -641,13 +641,13 @@ final class TaiyinAstrologyApi {
     });
   }
 
-  TaiyinEphemerisResult<TaiyinSiderealCoordinates> _siderealCoordinates(
-    TaiyinTarget target,
-    TaiyinAyanamshaModel ayanamsha,
-    TaiyinSiderealPrecessionPolicy precessionPolicy,
-    TaiyinSiderealReferencePlane referencePlane,
-    TaiyinSiderealReferenceEpoch? referenceEpoch,
-    Set<TaiyinPositionFlag> flags,
+  EphemerisResult<SiderealCoordinates> _siderealCoordinates(
+    Target target,
+    AyanamshaModel ayanamsha,
+    SiderealPrecessionPolicy precessionPolicy,
+    SiderealReferencePlane referencePlane,
+    SiderealReferenceEpoch? referenceEpoch,
+    Set<PositionFlag> flags,
     int nativeFlags,
     _SiderealCoordinatesCalculation calculate,
   ) {
@@ -661,18 +661,18 @@ final class TaiyinAstrologyApi {
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
       final value = output.ref;
-      final outputFlags = Set<TaiyinPositionFlag>.unmodifiable({
-        for (final flag in TaiyinPositionFlag.values)
+      final outputFlags = Set<PositionFlag>.unmodifiable({
+        for (final flag in PositionFlag.values)
           if ((value.position_flags & flag.mask) != 0) flag,
       });
-      return TaiyinEphemerisResult(
-        value: TaiyinSiderealCoordinates(
+      return EphemerisResult(
+        value: SiderealCoordinates(
           target: target,
           ayanamsha: ayanamsha,
           precessionPolicy: precessionPolicy,
           referencePlane: referencePlane,
           referenceEpoch: referenceEpoch,
-          coordinateFrame: TaiyinSiderealCoordinateFrame.fromId(
+          coordinateFrame: SiderealCoordinateFrame.fromId(
             value.coordinate_frame_id,
           ),
           rawCoordinateFrameId: value.coordinate_frame_id,
@@ -684,9 +684,9 @@ final class TaiyinAstrologyApi {
     });
   }
 
-  TaiyinEphemerisResult<TaiyinLunarNodePosition> _lunarNode(
-    TaiyinLunarNodeKind kind,
-    Set<TaiyinPositionFlag> flags,
+  EphemerisResult<LunarNodePosition> _lunarNode(
+    LunarNodeKind kind,
+    Set<PositionFlag> flags,
     _LunarNodeCalculation calculate,
   ) {
     return using((arena) {
@@ -699,10 +699,10 @@ final class TaiyinAstrologyApi {
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
       final value = output.ref;
-      return TaiyinEphemerisResult(
-        value: TaiyinLunarNodePosition(
+      return EphemerisResult(
+        value: LunarNodePosition(
           kind: kind,
-          referenceFrame: TaiyinApparentFrame.fromId(value.reference_frame_id),
+          referenceFrame: ApparentFrame.fromId(value.reference_frame_id),
           rawReferenceFrameId: value.reference_frame_id,
           longitudeRadians: value.longitude_rad,
           longitudeRateRadiansPerDay: value.longitude_rate_rad_per_day,
@@ -713,8 +713,8 @@ final class TaiyinAstrologyApi {
     });
   }
 
-  TaiyinEphemerisResult<TaiyinLunarApsisPosition> _lunarApsis(
-    Set<TaiyinPositionFlag> flags,
+  EphemerisResult<LunarApsisPosition> _lunarApsis(
+    Set<PositionFlag> flags,
     _LunarApsisCalculation calculate,
   ) {
     return using((arena) {
@@ -727,11 +727,11 @@ final class TaiyinAstrologyApi {
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
       final value = output.ref;
-      return TaiyinEphemerisResult(
-        value: TaiyinLunarApsisPosition(
-          referenceFrame: TaiyinApparentFrame.fromId(value.reference_frame_id),
+      return EphemerisResult(
+        value: LunarApsisPosition(
+          referenceFrame: ApparentFrame.fromId(value.reference_frame_id),
           rawReferenceFrameId: value.reference_frame_id,
-          definition: TaiyinLunarApsisDefinition.fromId(value.definition),
+          definition: LunarApsisDefinition.fromId(value.definition),
           rawDefinitionId: value.definition,
           longitudeRadians: value.longitude_rad,
           latitudeRadians: value.latitude_rad,
@@ -747,7 +747,7 @@ final class TaiyinAstrologyApi {
     });
   }
 
-  TaiyinHouses _houses(_HouseCalculation calculate) {
+  Houses _houses(_HouseCalculation calculate) {
     return using((arena) {
       final output = arena<taiyin_house_result>();
       _bindings.taiyin_house_result_init(output);
@@ -756,12 +756,12 @@ final class TaiyinAstrologyApi {
     });
   }
 
-  TaiyinHouses _readHouses(taiyin_house_result value) {
+  Houses _readHouses(taiyin_house_result value) {
     final flags = {
-      for (final flag in TaiyinHouseResultFlag.values)
+      for (final flag in HouseResultFlag.values)
         if ((value.flags & flag.mask) != 0) flag,
     };
-    return TaiyinHouses(
+    return Houses(
       requestedSystemId: value.requested_system_id,
       resolvedSystemId: value.resolved_system_id,
       rawFlags: value.flags,
@@ -787,7 +787,7 @@ final class TaiyinAstrologyApi {
     );
   }
 
-  Pointer<taiyin_house_result> _writeHouses(Arena arena, TaiyinHouses houses) {
+  Pointer<taiyin_house_result> _writeHouses(Arena arena, Houses houses) {
     final output = arena<taiyin_house_result>();
     _bindings.taiyin_house_result_init(output);
     output.ref
@@ -813,28 +813,26 @@ final class TaiyinAstrologyApi {
     return output;
   }
 
-  Set<TaiyinPositionFlag> _siderealFlags(Set<TaiyinPositionFlag> flags) {
-    if (flags.contains(TaiyinPositionFlag.xyz) ||
-        flags.contains(TaiyinPositionFlag.equatorial)) {
+  Set<PositionFlag> _siderealFlags(Set<PositionFlag> flags) {
+    if (flags.contains(PositionFlag.xyz) ||
+        flags.contains(PositionFlag.equatorial)) {
       throw ArgumentError.value(
         flags,
         'flags',
         'sidereal positions are ecliptic longitudes and do not support XYZ or equatorial output',
       );
     }
-    return Set.unmodifiable({...flags, TaiyinPositionFlag.radians});
+    return Set.unmodifiable({...flags, PositionFlag.radians});
   }
 
-  Set<TaiyinPositionFlag> _genericSiderealFlags(
-    Set<TaiyinPositionFlag> flags,
-  ) => Set.unmodifiable({...flags, TaiyinPositionFlag.radians});
+  Set<PositionFlag> _genericSiderealFlags(Set<PositionFlag> flags) =>
+      Set.unmodifiable({...flags, PositionFlag.radians});
 
-  ({int flags, TaiyinSiderealReferenceEpoch? referenceEpoch})
-  _resolveSiderealCall(
-    Set<TaiyinPositionFlag> positionFlags,
-    TaiyinSiderealPrecessionPolicy precessionPolicy,
-    TaiyinSiderealReferencePlane referencePlane,
-    TaiyinSiderealReferenceEpoch? referenceEpoch,
+  ({int flags, SiderealReferenceEpoch? referenceEpoch}) _resolveSiderealCall(
+    Set<PositionFlag> positionFlags,
+    SiderealPrecessionPolicy precessionPolicy,
+    SiderealReferencePlane referencePlane,
+    SiderealReferenceEpoch? referenceEpoch,
   ) {
     if (referencePlane.requiresReferenceEpoch != (referenceEpoch != null)) {
       final requirement = referencePlane.requiresReferenceEpoch
@@ -852,51 +850,51 @@ final class TaiyinAstrologyApi {
 
   /// Marshals a sidereal reference epoch into an arena-owned split-JD pointer.
   ///
-  /// A null epoch (used when [TaiyinSiderealReferencePlane] does not require
+  /// A null epoch (used when [SiderealReferencePlane] does not require
   /// one) is written as a null pointer, which the native ABI interprets as no
   /// reference epoch.
   Pointer<taiyin_split_julian_date> _writeReferenceEpoch(
     Arena arena,
-    TaiyinSiderealReferenceEpoch? referenceEpoch,
+    SiderealReferenceEpoch? referenceEpoch,
   ) {
     if (referenceEpoch == null) {
       return nullptr;
     }
     return switch (referenceEpoch) {
-      TaiyinSiderealReferenceEpochTt() => writeJulianDate<TtScale>(
+      SiderealReferenceEpochTt() => writeJulianDate<TtScale>(
         arena,
         referenceEpoch.coordinate,
       ),
-      TaiyinSiderealReferenceEpochUt1() => writeJulianDate<Ut1Scale>(
+      SiderealReferenceEpochUt1() => writeJulianDate<Ut1Scale>(
         arena,
         referenceEpoch.coordinate,
       ),
     };
   }
 
-  Set<TaiyinPositionFlag> _lunarPhysicalFlags(
-    Set<TaiyinPositionFlag> flags,
+  Set<PositionFlag> _lunarPhysicalFlags(
+    Set<PositionFlag> flags,
     String calculation,
   ) => _lunarFlags(flags, calculation, _lunarPhysicalAllowedFlags);
 
-  Set<TaiyinPositionFlag> _lunarMeanFlags(
-    Set<TaiyinPositionFlag> flags,
+  Set<PositionFlag> _lunarMeanFlags(
+    Set<PositionFlag> flags,
     String calculation,
   ) => _lunarFlags(flags, calculation, _lunarMeanAllowedFlags);
 
-  Set<TaiyinPositionFlag> _lunarFlags(
-    Set<TaiyinPositionFlag> flags,
+  Set<PositionFlag> _lunarFlags(
+    Set<PositionFlag> flags,
     String calculation,
-    Set<TaiyinPositionFlag> allowed,
+    Set<PositionFlag> allowed,
   ) {
     final unsupported = flags.difference(allowed);
     if (unsupported.isNotEmpty) {
       final unsupportedNames = [
-        for (final flag in TaiyinPositionFlag.values)
+        for (final flag in PositionFlag.values)
           if (unsupported.contains(flag)) flag.name,
       ];
       final allowedNames = [
-        for (final flag in TaiyinPositionFlag.values)
+        for (final flag in PositionFlag.values)
           if (allowed.contains(flag)) flag.name,
       ];
       throw ArgumentError.value(
@@ -909,7 +907,7 @@ final class TaiyinAstrologyApi {
     return Set.unmodifiable(flags);
   }
 
-  int _flagMask(Set<TaiyinPositionFlag> flags) =>
+  int _flagMask(Set<PositionFlag> flags) =>
       flags.fold(0, (value, flag) => value | flag.mask);
 
   double? _finiteOrNull(double value) => value.isFinite ? value : null;
@@ -942,17 +940,17 @@ final class TaiyinAstrologyApi {
     }
   }
 
-  static const Set<TaiyinPositionFlag> _lunarPhysicalAllowedFlags = {
-    TaiyinPositionFlag.truePosition,
-    TaiyinPositionFlag.equatorial,
-    TaiyinPositionFlag.noAberration,
-    TaiyinPositionFlag.noGravitationalDeflection,
-    TaiyinPositionFlag.astrometric,
-    TaiyinPositionFlag.noNutation,
+  static const Set<PositionFlag> _lunarPhysicalAllowedFlags = {
+    PositionFlag.truePosition,
+    PositionFlag.equatorial,
+    PositionFlag.noAberration,
+    PositionFlag.noGravitationalDeflection,
+    PositionFlag.astrometric,
+    PositionFlag.noNutation,
   };
 
-  static const Set<TaiyinPositionFlag> _lunarMeanAllowedFlags = {
-    TaiyinPositionFlag.equatorial,
-    TaiyinPositionFlag.noNutation,
+  static const Set<PositionFlag> _lunarMeanAllowedFlags = {
+    PositionFlag.equatorial,
+    PositionFlag.noNutation,
   };
 }

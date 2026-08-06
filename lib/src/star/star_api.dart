@@ -20,16 +20,16 @@ typedef _BatchStarPositionCalculation =
 typedef _StarStatusChecker =
     void Function(
       int status,
-      TaiyinEphemerisDiagnostic? diagnostic,
-      List<TaiyinEphemerisDiagnostic> diagnostics,
+      EphemerisDiagnostic? diagnostic,
+      List<EphemerisDiagnostic> diagnostics,
     );
 
 /// Process-wide fixed-star catalog management.
 ///
 /// Catalog mutation is a setup-time operation. Finish adding or clearing
 /// catalogs before calculations begin in any isolate.
-final class TaiyinStarCatalog {
-  TaiyinStarCatalog._(this._bindings);
+final class StarCatalog {
+  StarCatalog._(this._bindings);
 
   final TaiyinBindings _bindings;
 
@@ -87,7 +87,7 @@ final class TaiyinStarCatalog {
 
   /// Looks up a star's visual magnitude using its ID, name, or alias.
   ///
-  /// Throws [TaiyinException] when no loaded catalog contains a finite
+  /// Throws [EphemerisError] when no loaded catalog contains a finite
   /// magnitude for [starKey].
   double magnitudeOf(String starKey) {
     _requireStarKey(starKey);
@@ -103,14 +103,14 @@ final class TaiyinStarCatalog {
   }
 }
 
-/// Fixed-star calculations owned by one [TaiyinContext].
+/// Fixed-star calculations owned by one [EphemerisContext].
 ///
 /// Star keys may be canonical IDs, names, or aliases from any loaded global
 /// star catalog. Position batches preserve successful entries and their native
 /// diagnostics when another star fails. Observed batches throw if any entry
 /// fails because the native C ABI does not return partial observed values.
-final class TaiyinStarApi {
-  TaiyinStarApi._(
+final class StarApi {
+  StarApi._(
     this._bindings,
     this._context,
     this._ensureOpen,
@@ -122,14 +122,14 @@ final class TaiyinStarApi {
   final Pointer<taiyin_context> _context;
   final void Function() _ensureOpen;
   final _StarStatusChecker _checkStatus;
-  final TaiyinObservedApi _observedMapper;
+  final ObservedApi _observedMapper;
 
   /// Calculates one star with explicit TDB and TT coordinates.
-  TaiyinEphemerisResult<TaiyinStarPosition> atTdb(
+  EphemerisResult<StarPosition> atTdb(
     String starKey,
     JulianDate<TdbScale> tdb,
     JulianDate<TtScale> tt, {
-    Set<TaiyinPositionFlag> flags = const {},
+    Set<PositionFlag> flags = const {},
   }) {
     _ensureOpen();
     return _position(
@@ -149,10 +149,10 @@ final class TaiyinStarApi {
   }
 
   /// Calculates one star at a TT Julian date.
-  TaiyinEphemerisResult<TaiyinStarPosition> atTt(
+  EphemerisResult<StarPosition> atTt(
     String starKey,
     JulianDate<TtScale> julianDate, {
-    Set<TaiyinPositionFlag> flags = const {},
+    Set<PositionFlag> flags = const {},
   }) {
     _ensureOpen();
     return _position(
@@ -171,10 +171,10 @@ final class TaiyinStarApi {
   }
 
   /// Calculates one star at a UT1 Julian date using Taiyin's time policy.
-  TaiyinEphemerisResult<TaiyinStarPosition> atUt1(
+  EphemerisResult<StarPosition> atUt1(
     String starKey,
     JulianDate<Ut1Scale> julianDate, {
-    Set<TaiyinPositionFlag> flags = const {},
+    Set<PositionFlag> flags = const {},
   }) {
     _ensureOpen();
     return _position(
@@ -193,11 +193,11 @@ final class TaiyinStarApi {
   }
 
   /// Calculates one star at UT1 with an explicit TT−UT1 value.
-  TaiyinEphemerisResult<TaiyinStarPosition> atUt1WithDeltaT(
+  EphemerisResult<StarPosition> atUt1WithDeltaT(
     String starKey,
     JulianDate<Ut1Scale> julianDate,
     double deltaTSeconds, {
-    Set<TaiyinPositionFlag> flags = const {},
+    Set<PositionFlag> flags = const {},
   }) {
     _ensureOpen();
     _requireStarFinite(deltaTSeconds, 'deltaTSeconds');
@@ -218,11 +218,11 @@ final class TaiyinStarApi {
   }
 
   /// Calculates several stars with explicit TDB and TT coordinates.
-  List<TaiyinEphemerisResult<TaiyinStarPosition>> batchAtTdb(
+  List<EphemerisResult<StarPosition>> batchAtTdb(
     List<String> starKeys,
     JulianDate<TdbScale> tdb,
     JulianDate<TtScale> tt, {
-    Set<TaiyinPositionFlag> flags = const {},
+    Set<PositionFlag> flags = const {},
   }) {
     _ensureOpen();
     return _positions(
@@ -243,10 +243,10 @@ final class TaiyinStarApi {
   }
 
   /// Calculates several stars at a TT Julian date.
-  List<TaiyinEphemerisResult<TaiyinStarPosition>> batchAtTt(
+  List<EphemerisResult<StarPosition>> batchAtTt(
     List<String> starKeys,
     JulianDate<TtScale> julianDate, {
-    Set<TaiyinPositionFlag> flags = const {},
+    Set<PositionFlag> flags = const {},
   }) {
     _ensureOpen();
     return _positions(
@@ -266,10 +266,10 @@ final class TaiyinStarApi {
   }
 
   /// Calculates several stars at a UT1 Julian date.
-  List<TaiyinEphemerisResult<TaiyinStarPosition>> batchAtUt1(
+  List<EphemerisResult<StarPosition>> batchAtUt1(
     List<String> starKeys,
     JulianDate<Ut1Scale> julianDate, {
-    Set<TaiyinPositionFlag> flags = const {},
+    Set<PositionFlag> flags = const {},
   }) {
     _ensureOpen();
     return _positions(
@@ -289,11 +289,11 @@ final class TaiyinStarApi {
   }
 
   /// Calculates several stars at UT1 with an explicit TT−UT1 value.
-  List<TaiyinEphemerisResult<TaiyinStarPosition>> batchAtUt1WithDeltaT(
+  List<EphemerisResult<StarPosition>> batchAtUt1WithDeltaT(
     List<String> starKeys,
     JulianDate<Ut1Scale> julianDate,
     double deltaTSeconds, {
-    Set<TaiyinPositionFlag> flags = const {},
+    Set<PositionFlag> flags = const {},
   }) {
     _ensureOpen();
     _requireStarFinite(deltaTSeconds, 'deltaTSeconds');
@@ -315,15 +315,15 @@ final class TaiyinStarApi {
   }
 
   /// Calculates one complete observed star position at UT1.
-  TaiyinObservedStarPosition observedAtUt1(
+  ObservedStarPosition observedAtUt1(
     String starKey,
     JulianDate<Ut1Scale> julianDate, {
-    Set<TaiyinObservedFlag> flags = const {},
+    Set<ObservedFlag> flags = const {},
   }) {
     _ensureOpen();
     _requireStarKey(starKey);
     _observedMapper._validateFlags(flags);
-    final frozenFlags = Set<TaiyinObservedFlag>.unmodifiable(flags);
+    final frozenFlags = Set<ObservedFlag>.unmodifiable(flags);
     final mask = frozenFlags.fold(0, (value, flag) => value | flag.mask);
     return using((arena) {
       final nativeKey = starKey.toNativeUtf8(allocator: arena).cast<Char>();
@@ -349,16 +349,16 @@ final class TaiyinStarApi {
   }
 
   /// Calculates complete observed star positions at UT1.
-  List<TaiyinObservedStarPosition> observedBatchAtUt1(
+  List<ObservedStarPosition> observedBatchAtUt1(
     List<String> starKeys,
     JulianDate<Ut1Scale> julianDate, {
-    Set<TaiyinObservedFlag> flags = const {},
+    Set<ObservedFlag> flags = const {},
   }) {
     _ensureOpen();
     if (starKeys.isEmpty) return const [];
     _validateStarKeys(starKeys);
     _observedMapper._validateFlags(flags);
-    final frozenFlags = Set<TaiyinObservedFlag>.unmodifiable(flags);
+    final frozenFlags = Set<ObservedFlag>.unmodifiable(flags);
     final mask = frozenFlags.fold(0, (value, flag) => value | flag.mask);
 
     return using((arena) {
@@ -390,7 +390,7 @@ final class TaiyinStarApi {
         ];
         _checkStatus(status, failures.firstOrNull ?? mapped.first, mapped);
       }
-      final results = List<TaiyinObservedStarPosition>.unmodifiable([
+      final results = List<ObservedStarPosition>.unmodifiable([
         for (var index = 0; index < starKeys.length; index++)
           _readObservedStarPosition(
             output[index],
@@ -414,13 +414,13 @@ final class TaiyinStarApi {
     });
   }
 
-  TaiyinEphemerisResult<TaiyinStarPosition> _position(
+  EphemerisResult<StarPosition> _position(
     String starKey,
-    Set<TaiyinPositionFlag> flags,
+    Set<PositionFlag> flags,
     _SingleStarPositionCalculation calculate,
   ) {
     _requireStarKey(starKey);
-    final frozenFlags = Set<TaiyinPositionFlag>.unmodifiable(flags);
+    final frozenFlags = Set<PositionFlag>.unmodifiable(flags);
     final mask = frozenFlags.fold(0, (value, flag) => value | flag.mask);
     return using((arena) {
       final nativeKey = starKey.toNativeUtf8(allocator: arena).cast<Char>();
@@ -432,8 +432,8 @@ final class TaiyinStarApi {
         diagnostic.ref,
       );
       _checkStatus(status, mappedDiagnostic, const []);
-      return TaiyinEphemerisResult(
-        value: TaiyinStarPosition(
+      return EphemerisResult(
+        value: StarPosition(
           starKey: starKey,
           values: [for (var index = 0; index < 6; index++) output[index]],
           flags: frozenFlags,
@@ -443,14 +443,14 @@ final class TaiyinStarApi {
     });
   }
 
-  List<TaiyinEphemerisResult<TaiyinStarPosition>> _positions(
+  List<EphemerisResult<StarPosition>> _positions(
     List<String> starKeys,
-    Set<TaiyinPositionFlag> flags,
+    Set<PositionFlag> flags,
     _BatchStarPositionCalculation calculate,
   ) {
     if (starKeys.isEmpty) return const [];
     _validateStarKeys(starKeys);
-    final frozenFlags = Set<TaiyinPositionFlag>.unmodifiable(flags);
+    final frozenFlags = Set<PositionFlag>.unmodifiable(flags);
     final mask = frozenFlags.fold(0, (value, flag) => value | flag.mask);
     return using((arena) {
       final nativeKeys = _writeStarKeys(arena, starKeys);
@@ -482,8 +482,8 @@ final class TaiyinStarApi {
       }
       return List.unmodifiable([
         for (final entry in entries)
-          TaiyinEphemerisResult(
-            value: TaiyinStarPosition(
+          EphemerisResult(
+            value: StarPosition(
               starKey: starKeys[entry.starIndex],
               values: entry.diagnostic.status == 0
                   ? [
@@ -512,21 +512,21 @@ final class TaiyinStarApi {
     return nativeKeys;
   }
 
-  TaiyinObservedStarPosition _readObservedStarPosition(
+  ObservedStarPosition _readObservedStarPosition(
     taiyin_observed_position value,
     String starKey,
-    Set<TaiyinObservedFlag> flags,
+    Set<ObservedFlag> flags,
   ) {
     final wantsHorizontal =
-        flags.contains(TaiyinObservedFlag.horizontal) ||
-        flags.contains(TaiyinObservedFlag.refraction);
-    final wantsSpeed = flags.contains(TaiyinObservedFlag.speed);
-    final wantsRefraction = flags.contains(TaiyinObservedFlag.refraction);
-    return TaiyinObservedStarPosition(
+        flags.contains(ObservedFlag.horizontal) ||
+        flags.contains(ObservedFlag.refraction);
+    final wantsSpeed = flags.contains(ObservedFlag.speed);
+    final wantsRefraction = flags.contains(ObservedFlag.refraction);
+    return ObservedStarPosition(
       starKey: starKey,
       status: value.status,
       diagnostic: _observedMapper._readObservedDiagnostic(value.diagnostic),
-      apparent: TaiyinApparentStarPosition(
+      apparent: ApparentStarPosition(
         starKey: starKey,
         status: value.apparent.status,
         diagnostic: _observedMapper._readObservedDiagnostic(

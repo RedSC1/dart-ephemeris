@@ -11,15 +11,15 @@ void main() {
   final opm2DataAvailable = Directory(opm2DataPath).existsSync();
 
   group(
-    'TaiyinOrbitalApi native integration',
+    'OrbitalApi native integration',
     () {
-      late TaiyinContext context;
+      late EphemerisContext context;
       final startUt1 = JulianDate<Ut1Scale>.fromDouble(2460409.0);
 
       setUp(() {
-        context = Taiyin.open(
+        context = Ephemeris.open(
           libraryPath: libraryPath,
-          options: TaiyinRuntimeOptions(
+          options: RuntimeOptions(
             sourcePaths: [opm2DataPath],
             loadPackagedData: false,
           ),
@@ -38,35 +38,30 @@ void main() {
       }
 
       test('ports the Moon osculating-orbit physical checks', () {
-        final result = context.orbits.osculatingAtUt1(
-          TaiyinBody.moon,
-          startUt1,
-        );
+        final result = context.orbits.osculatingAtUt1(Body.moon, startUt1);
         final orbit = result.value;
 
-        expect(orbit.body, TaiyinBody.moon);
-        expect(orbit.center, TaiyinBody.earth);
-        expect(orbit.referenceFrame, TaiyinApparentFrame.j2000Ecliptic);
+        expect(orbit.body, Body.moon);
+        expect(orbit.center, Body.earth);
+        expect(orbit.referenceFrame, ApparentFrame.j2000Ecliptic);
         expect(orbit.eccentricity, inInclusiveRange(0.01, 0.2));
         expect(orbit.osculatingPeriodDays, inInclusiveRange(20.0, 35.0));
         expect(orbit.periapsisDistanceAu, lessThan(orbit.currentDistanceAu));
         expect(orbit.currentDistanceAu, lessThan(orbit.apoapsisDistanceAu));
         expect(orbit.gravitationalParameterAu3PerDay2, greaterThan(0.0));
         expect(result.diagnostic.status, 0);
-        expect(result.diagnostic.targetId, TaiyinBody.moon.id);
+        expect(result.diagnostic.targetId, Body.moon.id);
       });
 
       test('ports the osculating reference-point geometry checks', () {
-        final orbit = context.orbits
-            .osculatingAtUt1(TaiyinBody.moon, startUt1)
-            .value;
+        final orbit = context.orbits.osculatingAtUt1(Body.moon, startUt1).value;
         final points = context.orbits
-            .referencePointsAtUt1(TaiyinBody.moon, startUt1)
+            .referencePointsAtUt1(Body.moon, startUt1)
             .value;
 
-        expect(points.body, TaiyinBody.moon);
-        expect(points.center, TaiyinBody.earth);
-        expect(points.model, TaiyinOrbitReferencePointModel.osculating);
+        expect(points.body, Body.moon);
+        expect(points.center, Body.earth);
+        expect(points.model, OrbitReferencePointModel.osculating);
         expect(points.rawModelId, 0);
         expect(points.ascendingNode.positionAu.z, 0.0);
         expect(points.descendingNode.positionAu.z, 0.0);
@@ -98,16 +93,14 @@ void main() {
       test('TT and UT1 orbit and reference-point routes agree', () {
         final tt = ttFor(startUt1);
         final utOrbit = context.orbits
-            .osculatingAtUt1(TaiyinBody.moon, startUt1)
+            .osculatingAtUt1(Body.moon, startUt1)
             .value;
-        final ttOrbit = context.orbits
-            .osculatingAtTt(TaiyinBody.moon, tt)
-            .value;
+        final ttOrbit = context.orbits.osculatingAtTt(Body.moon, tt).value;
         final utPoints = context.orbits
-            .referencePointsAtUt1(TaiyinBody.moon, startUt1)
+            .referencePointsAtUt1(Body.moon, startUt1)
             .value;
         final ttPoints = context.orbits
-            .referencePointsAtTt(TaiyinBody.moon, tt)
+            .referencePointsAtTt(Body.moon, tt)
             .value;
 
         expect(
@@ -122,11 +115,11 @@ void main() {
       });
 
       test('supports every native orbital reference frame', () {
-        for (final frame in TaiyinApparentFrame.values.where(
-          (value) => value != TaiyinApparentFrame.unknown,
+        for (final frame in ApparentFrame.values.where(
+          (value) => value != ApparentFrame.unknown,
         )) {
           final orbit = context.orbits
-              .osculatingAtUt1(TaiyinBody.moon, startUt1, referenceFrame: frame)
+              .osculatingAtUt1(Body.moon, startUt1, referenceFrame: frame)
               .value;
           expect(orbit.referenceFrame, frame);
           expect(orbit.rawReferenceFrameId, frame.id);
@@ -135,33 +128,29 @@ void main() {
 
       test('ports lunar apsis and node Swiss Ephemeris oracles', () {
         final perigee = context.orbits
-            .searchApsisFromUt1(
-              TaiyinBody.moon,
-              TaiyinApsisKind.pericenter,
-              startUt1,
-            )
+            .searchApsisFromUt1(Body.moon, ApsisKind.pericenter, startUt1)
             .value;
         final previousApogee = context.orbits
             .searchApsisFromUt1(
-              TaiyinBody.moon,
-              TaiyinApsisKind.apocenter,
+              Body.moon,
+              ApsisKind.apocenter,
               startUt1,
-              direction: TaiyinOrbitalSearchDirection.reverse,
+              direction: OrbitalSearchDirection.reverse,
             )
             .value;
         final ascendingNode = context.orbits
             .searchPlaneNodeFromUt1(
-              TaiyinBody.moon,
-              TaiyinPlaneNodeKind.ascending,
+              Body.moon,
+              PlaneNodeKind.ascending,
               startUt1,
             )
             .value;
         final previousAscendingNode = context.orbits
             .searchPlaneNodeFromUt1(
-              TaiyinBody.moon,
-              TaiyinPlaneNodeKind.ascending,
+              Body.moon,
+              PlaneNodeKind.ascending,
               startUt1,
-              direction: TaiyinOrbitalSearchDirection.reverse,
+              direction: OrbitalSearchDirection.reverse,
             )
             .value;
 
@@ -170,8 +159,8 @@ void main() {
           closeTo(2460436.4196451753, 1e-4),
         );
         expect(perigee.radialVelocityAuPerDay.abs(), lessThan(1e-8));
-        expect(perigee.kind, TaiyinApsisKind.pericenter);
-        expect(perigee.direction, TaiyinOrbitalSearchDirection.forward);
+        expect(perigee.kind, ApsisKind.pericenter);
+        expect(perigee.direction, OrbitalSearchDirection.forward);
         expect(perigee.iterationCount, greaterThan(0));
         expect(perigee.evaluationCount, greaterThan(0));
 
@@ -180,38 +169,27 @@ void main() {
           closeTo(2460393.1562406393, 1e-4),
         );
         expect(previousApogee.coordinate.isBefore(startUt1), isTrue);
-        expect(previousApogee.direction, TaiyinOrbitalSearchDirection.reverse);
+        expect(previousApogee.direction, OrbitalSearchDirection.reverse);
 
         expect(
           ascendingNode.coordinate.toDouble(),
           closeTo(2460409.0138973210, 1e-4),
         );
-        expect(ascendingNode.kind, TaiyinPlaneNodeKind.ascending);
-        expect(ascendingNode.referenceFrame, TaiyinApparentFrame.j2000Ecliptic);
+        expect(ascendingNode.kind, PlaneNodeKind.ascending);
+        expect(ascendingNode.referenceFrame, ApparentFrame.j2000Ecliptic);
         expect(ascendingNode.referencePlaneAngleRadians.isFinite, isTrue);
 
         expect(previousAscendingNode.coordinate.isBefore(startUt1), isTrue);
-        expect(previousAscendingNode.kind, TaiyinPlaneNodeKind.ascending);
-        expect(
-          previousAscendingNode.direction,
-          TaiyinOrbitalSearchDirection.reverse,
-        );
+        expect(previousAscendingNode.kind, PlaneNodeKind.ascending);
+        expect(previousAscendingNode.direction, OrbitalSearchDirection.reverse);
       });
 
       test('TT and UT1 event searches preserve their time-scale types', () {
         final perigeeUt1 = context.orbits
-            .searchApsisFromUt1(
-              TaiyinBody.moon,
-              TaiyinApsisKind.pericenter,
-              startUt1,
-            )
+            .searchApsisFromUt1(Body.moon, ApsisKind.pericenter, startUt1)
             .value;
         final perigeeTt = context.orbits
-            .searchApsisFromTt(
-              TaiyinBody.moon,
-              TaiyinApsisKind.pericenter,
-              ttFor(startUt1),
-            )
+            .searchApsisFromTt(Body.moon, ApsisKind.pericenter, ttFor(startUt1))
             .value;
         final expectedTt = ttFor(perigeeUt1.coordinate);
 
@@ -223,8 +201,8 @@ void main() {
         );
 
         final nodeTt = context.orbits.searchPlaneNodeFromTt(
-          TaiyinBody.moon,
-          TaiyinPlaneNodeKind.ascending,
+          Body.moon,
+          PlaneNodeKind.ascending,
           ttFor(startUt1),
         );
         expect(nodeTt.value.coordinate, isA<JulianDate<TtScale>>());
@@ -234,13 +212,13 @@ void main() {
       test('supports planet barycenters and explicit approximation policy', () {
         final venus = context.orbits
             .osculatingAtUt1(
-              TaiyinBody.venusBarycenter,
+              Body.venusBarycenter,
               startUt1,
               allowBarycenterApproximation: true,
             )
             .value;
 
-        expect(venus.center, TaiyinBody.sun);
+        expect(venus.center, Body.sun);
         expect(venus.semiMajorAxisAu, inInclusiveRange(0.6, 0.85));
         expect(venus.eccentricity, inInclusiveRange(0.0, 0.05));
         expect(venus.allowBarycenterApproximation, isTrue);
@@ -248,21 +226,21 @@ void main() {
 
       test('rejects unsupported inputs and use after close', () {
         expect(
-          () => context.orbits.osculatingAtUt1(TaiyinBody.sun, startUt1),
+          () => context.orbits.osculatingAtUt1(Body.sun, startUt1),
           throwsArgumentError,
         );
         expect(
           () => context.orbits.osculatingAtUt1(
-            TaiyinBody.moon,
+            Body.moon,
             startUt1,
-            referenceFrame: TaiyinApparentFrame.unknown,
+            referenceFrame: ApparentFrame.unknown,
           ),
           throwsArgumentError,
         );
 
         context.close();
         expect(
-          () => context.orbits.osculatingAtUt1(TaiyinBody.moon, startUt1),
+          () => context.orbits.osculatingAtUt1(Body.moon, startUt1),
           throwsStateError,
         );
       });

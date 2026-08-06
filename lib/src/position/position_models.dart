@@ -1,12 +1,12 @@
 part of 'position_api.dart';
 
-/// A calculation target understood by Taiyin.
-abstract interface class TaiyinTarget {
+/// A calculation target understood by Ephemeris.
+abstract interface class Target {
   int get id;
 }
 
-/// A solar-system body built into Taiyin.
-enum TaiyinBody implements TaiyinTarget {
+/// A solar-system body built into Ephemeris.
+enum Body implements Target {
   solarSystemBarycenter(0),
   mercuryBarycenter(1),
   venusBarycenter(2),
@@ -29,7 +29,7 @@ enum TaiyinBody implements TaiyinTarget {
   neptune(899),
   pluto(999);
 
-  const TaiyinBody(this.id);
+  const Body(this.id);
 
   /// The stable body ID from the Taiyin C ABI.
   @override
@@ -37,8 +37,8 @@ enum TaiyinBody implements TaiyinTarget {
 }
 
 /// A process-wide custom calculation target backed by a Dart evaluator.
-final class TaiyinCustomTarget implements TaiyinTarget {
-  TaiyinCustomTarget(int id) : id = _validateId(id);
+final class CustomTarget implements Target {
+  CustomTarget(int id) : id = _validateId(id);
 
   @override
   final int id;
@@ -55,18 +55,17 @@ final class TaiyinCustomTarget implements TaiyinTarget {
   }
 
   @override
-  bool operator ==(Object other) =>
-      other is TaiyinCustomTarget && other.id == id;
+  bool operator ==(Object other) => other is CustomTarget && other.id == id;
 
   @override
   int get hashCode => id.hashCode;
 
   @override
-  String toString() => 'TaiyinCustomTarget($id)';
+  String toString() => 'CustomTarget($id)';
 }
 
 /// Modifiers for a position or Cartesian-state calculation.
-enum TaiyinPositionFlag {
+enum PositionFlag {
   speed(1 << 0),
   xyz(1 << 1),
   equatorial(1 << 2),
@@ -79,14 +78,14 @@ enum TaiyinPositionFlag {
   topocentric(1 << 9),
   allowBarycenterApproximation(1 << 10);
 
-  const TaiyinPositionFlag(this.mask);
+  const PositionFlag(this.mask);
 
   /// The bit used by the Taiyin C ABI.
   final int mask;
 }
 
 /// Reference frame reported by an ephemeris diagnostic.
-enum TaiyinApparentFrame {
+enum ApparentFrame {
   icrf(0),
   trueEquatorOfDate(1),
   trueEclipticOfDate(2),
@@ -97,22 +96,22 @@ enum TaiyinApparentFrame {
   cirs(7),
   unknown(-1);
 
-  const TaiyinApparentFrame(this.id);
+  const ApparentFrame(this.id);
 
   final int id;
 
-  static TaiyinApparentFrame fromId(int id) {
+  static ApparentFrame fromId(int id) {
     return values.where((value) => value.id == id).firstOrNull ?? unknown;
   }
 }
 
-/// The six values returned by a Taiyin position calculation.
+/// The six values returned by an Ephemeris position calculation.
 ///
 /// Values 0–2 are the primary coordinates. Values 3–5 are their rates when
-/// [TaiyinPositionFlag.speed] is requested. Their coordinate system and units
+/// [PositionFlag.speed] is requested. Their coordinate system and units
 /// are described by [flags].
-final class TaiyinPosition {
-  TaiyinPosition._(List<double> values, Set<TaiyinPositionFlag> flags)
+final class Position {
+  Position._(List<double> values, Set<PositionFlag> flags)
     : values = List.unmodifiable(values),
       flags = Set.unmodifiable(flags) {
     if (values.length != 6) {
@@ -121,21 +120,21 @@ final class TaiyinPosition {
   }
 
   final List<double> values;
-  final Set<TaiyinPositionFlag> flags;
+  final Set<PositionFlag> flags;
 
   List<double> get coordinates => values.sublist(0, 3);
   List<double> get rates => values.sublist(3, 6);
-  bool get isCartesian => flags.contains(TaiyinPositionFlag.xyz);
-  bool get isEquatorial => flags.contains(TaiyinPositionFlag.equatorial);
-  bool get isRadians => flags.contains(TaiyinPositionFlag.radians);
+  bool get isCartesian => flags.contains(PositionFlag.xyz);
+  bool get isEquatorial => flags.contains(PositionFlag.equatorial);
+  bool get isRadians => flags.contains(PositionFlag.radians);
 
   @override
-  String toString() => 'TaiyinPosition($values)';
+  String toString() => 'Position($values)';
 }
 
 /// A three-dimensional vector.
-final class TaiyinVector3 {
-  const TaiyinVector3(this.x, this.y, this.z);
+final class Vector3 {
+  const Vector3(this.x, this.y, this.z);
 
   final double x;
   final double y;
@@ -144,25 +143,25 @@ final class TaiyinVector3 {
   List<double> get values => List.unmodifiable([x, y, z]);
 
   @override
-  String toString() => 'TaiyinVector3($x, $y, $z)';
+  String toString() => 'Vector3($x, $y, $z)';
 }
 
-/// Cartesian position, velocity, and acceleration returned by Taiyin.
-final class TaiyinCartesianState {
-  const TaiyinCartesianState({
+/// Cartesian position, velocity, and acceleration returned by Ephemeris.
+final class CartesianState {
+  const CartesianState({
     required this.positionAu,
     required this.velocityAuPerDay,
     required this.accelerationAuPerDay2,
   });
 
-  final TaiyinVector3 positionAu;
-  final TaiyinVector3 velocityAuPerDay;
-  final TaiyinVector3 accelerationAuPerDay2;
+  final Vector3 positionAu;
+  final Vector3 velocityAuPerDay;
+  final Vector3 accelerationAuPerDay2;
 }
 
 /// Details about the route used for an ephemeris calculation.
-final class TaiyinEphemerisDiagnostic {
-  TaiyinEphemerisDiagnostic({
+final class EphemerisDiagnostic {
+  EphemerisDiagnostic({
     required this.status,
     required this.targetId,
     required this.centerId,
@@ -189,7 +188,7 @@ final class TaiyinEphemerisDiagnostic {
   final int status;
   final int targetId;
   final int centerId;
-  final TaiyinApparentFrame frame;
+  final ApparentFrame frame;
   final int rawFrameId;
   final JulianDate<TdbScale> julianDateTdb;
   final int candidateCount;
@@ -210,9 +209,9 @@ final class TaiyinEphemerisDiagnostic {
 }
 
 /// A calculated value together with its native ephemeris diagnostic.
-final class TaiyinEphemerisResult<T> {
-  const TaiyinEphemerisResult({required this.value, required this.diagnostic});
+final class EphemerisResult<T> {
+  const EphemerisResult({required this.value, required this.diagnostic});
 
   final T value;
-  final TaiyinEphemerisDiagnostic diagnostic;
+  final EphemerisDiagnostic diagnostic;
 }

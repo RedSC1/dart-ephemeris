@@ -1,11 +1,11 @@
-/// Chinese-calendar models backed by the Taiyin Chinese-calendar module.
+/// Chinese-calendar models backed by the Ephemeris Chinese-calendar module.
 library;
 
 import '../time/julian_date.dart';
 import '../time/time_scale.dart';
 
 /// Rule profile applied when constructing a Chinese calendar.
-enum TaiyinChineseCalendarRuleMode {
+enum ChineseCalendarRuleMode {
   /// Historical China: mean solar terms and new moons with compressed
   /// day-correction tables and a fixed UTC+8 civil boundary.
   historicalChina(0),
@@ -15,13 +15,13 @@ enum TaiyinChineseCalendarRuleMode {
   /// meridian.
   astronomical(1);
 
-  const TaiyinChineseCalendarRuleMode(this.id);
+  const ChineseCalendarRuleMode(this.id);
 
   final int id;
 }
 
 /// How the civil (local) day boundary is determined.
-enum TaiyinChineseCalendarDayBoundaryMode {
+enum ChineseCalendarDayBoundaryMode {
   /// The civil day starts at a fixed UTC offset (e.g. UTC+8 = 480 minutes).
   fixedUtcOffset(0),
 
@@ -29,24 +29,24 @@ enum TaiyinChineseCalendarDayBoundaryMode {
   /// longitude.
   meanSolarMeridian(1);
 
-  const TaiyinChineseCalendarDayBoundaryMode(this.id);
+  const ChineseCalendarDayBoundaryMode(this.id);
 
   final int id;
 }
 
 /// Historical exceptional month names used by the `historicalChina` profile.
-enum TaiyinChineseCalendarMonthName {
+enum ChineseCalendarMonthName {
   normal(0),
   thirteen(1),
   laterNine(2),
   altTwelve(3),
   altOne(4);
 
-  const TaiyinChineseCalendarMonthName(this.id);
+  const ChineseCalendarMonthName(this.id);
 
   final int id;
 
-  static TaiyinChineseCalendarMonthName fromId(int id) {
+  static ChineseCalendarMonthName fromId(int id) {
     for (final name in values) {
       if (name.id == id) return name;
     }
@@ -55,34 +55,34 @@ enum TaiyinChineseCalendarMonthName {
 }
 
 /// Configuration for a Chinese-calendar context.
-final class TaiyinChineseCalendarConfig {
-  const TaiyinChineseCalendarConfig({
-    this.ruleMode = TaiyinChineseCalendarRuleMode.astronomical,
-    this.dayBoundaryMode = TaiyinChineseCalendarDayBoundaryMode.fixedUtcOffset,
+final class ChineseCalendarConfig {
+  const ChineseCalendarConfig({
+    this.ruleMode = ChineseCalendarRuleMode.astronomical,
+    this.dayBoundaryMode = ChineseCalendarDayBoundaryMode.fixedUtcOffset,
     this.utcOffsetMinutes = 480,
     this.calendarMeridianDegrees = 0,
   });
 
   /// Default astronomical profile with a fixed UTC+8 civil day.
-  const TaiyinChineseCalendarConfig.astronomical() : this();
+  const ChineseCalendarConfig.astronomical() : this();
 
   /// Astronomical profile with a fixed [utcOffsetMinutes] civil boundary.
-  const TaiyinChineseCalendarConfig.utcOffset(int utcOffsetMinutes)
+  const ChineseCalendarConfig.utcOffset(int utcOffsetMinutes)
     : this(
-        dayBoundaryMode: TaiyinChineseCalendarDayBoundaryMode.fixedUtcOffset,
+        dayBoundaryMode: ChineseCalendarDayBoundaryMode.fixedUtcOffset,
         utcOffsetMinutes: utcOffsetMinutes,
       );
 
   /// Astronomical profile with a mean-solar-meridian civil boundary at
   /// [longitudeDegrees].
-  const TaiyinChineseCalendarConfig.meridian(double longitudeDegrees)
+  const ChineseCalendarConfig.meridian(double longitudeDegrees)
     : this(
-        dayBoundaryMode: TaiyinChineseCalendarDayBoundaryMode.meanSolarMeridian,
+        dayBoundaryMode: ChineseCalendarDayBoundaryMode.meanSolarMeridian,
         calendarMeridianDegrees: longitudeDegrees,
       );
 
-  final TaiyinChineseCalendarRuleMode ruleMode;
-  final TaiyinChineseCalendarDayBoundaryMode dayBoundaryMode;
+  final ChineseCalendarRuleMode ruleMode;
+  final ChineseCalendarDayBoundaryMode dayBoundaryMode;
 
   /// Civil-day offset from UTC in minutes, meaningful for [fixedUtcOffset].
   final int utcOffsetMinutes;
@@ -92,12 +92,8 @@ final class TaiyinChineseCalendarConfig {
 }
 
 /// A proleptic Gregorian (solar) calendar date.
-final class TaiyinSolarDate {
-  const TaiyinSolarDate({
-    required this.year,
-    required this.month,
-    required this.day,
-  });
+final class SolarDate {
+  const SolarDate({required this.year, required this.month, required this.day});
 
   final int year;
   final int month;
@@ -105,14 +101,14 @@ final class TaiyinSolarDate {
 }
 
 /// A Chinese lunar calendar date.
-final class TaiyinLunarDate {
-  const TaiyinLunarDate({
+final class LunarDate {
+  const LunarDate({
     required this.year,
     required this.month,
     required this.day,
     required this.isLeap,
     required this.monthDays,
-    this.monthName = TaiyinChineseCalendarMonthName.normal,
+    this.monthName = ChineseCalendarMonthName.normal,
   });
 
   final int year;
@@ -124,12 +120,12 @@ final class TaiyinLunarDate {
   final int monthDays;
 
   /// Historical exceptional month name, when applicable.
-  final TaiyinChineseCalendarMonthName monthName;
+  final ChineseCalendarMonthName monthName;
 }
 
 /// A solar-term (节气) crossing.
-final class TaiyinChineseSolarTermEvent {
-  const TaiyinChineseSolarTermEvent({
+final class ChineseSolarTermEvent {
+  const ChineseSolarTermEvent({
     required this.indexFromWinterSolstice,
     required this.targetLongitudeRadians,
     required this.jdUt,
@@ -150,19 +146,16 @@ final class TaiyinChineseSolarTermEvent {
 }
 
 /// A geocentric new moon (朔) within a Chinese-calendar year.
-final class TaiyinChineseNewMoonEvent {
-  const TaiyinChineseNewMoonEvent({
-    required this.jdUt,
-    required this.civilDayNumber,
-  });
+final class ChineseNewMoonEvent {
+  const ChineseNewMoonEvent({required this.jdUt, required this.civilDayNumber});
 
   final JulianDate<Ut1Scale> jdUt;
   final int civilDayNumber;
 }
 
 /// One lunar month within a Chinese-calendar year.
-final class TaiyinChineseCalendarMonth {
-  const TaiyinChineseCalendarMonth({
+final class ChineseCalendarMonth {
+  const ChineseCalendarMonth({
     required this.lunarYear,
     required this.month,
     required this.isLeap,
@@ -176,14 +169,14 @@ final class TaiyinChineseCalendarMonth {
   final int month;
   final bool isLeap;
   final int dayCount;
-  final TaiyinChineseCalendarMonthName monthName;
+  final ChineseCalendarMonthName monthName;
   final int firstCivilDayNumber;
   final JulianDate<Ut1Scale> astronomicalNewMoonJdUt;
 }
 
 /// A full winter-solstice-based Chinese calendar year.
-final class TaiyinChineseCalendarYear {
-  const TaiyinChineseCalendarYear({
+final class ChineseCalendarYear {
+  const ChineseCalendarYear({
     required this.solarTerms,
     required this.newMoons,
     required this.months,
@@ -195,9 +188,9 @@ final class TaiyinChineseCalendarYear {
     required this.secondWinterSolsticeDayNumber,
   });
 
-  final List<TaiyinChineseSolarTermEvent> solarTerms;
-  final List<TaiyinChineseNewMoonEvent> newMoons;
-  final List<TaiyinChineseCalendarMonth> months;
+  final List<ChineseSolarTermEvent> solarTerms;
+  final List<ChineseNewMoonEvent> newMoons;
+  final List<ChineseCalendarMonth> months;
   final int solarTermCount;
   final int newMoonCount;
   final int monthCount;

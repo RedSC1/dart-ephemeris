@@ -55,7 +55,7 @@ void main() {
     test(
       'the package loads and creates a context on a baseline library',
       () {
-        final runtime = Taiyin.open(libraryPath: baselineLibraryPath);
+        final runtime = Ephemeris.open(libraryPath: baselineLibraryPath);
         final context = runtime.createContext();
         expect(context, isNotNull);
         // The Chinese calendar is always built and works.

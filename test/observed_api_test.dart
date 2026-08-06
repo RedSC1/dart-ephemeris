@@ -4,14 +4,14 @@ import 'support/native_library.dart';
 
 void main() {
   group(
-    'TaiyinObservedApi native integration',
+    'ObservedApi native integration',
     () {
-      late TaiyinContext taiyin;
+      late EphemerisContext taiyin;
       final ut1 = JulianDate<Ut1Scale>.fromDouble(2460409.0);
       final utc = AstroDateTime(2024, 4, 8, 18);
 
       setUp(() {
-        taiyin = Taiyin.open(libraryPath: libraryPath).createContext();
+        taiyin = Ephemeris.open(libraryPath: libraryPath).createContext();
       });
 
       tearDown(() {
@@ -20,16 +20,16 @@ void main() {
 
       test('maps complete UT1 apparent state and diagnostic', () {
         final result = taiyin.observed.atUt1(
-          TaiyinBody.sun,
+          Body.sun,
           ut1,
-          flags: {TaiyinObservedFlag.speed, TaiyinObservedFlag.truePosition},
+          flags: {ObservedFlag.speed, ObservedFlag.truePosition},
         );
 
-        expect(result.body, TaiyinBody.sun);
+        expect(result.body, Body.sun);
         expect(result.status, 0);
         expect(result.diagnostic.status, 0);
-        expect(result.diagnostic.targetId, TaiyinBody.sun.id);
-        expect(result.apparent.body, TaiyinBody.sun);
+        expect(result.diagnostic.targetId, Body.sun.id);
+        expect(result.apparent.body, Body.sun);
         expect(result.apparent.status, 0);
         expect(result.apparent.bodyMaskBit, 1);
         expect(result.apparent.longitudeRadians.isFinite, isTrue);
@@ -63,8 +63,8 @@ void main() {
       });
 
       test('single and batch UT1 routes preserve order and values', () {
-        const bodies = [TaiyinBody.sun, TaiyinBody.moon];
-        const flags = {TaiyinObservedFlag.truePosition};
+        const bodies = [Body.sun, Body.moon];
+        const flags = {ObservedFlag.truePosition};
         final batch = taiyin.observed.batchAtUt1(bodies, ut1, flags: flags);
 
         expect(batch, hasLength(2));
@@ -94,17 +94,17 @@ void main() {
       test('throws with the failed target when any batch body fails', () {
         expect(
           () => taiyin.observed.batchAtUt1(
-            const [TaiyinBody.sun, TaiyinBody.mars],
+            const [Body.sun, Body.mars],
             ut1,
-            flags: {TaiyinObservedFlag.truePosition},
+            flags: {ObservedFlag.truePosition},
           ),
           throwsA(
-            isA<TaiyinException>()
+            isA<EphemerisError>()
                 .having((error) => error.status, 'status', isNot(0))
                 .having(
                   (error) => error.diagnostic?.targetId,
                   'failed target',
-                  TaiyinBody.mars.id,
+                  Body.mars.id,
                 )
                 .having(
                   (error) => error.diagnostics,
@@ -116,10 +116,10 @@ void main() {
       });
 
       test('covers UTC single and batch routes with precise time data', () {
-        const flags = {TaiyinObservedFlag.truePosition};
-        final single = taiyin.observed.atUtc(TaiyinBody.sun, utc, flags: flags);
+        const flags = {ObservedFlag.truePosition};
+        final single = taiyin.observed.atUtc(Body.sun, utc, flags: flags);
         final batch = taiyin.observed.batchAtUtc(
-          const [TaiyinBody.sun, TaiyinBody.moon],
+          const [Body.sun, Body.moon],
           utc,
           flags: flags,
         );
@@ -138,7 +138,7 @@ void main() {
 
       test('calculates topocentric horizontal coordinates and rates', () {
         taiyin.configuration.setObserverLocation(
-          const TaiyinObserverLocation(
+          const ObserverLocation(
             longitudeDegrees: 116.391,
             latitudeDegrees: 39.907,
             heightMeters: 50,
@@ -146,13 +146,13 @@ void main() {
         );
 
         final result = taiyin.observed.atUt1(
-          TaiyinBody.sun,
+          Body.sun,
           ut1,
           flags: {
-            TaiyinObservedFlag.speed,
-            TaiyinObservedFlag.topocentric,
-            TaiyinObservedFlag.horizontal,
-            TaiyinObservedFlag.truePosition,
+            ObservedFlag.speed,
+            ObservedFlag.topocentric,
+            ObservedFlag.horizontal,
+            ObservedFlag.truePosition,
           },
         );
 
@@ -170,23 +170,21 @@ void main() {
       test('supports atmosphere fallback and strict meteorology', () {
         taiyin.configuration
           ..setObserverLocation(
-            const TaiyinObserverLocation(
+            const ObserverLocation(
               longitudeDegrees: 0,
               latitudeDegrees: 0,
               heightMeters: 0,
             ),
           )
-          ..setAtmospherePolicy({
-            TaiyinAtmospherePolicyFlag.allowStandardFallback,
-          });
+          ..setAtmospherePolicy({AtmospherePolicyFlag.allowStandardFallback});
 
         final fallback = taiyin.observed.atUt1(
-          TaiyinBody.sun,
+          Body.sun,
           ut1,
           flags: {
-            TaiyinObservedFlag.topocentric,
-            TaiyinObservedFlag.refraction,
-            TaiyinObservedFlag.truePosition,
+            ObservedFlag.topocentric,
+            ObservedFlag.refraction,
+            ObservedFlag.truePosition,
           },
         );
 
@@ -200,22 +198,22 @@ void main() {
 
         expect(
           () => taiyin.observed.atUt1(
-            TaiyinBody.sun,
+            Body.sun,
             ut1,
             flags: {
-              TaiyinObservedFlag.topocentric,
-              TaiyinObservedFlag.refraction,
-              TaiyinObservedFlag.truePosition,
-              TaiyinObservedFlag.strictMeteorology,
+              ObservedFlag.topocentric,
+              ObservedFlag.refraction,
+              ObservedFlag.truePosition,
+              ObservedFlag.strictMeteorology,
             },
           ),
           throwsA(
-            isA<TaiyinException>()
+            isA<EphemerisError>()
                 .having((error) => error.status, 'status', isNot(0))
                 .having(
                   (error) => error.diagnostic?.targetId,
                   'diagnostic target',
-                  TaiyinBody.sun.id,
+                  Body.sun.id,
                 ),
           ),
         );
@@ -224,7 +222,7 @@ void main() {
       test('solar deflector skips self-deflection for the Sun', () {
         taiyin.configuration.useSolarDeflector();
 
-        final result = taiyin.observed.atUt1(TaiyinBody.sun, ut1);
+        final result = taiyin.observed.atUt1(Body.sun, ut1);
 
         expect(result.status, 0);
         expect(result.apparent.longitudeRadians.isFinite, isTrue);
@@ -233,27 +231,26 @@ void main() {
 
       test('rejects invalid bodies, batches, and flag dependencies', () {
         expect(
-          () => taiyin.observed.atUt1(TaiyinBody.earth, ut1),
+          () => taiyin.observed.atUt1(Body.earth, ut1),
           throwsArgumentError,
         );
         expect(
-          () =>
-              taiyin.observed.batchAtUt1(List.filled(11, TaiyinBody.sun), ut1),
+          () => taiyin.observed.batchAtUt1(List.filled(11, Body.sun), ut1),
           throwsArgumentError,
         );
         expect(
           () => taiyin.observed.atUt1(
-            TaiyinBody.sun,
+            Body.sun,
             ut1,
-            flags: {TaiyinObservedFlag.horizontal},
+            flags: {ObservedFlag.horizontal},
           ),
           throwsArgumentError,
         );
         expect(
           () => taiyin.observed.atUt1(
-            TaiyinBody.sun,
+            Body.sun,
             ut1,
-            flags: {TaiyinObservedFlag.refraction},
+            flags: {ObservedFlag.refraction},
           ),
           throwsArgumentError,
         );
@@ -270,17 +267,17 @@ void main() {
         taiyin.close();
         expect(
           () => taiyin.observed.atUt1(
-            TaiyinBody.sun,
+            Body.sun,
             ut1,
-            flags: {TaiyinObservedFlag.truePosition},
+            flags: {ObservedFlag.truePosition},
           ),
           throwsStateError,
         );
         expect(
           () => taiyin.observed.atUtc(
-            TaiyinBody.sun,
+            Body.sun,
             utc,
-            flags: {TaiyinObservedFlag.truePosition},
+            flags: {ObservedFlag.truePosition},
           ),
           throwsStateError,
         );

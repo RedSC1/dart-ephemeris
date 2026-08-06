@@ -52,7 +52,7 @@ part 'star/star_api.dart';
 part 'visibility/visibility_api.dart';
 
 /// A feature module reported by the loaded Taiyin native library.
-enum TaiyinCapability {
+enum Capability {
   runtime(1 << 0),
   time(1 << 1),
   position(1 << 2),
@@ -72,13 +72,13 @@ enum TaiyinCapability {
   bazi(taiyinBaziCapability),
   ganzhiCalendar(taiyinGanzhiCalendarCapability);
 
-  const TaiyinCapability(this.mask);
+  const Capability(this.mask);
 
   final int mask;
 }
 
-/// Broad category assigned to a Taiyin status code.
-enum TaiyinStatusCategory {
+/// Broad category assigned to an Ephemeris status code.
+enum StatusCategory {
   ok(0),
   generic(1),
   ephemeris(10),
@@ -89,23 +89,23 @@ enum TaiyinStatusCategory {
   runtime(60),
   unknown(999);
 
-  const TaiyinStatusCategory(this.id);
+  const StatusCategory(this.id);
 
   final int id;
 
-  static TaiyinStatusCategory fromId(int id) {
+  static StatusCategory fromId(int id) {
     return values.firstWhere((value) => value.id == id, orElse: () => unknown);
   }
 }
 
 /// A non-success status returned by the Taiyin C ABI.
-final class TaiyinException implements Exception {
-  TaiyinException(
+final class EphemerisError implements Exception {
+  EphemerisError(
     this.status,
     this.name,
     this.message, {
     this.diagnostic,
-    Iterable<TaiyinEphemerisDiagnostic> diagnostics = const [],
+    Iterable<EphemerisDiagnostic> diagnostics = const [],
   }) : diagnostics = List.unmodifiable(
          diagnostics.isEmpty && diagnostic != null ? [diagnostic] : diagnostics,
        );
@@ -115,28 +115,28 @@ final class TaiyinException implements Exception {
   final String message;
 
   /// Native route and coverage details for a failed ephemeris calculation.
-  final TaiyinEphemerisDiagnostic? diagnostic;
+  final EphemerisDiagnostic? diagnostic;
 
   /// Every native diagnostic available for the failed operation.
   ///
   /// Single-target failures contain [diagnostic]. Batch failures may contain
   /// several entries while [diagnostic] remains the primary first failure.
-  final List<TaiyinEphemerisDiagnostic> diagnostics;
+  final List<EphemerisDiagnostic> diagnostics;
 
   @override
-  String toString() => 'TaiyinException($status, $name): $message';
+  String toString() => 'EphemerisError($status, $name): $message';
 }
 
-/// One user-owned Taiyin calculation context.
+/// One user-owned Ephemeris calculation context.
 ///
 /// Call [close] when finished. A native finalizer is also attached as a safety
 /// net for contexts that are not closed explicitly.
 ///
-/// This object does not own or reconfigure the process-wide [Taiyin] runtime.
-/// Create it through [Taiyin.createContext], or use [attach] in a Dart
+/// This object does not own or reconfigure the process-wide [Ephemeris] runtime.
+/// Create it through [Ephemeris.createContext], or use [attach] in a Dart
 /// isolate after another isolate has initialized the runtime.
-final class TaiyinContext implements Finalizable {
-  TaiyinContext._(
+final class EphemerisContext implements Finalizable {
+  EphemerisContext._(
     this._library,
     this._bindings,
     this._context,
@@ -147,33 +147,33 @@ final class TaiyinContext implements Finalizable {
     try {
       _contextFinalizer.attach(this, _context.cast(), detach: this);
       finalizerAttached = true;
-      configuration = TaiyinContextConfiguration._(
+      configuration = ContextConfiguration._(
         _bindings,
         _context,
         _ensureOpen,
         (status) => _checkStatus(_bindings, status),
       );
-      time = TaiyinTime.internal(
+      time = Time.internal(
         _bindings,
         _context,
         _ensureOpen,
         (status) => _checkStatus(_bindings, status),
       );
-      astrology = TaiyinAstrologyApi._(
+      astrology = AstrologyApi._(
         _bindings,
         _context,
         _ensureOpen,
         (status, diagnostic) =>
             _checkStatus(_bindings, status, diagnostic: diagnostic),
       );
-      position = TaiyinPositionApi.internal(
+      position = PositionApi.internal(
         _bindings,
         _context,
         _ensureOpen,
         (status, diagnostic) =>
             _checkStatus(_bindings, status, diagnostic: diagnostic),
       );
-      observed = TaiyinObservedApi._(
+      observed = ObservedApi._(
         _bindings,
         _context,
         _ensureOpen,
@@ -184,63 +184,63 @@ final class TaiyinContext implements Finalizable {
           diagnostics: diagnostics,
         ),
       );
-      orbits = TaiyinOrbitalApi._(
+      orbits = OrbitalApi._(
         _bindings,
         _context,
         _ensureOpen,
         (status, diagnostic) =>
             _checkStatus(_bindings, status, diagnostic: diagnostic),
       );
-      phenomena = TaiyinPhenomenaApi._(
+      phenomena = PhenomenaApi._(
         _bindings,
         _context,
         _ensureOpen,
         (status, diagnostic) =>
             _checkStatus(_bindings, status, diagnostic: diagnostic),
       );
-      solarTime = TaiyinSolarTimeApi._(
+      solarTime = SolarTimeApi._(
         _bindings,
         _context,
         _ensureOpen,
         (status, diagnostic) =>
             _checkStatus(_bindings, status, diagnostic: diagnostic),
       );
-      visibility = TaiyinVisibilityApi._(
+      visibility = VisibilityApi._(
         _bindings,
         _context,
         _ensureOpen,
         (status, diagnostic) =>
             _checkStatus(_bindings, status, diagnostic: diagnostic),
       );
-      heliacal = TaiyinHeliacalApi._(
+      heliacal = HeliacalApi._(
         _bindings,
         _context,
         _ensureOpen,
         (status, diagnostic) =>
             _checkStatus(_bindings, status, diagnostic: diagnostic),
       );
-      events = TaiyinEventsApi._(
+      events = EventsApi._(
         _bindings,
         _context,
         _ensureOpen,
         (status, diagnostic) =>
             _checkStatus(_bindings, status, diagnostic: diagnostic),
       );
-      eclipses = TaiyinEclipseApi._(
+      eclipses = EclipseApi._(
         _bindings,
         _context,
         _ensureOpen,
         (status, diagnostic) =>
             _checkStatus(_bindings, status, diagnostic: diagnostic),
       );
-      occultation = TaiyinOccultationApi._(
+      occultation = OccultationApi._(
         _bindings,
         _context,
         _ensureOpen,
         (status, diagnostic) =>
             _checkStatus(_bindings, status, diagnostic: diagnostic),
       );
-      stars = TaiyinStarApi._(
+      stars = StarApi._(
         _bindings,
         _context,
         _ensureOpen,
@@ -252,7 +252,7 @@ final class TaiyinContext implements Finalizable {
         ),
         observed,
       );
-      ganzhi = TaiyinGanzhiApi._(_bindings, _nativeState.capabilities);
+      ganzhi = GanzhiApi._(_bindings, _nativeState.capabilities);
     } catch (_) {
       if (finalizerAttached) {
         _contextFinalizer.detach(this);
@@ -265,27 +265,27 @@ final class TaiyinContext implements Finalizable {
   /// Opens the native library and creates a context without initializing the
   /// process-wide runtime.
   ///
-  /// [Taiyin.open] must already have configured the runtime in this process.
+  /// [Ephemeris.open] must already have configured the runtime in this process.
   /// This constructor is intended for worker isolates that need an independent
   /// context while sharing the existing native runtime.
   ///
   /// The current C ABI does not expose an initialization-state query, so this
   /// precondition cannot be checked here. Calling [attach] first is unsupported
   /// and may report an ephemeris error only when a calculation is attempted.
-  factory TaiyinContext.attach({String? libraryPath}) {
-    return TaiyinContext.attachToDynamicLibrary(_openLibrary(libraryPath));
+  factory EphemerisContext.attach({String? libraryPath}) {
+    return EphemerisContext.attachToDynamicLibrary(_openLibrary(libraryPath));
   }
 
   /// Attaches a context to an already-loaded native library without
   /// reconfiguring the process-wide runtime.
-  factory TaiyinContext.attachToDynamicLibrary(DynamicLibrary library) {
+  factory EphemerisContext.attachToDynamicLibrary(DynamicLibrary library) {
     final state = _nativeLibraryStateFor(library);
-    return TaiyinContext._create(library, state);
+    return EphemerisContext._create(library, state);
   }
 
-  factory TaiyinContext._create(
+  factory EphemerisContext._create(
     DynamicLibrary library,
-    _TaiyinNativeLibraryState nativeState,
+    _NativeLibraryState nativeState,
   ) {
     final context = using((arena) {
       final output = arena<Pointer<taiyin_context>>();
@@ -295,7 +295,7 @@ final class TaiyinContext implements Finalizable {
       );
       return output.value;
     });
-    return TaiyinContext._(
+    return EphemerisContext._(
       library,
       nativeState.bindings,
       context,
@@ -308,41 +308,41 @@ final class TaiyinContext implements Finalizable {
   final TaiyinBindings _bindings;
   final Pointer<taiyin_context> _context;
   final NativeFinalizer _contextFinalizer;
-  final _TaiyinNativeLibraryState _nativeState;
-  late final TaiyinContextConfiguration configuration;
-  late final TaiyinTime time;
-  late final TaiyinAstrologyApi astrology;
-  late final TaiyinPositionApi position;
-  late final TaiyinObservedApi observed;
-  late final TaiyinOrbitalApi orbits;
-  late final TaiyinPhenomenaApi phenomena;
-  late final TaiyinSolarTimeApi solarTime;
-  late final TaiyinVisibilityApi visibility;
-  late final TaiyinHeliacalApi heliacal;
-  late final TaiyinEventsApi events;
-  late final TaiyinEclipseApi eclipses;
-  late final TaiyinOccultationApi occultation;
-  late final TaiyinStarApi stars;
-  late final TaiyinGanzhiApi ganzhi;
-  TaiyinChineseCalendarContext? _chineseCalendar;
+  final _NativeLibraryState _nativeState;
+  late final ContextConfiguration configuration;
+  late final Time time;
+  late final AstrologyApi astrology;
+  late final PositionApi position;
+  late final ObservedApi observed;
+  late final OrbitalApi orbits;
+  late final PhenomenaApi phenomena;
+  late final SolarTimeApi solarTime;
+  late final VisibilityApi visibility;
+  late final HeliacalApi heliacal;
+  late final EventsApi events;
+  late final EclipseApi eclipses;
+  late final OccultationApi occultation;
+  late final StarApi stars;
+  late final GanzhiApi ganzhi;
+  ChineseCalendarContext? _chineseCalendar;
 
   /// Every calendar context created from this context, tracked so closing the
   /// owner invalidates caller-created children that borrow its native state.
-  final Set<TaiyinChineseCalendarContext> _calendarChildren = {};
-  TaiyinBaziContext? _bazi;
+  final Set<ChineseCalendarContext> _calendarChildren = {};
+  BaziContext? _bazi;
   bool _closed = false;
 
   /// Creates an independent native context without reinitializing the runtime.
   ///
   /// Immutable cloned contexts may be used for concurrent calculations.
-  TaiyinContext clone() {
+  EphemerisContext clone() {
     _ensureOpen();
     final context = using((arena) {
       final output = arena<Pointer<taiyin_context>>();
       _checkStatus(_bindings, _bindings.taiyin_context_clone(_context, output));
       return output.value;
     });
-    return TaiyinContext._(
+    return EphemerisContext._(
       _library,
       _bindings,
       context,
@@ -356,7 +356,7 @@ final class TaiyinContext implements Finalizable {
   /// The first access creates and caches the native context; [close] releases
   /// it together with the owning context. A cache entry closed by the caller
   /// is replaced on the next access.
-  TaiyinChineseCalendarContext get chineseCalendar {
+  ChineseCalendarContext get chineseCalendar {
     final cached = _chineseCalendar;
     if (cached != null && !cached.isClosed) return cached;
     return _chineseCalendar = createChineseCalendar();
@@ -364,12 +364,12 @@ final class TaiyinContext implements Finalizable {
 
   /// Creates an independent Chinese-calendar context owned by the caller.
   ///
-  /// Call [TaiyinChineseCalendarContext.close] when it is no longer needed.
-  TaiyinChineseCalendarContext createChineseCalendar({
-    TaiyinChineseCalendarConfig config = const TaiyinChineseCalendarConfig(),
+  /// Call [ChineseCalendarContext.close] when it is no longer needed.
+  ChineseCalendarContext createChineseCalendar({
+    ChineseCalendarConfig config = const ChineseCalendarConfig(),
   }) {
     _ensureOpen();
-    final child = TaiyinChineseCalendarContext._create(
+    final child = ChineseCalendarContext._create(
       _nativeState,
       _bindings,
       _context,
@@ -385,7 +385,7 @@ final class TaiyinContext implements Finalizable {
   /// The first access creates and caches the native context; [close] releases
   /// it together with the owning context. A cache entry closed by the caller
   /// is replaced on the next access.
-  TaiyinBaziContext get bazi {
+  BaziContext get bazi {
     final cached = _bazi;
     if (cached != null && !cached.isClosed) return cached;
     return _bazi = createBazi();
@@ -393,28 +393,28 @@ final class TaiyinContext implements Finalizable {
 
   /// Creates an independent BaZi context owned by the caller.
   ///
-  /// Call [TaiyinBaziContext.close] when it is no longer needed.
-  TaiyinBaziContext createBazi({
-    TaiyinBaziContextConfig config = const TaiyinBaziContextConfig(),
+  /// Call [BaziContext.close] when it is no longer needed.
+  BaziContext createBazi({
+    BaziContextConfig config = const BaziContextConfig(),
   }) {
     _ensureOpen();
-    return TaiyinBaziContext._create(_nativeState, _bindings, config);
+    return BaziContext._create(_nativeState, _bindings, config);
   }
 
   /// Calculates a position at a TT Julian date.
-  TaiyinPosition positionTt(
-    TaiyinTarget body,
+  Position positionTt(
+    Target body,
     JulianDate<TtScale> julianDate, {
-    Set<TaiyinPositionFlag> flags = const {},
+    Set<PositionFlag> flags = const {},
   }) {
     return position.atTt(body, julianDate, flags: flags).value;
   }
 
   /// Calculates a position at a UT Julian date.
-  TaiyinPosition positionUt(
-    TaiyinTarget body,
+  Position positionUt(
+    Target body,
     JulianDate<Ut1Scale> julianDate, {
-    Set<TaiyinPositionFlag> flags = const {},
+    Set<PositionFlag> flags = const {},
   }) {
     return position.atUt1(body, julianDate, flags: flags).value;
   }
@@ -435,13 +435,13 @@ final class TaiyinContext implements Finalizable {
 
   void _ensureOpen() {
     if (_closed) {
-      throw StateError('This TaiyinContext has been closed.');
+      throw StateError('This EphemerisContext has been closed.');
     }
   }
 }
 
-final class _TaiyinNativeLibraryState {
-  _TaiyinNativeLibraryState(
+final class _NativeLibraryState {
+  _NativeLibraryState(
     this.bindings,
     this.contextFinalizer,
     this.chineseCalendarFinalizer,
@@ -454,11 +454,10 @@ final class _TaiyinNativeLibraryState {
   final NativeFinalizer chineseCalendarFinalizer;
   final int capabilities;
   final DynamicLibrary _library;
-  final Map<int, TaiyinCustomTargetRegistration> customTargetRegistrations = {};
-  final Map<int, TaiyinCustomAyanamshaRegistration>
-  customAyanamshaRegistrations = {};
-  final Map<int, TaiyinCustomHouseSystemRegistration>
-  customHouseSystemRegistrations = {};
+  final Map<int, CustomTargetRegistration> customTargetRegistrations = {};
+  final Map<int, CustomAyanamshaRegistration> customAyanamshaRegistrations = {};
+  final Map<int, CustomHouseSystemRegistration> customHouseSystemRegistrations =
+      {};
 
   NativeFinalizer? _baziFinalizer;
 
@@ -479,7 +478,7 @@ final class _TaiyinNativeLibraryState {
 // NativeFinalizer itself must stay reachable until its attachments have run.
 // Keying by the destroy symbol also reuses bindings when the same native module
 // is opened through more than one DynamicLibrary wrapper in this isolate.
-final Map<int, _TaiyinNativeLibraryState> _nativeLibraryStates = {};
+final Map<int, _NativeLibraryState> _nativeLibraryStates = {};
 
 DynamicLibrary _openLibrary(String? libraryPath) {
   final resolvedPath =
@@ -498,7 +497,7 @@ DynamicLibrary _openDefaultLibrary() {
   return DynamicLibrary.open('libtaiyin.so');
 }
 
-_TaiyinNativeLibraryState _nativeLibraryStateFor(DynamicLibrary library) {
+_NativeLibraryState _nativeLibraryStateFor(DynamicLibrary library) {
   final destroy = library.lookup<NativeFunction<Void Function(Pointer<Void>)>>(
     'taiyin_context_destroy',
   );
@@ -516,7 +515,7 @@ _TaiyinNativeLibraryState _nativeLibraryStateFor(DynamicLibrary library) {
         requiredSymbols: taiyinBaziSymbols,
       );
     }
-    return _TaiyinNativeLibraryState(
+    return _NativeLibraryState(
       bindings,
       NativeFinalizer(destroy),
       NativeFinalizer(
@@ -533,10 +532,10 @@ _TaiyinNativeLibraryState _nativeLibraryStateFor(DynamicLibrary library) {
 Never _throwStatus(
   TaiyinBindings bindings,
   int status, {
-  TaiyinEphemerisDiagnostic? diagnostic,
-  Iterable<TaiyinEphemerisDiagnostic> diagnostics = const [],
+  EphemerisDiagnostic? diagnostic,
+  Iterable<EphemerisDiagnostic> diagnostics = const [],
 }) {
-  throw TaiyinException(
+  throw EphemerisError(
     status,
     _readNativeString(bindings.taiyin_status_name(status)),
     _readNativeString(bindings.taiyin_status_message(status)),
@@ -548,8 +547,8 @@ Never _throwStatus(
 void _checkStatus(
   TaiyinBindings bindings,
   int status, {
-  TaiyinEphemerisDiagnostic? diagnostic,
-  Iterable<TaiyinEphemerisDiagnostic> diagnostics = const [],
+  EphemerisDiagnostic? diagnostic,
+  Iterable<EphemerisDiagnostic> diagnostics = const [],
 }) {
   if (status != 0) {
     _throwStatus(
@@ -568,7 +567,7 @@ String _readNativeString(Pointer<Char> value) {
 
 void _writeEphemerisDiagnostic(
   Pointer<taiyin_ephemeris_diagnostic> output,
-  TaiyinEphemerisDiagnostic value,
+  EphemerisDiagnostic value,
 ) {
   output.ref
     ..struct_size = sizeOf<taiyin_ephemeris_diagnostic>()
@@ -597,18 +596,18 @@ void _writeEphemerisDiagnostic(
     ..delta_t_seconds = value.deltaTSeconds;
 }
 
-TaiyinEphemerisDiagnostic _readEphemerisDiagnostic(
+EphemerisDiagnostic _readEphemerisDiagnostic(
   taiyin_ephemeris_diagnostic value,
 ) {
   final timeScaleFlags = {
     for (final flag in TimeScaleDiagnosticFlag.values)
       if ((value.time_scale_flags & flag.mask) != 0) flag,
   };
-  return TaiyinEphemerisDiagnostic(
+  return EphemerisDiagnostic(
     status: value.status,
     targetId: value.target_id,
     centerId: value.center_id,
-    frame: TaiyinApparentFrame.fromId(value.frame),
+    frame: ApparentFrame.fromId(value.frame),
     rawFrameId: value.frame,
     julianDateTdb: readJulianDate<TdbScale>(value.jd_tdb),
     candidateCount: value.candidate_count,

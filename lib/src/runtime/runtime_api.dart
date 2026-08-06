@@ -1,8 +1,8 @@
 part of '../taiyin.dart';
 
 /// Configuration for Taiyin's process-wide native runtime.
-final class TaiyinRuntimeOptions {
-  const TaiyinRuntimeOptions({
+final class RuntimeOptions {
+  const RuntimeOptions({
     this.dataRoot,
     this.sourcePaths = const [],
     this.eopPath,
@@ -28,38 +28,38 @@ final class TaiyinRuntimeOptions {
 /// [open] loads the native library and performs its internal default runtime
 /// setup. It does not create or own a user calculation context.
 ///
-/// Open this object before creating user [TaiyinContext] instances.
+/// Open this object before creating user [EphemerisContext] instances.
 /// Source-path, EOP-table, and lunar-limb mutations are setup-time operations;
 /// finish them before starting concurrent calculations.
 ///
 /// Every [open] or [fromDynamicLibrary] call currently reinitializes the
 /// process-wide native runtime. Call one of them once in the application's main
-/// isolate. Worker isolates must use [TaiyinContext.attach] instead.
-final class Taiyin {
-  Taiyin._(this._library, this._bindings, this._nativeState) {
-    starCatalog = TaiyinStarCatalog._(_bindings);
+/// isolate. Worker isolates must use [EphemerisContext.attach] instead.
+final class Ephemeris {
+  Ephemeris._(this._library, this._bindings, this._nativeState) {
+    starCatalog = StarCatalog._(_bindings);
   }
 
   final DynamicLibrary _library;
   final TaiyinBindings _bindings;
-  final _TaiyinNativeLibraryState _nativeState;
-  late final TaiyinStarCatalog starCatalog;
+  final _NativeLibraryState _nativeState;
+  late final StarCatalog starCatalog;
 
-  /// Opens Taiyin and performs process-wide native runtime setup.
-  factory Taiyin.open({
+  /// Opens Ephemeris and performs process-wide native runtime setup.
+  factory Ephemeris.open({
     String? libraryPath,
-    TaiyinRuntimeOptions options = const TaiyinRuntimeOptions(),
+    RuntimeOptions options = const RuntimeOptions(),
   }) {
-    return Taiyin.fromDynamicLibrary(
+    return Ephemeris.fromDynamicLibrary(
       _openLibrary(libraryPath),
       options: options,
     );
   }
 
-  /// Opens Taiyin from an already-loaded native library.
-  factory Taiyin.fromDynamicLibrary(
+  /// Opens Ephemeris from an already-loaded native library.
+  factory Ephemeris.fromDynamicLibrary(
     DynamicLibrary library, {
-    TaiyinRuntimeOptions options = const TaiyinRuntimeOptions(),
+    RuntimeOptions options = const RuntimeOptions(),
   }) {
     final state = _nativeLibraryStateFor(library);
     _initializeRuntime(
@@ -71,12 +71,12 @@ final class Taiyin {
         _closeCustomHouseSystemRegistrationsAfterNativeClear(state);
       },
     );
-    return Taiyin._(library, state.bindings, state);
+    return Ephemeris._(library, state.bindings, state);
   }
 
   /// Creates a new independent user calculation context.
-  TaiyinContext createContext() {
-    return TaiyinContext._create(_library, _nativeState);
+  EphemerisContext createContext() {
+    return EphemerisContext._create(_library, _nativeState);
   }
 
   /// The Taiyin C ABI version.
@@ -94,42 +94,42 @@ final class Taiyin {
   int get capabilities => _bindings.taiyin_get_capabilities();
 
   /// Native modules available in the loaded Taiyin library.
-  Set<TaiyinCapability> get availableCapabilities {
+  Set<Capability> get availableCapabilities {
     final mask = capabilities;
     return Set.unmodifiable({
-      for (final capability in TaiyinCapability.values)
+      for (final capability in Capability.values)
         if ((mask & capability.mask) != 0) capability,
     });
   }
 
-  bool hasCapability(TaiyinCapability capability) {
+  bool hasCapability(Capability capability) {
     return (capabilities & capability.mask) != 0;
   }
 
   /// Registers a process-wide custom target backed by Dart evaluators.
   ///
   /// [targetId] must be negative and may have only one active registration.
-  /// Keep the returned handle and call [TaiyinCustomTargetRegistration.close]
+  /// Keep the returned handle and call [CustomTargetRegistration.close]
   /// when the target is no longer needed.
   ///
   /// Evaluators may be invoked by calculations in worker isolates. Dart
   /// therefore requires the evaluator and everything it captures to be
   /// transitively immutable. Registration throws [ArgumentError] when that
   /// requirement is not met. Callback exceptions become
-  /// `TAIYIN_ERROR_INTERNAL`; throw [TaiyinCustomEvaluatorFailure] to return a
+  /// `TAIYIN_ERROR_INTERNAL`; throw [CustomEvaluatorFailure] to return a
   /// deliberate native failure status.
   ///
   /// Register and close custom targets from the long-lived main isolate.
   /// Registration changes must not overlap calculations in any isolate.
   ///
-  /// When [stateEvaluator] is omitted, Taiyin derives state vectors through
+  /// When [stateEvaluator] is omitted, Ephemeris derives state vectors through
   /// its native finite-difference fallback.
-  TaiyinCustomTargetRegistration registerCustomTarget(
+  CustomTargetRegistration registerCustomTarget(
     int targetId, {
-    required TaiyinCustomPositionEvaluator positionEvaluator,
-    TaiyinCustomStateEvaluator? stateEvaluator,
+    required CustomPositionEvaluator positionEvaluator,
+    CustomStateEvaluator? stateEvaluator,
   }) {
-    if (!hasCapability(TaiyinCapability.customTargets)) {
+    if (!hasCapability(Capability.customTargets)) {
       throw UnsupportedError(
         'The loaded Taiyin library does not support custom targets.',
       );
@@ -161,21 +161,21 @@ final class Taiyin {
   ///
   /// [modelId] must be at least 10000 and may have only one active Dart
   /// registration. Keep the returned handle and call
-  /// [TaiyinCustomAyanamshaRegistration.close] when it is no longer needed.
+  /// [CustomAyanamshaRegistration.close] when it is no longer needed.
   ///
   /// Evaluators may be invoked by calculations in worker isolates, so the
   /// evaluator and everything it captures must be transitively immutable.
   /// Callback exceptions become `TAIYIN_ERROR_INTERNAL`. Register and close
   /// models from the long-lived main isolate; those setup changes must not
-  /// overlap calculations in any isolate. Reopening Taiyin resets the native
+  /// overlap calculations in any isolate. Reopening Ephemeris resets the native
   /// runtime and clears C-API callbacks; close any handle still retained by a
   /// different isolate before discarding that isolate.
-  TaiyinCustomAyanamshaRegistration registerCustomAyanamshaModel(
+  CustomAyanamshaRegistration registerCustomAyanamshaModel(
     int modelId, {
-    required TaiyinCustomAyanamshaEvaluator evaluator,
-    TaiyinPrecessionModel? referencePrecessionModel,
+    required CustomAyanamshaEvaluator evaluator,
+    PrecessionModel? referencePrecessionModel,
   }) {
-    if (!hasCapability(TaiyinCapability.customAyanamsha)) {
+    if (!hasCapability(Capability.customAyanamsha)) {
       throw UnsupportedError(
         'The loaded Taiyin library does not support custom ayanamsha models.',
       );
@@ -191,9 +191,9 @@ final class Taiyin {
   /// Registers a process-wide custom house system backed by a Dart evaluator.
   ///
   /// [modelId] must be at least 10000 and may have only one active Dart
-  /// registration. [fallback] is used by Taiyin when the evaluator rejects a
+  /// registration. [fallback] is used by Ephemeris when the evaluator rejects a
   /// calculation; omit it to return the native evaluation failure instead.
-  /// Keep the returned handle and call [TaiyinCustomHouseSystemRegistration.close]
+  /// Keep the returned handle and call [CustomHouseSystemRegistration.close]
   /// when it is no longer needed.
   ///
   /// Evaluators may be invoked by calculations in worker isolates, so the
@@ -201,15 +201,15 @@ final class Taiyin {
   /// Register and close models from the long-lived main isolate; those setup
   /// changes must not overlap calculations in any isolate. A fallback model
   /// must be closed only after models that select it as their fallback are
-  /// closed. Reopening Taiyin resets the native runtime and clears C-API
+  /// closed. Reopening Ephemeris resets the native runtime and clears C-API
   /// callbacks; close any handle still retained by a different isolate before
   /// discarding that isolate.
-  TaiyinCustomHouseSystemRegistration registerCustomHouseSystemModel(
+  CustomHouseSystemRegistration registerCustomHouseSystemModel(
     int modelId, {
-    required TaiyinCustomHouseSystemEvaluator evaluator,
-    TaiyinHouseSystemModel? fallback,
+    required CustomHouseSystemEvaluator evaluator,
+    HouseSystemModel? fallback,
   }) {
-    if (!hasCapability(TaiyinCapability.customHouses)) {
+    if (!hasCapability(Capability.customHouses)) {
       throw UnsupportedError(
         'The loaded Taiyin library does not support custom house systems.',
       );
@@ -255,17 +255,15 @@ final class Taiyin {
   }
 
   /// Broad category for a native status code.
-  TaiyinStatusCategory statusCategory(int status) {
-    return TaiyinStatusCategory.fromId(
-      _bindings.taiyin_status_category_of(status),
-    );
+  StatusCategory statusCategory(int status) {
+    return StatusCategory.fromId(_bindings.taiyin_status_category_of(status));
   }
 
   /// Formats a structured native calculation diagnostic for logs or support.
   ///
   /// The result is the native library's stable, single-line representation.
   /// It is intended for humans rather than as a serialization format.
-  String formatEphemerisDiagnostic(TaiyinEphemerisDiagnostic diagnostic) {
+  String formatEphemerisDiagnostic(EphemerisDiagnostic diagnostic) {
     return using((arena) {
       final nativeDiagnostic = arena<taiyin_ephemeris_diagnostic>();
       _writeEphemerisDiagnostic(nativeDiagnostic, diagnostic);
@@ -302,11 +300,11 @@ final class Taiyin {
 
   /// Registers Taiyin's built-in node and Lilith targets for position routes.
   ///
-  /// After registration, use [TaiyinAstrologyTarget] with a context's
+  /// After registration, use [AstrologyTarget] with a context's
   /// position or state API. Calling this more than once is harmless. This is
   /// a setup-time operation and must not overlap calculations in any isolate.
   void registerBuiltinAstrologyTargets() {
-    if (!hasCapability(TaiyinCapability.astrology)) {
+    if (!hasCapability(Capability.astrology)) {
       throw UnsupportedError(
         'The loaded Taiyin library does not support astrology targets.',
       );
@@ -416,7 +414,7 @@ final class Taiyin {
 
 void _initializeRuntime(
   TaiyinBindings bindings,
-  TaiyinRuntimeOptions options, {
+  RuntimeOptions options, {
   void Function()? afterNativeInitializationAttempt,
 }) {
   using((arena) {

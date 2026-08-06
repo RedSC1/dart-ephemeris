@@ -50,8 +50,8 @@ final class LocalApparentSolarTime {
 }
 
 /// The equation of time and the scalar-native coordinates used to evaluate it.
-final class TaiyinEquationOfTime {
-  const TaiyinEquationOfTime({
+final class EquationOfTime {
+  const EquationOfTime({
     required this.ut1,
     required this.tt,
     required this.equationDays,

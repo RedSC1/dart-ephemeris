@@ -25,17 +25,17 @@ cmake --build build-c-api-release --target taiyin_c
 import 'package:taiyin/taiyin.dart';
 
 void main() {
-  final taiyin = Taiyin.open(
+  final ephemeris = Ephemeris.open(
     libraryPath: '../taiyin-ephemeris/build-c-api-release/libtaiyin.dylib',
   );
-  final context = taiyin.createContext();
+  final context = ephemeris.createContext();
   try {
     final moon = context.position.atTt(
-      TaiyinBody.moon,
+      Body.moon,
       JulianDate<TtScale>.fromDouble(2460409.0),
       flags: {
-        TaiyinPositionFlag.xyz,
-        TaiyinPositionFlag.speed,
+        PositionFlag.xyz,
+        PositionFlag.speed,
       },
     );
     print(moon.value.coordinates);
@@ -52,33 +52,33 @@ platform-standard loader name, or supplied through `TAIYIN_LIBRARY_PATH`.
 
 ## Runtime and release metadata
 
-Taiyin exposes its semantic version and major-release codename independently:
+Ephemeris exposes its semantic version and major-release codename independently:
 
 ```dart
-print(taiyin.libraryVersion);  // 1.0.0
-print(taiyin.libraryCodename); // Singularity
+print(ephemeris.libraryVersion);  // 1.0.0
+print(ephemeris.libraryCodename); // Singularity
 ```
 
-The `Taiyin` object represents the process-wide native engine. It manages
+The `Ephemeris` object represents the process-wide native engine. It manages
 ephemeris sources, Earth-orientation data, the lunar-limb model, and the
 ephemeris segment cache. Finish global setup before starting concurrent
 calculations:
 
 ```dart
-taiyin
+ephemeris
   ..addSourcePath('/path/to/ephemeris-data')
   ..loadBuiltinEopTable()
   ..clearEphemerisCache();
 
-print(taiyin.catalogSize);
-print(taiyin.cacheEntryCount);
+print(ephemeris.catalogSize);
+print(ephemeris.cacheEntryCount);
 ```
 
-`Taiyin.open()` hides the native runtime initialization step; ordinary callers
+`Ephemeris.open()` hides the native runtime initialization step; ordinary callers
 only open the engine. Call it once in the application's main isolate: every
 current `open()` call reinitializes the process-wide runtime. Worker isolates
-must use `TaiyinContext.attach()` instead. `taiyin.createContext()` creates an
-independent `TaiyinContext` for one user or calculation policy. Closing a
+must use `EphemerisContext.attach()` instead. `ephemeris.createContext()` creates an
+independent `EphemerisContext` for one user or calculation policy. Closing a
 context does not reset process-wide runtime data.
 
 ## Time values
@@ -150,7 +150,7 @@ print(scales.value.tdb);
 print(scales.diagnostic.route);
 ```
 
-`TaiyinTime` also exposes explicit UTC/TAI/TT/UT1/TDB conversions, Delta-T
+`Time` also exposes explicit UTC/TAI/TT/UT1/TDB conversions, Delta-T
 estimation, precise conversions with caller-supplied TAI−UTC and DUT1, and
 context policy/model configuration. Calendar conversion, UTC/TAI/TT/UT1/TDB
 conversion, and aggregate time-scale results all use Taiyin's split-Julian-Date
@@ -171,21 +171,21 @@ epoch).
 The automatic route prefers SPK, then OPM2, then Taiyin's built-in
 semi-analytical ephemeris before file-backed Kepler fallbacks. To select the
 built-in model explicitly, configure the context with
-`TaiyinRouteRule.semiAnalytic`. The model covers approximately calendar years
+`RouteRule.semiAnalytic`. The model covers approximately calendar years
 -3000 through +3000.
 
 For example:
 
 ```dart
 final state = context.position.stateAtTt(
-  TaiyinBody.moon,
+  Body.moon,
   JulianDate<TtScale>.fromDouble(2460409.0),
 );
 print(state.value.positionAu);
 print(state.diagnostic.frame);
 ```
 
-Single-target failures throw `TaiyinException` with its native `diagnostic`
+Single-target failures throw `EphemerisError` with its native `diagnostic`
 attached. Batch calls preserve one result per requested body when individual
 targets fail; inspect each `result.diagnostic.status` before consuming its
 position.
@@ -208,10 +208,10 @@ sidereal precession policy do not affect that path. `referencePlane` selects
 the ordinary ecliptic of date, fixed J2000 ecliptic, a fixed ecliptic at a
 typed TT/UT1 epoch, or the solar-system invariable plane.
 `meanEclipticAtEpoch` and `solarSystemInvariable` require
-`TaiyinSiderealReferenceEpoch.tt(...)` or `.ut1(...)`; `meanEclipticJ2000`
+`SiderealReferenceEpoch.tt(...)` or `.ut1(...)`; `meanEclipticJ2000`
 is fixed at J2000.0 and does not accept an epoch. Fixed and invariable planes
 are full 3-D rotations, not longitude offsets. Request
-`TaiyinPositionFlag.speed` to include rates. Time-based houses need an observer
+`PositionFlag.speed` to include rates. Time-based houses need an observer
 configured on the context, while `housesFromArmc` accepts
 explicit ARMC, latitude, and true obliquity. Returned house numbers are
 one-based. House cusps are a zero-indexed list of length 12: index `i` is the
@@ -227,37 +227,37 @@ represented with nullable distance fields.
 
 ```dart
 context.configuration.setObserverLocation(
-  const TaiyinObserverLocation(
+  const ObserverLocation(
     longitudeDegrees: 116.3833,
     latitudeDegrees: 39.9167,
   ),
 );
 
 final siderealMoon = context.astrology.siderealPositionAtTt(
-  TaiyinBody.moon,
+  Body.moon,
   JulianDate<TtScale>.fromDouble(2460409.0),
-  ayanamsha: TaiyinAyanamsha.lahiri,
+  ayanamsha: Ayanamsha.lahiri,
 );
 final fixedJ2000SiderealMoon = context.astrology.siderealCoordinatesAtTt(
-  TaiyinBody.moon,
+  Body.moon,
   JulianDate<TtScale>.fromDouble(2460409.0),
-  referencePlane: TaiyinSiderealReferencePlane.meanEclipticAtEpoch,
-  referenceEpoch: TaiyinSiderealReferenceEpoch.tt(
+  referencePlane: SiderealReferencePlane.meanEclipticAtEpoch,
+  referenceEpoch: SiderealReferenceEpoch.tt(
     JulianDate<TtScale>.fromDouble(2451545.0),
   ),
 );
 final siderealMoonRa = context.astrology.siderealCoordinatesAtTt(
-  TaiyinBody.moon,
+  Body.moon,
   JulianDate<TtScale>.fromDouble(2460409.0),
-  ayanamsha: TaiyinAyanamsha.lahiri,
+  ayanamsha: Ayanamsha.lahiri,
   flags: {
-    TaiyinPositionFlag.equatorial,
-    TaiyinPositionFlag.speed,
+    PositionFlag.equatorial,
+    PositionFlag.speed,
   },
 );
 final houses = context.astrology.housesAtUt1(
   JulianDate<Ut1Scale>.fromDouble(2460311.0),
-  system: TaiyinHouseSystem.placidus,
+  system: HouseSystem.placidus,
 );
 final moonHouse = context.astrology.housePositionOf(
   houses,
@@ -277,9 +277,9 @@ isolate is calculating.
 ```dart
 import 'dart:math' as math;
 
-double customAyanamsha(TaiyinCustomAyanamshaRequest request) => 0.123;
+double customAyanamsha(CustomAyanamshaRequest request) => 0.123;
 
-List<double> customCusps(TaiyinCustomHouseSystemRequest request) {
+List<double> customCusps(CustomHouseSystemRequest request) {
   final step = 2 * math.pi / 12;
   return [
     for (var i = 0; i < 12; i++)
@@ -287,14 +287,14 @@ List<double> customCusps(TaiyinCustomHouseSystemRequest request) {
   ];
 }
 
-final ayanamsha = taiyin.registerCustomAyanamshaModel(
+final ayanamsha = ephemeris.registerCustomAyanamshaModel(
   10001,
   evaluator: customAyanamsha,
 );
-final houses = taiyin.registerCustomHouseSystemModel(
+final houses = ephemeris.registerCustomHouseSystemModel(
   10001,
   evaluator: customCusps,
-  fallback: TaiyinHouseSystem.porphyry,
+  fallback: HouseSystem.porphyry,
 );
 try {
   final value = context.astrology.ayanamshaAtTt(
@@ -320,7 +320,7 @@ Custom negative target IDs can be backed by Dart evaluators. Register them once
 on the process-wide runtime before starting concurrent calculations:
 
 ```dart
-List<double> virtualPoint(TaiyinCustomTargetRequest request) => [
+List<double> virtualPoint(CustomTargetRequest request) => [
   1.0,
   2.0,
   3.0,
@@ -329,14 +329,14 @@ List<double> virtualPoint(TaiyinCustomTargetRequest request) => [
   0.0,
 ];
 
-final registration = taiyin.registerCustomTarget(
+final registration = ephemeris.registerCustomTarget(
   -200001,
   positionEvaluator: virtualPoint,
 );
 final result = context.position.atTt(
   registration.target,
   JulianDate<TtScale>.fromDouble(2460409.0),
-  flags: {TaiyinPositionFlag.xyz},
+  flags: {PositionFlag.xyz},
 );
 registration.close();
 ```
@@ -371,7 +371,7 @@ apparent-position, deflection, light-time, and eclipse configuration. Configure
 a context before using it concurrently:
 
 ```dart
-const beijing = TaiyinObserverLocation(
+const beijing = ObserverLocation(
   longitudeDegrees: 116.391,
   latitudeDegrees: 39.907,
   heightMeters: 50,
@@ -381,22 +381,22 @@ context.configuration
   ..setObserverLocation(beijing)
   ..setStandardAtmosphere()
   ..setAtmospherePolicy({
-    TaiyinAtmospherePolicyFlag.allowStandardFallback,
+    AtmospherePolicyFlag.allowStandardFallback,
   })
   ..setAstroModels(
-    const TaiyinAstroModelConfig(
-      precessionModel: TaiyinPrecessionModel.iau2006,
-      nutationModel: TaiyinNutationModel.iau2000A,
+    const AstroModelConfig(
+      precessionModel: PrecessionModel.iau2006,
+      nutationModel: NutationModel.iau2000A,
     ),
   )
   ..setApparentConfig(
-    TaiyinApparentConfig(
+    ApparentConfig(
       flags: const {
-        TaiyinApparentFlag.lightTime,
-        TaiyinApparentFlag.spherical,
-        TaiyinApparentFlag.aberration,
+        ApparentFlag.lightTime,
+        ApparentFlag.spherical,
+        ApparentFlag.aberration,
       },
-      outputFrame: TaiyinApparentFrame.trueEquatorOfDate,
+      outputFrame: ApparentFrame.trueEquatorOfDate,
     ),
   );
 ```
@@ -418,16 +418,16 @@ diagnostics, and optional horizontal and refracted coordinates:
 context.configuration
   ..setObserverLocation(beijing)
   ..setAtmospherePolicy({
-    TaiyinAtmospherePolicyFlag.allowStandardFallback,
+    AtmospherePolicyFlag.allowStandardFallback,
   });
 
 final observedSun = context.observed.atUtc(
-  TaiyinBody.sun,
+  Body.sun,
   AstroDateTime(2024, 4, 8, 18),
   flags: {
-    TaiyinObservedFlag.speed,
-    TaiyinObservedFlag.topocentric,
-    TaiyinObservedFlag.refraction,
+    ObservedFlag.speed,
+    ObservedFlag.topocentric,
+    ObservedFlag.refraction,
   },
 );
 print(observedSun.refractedHorizontal?.altitudeRadians);
@@ -448,7 +448,7 @@ refraction also require atmosphere data or a standard-atmosphere fallback.
 ```dart
 context.configuration
   ..setObserverLocation(
-    const TaiyinObserverLocation(
+    const ObserverLocation(
       longitudeDegrees: 116.3833,
       latitudeDegrees: 39.9167,
     ),
@@ -459,7 +459,7 @@ final start = JulianDate<Ut1Scale>.fromDouble(2460409.0);
 final sunrise = context.visibility.solarRiseSetAtUt1(
   start,
   start.add(const Duration(days: 1)),
-  event: TaiyinVisibilityEventKind.rise,
+  event: VisibilityEventKind.rise,
 );
 
 if (sunrise.value.coordinate case final coordinate?) {
@@ -470,7 +470,7 @@ if (sunrise.value.coordinate case final coordinate?) {
 ```
 
 Set `horizonAltitudeRadians` to use a custom geometric horizon. The default
-empty flags set means refraction; use `TaiyinVisibilityFlag.noRefraction` to
+empty flags set means refraction; use `VisibilityFlag.noRefraction` to
 disable it. `fixedDiscSize` is available for Sun and Moon only—physical planet
 and star searches intentionally reject it. Twilight uses
 `solarTwilightAtUt1`, while `solarRiseSetFastAtTt` and
@@ -492,38 +492,38 @@ process-wide catalog.
 ```dart
 context.configuration
   ..setGeocentricObserver(
-    observerId: TaiyinBody.earth.id,
-    centerId: TaiyinBody.earth.id,
+    observerId: Body.earth.id,
+    centerId: Body.earth.id,
   )
   ..setObserverLocation(
-    const TaiyinObserverLocation(
+    const ObserverLocation(
       longitudeDegrees: 116.3833,
       latitudeDegrees: 39.9167,
     ),
   )
   ..setAtmospherePolicy({
-    TaiyinAtmospherePolicyFlag.allowStandardFallback,
+    AtmospherePolicyFlag.allowStandardFallback,
   })
   ..useSolarDeflector()
   ..setApparentConfig(
-    const TaiyinApparentConfig(
+    const ApparentConfig(
       flags: {
-        TaiyinApparentFlag.spherical,
-        TaiyinApparentFlag.lightTime,
-        TaiyinApparentFlag.aberration,
-        TaiyinApparentFlag.gravitationalDeflection,
+        ApparentFlag.spherical,
+        ApparentFlag.lightTime,
+        ApparentFlag.aberration,
+        ApparentFlag.gravitationalDeflection,
       },
-      outputFrame: TaiyinApparentFrame.trueEclipticOfDate,
+      outputFrame: ApparentFrame.trueEclipticOfDate,
     ),
   )
-  ..setHeliacalVisibilityModel(TaiyinHeliacalVisibilityModel.schaefer1993);
+  ..setHeliacalVisibilityModel(HeliacalVisibilityModel.schaefer1993);
 
 final event = context.heliacal.nextBodyEventAtUt1(
-  TaiyinBody.venus,
+  Body.venus,
   JulianDate<Ut1Scale>.fromDouble(2460758.7),
-  event: TaiyinHeliacalEventKind.morningFirst,
+  event: HeliacalEventKind.morningFirst,
   maxSearchDays: 5,
-  conditions: const TaiyinHeliacalVisibilityConditions(
+  conditions: const HeliacalVisibilityConditions(
     extinctionMagnitudePerAirmass: 0.25,
   ),
 );
@@ -556,7 +556,7 @@ final event = context.occultation.nextLocalStarAtUt1(
 final visibility = context.occultation.localStarVisibilityAtUt1(
   'antares',
   event.value,
-  options: {TaiyinOccultationVisibilityOption.refraction},
+  options: {OccultationVisibilityOption.refraction},
 );
 
 print(event.value.firstContact);
@@ -570,8 +570,8 @@ Pass that same custom radius to `bodyWhereAtUt1` when deriving global paths.
 `starWhereAtUt1` and `bodyWhereAtUt1` expose the global maximum, center line,
 outer limits, and visible-region polygon as immutable lists capped by the
 native ABI's documented fixed capacities. Search type filters and the optional
-lunar-limb correction are `TaiyinOccultationSearchOption`s; the correction
-requires a global TLL1 lunar-limb model loaded through `Taiyin`.
+lunar-limb correction are `OccultationSearchOption`s; the correction
+requires a global TLL1 lunar-limb model loaded through `Ephemeris`.
 
 Occultation inputs and returned dates currently cross the C ABI as a scalar JD
 `double`, so they have the same roughly 40-microsecond present-epoch precision
@@ -587,16 +587,16 @@ typed `JulianDate` coordinates.
 ```dart
 final eclipse = context.eclipses.nextLunarAtUt1(
   JulianDate<Ut1Scale>.fromDouble(2460926.0),
-  kinds: {TaiyinEclipseKind.total},
-  options: {TaiyinLunarEclipseSearchOption.includeContacts},
+  kinds: {EclipseKind.total},
+  options: {LunarEclipseSearchOption.includeContacts},
 );
 final local = context.eclipses.localLunarVisibilityAtUt1(
   eclipse.value,
-  options: {TaiyinLocalLunarEclipseVisibilityOption.refraction},
+  options: {LocalLunarEclipseVisibilityOption.refraction},
 );
 
-print(eclipse.value.contacts[TaiyinLunarEclipseContact.greatest]);
-print(local.value.contacts[TaiyinLunarEclipseContact.greatest]);
+print(eclipse.value.contacts[LunarEclipseContact.greatest]);
+print(local.value.contacts[LunarEclipseContact.greatest]);
 ```
 
 An empty `kinds` filter accepts penumbral, partial, and total lunar eclipses.
@@ -609,7 +609,7 @@ refraction requires the usual atmosphere configuration or fallback policy.
 
 Use `excludePenumbral` to filter penumbral-only results, `backward` only for
 next-event searches, and `lunarLimbCorrection` only after loading a TLL1 lunar
-limb model through `Taiyin`. Eclipse inputs and outputs currently cross the C
+limb model through `Ephemeris`. Eclipse inputs and outputs currently cross the C
 ABI as scalar Julian-date doubles, with the same roughly 40-microsecond
 present-epoch precision boundary as other physical calculations.
 
@@ -623,19 +623,19 @@ the eclipse circumstances at that location.
 ```dart
 final global = context.eclipses.nextSolarAtUt1(
   JulianDate<Ut1Scale>.fromDouble(2460400.0),
-  kinds: {TaiyinEclipseKind.total},
-  options: {TaiyinSolarEclipseSearchOption.includeContacts},
+  kinds: {EclipseKind.total},
+  options: {SolarEclipseSearchOption.includeContacts},
 );
 final local = context.eclipses.nextLocalSolarAtUt1(
   JulianDate<Ut1Scale>.fromDouble(2460400.0),
-  kinds: {TaiyinEclipseKind.total},
+  kinds: {EclipseKind.total},
 );
 final geometry = context.eclipses.localSolarCircumstancesAtUt1(
   local.value.maximum!,
 );
 
-print(global.value.contacts[TaiyinSolarEclipseContact.greatest]);
-print(local.value.contacts[TaiyinLocalSolarEclipseContact.greatest]);
+print(global.value.contacts[SolarEclipseContact.greatest]);
+print(local.value.contacts[LocalSolarEclipseContact.greatest]);
 print(geometry.value.obscuration);
 ```
 
@@ -668,7 +668,7 @@ final phases = context.events.lunarPhaseCrossingsAtUt1(
 );
 
 final transit = context.events.nextSolarTransitAtUt1(
-  TaiyinBody.mercury,
+  Body.mercury,
   JulianDate<Ut1Scale>.fromDouble(2458799.0),
 );
 print(phases.value.map((date) => date.toDouble()));
@@ -677,10 +677,10 @@ print(transit.value.greatest);
 
 Pass ordinary coordinate-correction choices through `positionFlags`; each
 method rejects incompatible `xyz` and equatorial output requests before calling
-native code. `TaiyinEventSearchOption.reverse` is available only for the
+native code. `EventSearchOption.reverse` is available only for the
 native searches that support reverse lookup. Local solar-transit methods use an
 explicit observer argument and can request `refraction` or `noRefraction`
-(never both). The event targets use `TaiyinTarget`, so custom native target IDs
+(never both). The event targets use `Target`, so custom native target IDs
 remain usable where the corresponding C ABI permits them.
 
 All event inputs and returned coordinates cross the current C ABI as a single
@@ -725,7 +725,7 @@ parallax:
 
 ```dart
 final moonPhenomena = context.phenomena.atUt1(
-  TaiyinBody.moon,
+  Body.moon,
   JulianDate<Ut1Scale>.fromDouble(2460416.2916666665),
 );
 print(moonPhenomena.value.illuminatedFraction);
@@ -733,13 +733,13 @@ print(moonPhenomena.value.apparentMagnitude);
 print(moonPhenomena.value.geocentricHorizontalParallaxRadians);
 ```
 
-Set `origin: TaiyinPhenomenaOrigin.topocentric` to make observer-dependent
+Set `origin: PhenomenaOrigin.topocentric` to make observer-dependent
 phenomena reflect the observer configured on the context. Lunar horizontal
 parallax is explicitly exposed as `geocentricHorizontalParallaxRadians` and
 remains geocentric in either mode.
 
 Both modules attach the native ephemeris diagnostic to every successful result
-and throw `TaiyinException` with that diagnostic on native failure.
+and throw `EphemerisError` with that diagnostic on native failure.
 
 ## Osculating orbits and orbital events
 
@@ -750,19 +750,19 @@ EMB, and major planets or planet barycenters are Sun-centered.
 ```dart
 final start = JulianDate<Ut1Scale>.fromDouble(2460409.0);
 final orbit = context.orbits.osculatingAtUt1(
-  TaiyinBody.moon,
+  Body.moon,
   start,
 );
 final perigee = context.orbits.searchApsisFromUt1(
-  TaiyinBody.moon,
-  TaiyinApsisKind.pericenter,
+  Body.moon,
+  ApsisKind.pericenter,
   start,
 );
 final previousNode = context.orbits.searchPlaneNodeFromUt1(
-  TaiyinBody.moon,
-  TaiyinPlaneNodeKind.ascending,
+  Body.moon,
+  PlaneNodeKind.ascending,
   start,
-  direction: TaiyinOrbitalSearchDirection.reverse,
+  direction: OrbitalSearchDirection.reverse,
 );
 
 print(orbit.value.semiMajorAxisAu);
@@ -783,12 +783,12 @@ Fixed-star catalogs are process-wide resources. Load TSC1 catalogs from a file
 or bytes, or load editable TSF1 catalogs during application setup:
 
 ```dart
-taiyin.starCatalog.addTsc1(
+ephemeris.starCatalog.addTsc1(
   '/path/to/stars-fixed-traditional.tsc1',
 );
 
-print(taiyin.starCatalog.count);
-print(taiyin.starCatalog.magnitudeOf('spica'));
+print(ephemeris.starCatalog.count);
+print(ephemeris.starCatalog.magnitudeOf('spica'));
 ```
 
 The native runtime copies data passed to `addTsc1Bytes`, so the caller may
@@ -802,8 +802,8 @@ final spica = context.stars.atTt(
   'spica',
   JulianDate<TtScale>.fromDouble(2460409.0),
   flags: {
-    TaiyinPositionFlag.xyz,
-    TaiyinPositionFlag.speed,
+    PositionFlag.xyz,
+    PositionFlag.speed,
   },
 );
 
@@ -811,8 +811,8 @@ final observedSpica = context.stars.observedAtUt1(
   'spica',
   JulianDate<Ut1Scale>.fromDouble(2460409.0),
   flags: {
-    TaiyinObservedFlag.topocentric,
-    TaiyinObservedFlag.horizontal,
+    ObservedFlag.topocentric,
+    ObservedFlag.horizontal,
   },
 );
 ```
@@ -822,13 +822,13 @@ explicit Delta-T. Position batches retain one diagnostic per key, including
 partial failures. Observed-star batches throw if any star fails because the
 native C ABI does not return partial observed values. Failed position-batch
 entries contain NaN coordinates and rates. Batch exceptions expose every
-available native failure through `TaiyinException.diagnostics`.
+available native failure through `EphemerisError.diagnostics`.
 
 This package requires an ABI-5 native library that reports the
-`TaiyinCapability.splitTime` and `TaiyinCapability.chineseCalendar`
+`Capability.splitTime` and `Capability.chineseCalendar`
 capabilities and exposes the required runtime, star, solar-time, phenomena,
 Chinese-calendar, and Ganzhi-rule symbols. Incomplete ABI-5 builds are rejected
-during `Taiyin.open` or `TaiyinContext.attach` with a clear compatibility error
+during `Ephemeris.open` or `EphemerisContext.attach` with a clear compatibility error
 instead of failing later during a lazy symbol lookup.
 
 The Ganzhi extension (`TAIYIN_BUILD_GANZHI_CALENDAR_EXTENSION`) and the BaZi
@@ -838,18 +838,18 @@ and throw `UnsupportedError` when the loaded library was built without them, so
 a smaller extension-free library still loads and works for the core and
 Chinese-calendar modules.
 
-The native engine is process-wide, so call `Taiyin.open` once. Calling it again
+The native engine is process-wide, so call `Ephemeris.open` once. Calling it again
 currently replaces the global catalog, cache, EOP table, and lunar-limb model.
 Finish global configuration before starting concurrent calculations. Create
-separate contexts with `taiyin.createContext()` or `context.clone()`; every
+separate contexts with `ephemeris.createContext()` or `context.clone()`; every
 context owns and releases its native user state independently.
 
-A worker isolate must not receive a `TaiyinContext` through a `SendPort`.
+A worker isolate must not receive a `EphemerisContext` through a `SendPort`.
 Instead, send plain Dart inputs and let the worker attach a new context to the
 already-open process runtime:
 
 ```dart
-final workerContext = TaiyinContext.attach(libraryPath: libraryPath);
+final workerContext = EphemerisContext.attach(libraryPath: libraryPath);
 try {
   // Concurrent calculation using this isolate's own context.
 } finally {
@@ -867,7 +867,7 @@ caller-owned context:
 
 ```dart
 final lunar = context.chineseCalendar
-    .fromSolar(const TaiyinSolarDate(year: 2024, month: 2, day: 10));
+    .fromSolar(const SolarDate(year: 2024, month: 2, day: 10));
 print(lunar.value); // 2024-01-01 (甲辰正月初一)
 
 final year = context.chineseCalendar
@@ -891,24 +891,24 @@ final day = context.ganzhi.dayPillar(AstroDateTime(2024, 2, 10));
 
 // Requires TAIYIN_BUILD_BAZI_EXTENSION.
 final bazi = context.bazi;
-final chart = bazi.calcChart(pillars.value); // returns TaiyinBaziChart
+final chart = bazi.calcChart(pillars.value); // returns BaziChart
 final qiyun = bazi.calcQiyun(
   birthJdUt: JulianDate<Ut1Scale>.fromDouble(2460351.0),
   birthCivilTime: AstroDateTime(2024, 2, 10, 12),
   chart: chart,
-  gender: TaiyinBaziGender.male,
+  gender: BaziGender.male,
   calendar: context.chineseCalendar,
 );
 final dayun = bazi.fillDayun(
   birthCivilTime: AstroDateTime(2024, 2, 10, 12),
   chart: chart,
-  qiyun: qiyun.value, // calcQiyun returns TaiyinEphemerisResult
+  qiyun: qiyun.value, // calcQiyun returns EphemerisResult
   requestedCount: 5,
 );
 ```
 
 BaZi `calcQiyun` and `calcRenyuanSiling` additionally require a
-`TaiyinChineseCalendarContext`, which you pass explicitly.
+`ChineseCalendarContext`, which you pass explicitly.
 
 ## Regenerate bindings
 
@@ -948,7 +948,7 @@ surprising setup. For applications, bundle one native library per target:
 - macOS: `libtaiyin.dylib`
 - Linux/Android: `libtaiyin.so`
 - Windows: `taiyin-5.dll` (named by C ABI version)
-- iOS: statically link Taiyin and use `DynamicLibrary.process()`
+- iOS: statically link Ephemeris and use `DynamicLibrary.process()`
 
 A package intended for `pub.dev` should add a Dart build hook that builds or
 downloads the correct native asset. Keep that packaging concern separate from

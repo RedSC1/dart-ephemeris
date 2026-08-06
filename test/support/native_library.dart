@@ -6,8 +6,7 @@ import 'dart:io';
 /// calendar + Ganzhi + BaZi). Override with the `TAIYIN_TEST_LIBRARY`
 /// environment variable to test against a freshly built library.
 String get libraryPath =>
-    Platform.environment['TAIYIN_TEST_LIBRARY'] ??
-    'native/libtaiyin.dylib';
+    Platform.environment['TAIYIN_TEST_LIBRARY'] ?? 'native/libtaiyin.dylib';
 
 /// Whether [libraryPath] exists on disk.
 bool get nativeLibraryAvailable => File(libraryPath).existsSync();

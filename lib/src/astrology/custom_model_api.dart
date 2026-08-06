@@ -1,8 +1,8 @@
 part of '../taiyin.dart';
 
-/// Inputs supplied by Taiyin when evaluating a custom ayanamsha model.
-final class TaiyinCustomAyanamshaRequest {
-  const TaiyinCustomAyanamshaRequest._({
+/// Inputs supplied by Ephemeris when evaluating a custom ayanamsha model.
+final class CustomAyanamshaRequest {
+  const CustomAyanamshaRequest._({
     required this.julianDateTt,
     required this.rawFlags,
   });
@@ -18,24 +18,24 @@ final class TaiyinCustomAyanamshaRequest {
   final int rawFlags;
 
   /// Recognized native position flags supplied to the evaluator.
-  Set<TaiyinPositionFlag> get flags => Set.unmodifiable({
-    for (final flag in TaiyinPositionFlag.values)
+  Set<PositionFlag> get flags => Set.unmodifiable({
+    for (final flag in PositionFlag.values)
       if ((rawFlags & flag.mask) != 0) flag,
   });
 
-  bool hasFlag(TaiyinPositionFlag flag) => (rawFlags & flag.mask) != 0;
+  bool hasFlag(PositionFlag flag) => (rawFlags & flag.mask) != 0;
 }
 
 /// Calculates an ayanamsha in radians for a custom process-wide model.
 ///
-/// The returned value must be finite. Taiyin normalizes a successful result to
+/// The returned value must be finite. Ephemeris normalizes a successful result to
 /// `[0, 2π)` before publishing it to the requesting calculation.
-typedef TaiyinCustomAyanamshaEvaluator =
-    double Function(TaiyinCustomAyanamshaRequest request);
+typedef CustomAyanamshaEvaluator =
+    double Function(CustomAyanamshaRequest request);
 
-/// Inputs supplied by Taiyin when evaluating a custom house-system model.
-final class TaiyinCustomHouseSystemRequest {
-  const TaiyinCustomHouseSystemRequest._({
+/// Inputs supplied by Ephemeris when evaluating a custom house-system model.
+final class CustomHouseSystemRequest {
+  const CustomHouseSystemRequest._({
     required this.armcRadians,
     required this.observerLatitudeRadians,
     required this.trueObliquityRadians,
@@ -61,25 +61,25 @@ final class TaiyinCustomHouseSystemRequest {
 
 /// Calculates twelve zero-based cusp longitudes for a custom house system.
 ///
-/// The returned list must contain exactly twelve finite values. Taiyin applies
+/// The returned list must contain exactly twelve finite values. Ephemeris applies
 /// its normal cusp validation and fallback policy after this evaluator returns.
-typedef TaiyinCustomHouseSystemEvaluator =
-    List<double> Function(TaiyinCustomHouseSystemRequest request);
+typedef CustomHouseSystemEvaluator =
+    List<double> Function(CustomHouseSystemRequest request);
 
 /// Owns one process-wide Dart-backed custom ayanamsha registration.
 ///
 /// Call [close] before discarding the registration. Closing first removes the
 /// native callback pointer and only then releases the Dart callback.
-final class TaiyinCustomAyanamshaRegistration {
-  TaiyinCustomAyanamshaRegistration._(
+final class CustomAyanamshaRegistration {
+  CustomAyanamshaRegistration._(
     this.model,
     this._nativeState,
     this._callable,
     this._registrationToken,
   );
 
-  final TaiyinCustomAyanamshaModel model;
-  final _TaiyinNativeLibraryState _nativeState;
+  final CustomAyanamshaModel model;
+  final _NativeLibraryState _nativeState;
   final NativeCallable<taiyin_ayanamsha_evaluator_fnFunction> _callable;
   final int _registrationToken;
   bool _closed = false;
@@ -120,16 +120,16 @@ final class TaiyinCustomAyanamshaRegistration {
 ///
 /// Call [close] before discarding the registration. Closing first removes the
 /// native callback pointer and only then releases the Dart callback.
-final class TaiyinCustomHouseSystemRegistration {
-  TaiyinCustomHouseSystemRegistration._(
+final class CustomHouseSystemRegistration {
+  CustomHouseSystemRegistration._(
     this.model,
     this._nativeState,
     this._callable,
     this._registrationToken,
   );
 
-  final TaiyinCustomHouseSystemModel model;
-  final _TaiyinNativeLibraryState _nativeState;
+  final CustomHouseSystemModel model;
+  final _NativeLibraryState _nativeState;
   final NativeCallable<taiyin_house_system_evaluator_fnFunction> _callable;
   final int _registrationToken;
   bool _closed = false;
@@ -169,13 +169,13 @@ final class TaiyinCustomHouseSystemRegistration {
   }
 }
 
-TaiyinCustomAyanamshaRegistration _registerCustomAyanamshaModel(
-  _TaiyinNativeLibraryState nativeState,
+CustomAyanamshaRegistration _registerCustomAyanamshaModel(
+  _NativeLibraryState nativeState,
   int modelId,
-  TaiyinCustomAyanamshaEvaluator evaluator,
-  TaiyinPrecessionModel? referencePrecessionModel,
+  CustomAyanamshaEvaluator evaluator,
+  PrecessionModel? referencePrecessionModel,
 ) {
-  final model = TaiyinCustomAyanamshaModel(modelId);
+  final model = CustomAyanamshaModel(modelId);
   if (nativeState.customAyanamshaRegistrations.containsKey(model.id)) {
     throw ArgumentError.value(
       modelId,
@@ -212,7 +212,7 @@ TaiyinCustomAyanamshaRegistration _registerCustomAyanamshaModel(
     callable.close();
     throw StateError('Taiyin returned an invalid custom ayanamsha token.');
   }
-  final registration = TaiyinCustomAyanamshaRegistration._(
+  final registration = CustomAyanamshaRegistration._(
     model,
     nativeState,
     callable,
@@ -222,13 +222,13 @@ TaiyinCustomAyanamshaRegistration _registerCustomAyanamshaModel(
   return registration;
 }
 
-TaiyinCustomHouseSystemRegistration _registerCustomHouseSystemModel(
-  _TaiyinNativeLibraryState nativeState,
+CustomHouseSystemRegistration _registerCustomHouseSystemModel(
+  _NativeLibraryState nativeState,
   int modelId,
-  TaiyinCustomHouseSystemEvaluator evaluator,
-  TaiyinHouseSystemModel? fallback,
+  CustomHouseSystemEvaluator evaluator,
+  HouseSystemModel? fallback,
 ) {
-  final model = TaiyinCustomHouseSystemModel(modelId);
+  final model = CustomHouseSystemModel(modelId);
   if (nativeState.customHouseSystemRegistrations.containsKey(model.id)) {
     throw ArgumentError.value(
       modelId,
@@ -272,7 +272,7 @@ TaiyinCustomHouseSystemRegistration _registerCustomHouseSystemModel(
     callable.close();
     throw StateError('Taiyin returned an invalid custom house-system token.');
   }
-  final registration = TaiyinCustomHouseSystemRegistration._(
+  final registration = CustomHouseSystemRegistration._(
     model,
     nativeState,
     callable,
@@ -283,7 +283,7 @@ TaiyinCustomHouseSystemRegistration _registerCustomHouseSystemModel(
 }
 
 void _closeCustomAyanamshaRegistrationsAfterNativeClear(
-  _TaiyinNativeLibraryState nativeState,
+  _NativeLibraryState nativeState,
 ) {
   final registrations = nativeState.customAyanamshaRegistrations.values
       .toList();
@@ -294,7 +294,7 @@ void _closeCustomAyanamshaRegistrationsAfterNativeClear(
 }
 
 void _closeCustomHouseSystemRegistrationsAfterNativeClear(
-  _TaiyinNativeLibraryState nativeState,
+  _NativeLibraryState nativeState,
 ) {
   final registrations = nativeState.customHouseSystemRegistrations.values
       .toList();
@@ -305,7 +305,7 @@ void _closeCustomHouseSystemRegistrationsAfterNativeClear(
 }
 
 NativeCallable<taiyin_ayanamsha_evaluator_fnFunction>
-_createCustomAyanamshaCallable(TaiyinCustomAyanamshaEvaluator evaluator) {
+_createCustomAyanamshaCallable(CustomAyanamshaEvaluator evaluator) {
   final frozenEvaluator = evaluator;
   return NativeCallable<
     taiyin_ayanamsha_evaluator_fnFunction
@@ -320,7 +320,7 @@ _createCustomAyanamshaCallable(TaiyinCustomAyanamshaEvaluator evaluator) {
     output.value = double.nan;
     try {
       final value = frozenEvaluator(
-        TaiyinCustomAyanamshaRequest._(
+        CustomAyanamshaRequest._(
           julianDateTt: readJulianDate<TtScale>(jdTt.ref),
           rawFlags: rawFlags,
         ),
@@ -335,7 +335,7 @@ _createCustomAyanamshaCallable(TaiyinCustomAyanamshaEvaluator evaluator) {
 }
 
 NativeCallable<taiyin_house_system_evaluator_fnFunction>
-_createCustomHouseSystemCallable(TaiyinCustomHouseSystemEvaluator evaluator) {
+_createCustomHouseSystemCallable(CustomHouseSystemEvaluator evaluator) {
   final frozenEvaluator = evaluator;
   return NativeCallable<
     taiyin_house_system_evaluator_fnFunction
@@ -351,7 +351,7 @@ _createCustomHouseSystemCallable(TaiyinCustomHouseSystemEvaluator evaluator) {
     try {
       final native = data.ref;
       final cusps = frozenEvaluator(
-        TaiyinCustomHouseSystemRequest._(
+        CustomHouseSystemRequest._(
           armcRadians: native.armc_rad,
           observerLatitudeRadians: native.observer_latitude_rad,
           trueObliquityRadians: native.true_obliquity_rad,

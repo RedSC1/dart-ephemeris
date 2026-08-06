@@ -9,20 +9,20 @@ void main() {
   const majorBodiesPath = '$nativeDataRoot/ephemerides/opm2/major-bodies/600y';
   const lunarLimbPath = '$nativeDataRoot/lunar-limb/kaguya_lalt_16ppd.tll1';
   final lunarLimbAvailable = File(lunarLimbPath).existsSync();
-  const mazatlan = TaiyinObserverLocation(
+  const mazatlan = ObserverLocation(
     longitudeDegrees: -106.4,
     latitudeDegrees: 23.2,
     heightMeters: 0,
   );
 
-  group('TaiyinEclipseApi solar native integration', () {
-    late Taiyin runtime;
-    late TaiyinContext context;
+  group('EclipseApi solar native integration', () {
+    late Ephemeris runtime;
+    late EphemerisContext context;
 
     setUp(() {
-      runtime = Taiyin.open(
+      runtime = Ephemeris.open(
         libraryPath: libraryPath,
-        options: const TaiyinRuntimeOptions(
+        options: const RuntimeOptions(
           sourcePaths: [majorBodiesPath],
           loadPackagedData: false,
           loadBuiltinEop: false,
@@ -31,12 +31,12 @@ void main() {
       context = runtime.createContext();
       context.configuration
         ..setGeocentricObserver(
-          observerId: TaiyinBody.earth.id,
-          centerId: TaiyinBody.earth.id,
+          observerId: Body.earth.id,
+          centerId: Body.earth.id,
         )
         ..setObserverLocation(mazatlan)
         ..setStandardAtmosphere()
-        ..setRouteRule(TaiyinRouteRule.opm2);
+        ..setRouteRule(RouteRule.opm2);
     });
 
     tearDown(() {
@@ -49,50 +49,50 @@ void main() {
       () {
         final solvedUt = context.eclipses.solveSolarAtUt1(
           JulianDate<Ut1Scale>.fromDouble(2460409.25),
-          options: {TaiyinSolarEclipseSolveOption.includeContacts},
+          options: {SolarEclipseSolveOption.includeContacts},
         );
         final solvedTt = context.eclipses.solveSolarAtTt(
           JulianDate<TtScale>.fromDouble(2460409.263),
-          options: {TaiyinSolarEclipseSolveOption.includeContacts},
+          options: {SolarEclipseSolveOption.includeContacts},
         );
         final nextUt = context.eclipses.nextSolarAtUt1(
           JulianDate<Ut1Scale>.fromDouble(2460400.0),
-          kinds: {TaiyinEclipseKind.total},
-          options: {TaiyinSolarEclipseSearchOption.includeContacts},
+          kinds: {EclipseKind.total},
+          options: {SolarEclipseSearchOption.includeContacts},
         );
         final previousUt = context.eclipses.nextSolarAtUt1(
           JulianDate<Ut1Scale>.fromDouble(2460410.0),
-          kinds: {TaiyinEclipseKind.total},
+          kinds: {EclipseKind.total},
           options: {
-            TaiyinSolarEclipseSearchOption.includeContacts,
-            TaiyinSolarEclipseSearchOption.backward,
+            SolarEclipseSearchOption.includeContacts,
+            SolarEclipseSearchOption.backward,
           },
         );
         final nextTt = context.eclipses.nextSolarAtTt(
           JulianDate<TtScale>.fromDouble(2460409.263),
-          kinds: {TaiyinEclipseKind.total},
-          options: {TaiyinSolarEclipseSearchOption.includeContacts},
+          kinds: {EclipseKind.total},
+          options: {SolarEclipseSearchOption.includeContacts},
         );
         final rangeUt = context.eclipses.solarEclipsesAtUt1(
           JulianDate<Ut1Scale>.fromDouble(2460300.0),
           JulianDate<Ut1Scale>.fromDouble(2460800.0),
           maxResults: 6,
-          options: {TaiyinSolarEclipseSearchOption.includeContacts},
+          options: {SolarEclipseSearchOption.includeContacts},
         );
         final rangeTt = context.eclipses.solarEclipsesAtTt(
           JulianDate<TtScale>.fromDouble(2460300.0),
           JulianDate<TtScale>.fromDouble(2460800.0),
           maxResults: 6,
-          options: {TaiyinSolarEclipseSearchOption.includeContacts},
+          options: {SolarEclipseSearchOption.includeContacts},
         );
         final truePosition = context.eclipses.solveSolarAtUt1(
           JulianDate<Ut1Scale>.fromDouble(2460409.25),
-          positionFlags: {TaiyinPositionFlag.truePosition},
+          positionFlags: {PositionFlag.truePosition},
         );
 
-        expect(solvedUt.value.kinds, contains(TaiyinEclipseKind.total));
-        expect(solvedUt.value.kinds, contains(TaiyinEclipseKind.central));
-        expect(solvedTt.value.kinds, contains(TaiyinEclipseKind.total));
+        expect(solvedUt.value.kinds, contains(EclipseKind.total));
+        expect(solvedUt.value.kinds, contains(EclipseKind.central));
+        expect(solvedTt.value.kinds, contains(EclipseKind.total));
         expect(solvedUt.value.deltaTSeconds, greaterThan(50));
         expect(
           solvedUt.value.maximum!.toDouble(),
@@ -100,7 +100,7 @@ void main() {
         );
         expect(solvedUt.value.coreRadiusKilometers, greaterThan(0));
         expect(solvedUt.value.penumbralMarginKilometers, lessThan(0));
-        for (final contact in TaiyinSolarEclipseContact.values) {
+        for (final contact in SolarEclipseContact.values) {
           expect(solvedUt.value.contacts[contact], isNotNull);
         }
         expect(
@@ -111,22 +111,22 @@ void main() {
           previousUt.value.maximum!.toDouble(),
           closeTo(solvedUt.value.maximum!.toDouble(), 2 / 86400),
         );
-        expect(nextTt.value.kinds, contains(TaiyinEclipseKind.total));
+        expect(nextTt.value.kinds, contains(EclipseKind.total));
         expect(rangeUt.value, hasLength(3));
-        expect(rangeUt.value[1].kinds, contains(TaiyinEclipseKind.annular));
-        expect(rangeUt.value[1].kinds, contains(TaiyinEclipseKind.central));
-        expect(rangeUt.value[2].kinds, contains(TaiyinEclipseKind.partial));
-        expect(rangeUt.value[2].kinds, contains(TaiyinEclipseKind.noncentral));
+        expect(rangeUt.value[1].kinds, contains(EclipseKind.annular));
+        expect(rangeUt.value[1].kinds, contains(EclipseKind.central));
+        expect(rangeUt.value[2].kinds, contains(EclipseKind.partial));
+        expect(rangeUt.value[2].kinds, contains(EclipseKind.noncentral));
         expect(rangeTt.value, hasLength(3));
-        expect(rangeTt.value[0].kinds, contains(TaiyinEclipseKind.total));
-        expect(truePosition.value.kinds, contains(TaiyinEclipseKind.total));
+        expect(rangeTt.value[0].kinds, contains(EclipseKind.total));
+        expect(truePosition.value.kinds, contains(EclipseKind.total));
         expect(
           () => context.eclipses.solarEclipsesAtUt1(
             JulianDate<Ut1Scale>.fromDouble(2460300.0),
             JulianDate<Ut1Scale>.fromDouble(2460800.0),
             maxResults: 1,
           ),
-          throwsA(isA<TaiyinException>()),
+          throwsA(isA<EphemerisError>()),
         );
       },
       skip: !nativeLibraryAvailable,
@@ -143,11 +143,11 @@ void main() {
         );
         final nextLocalUt = context.eclipses.nextLocalSolarAtUt1(
           JulianDate<Ut1Scale>.fromDouble(2460400.0),
-          kinds: {TaiyinEclipseKind.total},
+          kinds: {EclipseKind.total},
         );
         final nextLocalTt = context.eclipses.nextLocalSolarAtTt(
           JulianDate<TtScale>.fromDouble(2460400.0),
-          kinds: {TaiyinEclipseKind.total},
+          kinds: {EclipseKind.total},
         );
         final circumstancesUt = context.eclipses.localSolarCircumstancesAtUt1(
           JulianDate<Ut1Scale>.fromDouble(2460409.256654905),
@@ -156,10 +156,10 @@ void main() {
           JulianDate<TtScale>.fromDouble(2460409.2575),
         );
 
-        expect(localUt.value.kinds, contains(TaiyinEclipseKind.total));
+        expect(localUt.value.kinds, contains(EclipseKind.total));
         expect(
           localUt.value.visibility,
-          contains(TaiyinLocalSolarEclipseVisibilityFlag.visibleAtObserver),
+          contains(LocalSolarEclipseVisibilityFlag.visibleAtObserver),
         );
         expect(localUt.value.magnitude, closeTo(1.057846292, 1e-4));
         expect(localUt.value.obscuration, closeTo(1, 1e-6));
@@ -171,16 +171,16 @@ void main() {
         expect(localUt.value.vertexAngleC1Degrees, isNotNull);
         expect(localUt.value.vertexAngleC4Degrees, isNotNull);
         expect(localUt.value.moonSunRadiusRatio, greaterThan(1));
-        for (final contact in TaiyinLocalSolarEclipseContact.values) {
+        for (final contact in LocalSolarEclipseContact.values) {
           expect(localUt.value.contacts[contact], isNotNull);
         }
-        expect(localTt.value.kinds, contains(TaiyinEclipseKind.total));
-        expect(nextLocalUt.value.kinds, contains(TaiyinEclipseKind.total));
+        expect(localTt.value.kinds, contains(EclipseKind.total));
+        expect(nextLocalUt.value.kinds, contains(EclipseKind.total));
         expect(
-          nextLocalUt.value.contacts[TaiyinLocalSolarEclipseContact.greatest],
+          nextLocalUt.value.contacts[LocalSolarEclipseContact.greatest],
           isNotNull,
         );
-        expect(nextLocalTt.value.kinds, contains(TaiyinEclipseKind.total));
+        expect(nextLocalTt.value.kinds, contains(EclipseKind.total));
         expect(circumstancesUt.value.deltaTSeconds, greaterThan(50));
         expect(circumstancesUt.value.magnitude, greaterThan(1));
         expect(circumstancesUt.value.obscuration, closeTo(1, 1e-6));
@@ -189,8 +189,8 @@ void main() {
 
         final previousLocalUt = context.eclipses.nextLocalSolarAtUt1(
           JulianDate<Ut1Scale>.fromDouble(2460410.0),
-          kinds: {TaiyinEclipseKind.total},
-          options: {TaiyinSolarEclipseSearchOption.backward},
+          kinds: {EclipseKind.total},
+          options: {SolarEclipseSearchOption.backward},
         );
         expect(
           previousLocalUt.value.maximum!.toDouble(),
@@ -198,7 +198,7 @@ void main() {
         );
 
         context.configuration.setObserverLocation(
-          const TaiyinObserverLocation(
+          const ObserverLocation(
             longitudeDegrees: -74.0,
             latitudeDegrees: 40.7,
             heightMeters: 10,
@@ -207,26 +207,26 @@ void main() {
         final newYork = context.eclipses.solveLocalSolarAtUt1(
           JulianDate<Ut1Scale>.fromDouble(2460409.262231433),
         );
-        expect(newYork.value.kinds, contains(TaiyinEclipseKind.partial));
+        expect(newYork.value.kinds, contains(EclipseKind.partial));
         expect(
-          newYork.value.contacts[TaiyinLocalSolarEclipseContact.partialBegin],
+          newYork.value.contacts[LocalSolarEclipseContact.partialBegin],
           isNotNull,
         );
         expect(
-          newYork.value.contacts[TaiyinLocalSolarEclipseContact.centralBegin],
+          newYork.value.contacts[LocalSolarEclipseContact.centralBegin],
           isNull,
         );
         expect(
-          newYork.value.contacts[TaiyinLocalSolarEclipseContact.centralEnd],
+          newYork.value.contacts[LocalSolarEclipseContact.centralEnd],
           isNull,
         );
         expect(
-          newYork.value.contacts[TaiyinLocalSolarEclipseContact.partialEnd],
+          newYork.value.contacts[LocalSolarEclipseContact.partialEnd],
           isNotNull,
         );
 
         context.configuration.setObserverLocation(
-          const TaiyinObserverLocation(
+          const ObserverLocation(
             longitudeDegrees: 2.3522,
             latitudeDegrees: 48.8566,
             heightMeters: 35,
@@ -237,7 +237,7 @@ void main() {
         );
         expect(paris.value.hasEclipse, isTrue);
         expect(paris.value.visibility, isEmpty);
-        for (final contact in TaiyinLocalSolarEclipseContact.values) {
+        for (final contact in LocalSolarEclipseContact.values) {
           expect(paris.value.contacts[contact], isNull);
         }
       },
@@ -251,30 +251,30 @@ void main() {
 
         final global = context.eclipses.solveSolarAtUt1(
           JulianDate<Ut1Scale>.fromDouble(2460409.25),
-          options: {TaiyinSolarEclipseSolveOption.lunarLimbCorrection},
+          options: {SolarEclipseSolveOption.lunarLimbCorrection},
         );
         final local = context.eclipses.solveLocalSolarAtUt1(
           JulianDate<Ut1Scale>.fromDouble(2460409.262231433),
-          options: {TaiyinSolarEclipseSolveOption.lunarLimbCorrection},
+          options: {SolarEclipseSolveOption.lunarLimbCorrection},
         );
         final nextLocal = context.eclipses.nextLocalSolarAtUt1(
           JulianDate<Ut1Scale>.fromDouble(2460400.0),
-          kinds: {TaiyinEclipseKind.total},
-          options: {TaiyinSolarEclipseSearchOption.lunarLimbCorrection},
+          kinds: {EclipseKind.total},
+          options: {SolarEclipseSearchOption.lunarLimbCorrection},
         );
         final route = context.eclipses.solarEclipseRouteRowAtUt1(
           JulianDate<Ut1Scale>.fromDouble(2460409.262039739),
-          options: {TaiyinSolarEclipseRouteOption.lunarLimbCorrection},
+          options: {SolarEclipseRouteOption.lunarLimbCorrection},
         );
 
         expect(runtime.hasLunarLimbModel, isTrue);
-        expect(global.value.kinds, contains(TaiyinEclipseKind.total));
-        expect(local.value.kinds, contains(TaiyinEclipseKind.total));
+        expect(global.value.kinds, contains(EclipseKind.total));
+        expect(local.value.kinds, contains(EclipseKind.total));
         expect(
-          local.value.contacts[TaiyinLocalSolarEclipseContact.centralBegin],
+          local.value.contacts[LocalSolarEclipseContact.centralBegin],
           isNotNull,
         );
-        expect(nextLocal.value.kinds, contains(TaiyinEclipseKind.total));
+        expect(nextLocal.value.kinds, contains(EclipseKind.total));
         expect(route.value.hasRoute, isTrue);
       },
       skip: !nativeLibraryAvailable || !lunarLimbAvailable,
@@ -303,7 +303,7 @@ void main() {
         );
         final evaluatedAtTwoHours = context.eclipses
             .evaluateSolarBesselianPolynomial(polynomial.value, 2);
-        const zeroElements = TaiyinSolarBesselianElements(
+        const zeroElements = SolarBesselianElements(
           tHours: 0,
           x: 0,
           y: 0,
@@ -318,7 +318,7 @@ void main() {
           tanF2: 0,
           gamma: 0,
         );
-        final normalizedPolynomial = TaiyinSolarBesselianPolynomial(
+        final normalizedPolynomial = SolarBesselianPolynomial(
           referenceEpoch: center,
           spanHours: 1,
           sampleStepHours: 1,
@@ -354,7 +354,7 @@ void main() {
         expect(polynomial.value.degree, 4);
         expect(
           polynomial.value.xCoefficients,
-          hasLength(TaiyinSolarBesselianPolynomial.coefficientCount),
+          hasLength(SolarBesselianPolynomial.coefficientCount),
         );
         expect(evaluated.x, closeTo(elements.value.x, 1e-8));
         expect(evaluated.y, closeTo(elements.value.y, 1e-8));
@@ -411,7 +411,7 @@ void main() {
         final rowUt = context.eclipses.solarEclipseRouteRowAtUt1(centerUt);
         final truePositionRow = context.eclipses.solarEclipseRouteRowAtUt1(
           centerUt,
-          positionFlags: {TaiyinPositionFlag.truePosition},
+          positionFlags: {PositionFlag.truePosition},
         );
         final rowTt = context.eclipses.solarEclipseRouteRowAtTt(centerTt);
         final routeUt = context.eclipses.solarEclipseRouteAtUt1(
@@ -473,7 +473,7 @@ void main() {
             stepMinutes: 10,
             maxRows: 1,
           ),
-          throwsA(isA<TaiyinException>()),
+          throwsA(isA<EphemerisError>()),
         );
         expect(
           () => context.eclipses.solarEclipseRouteAtUt1(
@@ -505,7 +505,7 @@ void main() {
         expect(
           () => context.eclipses.solarEclipseRouteRowAtUt1(
             centerUt,
-            positionFlags: {TaiyinPositionFlag.xyz},
+            positionFlags: {PositionFlag.xyz},
           ),
           throwsArgumentError,
         );
@@ -555,14 +555,14 @@ void main() {
         expect(
           () => context.eclipses.nextSolarAtUt1(
             JulianDate<Ut1Scale>.fromDouble(2460400.0),
-            kinds: {TaiyinEclipseKind.penumbral},
+            kinds: {EclipseKind.penumbral},
           ),
           throwsArgumentError,
         );
         expect(
           () => context.eclipses.nextSolarAtUt1(
             JulianDate<Ut1Scale>.fromDouble(2460400.0),
-            kinds: {TaiyinEclipseKind.central},
+            kinds: {EclipseKind.central},
           ),
           throwsArgumentError,
         );
@@ -585,14 +585,14 @@ void main() {
           () => context.eclipses.solarEclipsesAtUt1(
             JulianDate<Ut1Scale>.fromDouble(2460300.0),
             JulianDate<Ut1Scale>.fromDouble(2460800.0),
-            options: {TaiyinSolarEclipseSearchOption.backward},
+            options: {SolarEclipseSearchOption.backward},
           ),
           throwsArgumentError,
         );
         expect(
           () => context.eclipses.nextSolarAtUt1(
             JulianDate<Ut1Scale>.fromDouble(2460400.0),
-            positionFlags: {TaiyinPositionFlag.xyz},
+            positionFlags: {PositionFlag.xyz},
           ),
           throwsArgumentError,
         );
@@ -601,13 +601,13 @@ void main() {
           () => context.eclipses.solveLocalSolarAtUt1(
             JulianDate<Ut1Scale>.fromDouble(2460409.262231433),
           ),
-          throwsA(isA<TaiyinException>()),
+          throwsA(isA<EphemerisError>()),
         );
         expect(
           () => context.eclipses.localSolarCircumstancesAtUt1(
             JulianDate<Ut1Scale>.fromDouble(2460409.256654905),
           ),
-          throwsA(isA<TaiyinException>()),
+          throwsA(isA<EphemerisError>()),
         );
         context.close();
         expect(
@@ -671,19 +671,19 @@ void main() {
         expect(curvesTt.value, isNotEmpty);
         expect(
           curvesUt.value.map((point) => point.kind),
-          contains(TaiyinSolarEclipseRouteCurveKind.centerLine),
+          contains(SolarEclipseRouteCurveKind.centerLine),
         );
         expect(
           curvesUt.value.map((point) => point.kind),
-          contains(TaiyinSolarEclipseRouteCurveKind.penumbralNorth),
+          contains(SolarEclipseRouteCurveKind.penumbralNorth),
         );
         expect(
           curvesUt.value.map((point) => point.kind),
-          contains(TaiyinSolarEclipseRouteCurveKind.coreNorth),
+          contains(SolarEclipseRouteCurveKind.coreNorth),
         );
         expect(
           curvesUt.value.map((point) => point.kind),
-          contains(TaiyinSolarEclipseRouteCurveKind.halfMagnitudeNorth),
+          contains(SolarEclipseRouteCurveKind.halfMagnitudeNorth),
         );
         for (final point in curvesUt.value) {
           expect(point.latitudeDegrees.isFinite, isTrue);
@@ -694,7 +694,7 @@ void main() {
         expect(coreProductTt.value.points, isNotEmpty);
         expect(
           coreProduct.value.summary.flags,
-          contains(TaiyinSolarEclipseRouteProductFlag.hasCorePolygon),
+          contains(SolarEclipseRouteProductFlag.hasCorePolygon),
         );
         expect(
           coreProduct.value.summary.corePolygonPointCount,
@@ -702,11 +702,11 @@ void main() {
         );
         expect(
           coreProduct.value.points.first.kind,
-          TaiyinSolarEclipseRouteProductPointKind.coreNorth,
+          SolarEclipseRouteProductPointKind.coreNorth,
         );
         expect(
           coreProduct.value.points.last.kind,
-          TaiyinSolarEclipseRouteProductPointKind.polygonClose,
+          SolarEclipseRouteProductPointKind.polygonClose,
         );
         expect(
           coreProduct.value.points.last.latitudeDegrees,
@@ -721,15 +721,15 @@ void main() {
 
         expect(
           mapProduct.value.summary.flags,
-          contains(TaiyinSolarEclipseRouteProductFlag.hasCorePolygon),
+          contains(SolarEclipseRouteProductFlag.hasCorePolygon),
         );
         expect(
           mapProduct.value.summary.flags,
-          contains(TaiyinSolarEclipseRouteProductFlag.hasPenumbralPolygon),
+          contains(SolarEclipseRouteProductFlag.hasPenumbralPolygon),
         );
         expect(
           mapProduct.value.summary.flags,
-          contains(TaiyinSolarEclipseRouteProductFlag.hasHalfMagnitudePolygon),
+          contains(SolarEclipseRouteProductFlag.hasHalfMagnitudePolygon),
         );
         expect(
           mapProduct.value.summary.polygonPointCount,
@@ -749,7 +749,7 @@ void main() {
               .value
               .points[mapProductUt.value.summary.corePolygonPointCount]
               .kind,
-          TaiyinSolarEclipseRouteProductPointKind.penumbralNorth,
+          SolarEclipseRouteProductPointKind.penumbralNorth,
         );
         expect(
           mapProductUt
@@ -757,18 +757,18 @@ void main() {
               .points[mapProductUt.value.summary.corePolygonPointCount +
                   mapProductUt.value.summary.penumbralPolygonPointCount]
               .kind,
-          TaiyinSolarEclipseRouteProductPointKind.halfMagnitudeNorth,
+          SolarEclipseRouteProductPointKind.halfMagnitudeNorth,
         );
         expect(
           antimeridianMapProduct.value.summary.flags,
-          contains(TaiyinSolarEclipseRouteProductFlag.crossesAntimeridian),
+          contains(SolarEclipseRouteProductFlag.crossesAntimeridian),
         );
         expect(
           mapProduct
               .value
               .points[mapProduct.value.summary.corePolygonPointCount]
               .kind,
-          TaiyinSolarEclipseRouteProductPointKind.penumbralNorth,
+          SolarEclipseRouteProductPointKind.penumbralNorth,
         );
         expect(
           mapProduct
@@ -776,10 +776,10 @@ void main() {
               .points[mapProduct.value.summary.corePolygonPointCount +
                   mapProduct.value.summary.penumbralPolygonPointCount]
               .kind,
-          TaiyinSolarEclipseRouteProductPointKind.halfMagnitudeNorth,
+          SolarEclipseRouteProductPointKind.halfMagnitudeNorth,
         );
 
-        expect(boundaryUt.value.centerKinds, contains(TaiyinEclipseKind.total));
+        expect(boundaryUt.value.centerKinds, contains(EclipseKind.total));
         expect(boundaryUt.value.centerLongitudeDegrees, isNotNull);
         expect(boundaryUt.value.centerLatitudeDegrees, isNotNull);
         expect(boundaryUt.value.umbraNorthLongitudeDegrees, isNotNull);
@@ -787,7 +787,7 @@ void main() {
         expect(boundaryUt.value.penumbraNorthLongitudeDegrees, isNotNull);
         expect(boundaryUt.value.penumbraSouthLongitudeDegrees, isNotNull);
         expect(boundaryUt.value.umbraWidthKilometers, greaterThan(0));
-        expect(boundaryTt.value.centerKinds, contains(TaiyinEclipseKind.total));
+        expect(boundaryTt.value.centerKinds, contains(EclipseKind.total));
         expect(
           boundaryTt.value.centerLongitudeDegrees,
           closeTo(boundaryUt.value.centerLongitudeDegrees!, 0.002),
@@ -834,7 +834,7 @@ void main() {
         expect(
           () => context.eclipses.solarEclipseRouteMapProductAtUt1(
             centerUt,
-            positionFlags: {TaiyinPositionFlag.xyz},
+            positionFlags: {PositionFlag.xyz},
           ),
           throwsArgumentError,
         );

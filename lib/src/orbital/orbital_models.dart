@@ -3,76 +3,76 @@ import '../time/julian_date.dart';
 import '../time/time_scale.dart';
 
 /// The requested extremum of a body's distance from its physical primary.
-enum TaiyinApsisKind {
+enum ApsisKind {
   pericenter(0),
   apocenter(1);
 
-  const TaiyinApsisKind(this.id);
+  const ApsisKind(this.id);
 
   /// Stable value used by the Taiyin C ABI.
   final int id;
 
-  static TaiyinApsisKind fromId(int id) {
+  static ApsisKind fromId(int id) {
     return values.firstWhere(
       (value) => value.id == id,
-      orElse: () => throw StateError('Unknown Taiyin apsis kind: $id'),
+      orElse: () => throw StateError('Unknown Ephemeris apsis kind: $id'),
     );
   }
 }
 
 /// The requested crossing direction through an orbital reference plane.
-enum TaiyinPlaneNodeKind {
+enum PlaneNodeKind {
   ascending(0),
   descending(1);
 
-  const TaiyinPlaneNodeKind(this.id);
+  const PlaneNodeKind(this.id);
 
   /// Stable value used by the Taiyin C ABI.
   final int id;
 
-  static TaiyinPlaneNodeKind fromId(int id) {
+  static PlaneNodeKind fromId(int id) {
     return values.firstWhere(
       (value) => value.id == id,
-      orElse: () => throw StateError('Unknown Taiyin node kind: $id'),
+      orElse: () => throw StateError('Unknown Ephemeris node kind: $id'),
     );
   }
 }
 
 /// Direction in which an orbital-event search advances from its start.
-enum TaiyinOrbitalSearchDirection { forward, reverse }
+enum OrbitalSearchDirection { forward, reverse }
 
 /// Model used to construct instantaneous orbital reference points.
-enum TaiyinOrbitReferencePointModel {
+enum OrbitReferencePointModel {
   osculating(0),
   unknown(-1);
 
-  const TaiyinOrbitReferencePointModel(this.id);
+  const OrbitReferencePointModel(this.id);
 
   final int id;
 
-  static TaiyinOrbitReferencePointModel fromId(int id) {
+  static OrbitReferencePointModel fromId(int id) {
     return values.firstWhere((value) => value.id == id, orElse: () => unknown);
   }
 }
 
 /// One geometric point on an instantaneous two-body orbit.
-final class TaiyinOrbitReferencePoint {
-  const TaiyinOrbitReferencePoint({
+final class OrbitReferencePoint {
+  const OrbitReferencePoint({
     required this.positionAu,
     required this.longitudeRadians,
     required this.latitudeRadians,
     required this.distanceAu,
   });
 
-  final TaiyinVector3 positionAu;
+  final Vector3 positionAu;
   final double longitudeRadians;
   final double latitudeRadians;
   final double distanceAu;
 }
 
 /// Classical osculating elements relative to a body's fixed physical primary.
-final class TaiyinOsculatingOrbit {
-  const TaiyinOsculatingOrbit({
+final class OsculatingOrbit {
+  const OsculatingOrbit({
     required this.body,
     required this.center,
     required this.referenceFrame,
@@ -93,9 +93,9 @@ final class TaiyinOsculatingOrbit {
     required this.allowBarycenterApproximation,
   });
 
-  final TaiyinBody body;
-  final TaiyinBody center;
-  final TaiyinApparentFrame referenceFrame;
+  final Body body;
+  final Body center;
+  final ApparentFrame referenceFrame;
   final int rawReferenceFrameId;
   final double gravitationalParameterAu3PerDay2;
   final double semiMajorAxisAu;
@@ -117,8 +117,8 @@ final class TaiyinOsculatingOrbit {
 ///
 /// These are points on the orbit fitted at the requested epoch, not searches
 /// for future or past passages through those points.
-final class TaiyinOrbitReferencePoints {
-  const TaiyinOrbitReferencePoints({
+final class OrbitReferencePoints {
+  const OrbitReferencePoints({
     required this.body,
     required this.center,
     required this.referenceFrame,
@@ -133,23 +133,23 @@ final class TaiyinOrbitReferencePoints {
     required this.allowBarycenterApproximation,
   });
 
-  final TaiyinBody body;
-  final TaiyinBody center;
-  final TaiyinApparentFrame referenceFrame;
+  final Body body;
+  final Body center;
+  final ApparentFrame referenceFrame;
   final int rawReferenceFrameId;
-  final TaiyinOrbitReferencePointModel model;
+  final OrbitReferencePointModel model;
   final int rawModelId;
-  final TaiyinOrbitReferencePoint ascendingNode;
-  final TaiyinOrbitReferencePoint descendingNode;
-  final TaiyinOrbitReferencePoint periapsis;
-  final TaiyinOrbitReferencePoint apoapsis;
-  final TaiyinOrbitReferencePoint secondFocus;
+  final OrbitReferencePoint ascendingNode;
+  final OrbitReferencePoint descendingNode;
+  final OrbitReferencePoint periapsis;
+  final OrbitReferencePoint apoapsis;
+  final OrbitReferencePoint secondFocus;
   final bool allowBarycenterApproximation;
 }
 
 /// A searched pericenter or apocenter in a typed astronomical time scale.
-final class TaiyinApsisEvent<S extends TimeScale> {
-  const TaiyinApsisEvent({
+final class ApsisEvent<S extends TimeScale> {
+  const ApsisEvent({
     required this.body,
     required this.center,
     required this.kind,
@@ -162,9 +162,9 @@ final class TaiyinApsisEvent<S extends TimeScale> {
     required this.allowBarycenterApproximation,
   });
 
-  final TaiyinBody body;
-  final TaiyinBody center;
-  final TaiyinApsisKind kind;
+  final Body body;
+  final Body center;
+  final ApsisKind kind;
 
   /// Event coordinate returned by the native scalar-JD search.
   final JulianDate<S> coordinate;
@@ -173,13 +173,13 @@ final class TaiyinApsisEvent<S extends TimeScale> {
   final double radialVelocityAuPerDay;
   final int iterationCount;
   final int evaluationCount;
-  final TaiyinOrbitalSearchDirection direction;
+  final OrbitalSearchDirection direction;
   final bool allowBarycenterApproximation;
 }
 
 /// A searched crossing of a selected orbital reference plane.
-final class TaiyinPlaneNodeEvent<S extends TimeScale> {
-  const TaiyinPlaneNodeEvent({
+final class PlaneNodeEvent<S extends TimeScale> {
+  const PlaneNodeEvent({
     required this.body,
     required this.center,
     required this.referenceFrame,
@@ -194,11 +194,11 @@ final class TaiyinPlaneNodeEvent<S extends TimeScale> {
     required this.allowBarycenterApproximation,
   });
 
-  final TaiyinBody body;
-  final TaiyinBody center;
-  final TaiyinApparentFrame referenceFrame;
+  final Body body;
+  final Body center;
+  final ApparentFrame referenceFrame;
   final int rawReferenceFrameId;
-  final TaiyinPlaneNodeKind kind;
+  final PlaneNodeKind kind;
 
   /// Event coordinate returned by the native scalar-JD search.
   final JulianDate<S> coordinate;
@@ -210,6 +210,6 @@ final class TaiyinPlaneNodeEvent<S extends TimeScale> {
   final double distanceAu;
   final int iterationCount;
   final int evaluationCount;
-  final TaiyinOrbitalSearchDirection direction;
+  final OrbitalSearchDirection direction;
   final bool allowBarycenterApproximation;
 }

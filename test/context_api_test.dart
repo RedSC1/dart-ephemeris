@@ -4,10 +4,10 @@ import 'support/native_library.dart';
 
 void main() {
   group(
-    'TaiyinContextConfiguration native integration',
+    'ContextConfiguration native integration',
     () {
-      late TaiyinContext taiyin;
-      const beijing = TaiyinObserverLocation(
+      late EphemerisContext taiyin;
+      const beijing = ObserverLocation(
         longitudeDegrees: 116.391,
         latitudeDegrees: 39.907,
         heightMeters: 50,
@@ -15,15 +15,15 @@ void main() {
       final tt = JulianDate<TtScale>.fromDouble(2460409.0008);
       final ut1 = JulianDate<Ut1Scale>.fromDouble(2460409.0);
       final utc = JulianDate<UtcScale>.fromDouble(2458850.25);
-      const zero = TaiyinVector3(0, 0, 0);
-      const offset = TaiyinCartesianState(
+      const zero = Vector3(0, 0, 0);
+      const offset = CartesianState(
         positionAu: zero,
         velocityAuPerDay: zero,
         accelerationAuPerDay2: zero,
       );
 
       setUp(() {
-        taiyin = Taiyin.open(libraryPath: libraryPath).createContext();
+        taiyin = Ephemeris.open(libraryPath: libraryPath).createContext();
       });
 
       tearDown(() {
@@ -34,7 +34,7 @@ void main() {
         taiyin.configuration
           ..setObserverLocation(beijing)
           ..setAtmosphere(
-            const TaiyinAtmosphere(
+            const Atmosphere(
               pressureMillibars: 1008,
               temperatureCelsius: 23,
               relativeHumidityPercent: 45,
@@ -46,49 +46,42 @@ void main() {
             temperatureCelsius: 20,
           )
           ..setStandardAtmosphere()
-          ..setAtmospherePolicy({
-            TaiyinAtmospherePolicyFlag.allowStandardFallback,
-          })
+          ..setAtmospherePolicy({AtmospherePolicyFlag.allowStandardFallback})
           ..setMeteorologicalRangeKm(25)
           ..clearObserverLocation();
       });
 
       test('configures astronomy and apparent models', () {
         taiyin.configuration
-          ..setAstroModels(const TaiyinAstroModelConfig())
+          ..setAstroModels(const AstroModelConfig())
           ..setAstroModels(
-            const TaiyinAstroModelConfig(
-              precessionModel: TaiyinPrecessionModel.iau2006,
-              nutationModel: TaiyinNutationModel.iau2000A,
-              frameRoute: TaiyinFrameRoute.equinox,
+            const AstroModelConfig(
+              precessionModel: PrecessionModel.iau2006,
+              nutationModel: NutationModel.iau2000A,
+              frameRoute: FrameRoute.equinox,
             ),
           )
           ..setApparentConfig(
-            TaiyinApparentConfig(
-              flags: const {
-                TaiyinApparentFlag.lightTime,
-                TaiyinApparentFlag.spherical,
-              },
-              outputFrame: TaiyinApparentFrame.trueEquatorOfDate,
+            ApparentConfig(
+              flags: const {ApparentFlag.lightTime, ApparentFlag.spherical},
+              outputFrame: ApparentFrame.trueEquatorOfDate,
             ),
           )
           ..setCelestialPoleOffset(dxRadians: 1e-10, dyRadians: -2e-10)
-          ..setRefractionModel(TaiyinRefractionModel.sofa)
-          ..setHeliacalVisibilityModel(
-            TaiyinHeliacalVisibilityModel.schaefer1993,
-          )
+          ..setRefractionModel(RefractionModel.sofa)
+          ..setHeliacalVisibilityModel(HeliacalVisibilityModel.schaefer1993)
           ..setEclipseModels(
-            shadow: TaiyinEclipseShadowModel.nasaDanjon,
-            moonRadius: TaiyinEclipseMoonRadiusModel.almanac,
+            shadow: EclipseShadowModel.nasaDanjon,
+            moonRadius: EclipseMoonRadiusModel.almanac,
           );
       });
 
       test('configures observer modes and route selection', () {
         taiyin.configuration
-          ..setRouteRule(TaiyinRouteRule.automatic)
+          ..setRouteRule(RouteRule.automatic)
           ..setGeocentricObserver(
-            observerId: TaiyinBody.earth.id,
-            centerId: TaiyinBody.earth.id,
+            observerId: Body.earth.id,
+            centerId: Body.earth.id,
           )
           ..setTopocentricObserverOffset(offset)
           ..setSimpleTopocentricObserver(beijing, ut1: ut1, tt: tt)
@@ -100,7 +93,7 @@ void main() {
           ..useSolarDeflector()
           ..clearDeflectors()
           ..setDeflectors(const [
-            TaiyinApparentDeflector(bodyId: 10, schwarzschildRadiusAu: 1e-8),
+            ApparentDeflector(bodyId: 10, schwarzschildRadiusAu: 1e-8),
           ], solarDeflectorIndex: 0)
           ..setLightTimeIteration(maxIterations: 6, toleranceDays: 1e-12)
           ..enableShapiroDelay()
@@ -113,14 +106,14 @@ void main() {
           ..setObserverLocation(beijing)
           ..setTopocentricObserverOffset(offset)
           ..setDeflectors(const [
-            TaiyinApparentDeflector(bodyId: 10, schwarzschildRadiusAu: 1e-8),
+            ApparentDeflector(bodyId: 10, schwarzschildRadiusAu: 1e-8),
           ], solarDeflectorIndex: 0)
           ..setApparentConfig(
-            TaiyinApparentConfig(
+            ApparentConfig(
               flags: const {
-                TaiyinApparentFlag.lightTime,
-                TaiyinApparentFlag.spherical,
-                TaiyinApparentFlag.deflection,
+                ApparentFlag.lightTime,
+                ApparentFlag.spherical,
+                ApparentFlag.deflection,
               },
             ),
           );
@@ -130,16 +123,16 @@ void main() {
           taiyin.configuration.reset();
           expect(
             () => taiyin.position.atTt(
-              TaiyinBody.moon,
+              Body.moon,
               tt,
-              flags: {TaiyinPositionFlag.xyz, TaiyinPositionFlag.topocentric},
+              flags: {PositionFlag.xyz, PositionFlag.topocentric},
             ),
-            throwsA(isA<TaiyinException>()),
+            throwsA(isA<EphemerisError>()),
           );
           final result = clone.position.atTt(
-            TaiyinBody.moon,
+            Body.moon,
             tt,
-            flags: {TaiyinPositionFlag.xyz, TaiyinPositionFlag.topocentric},
+            flags: {PositionFlag.xyz, PositionFlag.topocentric},
           );
           expect(
             result.value.coordinates.every((value) => value.isFinite),
@@ -157,7 +150,7 @@ void main() {
           survivingClone.configuration.setStandardAtmosphere();
           expect(
             survivingClone.position
-                .atTt(TaiyinBody.sun, tt)
+                .atTt(Body.sun, tt)
                 .value
                 .values
                 .every((value) => value.isFinite),
@@ -176,7 +169,7 @@ void main() {
         taiyin.configuration.setStandardAtmosphere();
         expect(
           taiyin.position
-              .atTt(TaiyinBody.sun, tt)
+              .atTt(Body.sun, tt)
               .value
               .values
               .every((value) => value.isFinite),
@@ -187,16 +180,13 @@ void main() {
       test('rejects invalid Dart values before native calls', () {
         expect(
           () => taiyin.configuration.setObserverLocation(
-            const TaiyinObserverLocation(
-              longitudeDegrees: 0,
-              latitudeDegrees: 91,
-            ),
+            const ObserverLocation(longitudeDegrees: 0, latitudeDegrees: 91),
           ),
           throwsRangeError,
         );
         expect(
           () => taiyin.configuration.setAtmosphere(
-            const TaiyinAtmosphere(pressureMillibars: double.nan),
+            const Atmosphere(pressureMillibars: double.nan),
           ),
           throwsArgumentError,
         );
@@ -205,9 +195,8 @@ void main() {
           throwsRangeError,
         );
         expect(
-          () =>
-              taiyin.configuration.setRouteRule(const TaiyinRouteRule.raw(-1)),
-          throwsA(isA<TaiyinException>()),
+          () => taiyin.configuration.setRouteRule(const RouteRule.raw(-1)),
+          throwsA(isA<EphemerisError>()),
         );
         expect(
           () => taiyin.configuration.setGeocentricObserver(
@@ -218,17 +207,17 @@ void main() {
         );
         expect(
           () => taiyin.configuration.setTopocentricObserverOffset(
-            const TaiyinCartesianState(
-              positionAu: TaiyinVector3(double.nan, 0, 0),
-              velocityAuPerDay: TaiyinVector3(0, 0, 0),
-              accelerationAuPerDay2: TaiyinVector3(0, 0, 0),
+            const CartesianState(
+              positionAu: Vector3(double.nan, 0, 0),
+              velocityAuPerDay: Vector3(0, 0, 0),
+              accelerationAuPerDay2: Vector3(0, 0, 0),
             ),
           ),
           throwsArgumentError,
         );
         expect(
           () => taiyin.configuration.setDeflectors(const [
-            TaiyinApparentDeflector(bodyId: 10, schwarzschildRadiusAu: -1),
+            ApparentDeflector(bodyId: 10, schwarzschildRadiusAu: -1),
           ]),
           throwsRangeError,
         );
@@ -248,62 +237,47 @@ void main() {
         );
         expect(
           () => taiyin.configuration.setApparentConfig(
-            TaiyinApparentConfig(
-              flags: const {TaiyinApparentFlag.shapiroDelay},
-            ),
+            ApparentConfig(flags: const {ApparentFlag.shapiroDelay}),
           ),
           throwsArgumentError,
         );
       });
 
       test('exposes stable native model identifiers', () {
-        expect(TaiyinAtmospherePolicyFlag.values.map((value) => value.mask), [
-          1,
-        ]);
-        expect(TaiyinPrecessionModel.values.map((value) => value.id), [
-          0,
-          1,
-          2,
-          3,
-        ]);
-        expect(TaiyinNutationModel.values.map((value) => value.id), [0, 1]);
-        expect(TaiyinObliquityModel.values.map((value) => value.id), [0]);
-        expect(TaiyinFrameRoute.values.map((value) => value.id), [0, 1]);
+        expect(AtmospherePolicyFlag.values.map((value) => value.mask), [1]);
+        expect(PrecessionModel.values.map((value) => value.id), [0, 1, 2, 3]);
+        expect(NutationModel.values.map((value) => value.id), [0, 1]);
+        expect(ObliquityModel.values.map((value) => value.id), [0]);
+        expect(FrameRoute.values.map((value) => value.id), [0, 1]);
         expect(
           [
-            TaiyinRouteRule.automatic.id,
-            TaiyinRouteRule.opm2.id,
-            TaiyinRouteRule.spk.id,
-            TaiyinRouteRule.semiAnalytic.id,
+            RouteRule.automatic.id,
+            RouteRule.opm2.id,
+            RouteRule.spk.id,
+            RouteRule.semiAnalytic.id,
           ],
           [0, 1, 2, 3],
         );
-        expect(TaiyinRefractionModel.values.map((value) => value.id), [
+        expect(RefractionModel.values.map((value) => value.id), [
           0,
           1,
           2,
           3,
           4,
         ]);
-        expect(TaiyinHeliacalVisibilityModel.values.map((value) => value.id), [
-          0,
-          1,
-        ]);
-        expect(TaiyinAberrationModel.values.map((value) => value.id), [0]);
-        expect(TaiyinDeflectionModel.values.map((value) => value.id), [0, 1]);
-        expect(TaiyinLightTimeMethod.values.map((value) => value.id), [0]);
-        expect(TaiyinShapiroDelayModel.values.map((value) => value.id), [0]);
-        expect(TaiyinEclipseShadowModel.values.map((value) => value.id), [
+        expect(HeliacalVisibilityModel.values.map((value) => value.id), [0, 1]);
+        expect(AberrationModel.values.map((value) => value.id), [0]);
+        expect(DeflectionModel.values.map((value) => value.id), [0, 1]);
+        expect(LightTimeMethod.values.map((value) => value.id), [0]);
+        expect(ShapiroDelayModel.values.map((value) => value.id), [0]);
+        expect(EclipseShadowModel.values.map((value) => value.id), [
           0,
           1,
           2,
           3,
         ]);
-        expect(TaiyinEclipseMoonRadiusModel.values.map((value) => value.id), [
-          0,
-          1,
-        ]);
-        expect(TaiyinApparentFlag.values.map((value) => value.mask), [
+        expect(EclipseMoonRadiusModel.values.map((value) => value.id), [0, 1]);
+        expect(ApparentFlag.values.map((value) => value.mask), [
           1,
           4,
           8,
@@ -320,7 +294,7 @@ void main() {
           () => taiyin.configuration.reset(),
           () => taiyin.configuration.setObserverLocation(beijing),
           () => taiyin.configuration.clearObserverLocation(),
-          () => taiyin.configuration.setAtmosphere(const TaiyinAtmosphere()),
+          () => taiyin.configuration.setAtmosphere(const Atmosphere()),
           () => taiyin.configuration.setAtmospherePressureTemperature(
             pressureMillibars: 1013.25,
             temperatureCelsius: 15,
@@ -329,8 +303,8 @@ void main() {
           () => taiyin.configuration.setAtmospherePolicy(const {}),
           () => taiyin.configuration.setMeteorologicalRangeKm(25),
           () => taiyin.configuration.setGeocentricObserver(
-            observerId: TaiyinBody.earth.id,
-            centerId: TaiyinBody.sun.id,
+            observerId: Body.earth.id,
+            centerId: Body.sun.id,
           ),
           () => taiyin.configuration.setTopocentricObserverOffset(offset),
           () => taiyin.configuration.setSimpleTopocentricObserver(
@@ -343,20 +317,16 @@ void main() {
             utc: utc,
             tt: tt,
           ),
-          () => taiyin.configuration.setRouteRule(TaiyinRouteRule.automatic),
-          () => taiyin.configuration.setAstroModels(
-            const TaiyinAstroModelConfig(),
-          ),
-          () => taiyin.configuration.setApparentConfig(TaiyinApparentConfig()),
+          () => taiyin.configuration.setRouteRule(RouteRule.automatic),
+          () => taiyin.configuration.setAstroModels(const AstroModelConfig()),
+          () => taiyin.configuration.setApparentConfig(ApparentConfig()),
           () => taiyin.configuration.setCelestialPoleOffset(
             dxRadians: 0,
             dyRadians: 0,
           ),
-          () => taiyin.configuration.setRefractionModel(
-            TaiyinRefractionModel.sofa,
-          ),
+          () => taiyin.configuration.setRefractionModel(RefractionModel.sofa),
           () => taiyin.configuration.setHeliacalVisibilityModel(
-            TaiyinHeliacalVisibilityModel.schaefer1993,
+            HeliacalVisibilityModel.schaefer1993,
           ),
           () => taiyin.configuration.useSolarDeflector(),
           () => taiyin.configuration.clearDeflectors(),
@@ -368,8 +338,8 @@ void main() {
           () => taiyin.configuration.enableShapiroDelay(),
           () => taiyin.configuration.disableShapiroDelay(),
           () => taiyin.configuration.setEclipseModels(
-            shadow: TaiyinEclipseShadowModel.nasaDanjon,
-            moonRadius: TaiyinEclipseMoonRadiusModel.almanac,
+            shadow: EclipseShadowModel.nasaDanjon,
+            moonRadius: EclipseMoonRadiusModel.almanac,
           ),
         ];
 

@@ -1,11 +1,11 @@
 part of '../taiyin.dart';
 
 typedef _PhenomenaStatusChecker =
-    void Function(int status, TaiyinEphemerisDiagnostic? diagnostic);
+    void Function(int status, EphemerisDiagnostic? diagnostic);
 
 /// Physical and apparent phenomena for major solar-system bodies.
-final class TaiyinPhenomenaApi {
-  TaiyinPhenomenaApi._(
+final class PhenomenaApi {
+  PhenomenaApi._(
     this._bindings,
     this._context,
     this._ensureOpen,
@@ -21,13 +21,13 @@ final class TaiyinPhenomenaApi {
   ///
   /// [origin] makes the observer semantics explicit. A topocentric calculation
   /// uses the context's configured observer for observer-dependent values;
-  /// lunar [TaiyinBodyPhenomena.geocentricHorizontalParallaxRadians] remains
+  /// lunar [BodyPhenomena.geocentricHorizontalParallaxRadians] remains
   /// geocentric.
-  TaiyinEphemerisResult<TaiyinBodyPhenomena> atTt(
-    TaiyinBody body,
+  EphemerisResult<BodyPhenomena> atTt(
+    Body body,
     JulianDate<TtScale> tt, {
-    TaiyinPhenomenaOrigin origin = TaiyinPhenomenaOrigin.geocentric,
-    Set<TaiyinPositionFlag> flags = const {},
+    PhenomenaOrigin origin = PhenomenaOrigin.geocentric,
+    Set<PositionFlag> flags = const {},
   }) {
     _ensureOpen();
     return _calculate(
@@ -50,13 +50,13 @@ final class TaiyinPhenomenaApi {
   ///
   /// [origin] makes the observer semantics explicit. A topocentric calculation
   /// uses the context's configured observer for observer-dependent values;
-  /// lunar [TaiyinBodyPhenomena.geocentricHorizontalParallaxRadians] remains
+  /// lunar [BodyPhenomena.geocentricHorizontalParallaxRadians] remains
   /// geocentric.
-  TaiyinEphemerisResult<TaiyinBodyPhenomena> atUt1(
-    TaiyinBody body,
+  EphemerisResult<BodyPhenomena> atUt1(
+    Body body,
     JulianDate<Ut1Scale> ut1, {
-    TaiyinPhenomenaOrigin origin = TaiyinPhenomenaOrigin.geocentric,
-    Set<TaiyinPositionFlag> flags = const {},
+    PhenomenaOrigin origin = PhenomenaOrigin.geocentric,
+    Set<PositionFlag> flags = const {},
   }) {
     _ensureOpen();
     return _calculate(
@@ -75,10 +75,10 @@ final class TaiyinPhenomenaApi {
     );
   }
 
-  TaiyinEphemerisResult<TaiyinBodyPhenomena> _calculate(
-    TaiyinBody body,
-    TaiyinPhenomenaOrigin origin,
-    Set<TaiyinPositionFlag> flags,
+  EphemerisResult<BodyPhenomena> _calculate(
+    Body body,
+    PhenomenaOrigin origin,
+    Set<PositionFlag> flags,
     int Function(
       Arena arena,
       int,
@@ -88,17 +88,17 @@ final class TaiyinPhenomenaApi {
     calculate,
   ) {
     _requireSupportedBody(body);
-    if (flags.contains(TaiyinPositionFlag.topocentric)) {
+    if (flags.contains(PositionFlag.topocentric)) {
       throw ArgumentError.value(
         flags,
         'flags',
         'use the origin parameter for topocentric phenomena',
       );
     }
-    final frozenFlags = Set<TaiyinPositionFlag>.unmodifiable(flags);
+    final frozenFlags = Set<PositionFlag>.unmodifiable(flags);
     var mask = frozenFlags.fold(0, (value, flag) => value | flag.mask);
-    if (origin == TaiyinPhenomenaOrigin.topocentric) {
-      mask |= TaiyinPositionFlag.topocentric.mask;
+    if (origin == PhenomenaOrigin.topocentric) {
+      mask |= PositionFlag.topocentric.mask;
     }
     return using((arena) {
       final output = arena<taiyin_body_phenomena>();
@@ -110,8 +110,8 @@ final class TaiyinPhenomenaApi {
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
       final value = output.ref;
-      return TaiyinEphemerisResult(
-        value: TaiyinBodyPhenomena(
+      return EphemerisResult(
+        value: BodyPhenomena(
           body: body,
           phaseAngleRadians: value.phase_angle_rad,
           illuminatedFraction: value.illuminated_fraction,
@@ -130,18 +130,18 @@ final class TaiyinPhenomenaApi {
     });
   }
 
-  void _requireSupportedBody(TaiyinBody body) {
+  void _requireSupportedBody(Body body) {
     const supported = {
-      TaiyinBody.sun,
-      TaiyinBody.moon,
-      TaiyinBody.mercury,
-      TaiyinBody.venus,
-      TaiyinBody.mars,
-      TaiyinBody.jupiter,
-      TaiyinBody.saturn,
-      TaiyinBody.uranus,
-      TaiyinBody.neptune,
-      TaiyinBody.pluto,
+      Body.sun,
+      Body.moon,
+      Body.mercury,
+      Body.venus,
+      Body.mars,
+      Body.jupiter,
+      Body.saturn,
+      Body.uranus,
+      Body.neptune,
+      Body.pluto,
     };
     if (!supported.contains(body)) {
       throw ArgumentError.value(

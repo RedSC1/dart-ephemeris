@@ -1,7 +1,7 @@
 part of '../taiyin.dart';
 
 typedef _HeliacalStatusChecker =
-    void Function(int status, TaiyinEphemerisDiagnostic? diagnostic);
+    void Function(int status, EphemerisDiagnostic? diagnostic);
 typedef _HeliacalVisibilityCalculation =
     int Function(
       Arena arena,
@@ -20,10 +20,10 @@ typedef _HeliacalSearchCalculation =
 /// Heliacal visibility calculations and morning/evening event searches.
 ///
 /// Calculations use the observer location and heliacal-visibility model on the
-/// owning [TaiyinContext]. The native ABI accepts and returns split-JD UT1
+/// owning [EphemerisContext]. The native ABI accepts and returns split-JD UT1
 /// Julian dates, preserving full precision across the FFI boundary.
-final class TaiyinHeliacalApi {
-  TaiyinHeliacalApi._(
+final class HeliacalApi {
+  HeliacalApi._(
     this._bindings,
     this._context,
     this._ensureOpen,
@@ -40,13 +40,13 @@ final class TaiyinHeliacalApi {
   /// The Sun, Moon, Earth, and solar-system barycenter are not valid
   /// point-source heliacal targets. Other native body and custom-target IDs
   /// are passed through to the configured context.
-  TaiyinEphemerisResult<TaiyinHeliacalVisibilityResult> bodyAtUt1(
-    TaiyinTarget target,
+  EphemerisResult<HeliacalVisibilityResult> bodyAtUt1(
+    Target target,
     JulianDate<Ut1Scale> ut1, {
-    Set<TaiyinPositionFlag> positionFlags = const {},
-    Set<TaiyinHeliacalFlag> flags = const {},
-    TaiyinHeliacalVisibilityConditions conditions =
-        const TaiyinHeliacalVisibilityConditions(),
+    Set<PositionFlag> positionFlags = const {},
+    Set<HeliacalFlag> flags = const {},
+    HeliacalVisibilityConditions conditions =
+        const HeliacalVisibilityConditions(),
   }) {
     _ensureOpen();
     _requireBodyTarget(target);
@@ -71,13 +71,13 @@ final class TaiyinHeliacalApi {
   }
 
   /// Evaluates heliacal visibility of a catalogued star at [ut1].
-  TaiyinEphemerisResult<TaiyinHeliacalVisibilityResult> starAtUt1(
+  EphemerisResult<HeliacalVisibilityResult> starAtUt1(
     String starKey,
     JulianDate<Ut1Scale> ut1, {
-    Set<TaiyinPositionFlag> positionFlags = const {},
-    Set<TaiyinHeliacalFlag> flags = const {},
-    TaiyinHeliacalVisibilityConditions conditions =
-        const TaiyinHeliacalVisibilityConditions(),
+    Set<PositionFlag> positionFlags = const {},
+    Set<HeliacalFlag> flags = const {},
+    HeliacalVisibilityConditions conditions =
+        const HeliacalVisibilityConditions(),
   }) {
     _ensureOpen();
     _requireStarKey(starKey);
@@ -103,16 +103,15 @@ final class TaiyinHeliacalApi {
   }
 
   /// Finds the next heliacal [event] of a solar-system [target].
-  TaiyinEphemerisResult<TaiyinHeliacalVisibilitySearchResult>
-  nextBodyEventAtUt1(
-    TaiyinTarget target,
+  EphemerisResult<HeliacalVisibilitySearchResult> nextBodyEventAtUt1(
+    Target target,
     JulianDate<Ut1Scale> start, {
-    required TaiyinHeliacalEventKind event,
+    required HeliacalEventKind event,
     required double maxSearchDays,
-    Set<TaiyinPositionFlag> positionFlags = const {},
-    Set<TaiyinHeliacalFlag> flags = const {},
-    TaiyinHeliacalVisibilityConditions conditions =
-        const TaiyinHeliacalVisibilityConditions(),
+    Set<PositionFlag> positionFlags = const {},
+    Set<HeliacalFlag> flags = const {},
+    HeliacalVisibilityConditions conditions =
+        const HeliacalVisibilityConditions(),
   }) {
     _ensureOpen();
     _requireBodyTarget(target);
@@ -136,16 +135,15 @@ final class TaiyinHeliacalApi {
   }
 
   /// Finds the next heliacal [event] of a catalogued star.
-  TaiyinEphemerisResult<TaiyinHeliacalVisibilitySearchResult>
-  nextStarEventAtUt1(
+  EphemerisResult<HeliacalVisibilitySearchResult> nextStarEventAtUt1(
     String starKey,
     JulianDate<Ut1Scale> start, {
-    required TaiyinHeliacalEventKind event,
+    required HeliacalEventKind event,
     required double maxSearchDays,
-    Set<TaiyinPositionFlag> positionFlags = const {},
-    Set<TaiyinHeliacalFlag> flags = const {},
-    TaiyinHeliacalVisibilityConditions conditions =
-        const TaiyinHeliacalVisibilityConditions(),
+    Set<PositionFlag> positionFlags = const {},
+    Set<HeliacalFlag> flags = const {},
+    HeliacalVisibilityConditions conditions =
+        const HeliacalVisibilityConditions(),
   }) {
     _ensureOpen();
     _requireStarKey(starKey);
@@ -169,8 +167,8 @@ final class TaiyinHeliacalApi {
     });
   }
 
-  TaiyinEphemerisResult<TaiyinHeliacalVisibilityResult> _calculate(
-    TaiyinHeliacalVisibilityConditions conditions,
+  EphemerisResult<HeliacalVisibilityResult> _calculate(
+    HeliacalVisibilityConditions conditions,
     _HeliacalVisibilityCalculation calculate,
   ) {
     return using((arena) {
@@ -183,15 +181,15 @@ final class TaiyinHeliacalApi {
       final status = calculate(arena, nativeConditions, output, diagnostic);
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
-      return TaiyinEphemerisResult(
+      return EphemerisResult(
         value: _readVisibilityResult(output.ref),
         diagnostic: mappedDiagnostic,
       );
     });
   }
 
-  TaiyinEphemerisResult<TaiyinHeliacalVisibilitySearchResult> _search(
-    TaiyinHeliacalVisibilityConditions conditions,
+  EphemerisResult<HeliacalVisibilitySearchResult> _search(
+    HeliacalVisibilityConditions conditions,
     _HeliacalSearchCalculation calculate,
   ) {
     return using((arena) {
@@ -205,9 +203,9 @@ final class TaiyinHeliacalApi {
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
       final value = output.ref;
-      return TaiyinEphemerisResult(
-        value: TaiyinHeliacalVisibilitySearchResult(
-          event: TaiyinHeliacalEventKind.fromId(value.event_kind),
+      return EphemerisResult(
+        value: HeliacalVisibilitySearchResult(
+          event: HeliacalEventKind.fromId(value.event_kind),
           coordinate: readJulianDate<Ut1Scale>(value.jd_ut),
           windowStart: readJulianDate<Ut1Scale>(value.window_start_jd_ut),
           windowEnd: readJulianDate<Ut1Scale>(value.window_end_jd_ut),
@@ -223,7 +221,7 @@ final class TaiyinHeliacalApi {
 
   Pointer<taiyin_heliacal_visibility_conditions> _writeConditions(
     Arena arena,
-    TaiyinHeliacalVisibilityConditions conditions,
+    HeliacalVisibilityConditions conditions,
   ) {
     final native = arena<taiyin_heliacal_visibility_conditions>();
     _bindings.taiyin_heliacal_visibility_conditions_init(native);
@@ -239,10 +237,10 @@ final class TaiyinHeliacalApi {
     return native;
   }
 
-  TaiyinHeliacalVisibilityResult _readVisibilityResult(
+  HeliacalVisibilityResult _readVisibilityResult(
     taiyin_heliacal_visibility_result value,
   ) {
-    return TaiyinHeliacalVisibilityResult(
+    return HeliacalVisibilityResult(
       visible: value.visible != 0,
       modelId: value.model_id,
       extinctionModelId: value.extinction_model_id,
@@ -273,15 +271,12 @@ final class TaiyinHeliacalApi {
     );
   }
 
-  int _heliacalMask(
-    Set<TaiyinPositionFlag> positionFlags,
-    Set<TaiyinHeliacalFlag> flags,
-  ) {
+  int _heliacalMask(Set<PositionFlag> positionFlags, Set<HeliacalFlag> flags) {
     const allowedPositionFlags = {
-      TaiyinPositionFlag.truePosition,
-      TaiyinPositionFlag.noAberration,
-      TaiyinPositionFlag.noGravitationalDeflection,
-      TaiyinPositionFlag.astrometric,
+      PositionFlag.truePosition,
+      PositionFlag.noAberration,
+      PositionFlag.noGravitationalDeflection,
+      PositionFlag.astrometric,
     };
     final unsupported = positionFlags.difference(allowedPositionFlags);
     if (unsupported.isNotEmpty) {
@@ -296,7 +291,7 @@ final class TaiyinHeliacalApi {
         flags.fold(0, (mask, flag) => mask | flag.mask);
   }
 
-  void _validateConditions(TaiyinHeliacalVisibilityConditions conditions) {
+  void _validateConditions(HeliacalVisibilityConditions conditions) {
     _requirePositiveOptional(
       conditions.extinctionMagnitudePerAirmass,
       'conditions.extinctionMagnitudePerAirmass',
@@ -311,14 +306,14 @@ final class TaiyinHeliacalApi {
     );
   }
 
-  void _requireBodyTarget(TaiyinTarget target) {
+  void _requireBodyTarget(Target target) {
     const unsupported = {
-      TaiyinBody.sun,
-      TaiyinBody.moon,
-      TaiyinBody.earth,
-      TaiyinBody.solarSystemBarycenter,
+      Body.sun,
+      Body.moon,
+      Body.earth,
+      Body.solarSystemBarycenter,
     };
-    if (target is TaiyinBody && unsupported.contains(target)) {
+    if (target is Body && unsupported.contains(target)) {
       throw ArgumentError.value(
         target,
         'target',
@@ -341,8 +336,8 @@ final class TaiyinHeliacalApi {
     }
   }
 
-  void _requireEvent(TaiyinHeliacalEventKind event) {
-    if (event == TaiyinHeliacalEventKind.unknown) {
+  void _requireEvent(HeliacalEventKind event) {
+    if (event == HeliacalEventKind.unknown) {
       throw ArgumentError.value(event, 'event', 'must be a known event kind');
     }
   }

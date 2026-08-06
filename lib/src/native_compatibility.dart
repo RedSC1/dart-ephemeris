@@ -294,7 +294,7 @@ const Set<String> taiyinBaziSymbols = {
 /// be tested without loading a platform-specific dynamic library.
 ///
 /// The Dart package exposes its split-date time service and its Chinese
-/// calendar as required parts of every `TaiyinContext`, so it requires both
+/// calendar as required parts of every `EphemerisContext`, so it requires both
 /// the split-time and the Chinese-calendar capabilities. BaZi and the Ganzhi
 /// calendar are optional modules selected by their own capability bits.
 void validateTaiyinNativeCompatibility({
@@ -333,7 +333,7 @@ void validateTaiyinRequiredSymbols({
   ];
   if (missing.isNotEmpty) {
     throw StateError(
-      'The loaded Taiyin ABI-5 library is missing symbols required by this '
+      'The loaded Ephemeris ABI-5 library is missing symbols required by this '
       'package: ${missing.join(', ')}. Rebuild or update the native library.',
     );
   }

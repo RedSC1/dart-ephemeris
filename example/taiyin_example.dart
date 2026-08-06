@@ -1,6 +1,6 @@
 import 'package:taiyin/taiyin.dart';
 
-/// A small end-to-end tour of the Taiyin Dart API.
+/// A small end-to-end tour of the Ephemeris Dart API.
 ///
 /// Run with a path to a built ABI-5 Taiyin shared library:
 ///
@@ -8,23 +8,23 @@ import 'package:taiyin/taiyin.dart';
 /// dart run example/taiyin_example.dart ../taiyin-ephemeris/build-bazi/libtaiyin.dylib
 /// ```
 void main(List<String> arguments) {
-  final taiyin = Taiyin.open(libraryPath: arguments.firstOrNull);
-  final context = taiyin.createContext();
+  final ephemeris = Ephemeris.open(libraryPath: arguments.firstOrNull);
+  final context = ephemeris.createContext();
 
   try {
     // Core ephemeris: a Moon position and its native diagnostic.
     final moon = context.positionTt(
-      TaiyinBody.moon,
+      Body.moon,
       JulianDate<TtScale>.fromDouble(2460409.0),
-      flags: {TaiyinPositionFlag.xyz, TaiyinPositionFlag.speed},
+      flags: {PositionFlag.xyz, PositionFlag.speed},
     );
-    print('Taiyin ${taiyin.libraryVersion}, ABI ${taiyin.abiVersion}');
+    print('Taiyin ${ephemeris.libraryVersion}, ABI ${ephemeris.abiVersion}');
     print('Moon position: ${moon.coordinates}');
     print('Moon velocity: ${moon.rates}');
 
     // Chinese calendar: solar -> lunar conversion.
     final lunar = context.chineseCalendar.fromSolar(
-      const TaiyinSolarDate(year: 2024, month: 2, day: 10),
+      const SolarDate(year: 2024, month: 2, day: 10),
     );
     print(
       '2024-02-10 -> lunar ${lunar.value.year}-${lunar.value.month}-${lunar.value.day}',
@@ -38,7 +38,7 @@ void main(List<String> arguments) {
 
     // BaZi (requires a library built with the BaZi extension): four pillars,
     // the natal chart, and the first da-yun.
-    if (taiyin.hasCapability(TaiyinCapability.bazi)) {
+    if (ephemeris.hasCapability(Capability.bazi)) {
       final pillars = context.chineseCalendar.fourPillars(
         instantUtc: JulianDate<UtcScale>.fromDouble(2460351.0),
         virtualTime: AstroDateTime(2024, 2, 10, 12),
@@ -53,7 +53,7 @@ void main(List<String> arguments) {
         birthJdUt: JulianDate<Ut1Scale>.fromDouble(2460351.0),
         birthCivilTime: AstroDateTime(2024, 2, 10, 12),
         chart: chart,
-        gender: TaiyinBaziGender.male,
+        gender: BaziGender.male,
         calendar: context.chineseCalendar,
       );
       final dayun = context.bazi.fillDayun(
