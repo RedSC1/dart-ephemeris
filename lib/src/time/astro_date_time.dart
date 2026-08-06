@@ -20,7 +20,8 @@ import 'time_scale.dart';
 ///
 /// A civil value alone does not identify an instant. Its relationship to a
 /// standard Julian day is decided by the caller-supplied `utcOffsetHours`
-/// argument of [toJulianDay], [toJ2000], [toJulianDate], and [fromJulianDay]:
+/// argument of [toJulianDay], [toJ2000], [toJulianDate], [fromJulianDay],
+/// and [fromJulianDate]:
 ///
 /// * [toJulianDay] / [toJ2000] / [toJulianDate] convert a civil value
 ///   expressed in `utcOffsetHours` into the standard Julian day of the same
@@ -32,6 +33,11 @@ import 'time_scale.dart';
 /// [toJulianDate] and [fromJulianDate] operate on the split representation
 /// and keep full precision; the scalar [toJulianDay] / [fromJulianDay]
 /// merge through a `double` and are exact only to about 40 microseconds.
+///
+/// The uniform 86,400-second-day split cannot display a leap second
+/// (`second: 60`): such a value rolls over to the next day, and a non-zero
+/// `utcOffsetHours` applies the same rollover before the offset shift. Read
+/// leap-second instants as UTC (offset 0) if their exact display matters.
 ///
 /// An omitted offset (0) treats the civil fields as a UTC reading. The
 /// offset is a conversion argument, never a stored property: two civil
@@ -84,6 +90,9 @@ final class AstroDateTime implements Comparable<AstroDateTime> {
     double value, {
     double utcOffsetHours = 0,
   }) {
+    if (!value.isFinite) {
+      throw ArgumentError.value(value, 'value', 'must be finite');
+    }
     _requireFiniteOffset(utcOffsetHours);
     return AstroDateTime.fromJulianDate(
       JulianDate<TtScale>.fromDouble(value + utcOffsetHours / 24),
@@ -91,12 +100,19 @@ final class AstroDateTime implements Comparable<AstroDateTime> {
   }
 
   /// Converts a number of days relative to J2000.0.
-  factory AstroDateTime.fromJ2000(double days) {
+  ///
+  /// [days] is a standard Julian-day offset from J2000.0. [utcOffsetHours]
+  /// selects the civil timezone in which the result is displayed, exactly as
+  /// in [fromJulianDay]. See the Julian-day convention documented on this
+  /// class.
+  factory AstroDateTime.fromJ2000(double days, {double utcOffsetHours = 0}) {
     if (!days.isFinite) {
       throw ArgumentError.value(days, 'days', 'must be finite');
     }
+    _requireFiniteOffset(utcOffsetHours);
     return AstroDateTime.fromJulianDate(
       JulianDate<TtScale>.fromParts(j2000DayNumber, days),
+      utcOffsetHours: utcOffsetHours,
     );
   }
 

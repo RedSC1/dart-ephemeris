@@ -133,6 +133,9 @@ void main() {
 
     test('toJulianDate offset agrees with the scalar toJulianDay', () {
       final birth = AstroDateTime(2024, 2, 10, 12);
+      // The split path shifts then merges; the scalar path merges then
+      // subtracts. The two differ by a few microseconds (within the ~40us
+      // scalar resolution), so compare loosely rather than bit-for-bit.
       expect(
         birth.toJulianDate<UtcScale>(utcOffsetHours: 8).toDouble(),
         closeTo(birth.toJulianDay(utcOffsetHours: 8), 1e-9),
@@ -148,9 +151,75 @@ void main() {
       expect(beijing, AstroDateTime(2024, 2, 10, 12, 34, 56, 123456789));
     });
 
+    test('converts with negative and fractional zone offsets', () {
+      // 12:00 UTC-5 is 17:00 UTC; 12:00 UTC+5:45 (Nepal) is 06:15 UTC.
+      final localNoon = AstroDateTime(2024, 1, 1, 12);
+      expect(
+        localNoon.toJulianDay(utcOffsetHours: -5),
+        closeTo(AstroDateTime(2024, 1, 1, 17).toJulianDay(), 1e-8),
+      );
+      expect(
+        localNoon.toJulianDay(utcOffsetHours: 5.75),
+        closeTo(AstroDateTime(2024, 1, 1, 6, 15).toJulianDay(), 1e-8),
+      );
+    });
+
+    test('crosses date boundaries when shifting zones', () {
+      // 00:30 UTC shown on a UTC-5 clock reads 19:30 the previous day.
+      final western = AstroDateTime.fromJulianDate(
+        AstroDateTime(2024, 1, 1, 0, 30).toJulianDate<UtcScale>(),
+        utcOffsetHours: -5,
+      );
+      expect(western, AstroDateTime(2023, 12, 31, 19, 30));
+
+      // 23:30 UTC shown on a UTC+14 clock reads 13:30 the next day.
+      final eastern = AstroDateTime.fromJulianDate(
+        AstroDateTime(2024, 1, 1, 23, 30).toJulianDate<UtcScale>(),
+        utcOffsetHours: 14,
+      );
+      expect(eastern, AstroDateTime(2024, 1, 2, 13, 30));
+    });
+
+    test('absorbs a leap second before applying a zone offset', () {
+      // The uniform 86,400-second-day split cannot display second 60; the
+      // value rolls over to the next day before the offset is applied.
+      final utc = AstroDateTime.fromJulianDate(
+        AstroDateTime(
+          2024,
+          6,
+          30,
+          23,
+          59,
+          60,
+        ).toJulianDate<UtcScale>(utcOffsetHours: 8),
+      );
+      expect(utc, AstroDateTime(2024, 6, 30, 16, 0, 0));
+
+      final shownInBeijing = AstroDateTime.fromJulianDate(
+        AstroDateTime(2016, 12, 31, 23, 59, 60).toJulianDate<UtcScale>(),
+        utcOffsetHours: 8,
+      );
+      expect(shownInBeijing, AstroDateTime(2017, 1, 1, 8, 0, 0));
+    });
+
+    test('round-trips a zone offset through toJ2000 and fromJ2000', () {
+      final original = AstroDateTime(2024, 2, 10, 12, 34, 56, 123456789);
+      final roundTrip = AstroDateTime.fromJ2000(
+        original.toJ2000(utcOffsetHours: 8),
+        utcOffsetHours: 8,
+      );
+      // The J2000-relative form avoids the large-JD merge, so this stays
+      // well within the tolerance of the scalar path.
+      expect(roundTrip.secondsDifference(original).abs(), lessThan(1e-6));
+    });
+
     test('rejects a non-finite utcOffsetHours', () {
       expect(
         () => AstroDateTime(2026, 1, 1).toJulianDay(utcOffsetHours: double.nan),
+        throwsArgumentError,
+      );
+      expect(
+        () => AstroDateTime.fromJ2000(0, utcOffsetHours: double.nan),
         throwsArgumentError,
       );
       expect(

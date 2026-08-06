@@ -125,15 +125,17 @@ final backToBeijing = AstroDateTime.fromJulianDay(          // standard JD → 1
 ```
 
 `toJulianDay` / `toJ2000` / `toJulianDate` subtract the offset (civil →
-instant); `fromJulianDay` / `fromJulianDate` add it (instant → civil). An
-omitted offset treats the civil fields as a UTC reading. The offset is a
-**conversion argument, never a stored property** on `AstroDateTime` — which is
-why true-solar-time values (whose relationship to UTC depends on the date, not
-a fixed zone) fit the same type without lying. Feed `toJulianDate`'s split
-result straight to a calculation; the scalar `toJulianDay` merge is exact only
-to about 40 µs, so prefer the split form when nanosecond precision matters.
-For converting a UTC civil instant into other scales use the context-owned
-time service below.
+instant); `fromJulianDay` / `fromJulianDate` / `fromJ2000` add it (instant →
+civil). An omitted offset treats the civil fields as a UTC reading. The offset
+is a **conversion argument, never a stored property** on `AstroDateTime` —
+which is why true-solar-time values (whose relationship to UTC depends on the
+date, not a fixed zone) fit the same type without lying. Feed `toJulianDate`'s
+split result straight to a calculation; the scalar `toJulianDay` merge is exact
+only to about 40 µs, so prefer the split form when nanosecond precision
+matters. The uniform 86,400-second-day model cannot display a leap second
+(`second: 60`); a non-zero offset absorbs it before the shift, so read
+leap-second instants as UTC. For converting a UTC civil instant into other
+scales use the context-owned time service below.
 
 Use the context-owned time service for actual scale conversion:
 
