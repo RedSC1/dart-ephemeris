@@ -3,7 +3,7 @@ import 'package:test/test.dart';
 
 void main() {
   group('native compatibility', () {
-    test('accepts ABI 5 with split-time and Chinese-calendar support', () {
+    test('accepts ABI 6 with split-time and Chinese-calendar support', () {
       expect(
         () => validateTaiyinNativeCompatibility(
           abiVersion: taiyinSupportedAbiVersion,
@@ -15,7 +15,7 @@ void main() {
     });
 
     test(
-      'rejects an ABI-5 library without the Chinese-calendar capability',
+      'rejects an ABI-6 library without the Chinese-calendar capability',
       () {
         expect(
           () => validateTaiyinNativeCompatibility(
@@ -33,7 +33,7 @@ void main() {
       },
     );
 
-    test('rejects an ABI-5 library without split-time support', () {
+    test('rejects an ABI-6 library without split-time support', () {
       expect(
         () => validateTaiyinNativeCompatibility(
           abiVersion: taiyinSupportedAbiVersion,
@@ -49,7 +49,7 @@ void main() {
       );
     });
 
-    test('rejects the retired ABI-4 major first', () {
+    test('rejects the retired ABI-5 major first', () {
       expect(
         () => validateTaiyinNativeCompatibility(
           abiVersion: taiyinSupportedAbiVersion - 1,
@@ -66,10 +66,10 @@ void main() {
       );
     });
 
-    test('accepts a library that exposes every required ABI-5 symbol', () {
+    test('accepts a library that exposes every required ABI-6 symbol', () {
       expect(
         () => validateTaiyinRequiredSymbols(
-          providesSymbol: taiyinRequiredAbi5Symbols.contains,
+          providesSymbol: taiyinRequiredAbi6Symbols.contains,
         ),
         returnsNormally,
       );
@@ -162,7 +162,7 @@ void main() {
       },
     );
 
-    test('reports missing ABI-5 symbols before lazy lookup', () {
+    test('reports missing ABI-6 symbols before lazy lookup', () {
       expect(
         () => validateTaiyinRequiredSymbols(
           providesSymbol: (symbol) => symbol != 'taiyin_get_library_codename',

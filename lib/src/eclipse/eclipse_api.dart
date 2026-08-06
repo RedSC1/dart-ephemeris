@@ -124,7 +124,7 @@ const _solarRouteMaximumSampleCount = 4096;
 ///
 /// A local method samples the observer location already configured on the
 /// owning [EphemerisContext]. Native calculation coordinates and contact times
-/// cross the ABI-5 boundary as split Julian dates.
+/// cross the ABI-6 boundary as split Julian dates.
 final class EclipseApi {
   EclipseApi._(
     this._bindings,
@@ -767,6 +767,20 @@ final class EclipseApi {
     return options.fold(0, (mask, option) => mask | option.mask);
   }
 
+  int _localSolarVisibilityMask(
+    Set<LocalSolarEclipseVisibilityOption> options,
+  ) {
+    if (options.contains(LocalSolarEclipseVisibilityOption.strictMeteorology) &&
+        !options.contains(LocalSolarEclipseVisibilityOption.refraction)) {
+      throw ArgumentError.value(
+        options,
+        'visibilityOptions',
+        'strictMeteorology is valid only together with refraction',
+      );
+    }
+    return options.fold(0, (mask, option) => mask | option.mask);
+  }
+
   int _positionMask(Set<PositionFlag> positionFlags) {
     return positionFlags.fold(0, (mask, flag) => mask | flag.mask);
   }
@@ -1056,9 +1070,15 @@ final class EclipseApi {
     JulianDate<TtScale> estimate, {
     Set<PositionFlag> positionFlags = const {},
     Set<SolarEclipseSolveOption> options = const {},
+    Set<LocalSolarEclipseVisibilityOption> visibilityOptions = const {},
   }) {
     _ensureOpen();
-    final mask = _withSolarContacts(_solarSolveMask(positionFlags, options));
+    final mask = _withSolarContacts(
+      _mergeDisjointMasks(
+        _solarSolveMask(positionFlags, options),
+        _localSolarVisibilityMask(visibilityOptions),
+      ),
+    );
     return using((arena) {
       final estimateJd = writeJulianDate(arena, estimate);
       return _localSolarTt((output, diagnostic) {
@@ -1082,9 +1102,15 @@ final class EclipseApi {
     JulianDate<Ut1Scale> estimate, {
     Set<PositionFlag> positionFlags = const {},
     Set<SolarEclipseSolveOption> options = const {},
+    Set<LocalSolarEclipseVisibilityOption> visibilityOptions = const {},
   }) {
     _ensureOpen();
-    final mask = _withSolarContacts(_solarSolveMask(positionFlags, options));
+    final mask = _withSolarContacts(
+      _mergeDisjointMasks(
+        _solarSolveMask(positionFlags, options),
+        _localSolarVisibilityMask(visibilityOptions),
+      ),
+    );
     return using((arena) {
       final estimateJd = writeJulianDate(arena, estimate);
       return _localSolarUt((output, diagnostic) {
@@ -1110,10 +1136,14 @@ final class EclipseApi {
     Set<EclipseKind> kinds = const {},
     Set<PositionFlag> positionFlags = const {},
     Set<SolarEclipseSearchOption> options = const {},
+    Set<LocalSolarEclipseVisibilityOption> visibilityOptions = const {},
   }) {
     _ensureOpen();
     final mask = _withSolarContacts(
-      _solarSearchMask(positionFlags, options, allowBackward: true),
+      _mergeDisjointMasks(
+        _solarSearchMask(positionFlags, options, allowBackward: true),
+        _localSolarVisibilityMask(visibilityOptions),
+      ),
     );
     return using((arena) {
       final startJd = writeJulianDate(arena, start);
@@ -1141,10 +1171,14 @@ final class EclipseApi {
     Set<EclipseKind> kinds = const {},
     Set<PositionFlag> positionFlags = const {},
     Set<SolarEclipseSearchOption> options = const {},
+    Set<LocalSolarEclipseVisibilityOption> visibilityOptions = const {},
   }) {
     _ensureOpen();
     final mask = _withSolarContacts(
-      _solarSearchMask(positionFlags, options, allowBackward: true),
+      _mergeDisjointMasks(
+        _solarSearchMask(positionFlags, options, allowBackward: true),
+        _localSolarVisibilityMask(visibilityOptions),
+      ),
     );
     return using((arena) {
       final startJd = writeJulianDate(arena, start);

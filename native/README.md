@@ -9,9 +9,9 @@ programs self-contained and reproducible: they do not depend on the sibling
 
 | | |
 |---|---|
-| Native commit | `b9d4ca5` — "Fix init regression: TKC1 per-file source keys + route-overlap index (#56)" (2026-08-06) |
+| Native commit | `d370444` — "Fix fast rise-set refraction follow-ups (#58)" (2026-08-07) |
 | Version | 1.0.0 |
-| C ABI | 5 |
+| C ABI | 6 |
 | Build | `taiyin-ephemeris/build-bazi` — full modules (Chinese calendar + Ganzhi + BaZi) |
 | Platform | macOS arm64 |
 
@@ -24,7 +24,7 @@ external data dependency.
 When the native library updates, rebuild and replace this file in place:
 
 ```sh
-cp ../taiyin-ephemeris/build-bazi/libtaiyin.5.0.0.dylib native/libtaiyin.dylib
+cp ../taiyin-ephemeris/build-bazi/libtaiyin.6.0.0.dylib native/libtaiyin.dylib
 ```
 
 Update the "Current baseline" table above with the new native commit, version,

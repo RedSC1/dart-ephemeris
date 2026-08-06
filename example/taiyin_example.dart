@@ -2,7 +2,7 @@ import 'package:taiyin/taiyin.dart';
 
 /// A small end-to-end tour of the Ephemeris Dart API.
 ///
-/// Run with a path to a built ABI-5 Taiyin shared library:
+/// Run with a path to a built ABI-6 Taiyin shared library:
 ///
 /// ```sh
 /// dart run example/taiyin_example.dart ../taiyin-ephemeris/build-bazi/libtaiyin.dylib

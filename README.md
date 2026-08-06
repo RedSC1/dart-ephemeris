@@ -132,7 +132,7 @@ final tt = calendar.toJulianDate<TtScale>();
 scale is part of the Dart type, so a `JulianDate<Ut1Scale>` cannot be passed to
 `positionTt`. `toJulianDate<S>()` interprets the calendar fields in that scale;
 it does not perform UTC/TAI/TT conversion. The split representation crosses
-the FFI boundary end to end: the ABI-5 native entry points use
+the FFI boundary end to end: the ABI-6 native entry points use
 `taiyin_split_julian_date` for every calculation time, so the Dart value is
 never merged to a scalar `double` mid-calculation.
 
@@ -511,10 +511,13 @@ disable it. `fixedDiscSize` is available for Sun and Moon only—physical planet
 and star searches intentionally reject it. Twilight uses
 `solarTwilightAtUt1`, while `solarRiseSetFastAtTt` and
 `solarTransitFastAtTt` provide fast approximate solar values from an explicit
-observer location. Star searches additionally require the requested key in the
-process-wide star catalog. Search result dates are scalar native outputs and
-therefore have the same roughly 40-microsecond present-epoch precision boundary
-as other physical calculations.
+observer location. The fast rise/set route takes the same `VisibilityLimb`
+and `VisibilityFlag` options as the searches, including
+`VisibilityFlag.strictMeteorology` for refraction that rejects the
+standard-atmosphere fallback. Star searches additionally require the requested
+key in the process-wide star catalog. Search result dates are scalar native
+outputs and therefore have the same roughly 40-microsecond present-epoch
+precision boundary as other physical calculations.
 
 ## Heliacal visibility
 
@@ -679,9 +682,27 @@ Global contacts are optional and use P1/C1/greatest/C4/P4 slots. Local solar
 contacts are a distinct C1/C2/C3/C4/greatest array, exposed by a separate enum.
 Local solve and next-search methods request those contacts internally. The
 returned kind can additionally contain `central` or `noncentral`; search
-filters accept only partial, total, annular, and hybrid eclipse types. As with
-lunar eclipses, these physical calculation times currently cross the C ABI as
-scalar Julian-date doubles, with the existing roughly 40-microsecond
+filters accept only partial, total, annular, and hybrid eclipse types.
+
+Local solar methods accept `LocalSolarEclipseVisibilityOption` values to select
+the rise/set window used for the sunrise and sunset magnitudes. Neither set (the
+default) keeps the geometric window; `refraction` selects the apparent
+(refracted) window, and `strictMeteorology` — valid only together with
+`refraction` — requires complete explicit atmosphere data instead of the
+standard-atmosphere fallback:
+
+```dart
+final refracted = context.eclipses.solveLocalSolarAtUt1(
+  JulianDate<Ut1Scale>.fromDouble(2460409.262231433),
+  visibilityOptions: {
+    LocalSolarEclipseVisibilityOption.refraction,
+    LocalSolarEclipseVisibilityOption.strictMeteorology,
+  },
+);
+```
+
+As with lunar eclipses, these physical calculation times currently cross the C
+ABI as scalar Julian-date doubles, with the existing roughly 40-microsecond
 present-epoch precision boundary.
 
 ## Event searches
@@ -860,10 +881,10 @@ native C ABI does not return partial observed values. Failed position-batch
 entries contain NaN coordinates and rates. Batch exceptions expose every
 available native failure through `EphemerisError.diagnostics`.
 
-This package requires an ABI-5 native library that reports the
+This package requires an ABI-6 native library that reports the
 `Capability.splitTime` and `Capability.chineseCalendar`
 capabilities and exposes the required runtime, star, solar-time, phenomena,
-Chinese-calendar, and Ganzhi-rule symbols. Incomplete ABI-5 builds are rejected
+Chinese-calendar, and Ganzhi-rule symbols. Incomplete ABI-6 builds are rejected
 during `Ephemeris.open` or `EphemerisContext.attach` with a clear compatibility error
 instead of failing later during a lazy symbol lookup.
 
@@ -960,7 +981,7 @@ dart test
 ```
 
 Native integration tests use
-`../taiyin-ephemeris/build-bazi/libtaiyin.dylib` (ABI-5, BaZi and Ganzhi on)
+`../taiyin-ephemeris/build-bazi/libtaiyin.dylib` (ABI-6, BaZi and Ganzhi on)
 by default, and the extension-free baseline
 `../taiyin-ephemeris/build-review-off/libtaiyin.dylib` for optional-module
 gating tests. Override them when necessary:

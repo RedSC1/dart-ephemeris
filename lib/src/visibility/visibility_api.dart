@@ -276,14 +276,20 @@ final class VisibilityApi {
   ///
   /// This fast route receives [observer] directly; it does not use the
   /// context's configured observer location for the supplied coordinates.
+  /// [limb] selects the solar disc limb whose crossing defines the event;
+  /// [flags] controls refraction and disc-size handling, with the same default
+  /// and rejection semantics as [solarRiseSetAtUt1].
   EphemerisResult<SolarRiseSetFastResult> solarRiseSetFastAtTt(
     JulianDate<TtScale> center,
     ObserverLocation observer, {
+    VisibilityLimb limb = VisibilityLimb.upper,
     double horizonAltitudeRadians = 0,
+    Set<VisibilityFlag> flags = const {},
   }) {
     _ensureOpen();
     _validateObserver(observer);
     _requireFinite(horizonAltitudeRadians, 'horizonAltitudeRadians');
+    final mask = _visibilityMask(flags);
     return _solarRiseSetFast((arena, output, diagnostic) {
       return _bindings.taiyin_compute_solar_rise_set_fast_tt(
         _context,
@@ -291,7 +297,9 @@ final class VisibilityApi {
         observer.longitudeDegrees,
         observer.latitudeDegrees,
         observer.heightMeters,
+        limb.id,
         horizonAltitudeRadians,
+        mask,
         output,
         diagnostic,
       );

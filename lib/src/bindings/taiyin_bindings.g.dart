@@ -5918,7 +5918,9 @@ class TaiyinBindings {
     double longitude_deg,
     double latitude_deg,
     double height_m,
+    int limb_kind,
     double horizon_altitude_rad,
+    int visibility_flags,
     ffi.Pointer<taiyin_solar_rise_set_fast_result> out,
     ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
   ) {
@@ -5928,7 +5930,9 @@ class TaiyinBindings {
       longitude_deg,
       latitude_deg,
       height_m,
+      limb_kind,
       horizon_altitude_rad,
+      visibility_flags,
       out,
       diagnostic,
     );
@@ -5943,7 +5947,9 @@ class TaiyinBindings {
             ffi.Double,
             ffi.Double,
             ffi.Double,
+            ffi.Int32,
             ffi.Double,
+            ffi.Uint64,
             ffi.Pointer<taiyin_solar_rise_set_fast_result>,
             ffi.Pointer<taiyin_ephemeris_diagnostic>,
           )
@@ -5958,7 +5964,9 @@ class TaiyinBindings {
               double,
               double,
               double,
+              int,
               double,
+              int,
               ffi.Pointer<taiyin_solar_rise_set_fast_result>,
               ffi.Pointer<taiyin_ephemeris_diagnostic>,
             )

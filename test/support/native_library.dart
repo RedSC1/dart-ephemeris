@@ -1,6 +1,6 @@
 import 'dart:io';
 
-/// The ABI-5 Taiyin shared library used by default in native-integration tests.
+/// The ABI-6 Taiyin shared library used by default in native-integration tests.
 ///
 /// Defaults to the pinned copy in `native/` (full-module build: Chinese
 /// calendar + Ganzhi + BaZi). Override with the `TAIYIN_TEST_LIBRARY`
@@ -11,7 +11,7 @@ String get libraryPath =>
 /// Whether [libraryPath] exists on disk.
 bool get nativeLibraryAvailable => File(libraryPath).existsSync();
 
-/// ABI-5 baseline library (Chinese calendar only; no Ganzhi/BaZi extension),
+/// ABI-6 baseline library (Chinese calendar only; no Ganzhi/BaZi extension),
 /// used by optional-module tests to assert capability gating.
 ///
 /// Override with the `TAIYIN_BASELINE_LIBRARY` environment variable.

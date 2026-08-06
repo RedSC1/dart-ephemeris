@@ -245,6 +245,47 @@ void main() {
     );
 
     test(
+      'supports refracted and strict-meteorology local solar visibility',
+      () {
+        // The context has a fully specified standard atmosphere, so both the
+        // refracted and the strict refracted rise/set window resolve without
+        // fallback.
+        final refracted = context.eclipses.solveLocalSolarAtUt1(
+          JulianDate<Ut1Scale>.fromDouble(2460409.262231433),
+          visibilityOptions: {
+            LocalSolarEclipseVisibilityOption.refraction,
+          },
+        );
+        expect(refracted.value.kinds, contains(EclipseKind.total));
+        expect(
+          refracted.value.visibility,
+          contains(LocalSolarEclipseVisibilityFlag.visibleAtObserver),
+        );
+
+        final strict = context.eclipses.solveLocalSolarAtUt1(
+          JulianDate<Ut1Scale>.fromDouble(2460409.262231433),
+          visibilityOptions: {
+            LocalSolarEclipseVisibilityOption.refraction,
+            LocalSolarEclipseVisibilityOption.strictMeteorology,
+          },
+        );
+        expect(strict.value.kinds, contains(EclipseKind.total));
+
+        // strictMeteorology requires refraction.
+        expect(
+          () => context.eclipses.solveLocalSolarAtUt1(
+            JulianDate<Ut1Scale>.fromDouble(2460409.262231433),
+            visibilityOptions: {
+              LocalSolarEclipseVisibilityOption.strictMeteorology,
+            },
+          ),
+          throwsA(isA<ArgumentError>()),
+        );
+      },
+      skip: !nativeLibraryAvailable,
+    );
+
+    test(
       'uses a loaded lunar-limb model for solar contact calculations',
       () {
         runtime.loadLunarLimbModel(lunarLimbPath);

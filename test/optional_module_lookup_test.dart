@@ -10,7 +10,7 @@ import 'support/native_library.dart';
 /// Guards the optional-module contract: BaZi is an optional extension whose
 /// symbols do not exist in a library built without `TAIYIN_BUILD_BAZI_EXTENSION`.
 /// The package must never look up a `taiyin_bazi_*` symbol unless the loaded
-/// library advertises the BaZi capability. This file runs against the ABI-5
+/// library advertises the BaZi capability. This file runs against the ABI-6
 /// baseline library (Chinese calendar only) to verify that discipline.
 void main() {
   group('optional-module symbol lookup discipline', () {
@@ -49,7 +49,7 @@ void main() {
       },
       skip: baselineLibraryAvailable
           ? false
-          : 'Set TAIYIN_BASELINE_LIBRARY to a baseline ABI-5 library.',
+          : 'Set TAIYIN_BASELINE_LIBRARY to a baseline ABI-6 library.',
     );
 
     test(
@@ -85,7 +85,7 @@ void main() {
       },
       skip: baselineLibraryAvailable
           ? false
-          : 'Set TAIYIN_BASELINE_LIBRARY to a baseline ABI-5 library.',
+          : 'Set TAIYIN_BASELINE_LIBRARY to a baseline ABI-6 library.',
     );
   });
 }

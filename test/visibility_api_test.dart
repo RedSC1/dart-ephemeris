@@ -357,8 +357,96 @@ void main() {
         );
         expect(unrefracted.diagnostic.status, 0);
         expect(unrefracted.value.coordinate, isNotNull);
+
+        // The fast rise/set route enforces the same strict-meteorology rule:
+        // strict refraction without complete atmosphere data fails, while
+        // strict combined with noRefraction is allowed and ignores the flag.
+        expect(
+          () => strictContext.visibility.solarRiseSetFastAtTt(
+            centerTt,
+            denver,
+            flags: {VisibilityFlag.strictMeteorology},
+          ),
+          throwsA(isA<EphemerisError>()),
+        );
+        final unrefractedFast = strictContext.visibility.solarRiseSetFastAtTt(
+          centerTt,
+          denver,
+          flags: {
+            VisibilityFlag.strictMeteorology,
+            VisibilityFlag.noRefraction,
+          },
+        );
+        expect(unrefractedFast.diagnostic.status, 0);
+        expect(unrefractedFast.value.rise, isNotNull);
       },
     );
+
+    test('honors limb, refraction, and disc-size options for fast rise/set',
+        () {
+      final upperGeometric = context.visibility.solarRiseSetFastAtTt(
+        centerTt,
+        denver,
+        limb: VisibilityLimb.upper,
+        flags: {VisibilityFlag.noRefraction},
+      );
+      final centerGeometric = context.visibility.solarRiseSetFastAtTt(
+        centerTt,
+        denver,
+        limb: VisibilityLimb.center,
+        flags: {VisibilityFlag.noRefraction},
+      );
+      final lowerFixed = context.visibility.solarRiseSetFastAtTt(
+        centerTt,
+        denver,
+        limb: VisibilityLimb.lower,
+        flags: {
+          VisibilityFlag.fixedDiscSize,
+          VisibilityFlag.noRefraction,
+        },
+      );
+      final upperRefracted = context.visibility.solarRiseSetFastAtTt(
+        centerTt,
+        denver,
+        limb: VisibilityLimb.upper,
+        flags: {VisibilityFlag.refraction},
+      );
+
+      expect(upperGeometric.value.rise, isNotNull);
+      expect(upperGeometric.value.set, isNotNull);
+      expect(centerGeometric.value.rise, isNotNull);
+      expect(lowerFixed.value.rise, isNotNull);
+      expect(upperRefracted.value.rise, isNotNull);
+
+      // At sunrise the upper limb crosses the horizon first, then the center,
+      // then the lower limb; refraction raises the apparent altitude, so the
+      // refracted event precedes the geometric one for the same limb.
+      expect(
+        upperGeometric.value.rise!.isBefore(centerGeometric.value.rise!),
+        isTrue,
+      );
+      expect(
+        centerGeometric.value.rise!.isBefore(lowerFixed.value.rise!),
+        isTrue,
+      );
+      expect(
+        upperRefracted.value.rise!.isBefore(upperGeometric.value.rise!),
+        isTrue,
+      );
+
+      // Mutually exclusive refraction flags are rejected by the Dart API.
+      expect(
+        () => context.visibility.solarRiseSetFastAtTt(
+          centerTt,
+          denver,
+          flags: {
+            VisibilityFlag.refraction,
+            VisibilityFlag.noRefraction,
+          },
+        ),
+        throwsA(isA<ArgumentError>()),
+      );
+    });
 
     test('maps no-event states and rejects invalid Dart inputs', () {
       context.configuration.setObserverLocation(

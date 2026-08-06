@@ -1,6 +1,6 @@
 name: taiyin
 description: Idiomatic Dart bindings for the Taiyin ephemeris C API.
-version: 0.3.0
+version: 0.4.0
 repository: https://github.com/RedSC1/taiyin-dart
 
 environment:

@@ -72,6 +72,23 @@ enum SolarEclipseRouteOption {
   final int mask;
 }
 
+/// Options for the rise/set visibility window used by local solar eclipses.
+///
+/// Neither set (the default) keeps the geometric rise/set window used for the
+/// sunrise and sunset magnitudes. [refraction] selects the apparent (refracted)
+/// window; [strictMeteorology] is valid only together with [refraction] and
+/// requires complete explicit atmosphere data instead of the
+/// standard-atmosphere fallback.
+enum LocalSolarEclipseVisibilityOption {
+  refraction(1 << 37),
+  strictMeteorology(1 << 32);
+
+  const LocalSolarEclipseVisibilityOption(this.mask);
+
+  /// Bit used by the Taiyin C ABI.
+  final int mask;
+}
+
 /// Local solar-eclipse visibility bits returned by the native C ABI.
 ///
 /// Solar eclipses have no separate penumbral phase, so lunar-only penumbral
