@@ -22,20 +22,20 @@ cmake --build build-c-api-release --target taiyin_c
 ## Use
 
 ```dart
-import 'package:taiyin/taiyin.dart';
+import 'package:taiyin/taiyin.dart' as taiyin;
 
 void main() {
-  final ephemeris = Ephemeris.open(
+  final ephemeris = taiyin.Ephemeris.open(
     libraryPath: '../taiyin-ephemeris/build-c-api-release/libtaiyin.dylib',
   );
   final context = ephemeris.createContext();
   try {
     final moon = context.position.atTt(
-      Body.moon,
-      JulianDate<TtScale>.fromDouble(2460409.0),
+      taiyin.Body.moon,
+      taiyin.JulianDate<taiyin.TtScale>.fromDouble(2460409.0),
       flags: {
-        PositionFlag.xyz,
-        PositionFlag.speed,
+        taiyin.PositionFlag.xyz,
+        taiyin.PositionFlag.speed,
       },
     );
     print(moon.value.coordinates);
@@ -49,6 +49,42 @@ void main() {
 
 `libraryPath` can be omitted when the library is available under the
 platform-standard loader name, or supplied through `TAIYIN_LIBRARY_PATH`.
+
+## Naming and imports
+
+The public API matches the Python binding and drops the old `Taiyin` prefix, so
+most types have short bare names (`Body`, `Position`, `Time`, `Vector3`,
+`Ganzhi`, `BaziChart`…). Dart imports place every exported name into the
+importing library's scope — there is no Python-style `from taiyin import X`
+granularity — so a bare `Vector3` can collide with `vector_math`, a `Position`
+with another package's, and so on.
+
+**Recommended default: prefix the import.**
+
+```dart
+import 'package:taiyin/taiyin.dart' as taiyin;
+
+final ephemeris = taiyin.Ephemeris.open();
+final moon = context.position.atTt(
+  taiyin.Body.moon,
+  taiyin.JulianDate<taiyin.TtScale>.fromDouble(2460409.0),
+);
+```
+
+Prefixing makes collisions impossible. Note that collisions only error on the
+line that actually *uses* a bare conflicting name — importing the full package
+never errors by itself — but the prefixed form removes the question entirely.
+
+Reach for the prefixed form in any file that coexists with other packages or
+defines its own classes. Alternatively, pull only the names a file uses:
+
+```dart
+import 'package:taiyin/taiyin.dart'
+    show Ephemeris, EphemerisContext, Body, Position, PositionFlag;
+```
+
+The snippets elsewhere in this README use plain imports for readability; in real
+code that coexists with other packages, prefer the prefixed form above.
 
 ## Runtime and release metadata
 
