@@ -288,11 +288,45 @@ final class SolarEclipseRouteRow {
       southLimit.intersectsEarth;
 }
 
+/// Lightweight instantaneous global solar-eclipse geometry.
+///
+/// Returns the center line plus core and penumbral north/south limits,
+/// without half-magnitude limits, transverse width, duration, or numerical
+/// center-line refinement.
+final class SolarEclipseWhere {
+  const SolarEclipseWhere({
+    required this.coordinateTt,
+    required this.coordinateUt1,
+    required this.centerLine,
+    required this.penumbralNorthLimit,
+    required this.penumbralSouthLimit,
+    required this.northLimit,
+    required this.southLimit,
+    required this.magnitude,
+    required this.obscuration,
+    required this.centerSeparationDegrees,
+    required this.sunAngularRadiusDegrees,
+    required this.moonAngularRadiusDegrees,
+  });
+
+  final JulianDate<TtScale> coordinateTt;
+  final JulianDate<Ut1Scale> coordinateUt1;
+  final SolarEclipseRoutePoint centerLine;
+  final SolarEclipseRoutePoint penumbralNorthLimit;
+  final SolarEclipseRoutePoint penumbralSouthLimit;
+  final SolarEclipseRoutePoint northLimit;
+  final SolarEclipseRoutePoint southLimit;
+  final double magnitude;
+  final double obscuration;
+  final double centerSeparationDegrees;
+  final double sunAngularRadiusDegrees;
+  final double moonAngularRadiusDegrees;
+}
+
 /// Identifies one curve in a global solar-eclipse map.
 ///
 /// Points returned by a route-curve calculation are grouped by this value.
-enum SolarEclipseRouteCurveKind {
-  partialBeginA(0),
+enum SolarEclipseRouteCurveKind {  partialBeginA(0),
   partialBeginB(1),
   partialEndA(2),
   partialEndB(3),

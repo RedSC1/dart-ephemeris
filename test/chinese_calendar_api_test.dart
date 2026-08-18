@@ -79,7 +79,7 @@ void main() {
 
       test('supports custom calendar configurations', () {
         final custom = context.createChineseCalendar(
-          config: const ChineseCalendarConfig.utcOffset(0),
+          config: const ChineseCalendarConfig.localAstronomicalUtcOffset(0),
         );
         final year = custom
             .calcYearUt(JulianDate<Ut1Scale>.fromDouble(2460348.0))

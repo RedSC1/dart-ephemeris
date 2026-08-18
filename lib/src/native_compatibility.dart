@@ -1,10 +1,11 @@
-const int taiyinSupportedAbiVersion = 6;
+const int taiyinSupportedAbiVersion = 8;
 const int taiyinSplitTimeCapability = 1 << 14;
 const int taiyinChineseCalendarCapability = 1 << 15;
 const int taiyinBaziCapability = 1 << 16;
 const int taiyinGanzhiCalendarCapability = 1 << 17;
+const int taiyinZiweiCapability = 1 << 18;
 
-/// Symbols required by the ABI-6 native baseline used by this package.
+/// Symbols required by the ABI-8 native baseline used by this package.
 ///
 /// Chinese-calendar symbols and every Ganzhi entry point are always exported
 /// by `taiyin_c`. The Ganzhi functions return `TAIYIN_ERROR_UNSUPPORTED` when
@@ -13,7 +14,7 @@ const int taiyinGanzhiCalendarCapability = 1 << 17;
 /// excluded: they only exist when the library is built with
 /// `TAIYIN_BUILD_BAZI_EXTENSION=ON`, so the package gates them by capability
 /// instead of requiring them.
-const Set<String> taiyinRequiredAbi6Symbols = {
+const Set<String> taiyinRequiredAbi8Symbols = {
   'taiyin_get_library_codename',
   'taiyin_format_ephemeris_diagnostic',
   'taiyin_register_native_position_evaluator',
@@ -221,8 +222,6 @@ const Set<String> taiyinRequiredAbi6Symbols = {
   'taiyin_compute_local_solar_eclipse_boundary_tt',
   'taiyin_compute_local_solar_eclipse_boundary_ut',
   'taiyin_chinese_calendar_config_init',
-  'taiyin_chinese_calendar_config_init_utc_offset',
-  'taiyin_chinese_calendar_config_init_meridian',
   'taiyin_solar_date_init',
   'taiyin_lunar_date_init',
   'taiyin_chinese_solar_term_event_init',
@@ -238,6 +237,7 @@ const Set<String> taiyinRequiredAbi6Symbols = {
   'taiyin_chinese_calendar_get_prev_qi_ut',
   'taiyin_chinese_calendar_get_next_qi_ut',
   'taiyin_chinese_calendar_from_solar',
+  'taiyin_chinese_calendar_from_instant_ut',
   'taiyin_chinese_calendar_from_lunar',
   'taiyin_chinese_calendar_get_month_days',
   'taiyin_ganzhi_four_pillars_init',
@@ -251,9 +251,10 @@ const Set<String> taiyinRequiredAbi6Symbols = {
   'taiyin_chinese_calendar_calc_four_pillars_ut',
 };
 
-/// BaZi symbols, verified only when the loaded library advertises the BaZi
-/// capability. The symbols do not exist in a build without
-/// `TAIYIN_BUILD_BAZI_EXTENSION=ON`, so they must never be looked up otherwise.
+/// BaZi symbols, verified by `package:taiyin_bazi` only when the loaded
+/// library advertises the BaZi capability. The symbols do not exist in a build
+/// without `TAIYIN_BUILD_BAZI_EXTENSION=ON`, so they must never be looked up
+/// otherwise.
 const Set<String> taiyinBaziSymbols = {
   'taiyin_bazi_context_config_init',
   'taiyin_bazi_chart_init',
@@ -286,6 +287,53 @@ const Set<String> taiyinBaziSymbols = {
   'taiyin_bazi_fill_dayun',
   'taiyin_bazi_get_renyuan_siling_segments',
   'taiyin_bazi_calc_renyuan_siling',
+};
+
+/// Ziwei symbols, verified only when the loaded library advertises the Ziwei
+/// capability. The symbols do not exist in a build without
+/// `TAIYIN_BUILD_ZIWEI_EXTENSION=ON`, so they must never be looked up
+/// otherwise.
+const Set<String> taiyinZiweiSymbols = {
+  'taiyin_ziwei_option_override_init',
+  'taiyin_ziwei_birth_options_init',
+  'taiyin_ziwei_flow_options_init',
+  'taiyin_ziwei_transform_set_init',
+  'taiyin_ziwei_flow_summary_init',
+  'taiyin_ziwei_reverse_query_init',
+  'taiyin_ziwei_reverse_request_init',
+  'taiyin_ziwei_reverse_candidate_init',
+  'taiyin_ziwei_data_catalog_create',
+  'taiyin_ziwei_data_catalog_destroy',
+  'taiyin_ziwei_data_catalog_reload',
+  'taiyin_ziwei_data_catalog_generation',
+  'taiyin_ziwei_context_create',
+  'taiyin_ziwei_context_destroy',
+  'taiyin_ziwei_context_generation',
+  'taiyin_ziwei_star_count',
+  'taiyin_ziwei_find_star',
+  'taiyin_ziwei_get_star_metadata',
+  'taiyin_ziwei_chart_create',
+  'taiyin_ziwei_chart_destroy',
+  'taiyin_ziwei_reverse_lookup_tier1',
+  'taiyin_ziwei_chart_get_anchors',
+  'taiyin_ziwei_chart_get_summary',
+  'taiyin_ziwei_chart_get_palace_branch',
+  'taiyin_ziwei_chart_get_palace_stem',
+  'taiyin_ziwei_chart_get_star_position',
+  'taiyin_ziwei_chart_get_star_palace',
+  'taiyin_ziwei_chart_get_brightness',
+  'taiyin_ziwei_chart_has_star_transform_mark',
+  'taiyin_ziwei_chart_get_star_transformation_mask',
+  'taiyin_ziwei_chart_get_palace_stars',
+  'taiyin_ziwei_chart_set_flow',
+  'taiyin_ziwei_chart_truncate_flow',
+  'taiyin_ziwei_chart_flow_layer_count',
+  'taiyin_ziwei_chart_get_flow_star_position',
+  'taiyin_ziwei_chart_get_flow_layer_summary',
+  'taiyin_ziwei_chart_get_flow_palace_stars',
+  'taiyin_ziwei_chart_get_flow_transforms',
+  'taiyin_ziwei_step_flow_hour_target',
+  'taiyin_ziwei_step_flow_day_target',
 };
 
 /// Validates the native metadata available before any optional symbol lookup.
@@ -321,11 +369,11 @@ void validateTaiyinNativeCompatibility({
   }
 }
 
-/// Rejects incomplete ABI-6 builds before generated bindings lazily look up a
+/// Rejects incomplete ABI-8 builds before generated bindings lazily look up a
 /// missing symbol.
 void validateTaiyinRequiredSymbols({
   required bool Function(String symbol) providesSymbol,
-  Set<String> requiredSymbols = taiyinRequiredAbi6Symbols,
+  Set<String> requiredSymbols = taiyinRequiredAbi8Symbols,
 }) {
   final missing = [
     for (final symbol in requiredSymbols)
@@ -333,7 +381,7 @@ void validateTaiyinRequiredSymbols({
   ];
   if (missing.isNotEmpty) {
     throw StateError(
-      'The loaded Ephemeris ABI-6 library is missing symbols required by this '
+      'The loaded Ephemeris ABI-8 library is missing symbols required by this '
       'package: ${missing.join(', ')}. Rebuild or update the native library.',
     );
   }

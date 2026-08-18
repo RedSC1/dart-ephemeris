@@ -1,10 +1,7 @@
 /// BaZi (八字) astrology models backed by the Ephemeris BaZi extension.
 library;
 
-import '../ganzhi/ganzhi_models.dart';
-import '../time/astro_date_time.dart';
-import '../time/julian_date.dart';
-import '../time/time_scale.dart';
+import 'package:taiyin/taiyin.dart';
 
 /// How the 安命宫 (life-palace) / 安身宫 (body-palace) earth position is derived.
 enum BaziEarthPalaceMode {

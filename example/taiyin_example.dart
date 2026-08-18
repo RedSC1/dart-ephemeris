@@ -1,11 +1,13 @@
 import 'package:taiyin/taiyin.dart';
+import 'package:taiyin_bazi/taiyin_bazi.dart';
 
 /// A small end-to-end tour of the Ephemeris Dart API.
 ///
-/// Run with a path to a built ABI-6 Taiyin shared library:
+/// Run with a path to a built ABI-8 Taiyin shared library (or no argument to
+/// use the copy bundled in `lib/native/`):
 ///
 /// ```sh
-/// dart run example/taiyin_example.dart ../taiyin-ephemeris/build-bazi/libtaiyin.dylib
+/// dart run example/taiyin_example.dart
 /// ```
 void main(List<String> arguments) {
   final ephemeris = Ephemeris.open(libraryPath: arguments.firstOrNull);

@@ -1,0 +1,7 @@
+# Default Ziwei rule profile. Missing selections resolve to option1.
+format_version = 1
+stars = "stars.toml"
+placement_rules = "placement.toml"
+brightness_rules = "brightness.toml"
+sihua_rules = "sihua.toml"
+master_rules = "masters.toml"

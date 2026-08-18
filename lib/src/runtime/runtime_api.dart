@@ -402,6 +402,97 @@ final class Ephemeris {
   /// The number of entries currently held in the global segment cache.
   int get cacheEntryCount => _bindings.taiyin_runtime_cache_entry_count();
 
+  /// Snapshot of data sources successfully registered with this process-wide
+  /// runtime.
+  List<RegisteredDataSource> get registeredDataSources {
+    return using((arena) {
+      final count = _bindings.taiyin_runtime_registered_data_source_count();
+      final sources = <RegisteredDataSource>[];
+      for (var index = 0; index < count; index++) {
+        final value = arena<taiyin_runtime_registered_data_source>();
+        final requiredSize = arena<Size>();
+        _bindings.taiyin_runtime_registered_data_source_init(value);
+        _checkStatus(
+          _bindings,
+          _bindings.taiyin_runtime_get_registered_data_source(
+            index,
+            value,
+            nullptr.cast(),
+            0,
+            requiredSize,
+          ),
+        );
+        final buffer = arena<Char>(requiredSize.value);
+        _checkStatus(
+          _bindings,
+          _bindings.taiyin_runtime_get_registered_data_source(
+            index,
+            value,
+            buffer,
+            requiredSize.value,
+            requiredSize,
+          ),
+        );
+        final ref = value.ref;
+        sources.add(
+          RegisteredDataSource(
+            kind: RuntimeDataSourceKind.fromId(ref.kind),
+            format: RuntimeDataSourceFormat.fromId(ref.format),
+            flags: {
+              for (final flag in RuntimeDataSourceFlag.values)
+                if (ref.flags & flag.mask != 0) flag,
+            },
+            source: buffer.cast<Utf8>().toDartString(),
+            itemCount: ref.item_count,
+            jdStart: ref.jd_start,
+            jdEnd: ref.jd_end,
+          ),
+        );
+      }
+      return sources;
+    });
+  }
+
+  /// Overrides one file's provider-local ephemeris priority during setup.
+  ///
+  /// [pathOrBasename] may be the exact loaded path or a bare filename such as
+  /// `jup349.bsp`; a bare filename applies to all matching loaded files.
+  /// Higher values win inside the provider and, under automatic routing, also
+  /// reorder that provider's model products. Provider route boundaries never
+  /// change. This is a setup-time operation.
+  void setEphemerisSourcePriority(String pathOrBasename, int priority) {
+    _requirePath(pathOrBasename, 'pathOrBasename');
+    using((arena) {
+      final nativePath = pathOrBasename.toNativeUtf8(allocator: arena)
+          .cast<Char>();
+      _checkStatus(
+        _bindings,
+        _bindings.taiyin_runtime_set_ephemeris_source_priority(
+          nativePath,
+          priority,
+        ),
+      );
+    });
+  }
+
+  /// Restores the provider-default priority for [pathOrBasename].
+  void clearEphemerisSourcePriority(String pathOrBasename) {
+    _requirePath(pathOrBasename, 'pathOrBasename');
+    using((arena) {
+      final nativePath = pathOrBasename.toNativeUtf8(allocator: arena)
+          .cast<Char>();
+      _checkStatus(
+        _bindings,
+        _bindings.taiyin_runtime_clear_ephemeris_source_priority(nativePath),
+      );
+    });
+  }
+
+  /// Removes every ephemeris source priority override.
+  void clearAllEphemerisSourcePriorities() {
+    _bindings.taiyin_runtime_clear_all_ephemeris_source_priorities();
+  }
+
   void _requirePath(String path, String name) {
     if (path.isEmpty) {
       throw ArgumentError.value(path, name, 'must not be empty');

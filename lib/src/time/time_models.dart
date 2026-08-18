@@ -9,15 +9,6 @@ enum TdbModel {
   final int id;
 }
 
-enum TimeScalePolicy {
-  automatic(0),
-  precise(1),
-  estimated(2);
-
-  const TimeScalePolicy(this.id);
-  final int id;
-}
-
 enum DeltaTModel {
   estimatedDefault(0);
 

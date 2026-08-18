@@ -189,7 +189,7 @@ void main() {
 
       test('validates metadata and initializes the catalog', () {
         expect(runtime.abiVersion, taiyinSupportedAbiVersion);
-        expect(runtime.libraryVersion, '1.0.0');
+        expect(runtime.libraryVersion, '1.0.0-preview.5');
         expect(runtime.catalogSize, greaterThan(0));
         expect(
           runtime.availableCapabilities,

@@ -30,8 +30,13 @@ void main() {
 
       test('reports Singularity release metadata', () {
         expect(runtime.abiVersion, taiyinSupportedAbiVersion);
-        expect(runtime.libraryVersion, '1.0.0');
+        expect(runtime.libraryVersion, '1.0.0-preview.5');
         expect(runtime.libraryCodename, 'Singularity');
+      });
+
+      test('opens the bundled native library without an explicit path', () {
+        final bundled = Ephemeris.open();
+        expect(bundled.abiVersion, taiyinSupportedAbiVersion);
       });
 
       test('formats structured native diagnostics for logs', () {
@@ -81,6 +86,28 @@ void main() {
         expect(runtime.catalogSize, initialSize);
         runtime.addSourcePath(nativeDataPath);
         expect(runtime.catalogSize, greaterThanOrEqualTo(initialSize));
+      });
+
+      test('lists registered data sources and manages priorities', () {
+        final sources = runtime.registeredDataSources;
+
+        expect(sources, isNotEmpty);
+        expect(
+          sources.any(
+            (source) => source.kind == RuntimeDataSourceKind.earthOrientation,
+          ),
+          isTrue,
+          reason: 'the built-in EOP table is registered by default',
+        );
+
+        runtime.setEphemerisSourcePriority('jup365.bsp', 100);
+        runtime.clearEphemerisSourcePriority('jup365.bsp');
+        runtime.clearAllEphemerisSourcePriorities();
+
+        expect(
+          () => runtime.setEphemerisSourcePriority('', 1),
+          throwsArgumentError,
+        );
       });
 
       test('manages the built-in EOP table lifecycle', () {

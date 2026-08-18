@@ -1,4 +1,5 @@
 import 'package:taiyin/taiyin.dart';
+import 'package:taiyin_bazi/taiyin_bazi.dart';
 import 'package:test/test.dart';
 
 import 'support/native_library.dart';
@@ -160,7 +161,7 @@ void main() {
 
       test('rejects use after close', () {
         final bazi = context.bazi;
-        context.close();
+        bazi.close();
         expect(() => bazi.calcLiunian(2024), throwsStateError);
       });
     },

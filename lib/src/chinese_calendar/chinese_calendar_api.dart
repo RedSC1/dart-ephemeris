@@ -13,6 +13,7 @@ final class ChineseCalendarContext implements Finalizable {
     this._finalizer,
     this._capabilities,
     this._owner,
+    this.config,
   ) {
     _finalizer.attach(this, _context.cast(), detach: this);
   }
@@ -43,6 +44,7 @@ final class ChineseCalendarContext implements Finalizable {
       nativeState.chineseCalendarFinalizer,
       nativeState.capabilities,
       owner,
+      config,
     );
   }
 
@@ -51,9 +53,21 @@ final class ChineseCalendarContext implements Finalizable {
   final NativeFinalizer _finalizer;
   final int _capabilities;
   final EphemerisContext _owner;
+
+  /// The configuration this calendar context was created with.
+  final ChineseCalendarConfig config;
   bool _closed = false;
 
   bool get isClosed => _closed;
+
+  /// The ephemeris context this calendar borrows its native astronomy state
+  /// from.
+  EphemerisContext get owner => _owner;
+
+  /// FFI handle for the official extension packages (for example
+  /// `package:taiyin_ziwei`).
+  TaiyinExtensionHost get extensionHost =>
+      TaiyinExtensionHost._(_owner._nativeState, _context.cast(), _ensureOpen);
 
   /// Releases the native calendar context. Calling this more than once is safe.
   void close() {
@@ -246,9 +260,32 @@ final class ChineseCalendarContext implements Finalizable {
     });
   }
 
-  /// Converts a Chinese lunar date to a solar (Gregorian) date.
-  EphemerisResult<SolarDate> fromLunar(LunarDate lunar) {
+  /// Resolves the Chinese lunar date containing a UT1 instant.
+  EphemerisResult<LunarDate> fromInstantUt1(JulianDate<Ut1Scale> instant) {
     _ensureOpen();
+    return using((arena) {
+      final nativeInstant = writeJulianDate(arena, instant);
+      final output = arena<taiyin_lunar_date>();
+      final diagnostic = arena<taiyin_ephemeris_diagnostic>();
+      _bindings.taiyin_lunar_date_init(output);
+      _bindings.taiyin_ephemeris_diagnostic_init(diagnostic);
+      final status = _bindings.taiyin_chinese_calendar_from_instant_ut(
+        _context,
+        nativeInstant,
+        output,
+        diagnostic,
+      );
+      final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
+      _checkStatus(_bindings, status, diagnostic: mappedDiagnostic);
+      return EphemerisResult(
+        value: _readLunarDate(output.ref),
+        diagnostic: mappedDiagnostic,
+      );
+    });
+  }
+
+  /// Converts a Chinese lunar date to a solar (Gregorian) date.
+  EphemerisResult<SolarDate> fromLunar(LunarDate lunar) {    _ensureOpen();
     return using((arena) {
       final nativeLunar = _writeLunarDate(_bindings, arena, lunar);
       final output = arena<taiyin_solar_date>();
@@ -387,7 +424,7 @@ Pointer<taiyin_chinese_calendar_config> _writeChineseCalendarConfig(
   final native = arena<taiyin_chinese_calendar_config>();
   bindings.taiyin_chinese_calendar_config_init(native);
   native.ref
-    ..rule_mode = config.ruleMode.id
+    ..mode = config.mode.id
     ..day_boundary_mode = config.dayBoundaryMode.id
     ..utc_offset_minutes = config.utcOffsetMinutes
     ..calendar_meridian_deg = config.calendarMeridianDegrees;
@@ -465,6 +502,7 @@ ChineseCalendarMonth _readCalendarMonth(taiyin_chinese_calendar_month value) {
     isLeap: value.is_leap != 0,
     dayCount: value.day_count,
     monthName: ChineseCalendarMonthName.fromId(value.month_name),
+    monthBuildingBranch: value.month_building_branch,
     firstCivilDayNumber: value.first_civil_day_number,
     astronomicalNewMoonJdUt: readJulianDate<Ut1Scale>(
       value.astronomical_new_moon_jd_ut,

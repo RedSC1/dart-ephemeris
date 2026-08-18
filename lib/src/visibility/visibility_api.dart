@@ -160,6 +160,7 @@ final class VisibilityApi {
     JulianDate<Ut1Scale> start,
     JulianDate<Ut1Scale> end, {
     required VisibilityEventKind event,
+    Set<PositionFlag> flags = const {},
   }) {
     _ensureOpen();
     _requirePlanet(body);
@@ -173,6 +174,7 @@ final class VisibilityApi {
         writeJulianDate(arena, start),
         writeJulianDate(arena, end),
         event.id,
+        flags.fold(0, (value, flag) => value | flag.mask),
         output,
         diagnostic,
       ),

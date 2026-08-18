@@ -5,17 +5,21 @@ import '../time/julian_date.dart';
 import '../time/time_scale.dart';
 
 /// Rule profile applied when constructing a Chinese calendar.
-enum ChineseCalendarRuleMode {
-  /// Historical China: mean solar terms and new moons with compressed
-  /// day-correction tables and a fixed UTC+8 civil boundary.
-  historicalChina(0),
+enum ChineseCalendarMode {
+  /// China-standard historical: mean solar terms and new moons with
+  /// compressed day-correction tables and a fixed UTC+8 civil boundary.
+  chinaStandardHistorical(0),
 
-  /// Astronomical: always uses Taiyin's precise 定气 (solar terms) and 定朔
-  /// (new moons); the civil boundary is a fixed UTC offset or mean-solar
+  /// Local astronomical: always uses Taiyin's precise 定气 (solar terms) and
+  /// 定朔 (new moons); the civil boundary is a fixed UTC offset or mean-solar
   /// meridian.
-  astronomical(1);
+  localAstronomical(1),
 
-  const ChineseCalendarRuleMode(this.id);
+  /// China-standard astronomical: precise solar terms and new moons rendered
+  /// against the China-standard (UTC+8) civil day.
+  chinaStandardAstronomical(2);
+
+  const ChineseCalendarMode(this.id);
 
   final int id;
 }
@@ -34,13 +38,15 @@ enum ChineseCalendarDayBoundaryMode {
   final int id;
 }
 
-/// Historical exceptional month names used by the `historicalChina` profile.
+/// Historical exceptional month names used by the `chinaStandardHistorical`
+/// profile.
 enum ChineseCalendarMonthName {
   normal(0),
   thirteen(1),
   laterNine(2),
   altTwelve(3),
-  altOne(4);
+  altOne(4),
+  laterSameName(5);
 
   const ChineseCalendarMonthName(this.id);
 
@@ -57,31 +63,42 @@ enum ChineseCalendarMonthName {
 /// Configuration for a Chinese-calendar context.
 final class ChineseCalendarConfig {
   const ChineseCalendarConfig({
-    this.ruleMode = ChineseCalendarRuleMode.astronomical,
+    this.mode = ChineseCalendarMode.chinaStandardHistorical,
     this.dayBoundaryMode = ChineseCalendarDayBoundaryMode.fixedUtcOffset,
     this.utcOffsetMinutes = 480,
     this.calendarMeridianDegrees = 0,
   });
 
-  /// Default astronomical profile with a fixed UTC+8 civil day.
-  const ChineseCalendarConfig.astronomical() : this();
+  /// China-standard astronomical profile with a fixed UTC+8 civil day.
+  const ChineseCalendarConfig.chinaStandardAstronomical({
+    int utcOffsetMinutes = 480,
+  }) : this(
+         mode: ChineseCalendarMode.chinaStandardAstronomical,
+         utcOffsetMinutes: utcOffsetMinutes,
+       );
 
-  /// Astronomical profile with a fixed [utcOffsetMinutes] civil boundary.
-  const ChineseCalendarConfig.utcOffset(int utcOffsetMinutes)
+  /// Historical China-standard profile with the given civil-day UTC offset.
+  const ChineseCalendarConfig.historicalChina({int utcOffsetMinutes = 480})
+    : this(utcOffsetMinutes: utcOffsetMinutes);
+
+  /// Local astronomical profile with a fixed [utcOffsetMinutes] civil
+  /// boundary.
+  const ChineseCalendarConfig.localAstronomicalUtcOffset(int utcOffsetMinutes)
     : this(
-        dayBoundaryMode: ChineseCalendarDayBoundaryMode.fixedUtcOffset,
+        mode: ChineseCalendarMode.localAstronomical,
         utcOffsetMinutes: utcOffsetMinutes,
       );
 
-  /// Astronomical profile with a mean-solar-meridian civil boundary at
+  /// Local astronomical profile with a mean-solar-meridian civil boundary at
   /// [longitudeDegrees].
-  const ChineseCalendarConfig.meridian(double longitudeDegrees)
+  const ChineseCalendarConfig.localAstronomicalMeridian(double longitudeDegrees)
     : this(
+        mode: ChineseCalendarMode.localAstronomical,
         dayBoundaryMode: ChineseCalendarDayBoundaryMode.meanSolarMeridian,
         calendarMeridianDegrees: longitudeDegrees,
       );
 
-  final ChineseCalendarRuleMode ruleMode;
+  final ChineseCalendarMode mode;
   final ChineseCalendarDayBoundaryMode dayBoundaryMode;
 
   /// Civil-day offset from UTC in minutes, meaningful for [fixedUtcOffset].
@@ -161,6 +178,7 @@ final class ChineseCalendarMonth {
     required this.isLeap,
     required this.dayCount,
     required this.monthName,
+    this.monthBuildingBranch = 0,
     required this.firstCivilDayNumber,
     required this.astronomicalNewMoonJdUt,
   });
@@ -170,6 +188,9 @@ final class ChineseCalendarMonth {
   final bool isLeap;
   final int dayCount;
   final ChineseCalendarMonthName monthName;
+
+  /// Earthly-branch id (0=Zi … 11=Hai) the month is built from.
+  final int monthBuildingBranch;
   final int firstCivilDayNumber;
   final JulianDate<Ut1Scale> astronomicalNewMoonJdUt;
 }

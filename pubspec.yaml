@@ -6,10 +6,18 @@ repository: https://github.com/RedSC1/taiyin-dart
 environment:
   sdk: ^3.10.0
 
+workspace:
+  - packages/taiyin_bazi
+  - packages/taiyin_ziwei
+
 dependencies:
   ffi: ^2.2.0
 
 dev_dependencies:
   ffigen: ^20.1.1
   lints: ^6.0.0
+  taiyin_bazi:
+    path: packages/taiyin_bazi
+  taiyin_ziwei:
+    path: packages/taiyin_ziwei
   test: ^1.26.0

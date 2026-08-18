@@ -117,7 +117,6 @@ void main() {
       });
 
       test('uses precise EOP and leap-second runtime data', () {
-        taiyin.time.setPolicy(TimeScalePolicy.precise);
         taiyin.time.setTdbModel(TdbModel.sofaFull);
         final result = taiyin.time.scalesFromUtc(utcCalendar);
 
@@ -133,9 +132,14 @@ void main() {
         expect(result.value.tt.toDouble().isFinite, isTrue);
       });
 
-      test('can force the estimated Delta-T route', () {
+      test('falls back to the estimated Delta-T route when allowed', () {
+        taiyin.close();
+        taiyin = Ephemeris.open(
+          libraryPath: libraryPath,
+          options: const RuntimeOptions(loadBuiltinEop: false),
+        ).createContext();
         taiyin.time
-          ..setPolicy(TimeScalePolicy.estimated)
+          ..setAllowUtcOutOfRangeEstimate(true)
           ..setDeltaTModel(
             DeltaTModel.estimatedDefault,
             family: EphemerisFamily.de441,

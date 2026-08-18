@@ -23,19 +23,15 @@ void main() {
 
       test('closing the owning context closes its cached child contexts', () {
         final calendar = context.chineseCalendar;
-        final bazi = context.bazi;
         expect(calendar.isClosed, isFalse);
-        expect(bazi.isClosed, isFalse);
 
         context.close();
 
         expect(calendar.isClosed, isTrue);
-        expect(bazi.isClosed, isTrue);
         expect(
           () => calendar.calcYearUt(JulianDate<Ut1Scale>.fromDouble(2460348.0)),
           throwsStateError,
         );
-        expect(() => bazi.calcLiunian(2024), throwsStateError);
       });
 
       test(
@@ -44,7 +40,7 @@ void main() {
           // A caller-created calendar context borrows the owner's native state;
           // closing the owner must invalidate it too, not just the cached one.
           final custom = context.createChineseCalendar(
-            config: const ChineseCalendarConfig.utcOffset(0),
+            config: const ChineseCalendarConfig.localAstronomicalUtcOffset(0),
           );
           expect(custom.isClosed, isFalse);
 
@@ -62,10 +58,8 @@ void main() {
         final originalCalendar = context.chineseCalendar;
         final clone = context.clone();
         final cloneCalendar = clone.chineseCalendar;
-        final cloneBazi = clone.bazi;
 
         expect(identical(originalCalendar, cloneCalendar), isFalse);
-        expect(cloneBazi.isClosed, isFalse);
 
         clone.close();
         expect(cloneCalendar.isClosed, isTrue);

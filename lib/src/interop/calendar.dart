@@ -25,3 +25,18 @@ Pointer<taiyin_calendar_datetime> writeNativeCalendar(
     ..second = value.fractionalSecond;
   return native;
 }
+
+/// Converts a native calendar struct into an [AstroDateTime] using the same
+/// second rounding the time API applies to `reverseJulianDay`.
+AstroDateTime readCalendarDateTime(taiyin_calendar_datetime value) {
+  final minute = AstroDateTime(
+    value.year,
+    value.month,
+    value.day,
+    value.hour,
+    value.minute,
+  );
+  return minute.addNanoseconds(
+    (value.second * Duration.microsecondsPerSecond * 1000).round(),
+  );
+}

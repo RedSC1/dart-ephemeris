@@ -1,36 +1,94 @@
-part of '../taiyin.dart';
+import 'dart:ffi';
+
+import 'package:ffi/ffi.dart';
+import 'package:taiyin/ffi.dart';
+import 'package:taiyin/taiyin.dart';
+
+import 'bazi_models.dart';
 
 /// The native "invalid five-element" sentinel (`TAIYIN_BAZI_INVALID_WUXING`).
 const int _taiyinBaziInvalidWuxing = 0xff;
 
+void _checkStatus(
+  TaiyinBindings bindings,
+  int status, {
+  EphemerisDiagnostic? diagnostic,
+}) {
+  if (status == 0) return;
+  final namePointer = bindings.taiyin_status_name(status);
+  final messagePointer = bindings.taiyin_status_message(status);
+  throw EphemerisError(
+    status,
+    namePointer == nullptr
+        ? 'Unknown'
+        : namePointer.cast<Utf8>().toDartString(),
+    messagePointer == nullptr
+        ? 'Unknown'
+        : messagePointer.cast<Utf8>().toDartString(),
+    diagnostic: diagnostic,
+  );
+}
+
+final Expando<BaziContext> _baziCache = Expando<BaziContext>('taiyin_bazi');
+
+/// BaZi entry points attached to an [EphemerisContext].
+extension BaziExtension on EphemerisContext {
+  /// A BaZi context using the default configuration.
+  ///
+  /// The first access creates and caches the native context; a cached entry
+  /// closed by the caller is replaced on the next access. The BaZi context
+  /// does not borrow this context's native state, so closing the owning
+  /// context does not invalidate it.
+  BaziContext get bazi {
+    final cached = _baziCache[this];
+    if (cached != null && !cached.isClosed) return cached;
+    final created = createBazi();
+    _baziCache[this] = created;
+    return created;
+  }
+
+  /// Creates an independent BaZi context owned by the caller.
+  ///
+  /// Call [BaziContext.close] when it is no longer needed.
+  BaziContext createBazi({
+    BaziContextConfig config = const BaziContextConfig(),
+  }) {
+    final host = extensionHost;
+    host.ensureOpen();
+    return BaziContext._create(host, config);
+  }
+}
+
 /// Owns one native BaZi context.
 ///
-/// Create one through [EphemerisContext.createBazi], or use
-/// [EphemerisContext.bazi] for the cached default configuration. Call [close]
-/// before discarding the handle; closing the owning [EphemerisContext] closes its
-/// cached BaZi context first.
+/// Create one through [BaziExtension.createBazi], or use
+/// [BaziExtension.bazi] for the cached default configuration. Call [close]
+/// before discarding the handle; a native finalizer is attached as a safety
+/// net for contexts that are not closed explicitly.
 final class BaziContext implements Finalizable {
-  BaziContext._(
-    this._bindings,
-    this._context,
-    this._finalizer,
-    this._capabilities,
-  ) {
+  BaziContext._(this._host, this._context, this._finalizer) {
     _finalizer.attach(this, _context.cast(), detach: this);
   }
 
   factory BaziContext._create(
-    _NativeLibraryState nativeState,
-    TaiyinBindings bindings,
+    TaiyinExtensionHost host,
     BaziContextConfig config,
   ) {
-    final finalizer = nativeState.baziFinalizer;
+    final finalizer = host.finalizerFor(
+      'taiyin_bazi_context_destroy',
+      capability: taiyinBaziCapability,
+    );
     if (finalizer == null) {
       throw UnsupportedError(
         'The loaded Taiyin library does not include the BaZi extension '
         '(build with TAIYIN_BUILD_BAZI_EXTENSION=ON).',
       );
     }
+    validateTaiyinRequiredSymbols(
+      providesSymbol: host.library.providesSymbol,
+      requiredSymbols: taiyinBaziSymbols,
+    );
+    final bindings = host.bindings;
     final context = using((arena) {
       final nativeConfig = _writeBaziConfig(bindings, arena, config);
       final output = arena<Pointer<taiyin_bazi_context>>();
@@ -40,18 +98,15 @@ final class BaziContext implements Finalizable {
       );
       return output.value;
     });
-    return BaziContext._(
-      bindings,
-      context,
-      finalizer,
-      nativeState.capabilities,
-    );
+    return BaziContext._(host, context, finalizer);
   }
 
-  final TaiyinBindings _bindings;
+  final TaiyinExtensionHost _host;
   final Pointer<taiyin_bazi_context> _context;
   final NativeFinalizer _finalizer;
-  final int _capabilities;
+
+  TaiyinBindings get _bindings => _host.bindings;
+  int get _capabilities => _host.capabilities;
   bool _closed = false;
 
   bool get isClosed => _closed;
@@ -314,7 +369,7 @@ final class BaziContext implements Finalizable {
         count,
       );
       _checkStatus(_bindings, countStatus);
-      final requiredCount = _validatedArrayCount(count.value, 'BaZi xiao-yun');
+      final requiredCount = validatedNativeArrayCount(count.value, 'BaZi xiao-yun');
       if (requiredCount == 0) {
         return const <BaziXiaoyun>[];
       }
@@ -333,7 +388,7 @@ final class BaziContext implements Finalizable {
         count,
       );
       _checkStatus(_bindings, fillStatus);
-      final resultCount = _validatedResultCount(count.value, requiredCount);
+      final resultCount = validatedNativeResultCount(count.value, requiredCount);
       return List.unmodifiable([
         for (var index = 0; index < resultCount; index++)
           _readXiaoyun((output + index).ref),
@@ -371,7 +426,7 @@ final class BaziContext implements Finalizable {
   }) {
     _ensureOpen();
     _requireBazi();
-    calendar._ensureOpen();
+    calendar.extensionHost.ensureOpen();
     return using((arena) {
       final output = arena<taiyin_bazi_qiyun_result>();
       final diagnostic = arena<taiyin_ephemeris_diagnostic>();
@@ -380,7 +435,8 @@ final class BaziContext implements Finalizable {
         ..taiyin_ephemeris_diagnostic_init(diagnostic);
       final status = _bindings.taiyin_bazi_calc_qiyun(
         _context,
-        calendar._context,
+        calendar.extensionHost
+            .nativeHandle<taiyin_chinese_calendar_context>(),
         writeJulianDate(arena, birthJdUt),
         writeNativeCalendar(_bindings, arena, birthCivilTime),
         _writeBaziChart(_bindings, arena, chart),
@@ -388,7 +444,7 @@ final class BaziContext implements Finalizable {
         output,
         diagnostic,
       );
-      final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
+      final mappedDiagnostic = _host.readDiagnostic(diagnostic.ref);
       _checkStatus(_bindings, status, diagnostic: mappedDiagnostic);
       return EphemerisResult(
         value: _readQiyunResult(output.ref),
@@ -425,7 +481,7 @@ final class BaziContext implements Finalizable {
         count,
       );
       _checkStatus(_bindings, countStatus);
-      final requiredCount = _validatedArrayCount(count.value, 'BaZi da-yun');
+      final requiredCount = validatedNativeArrayCount(count.value, 'BaZi da-yun');
       if (requiredCount == 0) {
         return const <BaziDayun>[];
       }
@@ -445,7 +501,7 @@ final class BaziContext implements Finalizable {
         count,
       );
       _checkStatus(_bindings, fillStatus);
-      final resultCount = _validatedResultCount(count.value, requiredCount);
+      final resultCount = validatedNativeResultCount(count.value, requiredCount);
       return List.unmodifiable([
         for (var index = 0; index < resultCount; index++)
           _readDayun((output + index).ref),
@@ -466,7 +522,7 @@ final class BaziContext implements Finalizable {
   }) {
     _ensureOpen();
     _requireBazi();
-    calendar._ensureOpen();
+    calendar.extensionHost.ensureOpen();
     return using((arena) {
       final output = arena<taiyin_bazi_renyuan_siling_result>();
       final diagnostic = arena<taiyin_ephemeris_diagnostic>();
@@ -474,7 +530,8 @@ final class BaziContext implements Finalizable {
         ..taiyin_bazi_renyuan_siling_result_init(output)
         ..taiyin_ephemeris_diagnostic_init(diagnostic);
       final status = _bindings.taiyin_bazi_calc_renyuan_siling(
-        calendar._context,
+        calendar.extensionHost
+            .nativeHandle<taiyin_chinese_calendar_context>(),
         writeJulianDate(arena, instantJdUt),
         _writeBaziChart(_bindings, arena, chart),
         tableModel.id,
@@ -482,7 +539,7 @@ final class BaziContext implements Finalizable {
         output,
         diagnostic,
       );
-      final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
+      final mappedDiagnostic = _host.readDiagnostic(diagnostic.ref);
       _checkStatus(_bindings, status, diagnostic: mappedDiagnostic);
       return EphemerisResult(
         value: _readRenyuanSilingResult(output.ref),
@@ -508,7 +565,7 @@ final class BaziContext implements Finalizable {
         count,
       );
       _checkStatus(_bindings, countStatus);
-      final requiredCount = _validatedArrayCount(
+      final requiredCount = validatedNativeArrayCount(
         count.value,
         'BaZi renyuan siling segments',
       );
@@ -528,7 +585,7 @@ final class BaziContext implements Finalizable {
         count,
       );
       _checkStatus(_bindings, fillStatus);
-      final resultCount = _validatedResultCount(count.value, requiredCount);
+      final resultCount = validatedNativeResultCount(count.value, requiredCount);
       return List.unmodifiable([
         for (var index = 0; index < resultCount; index++)
           _readRenyuanSilingSegment((output + index).ref),
@@ -559,7 +616,7 @@ final class BaziContext implements Finalizable {
         count,
       );
       _checkStatus(_bindings, countStatus);
-      final requiredCount = _validatedArrayCount(
+      final requiredCount = validatedNativeArrayCount(
         count.value,
         'BaZi chart relations',
       );
@@ -580,7 +637,7 @@ final class BaziContext implements Finalizable {
         count,
       );
       _checkStatus(_bindings, fillStatus);
-      final resultCount = _validatedResultCount(count.value, requiredCount);
+      final resultCount = validatedNativeResultCount(count.value, requiredCount);
       return List.unmodifiable([
         for (var index = 0; index < resultCount; index++)
           _readRelation((output + index).ref),
@@ -834,7 +891,7 @@ BaziQiyunResult _readQiyunResult(taiyin_bazi_qiyun_result value) {
     offsetSeconds: value.offset_seconds,
     referenceJieJdUt: readJulianDate<Ut1Scale>(value.reference_jie_jd_ut),
     startJdUt: readJulianDate<Ut1Scale>(value.start_jd_ut),
-    startCivilTime: _readCalendarDateTime(value.start_civil_time),
+    startCivilTime: readCalendarDateTime(value.start_civil_time),
   );
 }
 
@@ -850,8 +907,8 @@ BaziDayun _readDayun(taiyin_bazi_dayun value) {
     endVirtualAge: value.end_virtual_age,
     startJdUt: readJulianDate<Ut1Scale>(value.start_jd_ut),
     endJdUt: readJulianDate<Ut1Scale>(value.end_jd_ut),
-    startCivilTime: _readCalendarDateTime(value.start_civil_time),
-    endCivilTime: _readCalendarDateTime(value.end_civil_time),
+    startCivilTime: readCalendarDateTime(value.start_civil_time),
+    endCivilTime: readCalendarDateTime(value.end_civil_time),
   );
 }
 
@@ -883,35 +940,4 @@ BaziRenyuanSilingResult _readRenyuanSilingResult(
     segmentEndDay: value.segment_end_day,
     previousJieJdUt: readJulianDate<Ut1Scale>(value.previous_jie_jd_ut),
   );
-}
-
-/// Converts a native calendar struct into an [AstroDateTime] using the same
-/// second rounding the time API applies to `reverseJulianDay`.
-AstroDateTime _readCalendarDateTime(taiyin_calendar_datetime value) {
-  final minute = AstroDateTime(
-    value.year,
-    value.month,
-    value.day,
-    value.hour,
-    value.minute,
-  );
-  return minute.addNanoseconds(
-    (value.second * Duration.microsecondsPerSecond * 1000).round(),
-  );
-}
-
-int _validatedArrayCount(int count, String noun) {
-  if (count < 0) {
-    throw StateError('Native $noun returned a negative count');
-  }
-  return count;
-}
-
-int _validatedResultCount(int count, int capacity) {
-  if (count < 0 || count > capacity) {
-    throw StateError(
-      'Native array fill returned count=$count outside 0..$capacity',
-    );
-  }
-  return count;
 }

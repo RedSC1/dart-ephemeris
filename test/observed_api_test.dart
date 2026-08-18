@@ -94,7 +94,7 @@ void main() {
       test('throws with the failed target when any batch body fails', () {
         expect(
           () => taiyin.observed.batchAtUt1(
-            const [Body.sun, Body.mars],
+            const [Body.sun, Body.saturn],
             ut1,
             flags: {ObservedFlag.truePosition},
           ),
@@ -104,7 +104,7 @@ void main() {
                 .having(
                   (error) => error.diagnostic?.targetId,
                   'failed target',
-                  Body.mars.id,
+                  Body.saturn.id,
                 )
                 .having(
                   (error) => error.diagnostics,

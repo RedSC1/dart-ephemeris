@@ -7,16 +7,18 @@ import 'package:test/test.dart';
 
 import 'support/native_library.dart';
 
-/// Guards the optional-module contract: BaZi is an optional extension whose
-/// symbols do not exist in a library built without `TAIYIN_BUILD_BAZI_EXTENSION`.
-/// The package must never look up a `taiyin_bazi_*` symbol unless the loaded
-/// library advertises the BaZi capability. This file runs against the ABI-6
-/// baseline library (Chinese calendar only) to verify that discipline.
+/// Guards the optional-module contract: BaZi and Ziwei are optional
+/// extensions whose symbols do not exist in a library built without
+/// `TAIYIN_BUILD_BAZI_EXTENSION` / `TAIYIN_BUILD_ZIWEI_EXTENSION`. The core
+/// package must never look up a `taiyin_bazi_*` or `taiyin_ziwei_*` symbol;
+/// the extension packages gate their own lookups by capability (covered by
+/// their own baseline tests). This file runs against the ABI-8 baseline
+/// library (Chinese calendar only) to verify that discipline.
 void main() {
   group('optional-module symbol lookup discipline', () {
     test(
       'constructing bindings and reading load-time metadata does not touch '
-      'BaZi symbols',
+      'extension symbols',
       () {
         final library = DynamicLibrary.open(baselineLibraryPath);
         final lookedUp = <String>[];
@@ -42,14 +44,25 @@ void main() {
           reason: 'baseline library must not report the BaZi module',
         );
         expect(
+          capabilities & taiyinZiweiCapability,
+          isZero,
+          reason: 'baseline library must not report the Ziwei module',
+        );
+        expect(
           lookedUp.any((symbol) => symbol.startsWith('taiyin_bazi_')),
           isFalse,
           reason: 'BaZi symbols must not be looked up before capability gating',
         );
+        expect(
+          lookedUp.any((symbol) => symbol.startsWith('taiyin_ziwei_')),
+          isFalse,
+          reason:
+              'Ziwei symbols must not be looked up before capability gating',
+        );
       },
       skip: baselineLibraryAvailable
           ? false
-          : 'Set TAIYIN_BASELINE_LIBRARY to a baseline ABI-6 library.',
+          : 'Set TAIYIN_BASELINE_LIBRARY to a baseline ABI-8 library.',
     );
 
     test(
@@ -58,34 +71,29 @@ void main() {
         final runtime = Ephemeris.open(libraryPath: baselineLibraryPath);
         final context = runtime.createContext();
         expect(context, isNotNull);
-        // The Chinese calendar is always built and works.
+        // The Chinese calendar is always built and works, and since the
+        // calendar-ABI restructure Ganzhi (including four pillars) is always
+        // built too.
         final year = context.chineseCalendar
             .calcYearUt(JulianDate<Ut1Scale>.fromDouble(2460348.0))
             .value;
         expect(year.solarTermCount, 25);
-        // fourPillars needs the Ganzhi extension (its entry point is always
-        // exported but returns UNSUPPORTED without it); the API must refuse
-        // with UnsupportedError.
+        final pillars = context.chineseCalendar
+            .fourPillars(
+              instantUtc: JulianDate<UtcScale>.fromDouble(2460351.0),
+              virtualTime: AstroDateTime(2024, 2, 10, 12),
+            )
+            .value;
+        expect(pillars.year.stemId, inInclusiveRange(0, 9));
         expect(
-          () => context.chineseCalendar.fourPillars(
-            instantUtc: JulianDate<UtcScale>.fromDouble(2460351.0),
-            virtualTime: AstroDateTime(2024, 2, 10, 12),
-          ),
-          throwsUnsupportedError,
+          context.ganzhi.make(stemId: 0, branchId: 0).stemId,
+          0,
         );
-        // Ganzhi and BaZi are optional: the API must refuse before any symbol
-        // lookup on an extension-free library.
-        expect(
-          () => context.ganzhi.make(stemId: 0, branchId: 0),
-          throwsUnsupportedError,
-        );
-        expect(() => context.bazi.calcLiunian(2024), throwsUnsupportedError);
-        expect(() => context.createBazi(), throwsUnsupportedError);
         context.close();
       },
       skip: baselineLibraryAvailable
           ? false
-          : 'Set TAIYIN_BASELINE_LIBRARY to a baseline ABI-6 library.',
+          : 'Set TAIYIN_BASELINE_LIBRARY to a baseline ABI-8 library.',
     );
   });
 }

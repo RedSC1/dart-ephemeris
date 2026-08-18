@@ -87,25 +87,25 @@ void main() {
       });
 
       test('preserves successful targets when a batch target fails', () {
-        const bodies = [Body.sun, Body.mars];
+        const bodies = [Body.sun, Body.saturn];
         final batch = taiyin.position.batchAtTt(bodies, tt);
 
         expect(batch, hasLength(2));
         expect(batch[0].diagnostic.status, 0);
         expect(batch[0].value.values.every((value) => value.isFinite), isTrue);
         expect(batch[1].diagnostic.status, isNot(0));
-        expect(batch[1].diagnostic.targetId, Body.mars.id);
+        expect(batch[1].diagnostic.targetId, Body.saturn.id);
       });
 
       test('attaches native diagnostics to single-target failures', () {
         expect(
-          () => taiyin.position.atTt(Body.mars, tt),
+          () => taiyin.position.atTt(Body.saturn, tt),
           throwsA(
             isA<EphemerisError>()
                 .having(
                   (error) => error.diagnostic?.targetId,
                   'diagnostic target',
-                  Body.mars.id,
+                  Body.saturn.id,
                 )
                 .having(
                   (error) => error.diagnostic?.status,

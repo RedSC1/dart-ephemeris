@@ -84,13 +84,19 @@ final class Time {
     });
   }
 
-  /// Selects how UTC conversions obtain UT1 and Delta-T.
+  /// Allows UTC entry points to fall back to an approximate UT1 plus
+  /// Delta-T estimate when UTC/EOP data is missing or out of range.
   ///
-  /// Context configuration must finish before concurrent calculations begin.
-  void setPolicy(TimeScalePolicy policy) {
+  /// UTC entry points are strict by default. This never changes the
+  /// semantics of UT1 entry points. Context configuration must finish before
+  /// concurrent calculations begin.
+  void setAllowUtcOutOfRangeEstimate(bool allow) {
     _ensureOpen();
     _checkStatus(
-      _bindings.taiyin_context_set_time_scale_policy(_context, policy.id),
+      _bindings.taiyin_context_set_allow_utc_out_of_range_estimate(
+        _context,
+        allow ? 1 : 0,
+      ),
     );
   }
 

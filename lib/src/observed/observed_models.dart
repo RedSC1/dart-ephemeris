@@ -5,35 +5,38 @@ enum ObservedFlag {
   /// Calculate velocity and horizontal-coordinate rates.
   speed(1 << 0),
 
+  /// Return the geometric position without light-time or apparent corrections.
+  truePosition(1 << 4),
+
+  /// Disable aberration in the apparent-position path.
+  noAberration(1 << 5),
+
+  /// Disable gravitational deflection in the apparent-position path.
+  noGravitationalDeflection(1 << 6),
+
+  /// Apply light-time but omit aberration, deflection, and Shapiro delay.
+  astrometric(1 << 7),
+
   /// Apply the context's topocentric observer.
-  topocentric(1 << 1),
+  topocentric(1 << 9),
+
+  /// Allow a barycenter approximation for satellite positions.
+  allowBarycenterApproximation(1 << 10),
 
   /// Calculate azimuth, altitude, and distance.
   ///
   /// This requires [topocentric] and an observer location in the context.
-  horizontal(1 << 2),
+  horizontal(1 << 32),
 
   /// Calculate refracted horizontal coordinates.
   ///
   /// This requires [topocentric], an observer location, and usable atmosphere
   /// data. Horizontal coordinates are calculated even when [horizontal] is
   /// omitted.
-  refraction(1 << 3),
-
-  /// Return the geometric position without light-time or apparent corrections.
-  truePosition(1 << 4),
-
-  /// Apply light-time but omit aberration, deflection, and Shapiro delay.
-  astrometric(1 << 5),
-
-  /// Disable aberration in the apparent-position path.
-  noAberration(1 << 6),
-
-  /// Disable gravitational deflection in the apparent-position path.
-  noGravitationalDeflection(1 << 7),
+  refraction(1 << 33),
 
   /// Do not use standard-atmosphere fallback for refraction.
-  strictMeteorology(1 << 32);
+  strictMeteorology(1 << 34);
 
   const ObservedFlag(this.mask);
 

@@ -124,7 +124,7 @@ const _solarRouteMaximumSampleCount = 4096;
 ///
 /// A local method samples the observer location already configured on the
 /// owning [EphemerisContext]. Native calculation coordinates and contact times
-/// cross the ABI-6 boundary as split Julian dates.
+/// cross the ABI-8 boundary as split Julian dates.
 final class EclipseApi {
   EclipseApi._(
     this._bindings,
@@ -1382,6 +1382,74 @@ final class EclipseApi {
     });
   }
 
+  /// Calculates lightweight instantaneous global solar-eclipse geometry at TT
+  /// [coordinate].
+  ///
+  /// Only [PositionFlag.truePosition] and
+  /// [SolarEclipseRouteOption.lunarLimbCorrection] are supported.
+  EphemerisResult<SolarEclipseWhere> solarEclipseWhereAtTt(
+    JulianDate<TtScale> coordinate, {
+    Set<PositionFlag> positionFlags = const {},
+    Set<SolarEclipseRouteOption> options = const {},
+  }) {
+    _ensureOpen();
+    final mask = _solarRouteMask(positionFlags, options);
+    return using((arena) {
+      final coordinateJd = writeJulianDate(arena, coordinate);
+      final output = arena<taiyin_solar_eclipse_where>();
+      final diagnostic = arena<taiyin_ephemeris_diagnostic>();
+      _bindings.taiyin_solar_eclipse_where_init(output);
+      _bindings.taiyin_ephemeris_diagnostic_init(diagnostic);
+      final status = _bindings.taiyin_compute_solar_eclipse_where_tt(
+        _context,
+        coordinateJd,
+        mask,
+        output,
+        diagnostic,
+      );
+      final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
+      _checkStatus(status, mappedDiagnostic);
+      return EphemerisResult(
+        value: _readSolarEclipseWhere(output.ref),
+        diagnostic: mappedDiagnostic,
+      );
+    });
+  }
+
+  /// Calculates lightweight instantaneous global solar-eclipse geometry at
+  /// UT1 [coordinate].
+  ///
+  /// Only [PositionFlag.truePosition] and
+  /// [SolarEclipseRouteOption.lunarLimbCorrection] are supported.
+  EphemerisResult<SolarEclipseWhere> solarEclipseWhereAtUt1(
+    JulianDate<Ut1Scale> coordinate, {
+    Set<PositionFlag> positionFlags = const {},
+    Set<SolarEclipseRouteOption> options = const {},
+  }) {
+    _ensureOpen();
+    final mask = _solarRouteMask(positionFlags, options);
+    return using((arena) {
+      final coordinateJd = writeJulianDate(arena, coordinate);
+      final output = arena<taiyin_solar_eclipse_where>();
+      final diagnostic = arena<taiyin_ephemeris_diagnostic>();
+      _bindings.taiyin_solar_eclipse_where_init(output);
+      _bindings.taiyin_ephemeris_diagnostic_init(diagnostic);
+      final status = _bindings.taiyin_compute_solar_eclipse_where_ut(
+        _context,
+        coordinateJd,
+        mask,
+        output,
+        diagnostic,
+      );
+      final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
+      _checkStatus(status, mappedDiagnostic);
+      return EphemerisResult(
+        value: _readSolarEclipseWhere(output.ref),
+        diagnostic: mappedDiagnostic,
+      );
+    });
+  }
+
   /// Samples global solar-eclipse route geometry from TT [start] through [end].
   ///
   /// Both endpoints are included when they land on [stepMinutes]. The range
@@ -2179,6 +2247,27 @@ final class EclipseApi {
       durationSeconds: _finiteOrNull(value.duration_seconds),
       sunAltitudeDegrees: _finiteOrNull(value.sun_altitude_deg),
       sunAzimuthDegrees: _finiteOrNull(value.sun_azimuth_deg),
+    );
+  }
+
+  SolarEclipseWhere _readSolarEclipseWhere(taiyin_solar_eclipse_where value) {
+    return SolarEclipseWhere(
+      coordinateTt: readJulianDate<TtScale>(value.jd_tt),
+      coordinateUt1: readJulianDate<Ut1Scale>(value.jd_ut),
+      centerLine: _readSolarEclipseRoutePoint(value.center_line),
+      penumbralNorthLimit: _readSolarEclipseRoutePoint(
+        value.penumbral_north_limit,
+      ),
+      penumbralSouthLimit: _readSolarEclipseRoutePoint(
+        value.penumbral_south_limit,
+      ),
+      northLimit: _readSolarEclipseRoutePoint(value.north_limit),
+      southLimit: _readSolarEclipseRoutePoint(value.south_limit),
+      magnitude: value.magnitude,
+      obscuration: value.obscuration,
+      centerSeparationDegrees: value.center_separation_deg,
+      sunAngularRadiusDegrees: value.sun_angular_radius_deg,
+      moonAngularRadiusDegrees: value.moon_angular_radius_deg,
     );
   }
 

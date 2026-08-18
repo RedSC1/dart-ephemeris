@@ -1,0 +1,797 @@
+# Generated from the author's MIT-licensed ziwei_core 0.13.0 defaults.
+# All placement algorithms are flattened offline into final answer tables.
+format_version = 1
+
+[[brightness]]
+star = "ziwei"
+option = "option1"
+values = [2, 6, 6, 5, 4, 5, 6, 6, 5, 5, 4, 5]
+
+[[brightness]]
+star = "tianji"
+option = "option1"
+values = [6, 0, 4, 5, 3, 2, 6, 0, 4, 5, 3, 2]
+
+[[brightness]]
+star = "taiyang"
+option = "option1"
+values = [0, 1, 5, 6, 5, 5, 5, 4, 4, 2, 1, 0]
+
+[[brightness]]
+star = "wuqu"
+option = "option1"
+values = [5, 6, 4, 3, 6, 2, 5, 6, 4, 3, 6, 2]
+
+[[brightness]]
+star = "tiantong"
+option = "option1"
+values = [5, 1, 3, 2, 2, 6, 0, 1, 5, 2, 2, 6]
+
+[[brightness]]
+star = "lianzhen"
+option = "option1"
+values = [2, 3, 6, 2, 3, 0, 2, 3, 6, 2, 3, 0]
+
+[[brightness]]
+star = "tianfu"
+option = "option1"
+values = [6, 6, 6, 4, 6, 4, 5, 6, 4, 5, 6, 4]
+
+[[brightness]]
+star = "taiyin"
+option = "option1"
+values = [6, 6, 5, 0, 0, 0, 1, 1, 3, 5, 5, 6]
+
+[[brightness]]
+star = "tanlang"
+option = "option1"
+values = [5, 6, 2, 3, 6, 0, 5, 6, 2, 3, 6, 0]
+
+[[brightness]]
+star = "jumen"
+option = "option1"
+values = [5, 1, 6, 6, 0, 5, 5, 1, 6, 6, 0, 5]
+
+[[brightness]]
+star = "tianxiang"
+option = "option1"
+values = [6, 6, 6, 0, 4, 4, 6, 4, 6, 0, 4, 4]
+
+[[brightness]]
+star = "tianliang"
+option = "option1"
+values = [6, 5, 6, 6, 6, 4, 6, 5, 0, 4, 6, 0]
+
+[[brightness]]
+star = "qisha"
+option = "option1"
+values = [5, 6, 6, 5, 6, 2, 5, 6, 6, 5, 6, 2]
+
+[[brightness]]
+star = "pojun"
+option = "option1"
+values = [6, 5, 4, 0, 5, 2, 6, 5, 4, 0, 5, 2]
+
+[[brightness]]
+star = "zuofu"
+option = "option1"
+values = [5, 6, 5, 5, 6, 5, 5, 6, 5, 5, 6, 5]
+
+[[brightness]]
+star = "youbi"
+option = "option1"
+values = [5, 6, 5, 5, 6, 5, 5, 6, 5, 5, 6, 5]
+
+[[brightness]]
+star = "wenchang"
+option = "option1"
+values = [5, 6, 0, 2, 5, 6, 0, 2, 5, 6, 0, 5]
+
+[[brightness]]
+star = "wenqu"
+option = "option1"
+values = [5, 6, 0, 2, 5, 6, 0, 2, 5, 6, 0, 5]
+
+[[brightness]]
+star = "tiankui"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+[[brightness]]
+star = "tianyue"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "lucun"
+option = "option1"
+values = [6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6]
+
+[[brightness]]
+star = "tianma"
+option = "option1"
+values = [-1, -1, 5, -1, -1, 2, -1, -1, 5, -1, -1, 2]
+
+[[brightness]]
+star = "qingyang"
+option = "option1"
+values = [0, 6, 0, 0, 6, 0, 0, 6, 0, 0, 6, 0]
+
+[[brightness]]
+star = "tuoluo"
+option = "option1"
+values = [0, 6, 0, 0, 6, 0, 0, 6, 0, 0, 6, 0]
+
+[[brightness]]
+star = "huoxing"
+option = "option1"
+values = [0, 3, 6, 4, 0, 3, 6, 4, 0, 3, 6, 4]
+
+[[brightness]]
+star = "lingxing"
+option = "option1"
+values = [0, 3, 6, 4, 0, 3, 6, 4, 0, 3, 6, 4]
+
+[[brightness]]
+star = "dikong"
+option = "option1"
+values = [0, 0, 0, 0, 0, 6, 0, 0, 0, 0, 0, 6]
+
+[[brightness]]
+star = "dijie"
+option = "option1"
+values = [0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 6]
+
+[[brightness]]
+star = "hongluan"
+option = "option1"
+values = [0, 6, 6, 6, 6, 6, 0, 6, 6, 0, 6, 6]
+
+[[brightness]]
+star = "tianxi"
+option = "option1"
+values = [0, 6, 6, 6, 6, 6, 0, 6, 6, 0, 6, 6]
+
+[[brightness]]
+star = "tianyao"
+option = "option1"
+values = [0, 2, 0, 6, 2, 0, 2, 2, 0, 6, 6, 6]
+
+[[brightness]]
+star = "tianxing"
+option = "option1"
+values = [1, 1, 3, 3, 1, 1, 1, 1, 3, 3, 1, 1]
+
+[[brightness]]
+star = "xianchi"
+option = "option1"
+values = [0, -1, -1, 5, -1, -1, 0, -1, -1, 5, -1, -1]
+
+[[brightness]]
+star = "santai"
+option = "option1"
+values = [5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5]
+
+[[brightness]]
+star = "bazuo"
+option = "option1"
+values = [5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5]
+
+[[brightness]]
+star = "enguang"
+option = "option1"
+values = [5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5]
+
+[[brightness]]
+star = "tiangui"
+option = "option1"
+values = [5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5]
+
+[[brightness]]
+star = "taifu"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "fenggao"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "tiancai"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "tianshou"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "longchi"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "fengge"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "guchen"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "guasu"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "xunkong"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "fuxun"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "jiekong"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "fujie"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "tiankong"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "tianshang"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "tianshi"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "tianku"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "tianxu"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "tianguan"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "tianfu_minor"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "yinsha"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "tianwu"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "tianyue_minor"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "posui"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "feilian"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "tianchu"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "jieshen"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "nianjie"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "tiande"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "yuede"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "dahao"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "boshi_boshi12"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "lishi_boshi12"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "qinglong_boshi12"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "xiaohao_boshi12"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "jiangjun_boshi12"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "zoushu_boshi12"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "feilian_boshi12"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "xishen_boshi12"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "bingfu_boshi12"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "dahao_boshi12"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "fubing_boshi12"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "guanfu_boshi12"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "jiangxing_jiangqian12"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "panan_jiangqian12"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "suiyi_jiangqian12"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "xishen_jiangqian12"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "huagai_jiangqian12"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "jiesha_jiangqian12"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "zaisha_jiangqian12"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "tiansha_jiangqian12"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "zhibei_jiangqian12"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "xianchi_jiangqian12"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "yuesha_jiangqian12"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "wangshen_jiangqian12"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "suijian_suijian12"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "huiqi_suijian12"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "sangmen_suijian12"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "guansuo_suijian12"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "guanfu_suijian12"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "xiaohao_suijian12"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "suipo_suijian12"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "longde_suijian12"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "baihu_suijian12"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "tiande_suijian12"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "diaoke_suijian12"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "bingfu_suijian12"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "changsheng"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "muyu"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "guandai"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "linguan"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "diwang"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "shuai"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "bing"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "si"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "mu"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "jue"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "tai"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "yang"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "flow_lucun"
+option = "option1"
+values = [6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6]
+
+[[brightness]]
+star = "flow_tiankui"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "flow_tianyue"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "flow_wenchang"
+option = "option1"
+values = [5, 6, 0, 2, 5, 6, 0, 2, 5, 6, 0, 5]
+
+[[brightness]]
+star = "flow_wenqu"
+option = "option1"
+values = [5, 6, 0, 2, 5, 6, 0, 2, 5, 6, 0, 5]
+
+[[brightness]]
+star = "flow_qingyang"
+option = "option1"
+values = [0, 6, 0, 0, 6, 0, 0, 6, 0, 0, 6, 0]
+
+[[brightness]]
+star = "flow_tuoluo"
+option = "option1"
+values = [0, 6, 0, 0, 6, 0, 0, 6, 0, 0, 6, 0]
+
+[[brightness]]
+star = "flow_tianma"
+option = "option1"
+values = [-1, -1, 5, -1, -1, 2, -1, -1, 5, -1, -1, 2]
+
+[[brightness]]
+star = "flow_jiangxing_jiangqian12"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "flow_panan_jiangqian12"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "flow_suiyi_jiangqian12"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "flow_xishen_jiangqian12"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "flow_huagai_jiangqian12"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "flow_jiesha_jiangqian12"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "flow_zaisha_jiangqian12"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "flow_tiansha_jiangqian12"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "flow_zhibei_jiangqian12"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "flow_xianchi_jiangqian12"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "flow_yuesha_jiangqian12"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "flow_wangshen_jiangqian12"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "flow_boshi_boshi12"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "flow_lishi_boshi12"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "flow_qinglong_boshi12"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "flow_xiaohao_boshi12"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "flow_jiangjun_boshi12"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "flow_zoushu_boshi12"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "flow_feilian_boshi12"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "flow_xishen_boshi12"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "flow_bingfu_boshi12"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "flow_dahao_boshi12"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "flow_fubing_boshi12"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "flow_guanfu_boshi12"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "flow_suijian_suijian12"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "flow_huiqi_suijian12"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "flow_sangmen_suijian12"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "flow_guansuo_suijian12"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "flow_guanfu_suijian12"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "flow_xiaohao_suijian12"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "flow_suipo_suijian12"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "flow_longde_suijian12"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "flow_baihu_suijian12"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "flow_tiande_suijian12"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "flow_diaoke_suijian12"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+
+[[brightness]]
+star = "flow_bingfu_suijian12"
+option = "option1"
+values = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]

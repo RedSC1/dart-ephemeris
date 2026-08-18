@@ -1,5 +1,6 @@
 import 'dart:ffi';
 import 'dart:io';
+import 'dart:isolate';
 import 'dart:math' as math;
 import 'dart:typed_data';
 
@@ -7,7 +8,6 @@ import 'package:ffi/ffi.dart';
 
 import 'bindings/taiyin_bindings.g.dart';
 import 'astrology/astrology_models.dart';
-import 'bazi/bazi_models.dart';
 import 'chinese_calendar/chinese_calendar_models.dart';
 import 'context/context_models.dart';
 import 'ganzhi/ganzhi_models.dart';
@@ -23,6 +23,7 @@ import 'occultation/occultation_models.dart';
 import 'orbital/orbital_models.dart';
 import 'phenomena/phenomena_models.dart';
 import 'position/position_api.dart';
+import 'runtime/runtime_models.dart';
 import 'solar_time/solar_time_models.dart';
 import 'star/star_models.dart';
 import 'time/astro_date_time.dart';
@@ -32,10 +33,10 @@ import 'time/time_models.dart';
 import 'time/time_scale.dart';
 import 'visibility/visibility_models.dart';
 
-part 'bazi/bazi_api.dart';
 part 'chinese_calendar/chinese_calendar_api.dart';
 part 'context/context_api.dart';
 part 'eclipse/eclipse_api.dart';
+part 'extension_host.dart';
 part 'ganzhi/ganzhi_api.dart';
 part 'events/event_api.dart';
 part 'occultation/occultation_api.dart';
@@ -70,7 +71,8 @@ enum Capability {
   splitTime(taiyinSplitTimeCapability),
   chineseCalendar(taiyinChineseCalendarCapability),
   bazi(taiyinBaziCapability),
-  ganzhiCalendar(taiyinGanzhiCalendarCapability);
+  ganzhiCalendar(taiyinGanzhiCalendarCapability),
+  ziwei(taiyinZiweiCapability);
 
   const Capability(this.mask);
 
@@ -329,7 +331,6 @@ final class EphemerisContext implements Finalizable {
   /// Every calendar context created from this context, tracked so closing the
   /// owner invalidates caller-created children that borrow its native state.
   final Set<ChineseCalendarContext> _calendarChildren = {};
-  BaziContext? _bazi;
   bool _closed = false;
 
   /// Creates an independent native context without reinitializing the runtime.
@@ -380,26 +381,10 @@ final class EphemerisContext implements Finalizable {
     return child;
   }
 
-  /// A BaZi context using the default astronomical configuration.
-  ///
-  /// The first access creates and caches the native context; [close] releases
-  /// it together with the owning context. A cache entry closed by the caller
-  /// is replaced on the next access.
-  BaziContext get bazi {
-    final cached = _bazi;
-    if (cached != null && !cached.isClosed) return cached;
-    return _bazi = createBazi();
-  }
-
-  /// Creates an independent BaZi context owned by the caller.
-  ///
-  /// Call [BaziContext.close] when it is no longer needed.
-  BaziContext createBazi({
-    BaziContextConfig config = const BaziContextConfig(),
-  }) {
-    _ensureOpen();
-    return BaziContext._create(_nativeState, _bindings, config);
-  }
+  /// FFI handle for the official extension packages (for example
+  /// `package:taiyin_bazi` and `package:taiyin_ziwei`).
+  TaiyinExtensionHost get extensionHost =>
+      TaiyinExtensionHost._(_nativeState, _context.cast(), _ensureOpen);
 
   /// Calculates a position at a TT Julian date.
   Position positionTt(
@@ -423,12 +408,10 @@ final class EphemerisContext implements Finalizable {
   void close() {
     if (_closed) return;
     _closed = true;
-    // Destroy borrowed child contexts before the owning native context.
     for (final child in List.of(_calendarChildren)) {
       child.close();
     }
     _calendarChildren.clear();
-    _bazi?.close();
     _contextFinalizer.detach(this);
     _bindings.taiyin_context_destroy(_context);
   }
@@ -458,21 +441,6 @@ final class _NativeLibraryState {
   final Map<int, CustomAyanamshaRegistration> customAyanamshaRegistrations = {};
   final Map<int, CustomHouseSystemRegistration> customHouseSystemRegistrations =
       {};
-
-  NativeFinalizer? _baziFinalizer;
-
-  /// The BaZi context finalizer, created lazily and only after the BaZi
-  /// capability has been confirmed. The symbol does not exist in a build
-  /// without `TAIYIN_BUILD_BAZI_EXTENSION=ON`, so it must never be looked up
-  /// otherwise.
-  NativeFinalizer? get baziFinalizer {
-    if ((capabilities & taiyinBaziCapability) == 0) return null;
-    return _baziFinalizer ??= NativeFinalizer(
-      _library.lookup<NativeFunction<Void Function(Pointer<Void>)>>(
-        'taiyin_bazi_context_destroy',
-      ),
-    );
-  }
 }
 
 // NativeFinalizer itself must stay reachable until its attachments have run.
@@ -490,11 +458,29 @@ DynamicLibrary _openLibrary(String? libraryPath) {
 
 DynamicLibrary _openDefaultLibrary() {
   if (Platform.isIOS) return DynamicLibrary.process();
+  final bundled = _bundledLibraryPath();
+  if (bundled != null) return DynamicLibrary.open(bundled);
   // Windows shared libraries are named by C ABI version; macOS and Linux build
   // and install trees provide versionless symlinks.
-  if (Platform.isWindows) return DynamicLibrary.open('taiyin-5.dll');
+  if (Platform.isWindows) return DynamicLibrary.open('taiyin-8.dll');
   if (Platform.isMacOS) return DynamicLibrary.open('libtaiyin.dylib');
   return DynamicLibrary.open('libtaiyin.so');
+}
+
+/// The shared library bundled inside the package, when it ships one for this
+/// platform.
+String? _bundledLibraryPath() {
+  final fileName = Platform.isWindows
+      ? 'taiyin-$taiyinSupportedAbiVersion.dll'
+      : Platform.isMacOS
+      ? 'libtaiyin.dylib'
+      : 'libtaiyin.so';
+  final resolved = Isolate.resolvePackageUriSync(
+    Uri.parse('package:taiyin/native/$fileName'),
+  );
+  if (resolved == null || resolved.scheme != 'file') return null;
+  final path = resolved.toFilePath();
+  return File(path).existsSync() ? path : null;
 }
 
 _NativeLibraryState _nativeLibraryStateFor(DynamicLibrary library) {
@@ -509,12 +495,6 @@ _NativeLibraryState _nativeLibraryStateFor(DynamicLibrary library) {
       capabilities: capabilities,
     );
     validateTaiyinRequiredSymbols(providesSymbol: library.providesSymbol);
-    if ((capabilities & taiyinBaziCapability) != 0) {
-      validateTaiyinRequiredSymbols(
-        providesSymbol: library.providesSymbol,
-        requiredSymbols: taiyinBaziSymbols,
-      );
-    }
     return _NativeLibraryState(
       bindings,
       NativeFinalizer(destroy),

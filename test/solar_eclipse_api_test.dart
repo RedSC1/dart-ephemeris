@@ -443,6 +443,28 @@ void main() {
     );
 
     test(
+      'computes lightweight instantaneous global geometry with where',
+      () {
+        final centerUt = JulianDate<Ut1Scale>.fromDouble(2460409.262039739);
+        final centerTt = JulianDate<TtScale>.fromDouble(
+          2460409.262039739 + 69 / 86400,
+        );
+        final whereUt = context.eclipses.solarEclipseWhereAtUt1(centerUt).value;
+        final whereTt = context.eclipses.solarEclipseWhereAtTt(centerTt).value;
+
+        expect(whereUt.magnitude, greaterThan(1));
+        expect(whereUt.centerLine.intersectsEarth, isTrue);
+        expect(whereUt.centerSeparationDegrees, isNonNegative);
+        expect(whereUt.sunAngularRadiusDegrees, greaterThan(0));
+        expect(whereUt.moonAngularRadiusDegrees, greaterThan(0));
+        expect(
+          whereTt.magnitude,
+          closeTo(whereUt.magnitude, 1e-6),
+        );
+      },
+    );
+
+    test(
       'computes global solar-eclipse route rows and inclusive route samples',
       () {
         final centerUt = JulianDate<Ut1Scale>.fromDouble(2460409.262039739);
