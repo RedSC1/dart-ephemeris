@@ -161,99 +161,102 @@ final class EphemerisContext implements Finalizable {
         _ensureOpen,
         (status) => _checkStatus(_bindings, status),
       );
-      astrology = AstrologyApi._(
-        _bindings,
-        _context,
-        _ensureOpen,
-        (status, diagnostic) =>
-            _checkStatus(_bindings, status, diagnostic: diagnostic),
-      );
-      position = PositionApi.internal(
-        _bindings,
-        _context,
-        _ensureOpen,
-        (status, diagnostic) =>
-            _checkStatus(_bindings, status, diagnostic: diagnostic),
-      );
-      observed = ObservedApi._(
-        _bindings,
-        _context,
-        _ensureOpen,
-        (status, diagnostic, diagnostics) => _checkStatus(
+      astrology = AstrologyApi._(_bindings, _context, _ensureOpen, (
+        status,
+        diagnostic,
+      ) {
+        if (diagnostic != null) _recordDiagnostic(diagnostic);
+        _checkStatus(_bindings, status, diagnostic: diagnostic);
+      });
+      position = PositionApi.internal(_bindings, _context, _ensureOpen, (
+        status,
+        diagnostic,
+      ) {
+        if (diagnostic != null) _recordDiagnostic(diagnostic);
+        _checkStatus(_bindings, status, diagnostic: diagnostic);
+      });
+      observed = ObservedApi._(_bindings, _context, _ensureOpen, (
+        status,
+        diagnostic,
+        diagnostics,
+      ) {
+        if (diagnostic != null) _recordDiagnostic(diagnostic);
+        _checkStatus(
           _bindings,
           status,
           diagnostic: diagnostic,
           diagnostics: diagnostics,
-        ),
-      );
-      orbits = OrbitalApi._(
-        _bindings,
-        _context,
-        _ensureOpen,
-        (status, diagnostic) =>
-            _checkStatus(_bindings, status, diagnostic: diagnostic),
-      );
-      phenomena = PhenomenaApi._(
-        _bindings,
-        _context,
-        _ensureOpen,
-        (status, diagnostic) =>
-            _checkStatus(_bindings, status, diagnostic: diagnostic),
-      );
-      solarTime = SolarTimeApi._(
-        _bindings,
-        _context,
-        _ensureOpen,
-        (status, diagnostic) =>
-            _checkStatus(_bindings, status, diagnostic: diagnostic),
-      );
-      visibility = VisibilityApi._(
-        _bindings,
-        _context,
-        _ensureOpen,
-        (status, diagnostic) =>
-            _checkStatus(_bindings, status, diagnostic: diagnostic),
-      );
-      heliacal = HeliacalApi._(
-        _bindings,
-        _context,
-        _ensureOpen,
-        (status, diagnostic) =>
-            _checkStatus(_bindings, status, diagnostic: diagnostic),
-      );
-      events = EventsApi._(
-        _bindings,
-        _context,
-        _ensureOpen,
-        (status, diagnostic) =>
-            _checkStatus(_bindings, status, diagnostic: diagnostic),
-      );
-      eclipses = EclipseApi._(
-        _bindings,
-        _context,
-        _ensureOpen,
-        (status, diagnostic) =>
-            _checkStatus(_bindings, status, diagnostic: diagnostic),
-      );
-      occultation = OccultationApi._(
-        _bindings,
-        _context,
-        _ensureOpen,
-        (status, diagnostic) =>
-            _checkStatus(_bindings, status, diagnostic: diagnostic),
-      );
-      stars = StarApi._(
-        _bindings,
-        _context,
-        _ensureOpen,
-        (status, diagnostic, diagnostics) => _checkStatus(
+        );
+      });
+      orbits = OrbitalApi._(_bindings, _context, _ensureOpen, (
+        status,
+        diagnostic,
+      ) {
+        if (diagnostic != null) _recordDiagnostic(diagnostic);
+        _checkStatus(_bindings, status, diagnostic: diagnostic);
+      });
+      phenomena = PhenomenaApi._(_bindings, _context, _ensureOpen, (
+        status,
+        diagnostic,
+      ) {
+        if (diagnostic != null) _recordDiagnostic(diagnostic);
+        _checkStatus(_bindings, status, diagnostic: diagnostic);
+      });
+      solarTime = SolarTimeApi._(_bindings, _context, _ensureOpen, (
+        status,
+        diagnostic,
+      ) {
+        if (diagnostic != null) _recordDiagnostic(diagnostic);
+        _checkStatus(_bindings, status, diagnostic: diagnostic);
+      });
+      visibility = VisibilityApi._(_bindings, _context, _ensureOpen, (
+        status,
+        diagnostic,
+      ) {
+        if (diagnostic != null) _recordDiagnostic(diagnostic);
+        _checkStatus(_bindings, status, diagnostic: diagnostic);
+      });
+      heliacal = HeliacalApi._(_bindings, _context, _ensureOpen, (
+        status,
+        diagnostic,
+      ) {
+        if (diagnostic != null) _recordDiagnostic(diagnostic);
+        _checkStatus(_bindings, status, diagnostic: diagnostic);
+      });
+      events = EventsApi._(_bindings, _context, _ensureOpen, (
+        status,
+        diagnostic,
+      ) {
+        if (diagnostic != null) _recordDiagnostic(diagnostic);
+        _checkStatus(_bindings, status, diagnostic: diagnostic);
+      });
+      eclipses = EclipseApi._(_bindings, _context, _ensureOpen, (
+        status,
+        diagnostic,
+      ) {
+        if (diagnostic != null) _recordDiagnostic(diagnostic);
+        _checkStatus(_bindings, status, diagnostic: diagnostic);
+      });
+      occultation = OccultationApi._(_bindings, _context, _ensureOpen, (
+        status,
+        diagnostic,
+      ) {
+        if (diagnostic != null) _recordDiagnostic(diagnostic);
+        _checkStatus(_bindings, status, diagnostic: diagnostic);
+      });
+      stars = StarApi._(_bindings, _context, _ensureOpen, (
+        status,
+        diagnostic,
+        diagnostics,
+      ) {
+        if (diagnostic != null) _recordDiagnostic(diagnostic);
+        _checkStatus(
           _bindings,
           status,
           diagnostic: diagnostic,
           diagnostics: diagnostics,
-        ),
-        observed,
-      );
+        );
+      }, observed);
       ganzhi = GanzhiApi._(_bindings, _nativeState.capabilities);
     } catch (_) {
       if (finalizerAttached) {
@@ -327,6 +330,19 @@ final class EphemerisContext implements Finalizable {
   late final StarApi stars;
   late final GanzhiApi ganzhi;
   ChineseCalendarContext? _chineseCalendar;
+  EphemerisDiagnostic? _lastDiagnostic;
+
+  /// The diagnostic snapshot published by the most recent operation that
+  /// produced one, or null when no such operation has run yet.
+  ///
+  /// Diagnostics describe the route a calculation took (method, frame, and
+  /// time-scale conversions); failures also publish their diagnostic here
+  /// before throwing.
+  EphemerisDiagnostic? get lastDiagnostic => _lastDiagnostic;
+
+  void _recordDiagnostic(EphemerisDiagnostic diagnostic) {
+    _lastDiagnostic = diagnostic;
+  }
 
   /// Every calendar context created from this context, tracked so closing the
   /// owner invalidates caller-created children that borrow its native state.
@@ -383,8 +399,12 @@ final class EphemerisContext implements Finalizable {
 
   /// FFI handle for the official extension packages (for example
   /// `package:taiyin_bazi` and `package:taiyin_ziwei`).
-  TaiyinExtensionHost get extensionHost =>
-      TaiyinExtensionHost._(_nativeState, _context.cast(), _ensureOpen);
+  TaiyinExtensionHost get extensionHost => TaiyinExtensionHost._(
+    _nativeState,
+    _context.cast(),
+    _ensureOpen,
+    _recordDiagnostic,
+  );
 
   /// Calculates a position at a TT Julian date.
   Position positionTt(
@@ -392,7 +412,7 @@ final class EphemerisContext implements Finalizable {
     JulianDate<TtScale> julianDate, {
     Set<PositionFlag> flags = const {},
   }) {
-    return position.atTt(body, julianDate, flags: flags).value;
+    return position.atTt(body, julianDate, flags: flags);
   }
 
   /// Calculates a position at a UT Julian date.
@@ -401,7 +421,7 @@ final class EphemerisContext implements Finalizable {
     JulianDate<Ut1Scale> julianDate, {
     Set<PositionFlag> flags = const {},
   }) {
-    return position.atUt1(body, julianDate, flags: flags).value;
+    return position.atUt1(body, julianDate, flags: flags);
   }
 
   /// Releases the owned native context. Calling this more than once is safe.

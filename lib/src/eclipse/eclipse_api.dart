@@ -139,7 +139,7 @@ final class EclipseApi {
   final _EclipseStatusChecker _checkStatus;
 
   /// Solves the lunar-eclipse lunation nearest [estimate].
-  EphemerisResult<LunarEclipseResult<TtScale>> solveLunarAtTt(
+  LunarEclipseResult<TtScale> solveLunarAtTt(
     JulianDate<TtScale> estimate, {
     Set<PositionFlag> positionFlags = const {},
     Set<LunarEclipseSolveOption> options = const {},
@@ -161,7 +161,7 @@ final class EclipseApi {
   }
 
   /// Solves the lunar-eclipse lunation nearest [estimate].
-  EphemerisResult<LunarEclipseResult<Ut1Scale>> solveLunarAtUt1(
+  LunarEclipseResult<Ut1Scale> solveLunarAtUt1(
     JulianDate<Ut1Scale> estimate, {
     Set<PositionFlag> positionFlags = const {},
     Set<LunarEclipseSolveOption> options = const {},
@@ -183,7 +183,7 @@ final class EclipseApi {
   }
 
   /// Finds the next matching lunar eclipse from [start].
-  EphemerisResult<LunarEclipseResult<TtScale>> nextLunarAtTt(
+  LunarEclipseResult<TtScale> nextLunarAtTt(
     JulianDate<TtScale> start, {
     Set<EclipseKind> kinds = const {},
     Set<PositionFlag> positionFlags = const {},
@@ -210,7 +210,7 @@ final class EclipseApi {
   /// Finds the next matching lunar eclipse from [start].
   ///
   /// Pass [LunarEclipseSearchOption.backward] to search backwards.
-  EphemerisResult<LunarEclipseResult<Ut1Scale>> nextLunarAtUt1(
+  LunarEclipseResult<Ut1Scale> nextLunarAtUt1(
     JulianDate<Ut1Scale> start, {
     Set<EclipseKind> kinds = const {},
     Set<PositionFlag> positionFlags = const {},
@@ -239,7 +239,7 @@ final class EclipseApi {
   ///
   /// Native code reports insufficient [maxResults] capacity as an error rather
   /// than silently dropping later eclipses.
-  EphemerisResult<List<LunarEclipseResult<TtScale>>> lunarEclipsesAtTt(
+  List<LunarEclipseResult<TtScale>> lunarEclipsesAtTt(
     JulianDate<TtScale> start,
     JulianDate<TtScale> end, {
     int maxResults = 16,
@@ -273,7 +273,7 @@ final class EclipseApi {
 
   /// Finds all matching lunar eclipses in the positive-length,
   /// endpoint-inclusive [start], [end] range.
-  EphemerisResult<List<LunarEclipseResult<Ut1Scale>>> lunarEclipsesAtUt1(
+  List<LunarEclipseResult<Ut1Scale>> lunarEclipsesAtUt1(
     JulianDate<Ut1Scale> start,
     JulianDate<Ut1Scale> end, {
     int maxResults = 16,
@@ -309,7 +309,7 @@ final class EclipseApi {
   ///
   /// The context must have a geographic observer. A non-empty eclipse must
   /// include contact data, so search with `includeContacts` before calling.
-  EphemerisResult<LocalLunarEclipseResult<TtScale>> localLunarVisibilityAtTt(
+  LocalLunarEclipseResult<TtScale> localLunarVisibilityAtTt(
     LunarEclipseResult<TtScale> eclipse, {
     Set<LocalLunarEclipseVisibilityOption> options = const {},
   }) {
@@ -331,7 +331,7 @@ final class EclipseApi {
   }
 
   /// Derives local visibility for a UT1 global [eclipse].
-  EphemerisResult<LocalLunarEclipseResult<Ut1Scale>> localLunarVisibilityAtUt1(
+  LocalLunarEclipseResult<Ut1Scale> localLunarVisibilityAtUt1(
     LunarEclipseResult<Ut1Scale> eclipse, {
     Set<LocalLunarEclipseVisibilityOption> options = const {},
   }) {
@@ -354,7 +354,7 @@ final class EclipseApi {
 
   /// Finds the next matching lunar eclipse and its visibility at the context
   /// observer.
-  EphemerisResult<LocalLunarEclipseResult<TtScale>> nextLocalLunarAtTt(
+  LocalLunarEclipseResult<TtScale> nextLocalLunarAtTt(
     JulianDate<TtScale> start, {
     Set<EclipseKind> kinds = const {},
     Set<PositionFlag> positionFlags = const {},
@@ -384,7 +384,7 @@ final class EclipseApi {
 
   /// Finds the next matching lunar eclipse and its visibility at the context
   /// observer.
-  EphemerisResult<LocalLunarEclipseResult<Ut1Scale>> nextLocalLunarAtUt1(
+  LocalLunarEclipseResult<Ut1Scale> nextLocalLunarAtUt1(
     JulianDate<Ut1Scale> start, {
     Set<EclipseKind> kinds = const {},
     Set<PositionFlag> positionFlags = const {},
@@ -412,9 +412,7 @@ final class EclipseApi {
     });
   }
 
-  EphemerisResult<LunarEclipseResult<TtScale>> _lunarTt(
-    _LunarTtCalculation calculate,
-  ) {
+  LunarEclipseResult<TtScale> _lunarTt(_LunarTtCalculation calculate) {
     return using((arena) {
       final output = arena<taiyin_lunar_eclipse_result_tt>();
       final diagnostic = arena<taiyin_ephemeris_diagnostic>();
@@ -424,16 +422,11 @@ final class EclipseApi {
       final status = calculate(output, diagnostic);
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
-      return EphemerisResult(
-        value: _readLunarTt(output.ref),
-        diagnostic: mappedDiagnostic,
-      );
+      return _readLunarTt(output.ref);
     });
   }
 
-  EphemerisResult<LunarEclipseResult<Ut1Scale>> _lunarUt(
-    _LunarUtCalculation calculate,
-  ) {
+  LunarEclipseResult<Ut1Scale> _lunarUt(_LunarUtCalculation calculate) {
     return using((arena) {
       final output = arena<taiyin_lunar_eclipse_result_ut>();
       final diagnostic = arena<taiyin_ephemeris_diagnostic>();
@@ -443,14 +436,11 @@ final class EclipseApi {
       final status = calculate(output, diagnostic);
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
-      return EphemerisResult(
-        value: _readLunarUt(output.ref),
-        diagnostic: mappedDiagnostic,
-      );
+      return _readLunarUt(output.ref);
     });
   }
 
-  EphemerisResult<List<LunarEclipseResult<TtScale>>> _lunarTtArray(
+  List<LunarEclipseResult<TtScale>> _lunarTtArray(
     int capacity,
     _LunarTtArrayCalculation calculate,
   ) {
@@ -466,17 +456,14 @@ final class EclipseApi {
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
       final resultCount = _validatedResultCount(count.value, capacity);
-      return EphemerisResult(
-        value: List.unmodifiable([
-          for (var index = 0; index < resultCount; index++)
-            _readLunarTt((output + index).ref),
-        ]),
-        diagnostic: mappedDiagnostic,
-      );
+      return List.unmodifiable([
+        for (var index = 0; index < resultCount; index++)
+          _readLunarTt((output + index).ref),
+      ]);
     });
   }
 
-  EphemerisResult<List<LunarEclipseResult<Ut1Scale>>> _lunarUtArray(
+  List<LunarEclipseResult<Ut1Scale>> _lunarUtArray(
     int capacity,
     _LunarUtArrayCalculation calculate,
   ) {
@@ -492,17 +479,14 @@ final class EclipseApi {
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
       final resultCount = _validatedResultCount(count.value, capacity);
-      return EphemerisResult(
-        value: List.unmodifiable([
-          for (var index = 0; index < resultCount; index++)
-            _readLunarUt((output + index).ref),
-        ]),
-        diagnostic: mappedDiagnostic,
-      );
+      return List.unmodifiable([
+        for (var index = 0; index < resultCount; index++)
+          _readLunarUt((output + index).ref),
+      ]);
     });
   }
 
-  EphemerisResult<LocalLunarEclipseResult<TtScale>> _localLunarTt(
+  LocalLunarEclipseResult<TtScale> _localLunarTt(
     _LocalLunarTtCalculation calculate,
   ) {
     return using((arena) {
@@ -514,14 +498,11 @@ final class EclipseApi {
       final status = calculate(output, diagnostic);
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
-      return EphemerisResult(
-        value: _readLocalLunarTt(output.ref),
-        diagnostic: mappedDiagnostic,
-      );
+      return _readLocalLunarTt(output.ref);
     });
   }
 
-  EphemerisResult<LocalLunarEclipseResult<Ut1Scale>> _localLunarUt(
+  LocalLunarEclipseResult<Ut1Scale> _localLunarUt(
     _LocalLunarUtCalculation calculate,
   ) {
     return using((arena) {
@@ -533,10 +514,7 @@ final class EclipseApi {
       final status = calculate(output, diagnostic);
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
-      return EphemerisResult(
-        value: _readLocalLunarUt(output.ref),
-        diagnostic: mappedDiagnostic,
-      );
+      return _readLocalLunarUt(output.ref);
     });
   }
 
@@ -902,7 +880,7 @@ final class EclipseApi {
   double? _finiteOrNull(double value) => value.isFinite ? value : null;
 
   /// Solves the solar-eclipse lunation nearest [estimate].
-  EphemerisResult<SolarEclipseResult<TtScale>> solveSolarAtTt(
+  SolarEclipseResult<TtScale> solveSolarAtTt(
     JulianDate<TtScale> estimate, {
     Set<PositionFlag> positionFlags = const {},
     Set<SolarEclipseSolveOption> options = const {},
@@ -924,7 +902,7 @@ final class EclipseApi {
   }
 
   /// Solves the solar-eclipse lunation nearest [estimate].
-  EphemerisResult<SolarEclipseResult<Ut1Scale>> solveSolarAtUt1(
+  SolarEclipseResult<Ut1Scale> solveSolarAtUt1(
     JulianDate<Ut1Scale> estimate, {
     Set<PositionFlag> positionFlags = const {},
     Set<SolarEclipseSolveOption> options = const {},
@@ -946,7 +924,7 @@ final class EclipseApi {
   }
 
   /// Finds the next matching global solar eclipse from [start].
-  EphemerisResult<SolarEclipseResult<TtScale>> nextSolarAtTt(
+  SolarEclipseResult<TtScale> nextSolarAtTt(
     JulianDate<TtScale> start, {
     Set<EclipseKind> kinds = const {},
     Set<PositionFlag> positionFlags = const {},
@@ -972,7 +950,7 @@ final class EclipseApi {
   /// Finds the next matching global solar eclipse from [start].
   ///
   /// Pass [SolarEclipseSearchOption.backward] to search backwards.
-  EphemerisResult<SolarEclipseResult<Ut1Scale>> nextSolarAtUt1(
+  SolarEclipseResult<Ut1Scale> nextSolarAtUt1(
     JulianDate<Ut1Scale> start, {
     Set<EclipseKind> kinds = const {},
     Set<PositionFlag> positionFlags = const {},
@@ -997,7 +975,7 @@ final class EclipseApi {
 
   /// Finds all matching solar eclipses in the positive-length,
   /// endpoint-inclusive [start], [end] range.
-  EphemerisResult<List<SolarEclipseResult<TtScale>>> solarEclipsesAtTt(
+  List<SolarEclipseResult<TtScale>> solarEclipsesAtTt(
     JulianDate<TtScale> start,
     JulianDate<TtScale> end, {
     int maxResults = 16,
@@ -1030,7 +1008,7 @@ final class EclipseApi {
 
   /// Finds all matching solar eclipses in the positive-length,
   /// endpoint-inclusive [start], [end] range.
-  EphemerisResult<List<SolarEclipseResult<Ut1Scale>>> solarEclipsesAtUt1(
+  List<SolarEclipseResult<Ut1Scale>> solarEclipsesAtUt1(
     JulianDate<Ut1Scale> start,
     JulianDate<Ut1Scale> end, {
     int maxResults = 16,
@@ -1066,7 +1044,7 @@ final class EclipseApi {
   /// A geographic observer location must be configured on the context.
   ///
   /// Contacts are always requested for this local result.
-  EphemerisResult<LocalSolarEclipseResult<TtScale>> solveLocalSolarAtTt(
+  LocalSolarEclipseResult<TtScale> solveLocalSolarAtTt(
     JulianDate<TtScale> estimate, {
     Set<PositionFlag> positionFlags = const {},
     Set<SolarEclipseSolveOption> options = const {},
@@ -1098,7 +1076,7 @@ final class EclipseApi {
   /// A geographic observer location must be configured on the context.
   ///
   /// Contacts are always requested for this local result.
-  EphemerisResult<LocalSolarEclipseResult<Ut1Scale>> solveLocalSolarAtUt1(
+  LocalSolarEclipseResult<Ut1Scale> solveLocalSolarAtUt1(
     JulianDate<Ut1Scale> estimate, {
     Set<PositionFlag> positionFlags = const {},
     Set<SolarEclipseSolveOption> options = const {},
@@ -1131,7 +1109,7 @@ final class EclipseApi {
   ///
   /// Contacts are always requested. Pass
   /// [SolarEclipseSearchOption.backward] to search backwards.
-  EphemerisResult<LocalSolarEclipseResult<TtScale>> nextLocalSolarAtTt(
+  LocalSolarEclipseResult<TtScale> nextLocalSolarAtTt(
     JulianDate<TtScale> start, {
     Set<EclipseKind> kinds = const {},
     Set<PositionFlag> positionFlags = const {},
@@ -1166,7 +1144,7 @@ final class EclipseApi {
   ///
   /// Contacts are always requested. Pass
   /// [SolarEclipseSearchOption.backward] to search backwards.
-  EphemerisResult<LocalSolarEclipseResult<Ut1Scale>> nextLocalSolarAtUt1(
+  LocalSolarEclipseResult<Ut1Scale> nextLocalSolarAtUt1(
     JulianDate<Ut1Scale> start, {
     Set<EclipseKind> kinds = const {},
     Set<PositionFlag> positionFlags = const {},
@@ -1198,8 +1176,9 @@ final class EclipseApi {
   /// Calculates instantaneous local solar-eclipse geometry at [coordinate].
   ///
   /// A geographic observer location must be configured on the context.
-  EphemerisResult<LocalSolarEclipseCircumstances<TtScale>>
-  localSolarCircumstancesAtTt(JulianDate<TtScale> coordinate) {
+  LocalSolarEclipseCircumstances<TtScale> localSolarCircumstancesAtTt(
+    JulianDate<TtScale> coordinate,
+  ) {
     _ensureOpen();
     return using((arena) {
       final coordinateJd = writeJulianDate(arena, coordinate);
@@ -1217,8 +1196,9 @@ final class EclipseApi {
   /// Calculates instantaneous local solar-eclipse geometry at [coordinate].
   ///
   /// A geographic observer location must be configured on the context.
-  EphemerisResult<LocalSolarEclipseCircumstances<Ut1Scale>>
-  localSolarCircumstancesAtUt1(JulianDate<Ut1Scale> coordinate) {
+  LocalSolarEclipseCircumstances<Ut1Scale> localSolarCircumstancesAtUt1(
+    JulianDate<Ut1Scale> coordinate,
+  ) {
     _ensureOpen();
     return using((arena) {
       final coordinateJd = writeJulianDate(arena, coordinate);
@@ -1238,7 +1218,7 @@ final class EclipseApi {
   /// [timeOffsetHours] is retained as the conventional Besselian time offset
   /// in the returned value. The physical calculation crosses the current
   /// scalar-Julian-date C ABI boundary.
-  EphemerisResult<SolarBesselianElements> solarBesselianElementsAtTt(
+  SolarBesselianElements solarBesselianElementsAtTt(
     JulianDate<TtScale> coordinate, {
     double timeOffsetHours = 0,
   }) {
@@ -1259,10 +1239,7 @@ final class EclipseApi {
       );
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
-      return EphemerisResult(
-        value: _readSolarBesselianElements(output.ref),
-        diagnostic: mappedDiagnostic,
-      );
+      return _readSolarBesselianElements(output.ref);
     });
   }
 
@@ -1270,7 +1247,7 @@ final class EclipseApi {
   ///
   /// [spanHours] and [sampleStepHours] must be positive. The native model
   /// permits polynomial [degree] values from 1 through 7.
-  EphemerisResult<SolarBesselianPolynomial> solarBesselianPolynomialAtTt(
+  SolarBesselianPolynomial solarBesselianPolynomialAtTt(
     JulianDate<TtScale> coordinate, {
     required double spanHours,
     required double sampleStepHours,
@@ -1297,10 +1274,7 @@ final class EclipseApi {
       );
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
-      return EphemerisResult(
-        value: _readSolarBesselianPolynomial(output.ref),
-        diagnostic: mappedDiagnostic,
-      );
+      return _readSolarBesselianPolynomial(output.ref);
     });
   }
 
@@ -1336,7 +1310,7 @@ final class EclipseApi {
   ///
   /// Only [PositionFlag.truePosition] and
   /// [SolarEclipseRouteOption.lunarLimbCorrection] are supported.
-  EphemerisResult<SolarEclipseRouteRow> solarEclipseRouteRowAtTt(
+  SolarEclipseRouteRow solarEclipseRouteRowAtTt(
     JulianDate<TtScale> coordinate, {
     Set<PositionFlag> positionFlags = const {},
     Set<SolarEclipseRouteOption> options = const {},
@@ -1361,7 +1335,7 @@ final class EclipseApi {
   ///
   /// Only [PositionFlag.truePosition] and
   /// [SolarEclipseRouteOption.lunarLimbCorrection] are supported.
-  EphemerisResult<SolarEclipseRouteRow> solarEclipseRouteRowAtUt1(
+  SolarEclipseRouteRow solarEclipseRouteRowAtUt1(
     JulianDate<Ut1Scale> coordinate, {
     Set<PositionFlag> positionFlags = const {},
     Set<SolarEclipseRouteOption> options = const {},
@@ -1387,7 +1361,7 @@ final class EclipseApi {
   ///
   /// Only [PositionFlag.truePosition] and
   /// [SolarEclipseRouteOption.lunarLimbCorrection] are supported.
-  EphemerisResult<SolarEclipseWhere> solarEclipseWhereAtTt(
+  SolarEclipseWhere solarEclipseWhereAtTt(
     JulianDate<TtScale> coordinate, {
     Set<PositionFlag> positionFlags = const {},
     Set<SolarEclipseRouteOption> options = const {},
@@ -1409,10 +1383,7 @@ final class EclipseApi {
       );
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
-      return EphemerisResult(
-        value: _readSolarEclipseWhere(output.ref),
-        diagnostic: mappedDiagnostic,
-      );
+      return _readSolarEclipseWhere(output.ref);
     });
   }
 
@@ -1421,7 +1392,7 @@ final class EclipseApi {
   ///
   /// Only [PositionFlag.truePosition] and
   /// [SolarEclipseRouteOption.lunarLimbCorrection] are supported.
-  EphemerisResult<SolarEclipseWhere> solarEclipseWhereAtUt1(
+  SolarEclipseWhere solarEclipseWhereAtUt1(
     JulianDate<Ut1Scale> coordinate, {
     Set<PositionFlag> positionFlags = const {},
     Set<SolarEclipseRouteOption> options = const {},
@@ -1443,10 +1414,7 @@ final class EclipseApi {
       );
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
-      return EphemerisResult(
-        value: _readSolarEclipseWhere(output.ref),
-        diagnostic: mappedDiagnostic,
-      );
+      return _readSolarEclipseWhere(output.ref);
     });
   }
 
@@ -1455,7 +1423,7 @@ final class EclipseApi {
   /// Both endpoints are included when they land on [stepMinutes]. The range
   /// may contain one coordinate. Rows with no Earth-intersecting route branch
   /// are omitted by native code.
-  EphemerisResult<List<SolarEclipseRouteRow>> solarEclipseRouteAtTt(
+  List<SolarEclipseRouteRow> solarEclipseRouteAtTt(
     JulianDate<TtScale> start,
     JulianDate<TtScale> end, {
     required double stepMinutes,
@@ -1492,7 +1460,7 @@ final class EclipseApi {
   /// Both endpoints are included when they land on [stepMinutes]. The range
   /// may contain one coordinate. Rows with no Earth-intersecting route branch
   /// are omitted by native code.
-  EphemerisResult<List<SolarEclipseRouteRow>> solarEclipseRouteAtUt1(
+  List<SolarEclipseRouteRow> solarEclipseRouteAtUt1(
     JulianDate<Ut1Scale> start,
     JulianDate<Ut1Scale> end, {
     required double stepMinutes,
@@ -1529,8 +1497,7 @@ final class EclipseApi {
   ///
   /// [routeSampleCount] controls the sampling density for every curve and
   /// must be between 32 and 4096. Points are grouped by curve kind.
-  EphemerisResult<List<SolarEclipseRouteCurvePoint>>
-  solarEclipseRouteCurvesAtTt(
+  List<SolarEclipseRouteCurvePoint> solarEclipseRouteCurvesAtTt(
     JulianDate<TtScale> coordinate, {
     int routeSampleCount = _solarRouteDefaultSampleCount,
     Set<PositionFlag> positionFlags = const {},
@@ -1558,8 +1525,7 @@ final class EclipseApi {
 
   /// Computes the complete time-tagged solar-eclipse map curves near UT1
   /// [coordinate].
-  EphemerisResult<List<SolarEclipseRouteCurvePoint>>
-  solarEclipseRouteCurvesAtUt1(
+  List<SolarEclipseRouteCurvePoint> solarEclipseRouteCurvesAtUt1(
     JulianDate<Ut1Scale> coordinate, {
     int routeSampleCount = _solarRouteDefaultSampleCount,
     Set<PositionFlag> positionFlags = const {},
@@ -1589,7 +1555,7 @@ final class EclipseApi {
   ///
   /// Use [solarEclipseRouteMapProductAtTt] when penumbral and half-magnitude
   /// polygons are also required.
-  EphemerisResult<SolarEclipseRouteProduct> solarEclipseRouteProductAtTt(
+  SolarEclipseRouteProduct solarEclipseRouteProductAtTt(
     JulianDate<TtScale> coordinate, {
     int routeSampleCount = _solarRouteDefaultSampleCount,
     Set<PositionFlag> positionFlags = const {},
@@ -1620,7 +1586,7 @@ final class EclipseApi {
   ///
   /// Use [solarEclipseRouteMapProductAtUt1] when penumbral and half-magnitude
   /// polygons are also required.
-  EphemerisResult<SolarEclipseRouteProduct> solarEclipseRouteProductAtUt1(
+  SolarEclipseRouteProduct solarEclipseRouteProductAtUt1(
     JulianDate<Ut1Scale> coordinate, {
     int routeSampleCount = _solarRouteDefaultSampleCount,
     Set<PositionFlag> positionFlags = const {},
@@ -1651,7 +1617,7 @@ final class EclipseApi {
   ///
   /// The returned point sequence contains the core, penumbral, and
   /// half-magnitude polygons in that order when those layers exist.
-  EphemerisResult<SolarEclipseRouteProduct> solarEclipseRouteMapProductAtTt(
+  SolarEclipseRouteProduct solarEclipseRouteMapProductAtTt(
     JulianDate<TtScale> coordinate, {
     int routeSampleCount = _solarRouteDefaultSampleCount,
     Set<PositionFlag> positionFlags = const {},
@@ -1679,7 +1645,7 @@ final class EclipseApi {
   }
 
   /// Builds all available solar-eclipse map polygons near UT1 [coordinate].
-  EphemerisResult<SolarEclipseRouteProduct> solarEclipseRouteMapProductAtUt1(
+  SolarEclipseRouteProduct solarEclipseRouteMapProductAtUt1(
     JulianDate<Ut1Scale> coordinate, {
     int routeSampleCount = _solarRouteDefaultSampleCount,
     Set<PositionFlag> positionFlags = const {},
@@ -1712,7 +1678,7 @@ final class EclipseApi {
   /// [longitudeDegrees] and [latitudeDegrees] select the reference location
   /// used to resolve the central-path kind; they do not need to match the
   /// context observer.
-  EphemerisResult<LocalSolarEclipseBoundary> localSolarEclipseBoundaryAtTt(
+  LocalSolarEclipseBoundary localSolarEclipseBoundaryAtTt(
     JulianDate<TtScale> coordinate, {
     required double longitudeDegrees,
     required double latitudeDegrees,
@@ -1737,7 +1703,7 @@ final class EclipseApi {
 
   /// Computes the local Earth intersections of the solar shadow at UT1
   /// [coordinate].
-  EphemerisResult<LocalSolarEclipseBoundary> localSolarEclipseBoundaryAtUt1(
+  LocalSolarEclipseBoundary localSolarEclipseBoundaryAtUt1(
     JulianDate<Ut1Scale> coordinate, {
     required double longitudeDegrees,
     required double latitudeDegrees,
@@ -1760,9 +1726,7 @@ final class EclipseApi {
     });
   }
 
-  EphemerisResult<SolarEclipseResult<TtScale>> _solarTt(
-    _SolarTtCalculation calculate,
-  ) {
+  SolarEclipseResult<TtScale> _solarTt(_SolarTtCalculation calculate) {
     return using((arena) {
       final output = arena<taiyin_solar_eclipse_result_tt>();
       final diagnostic = arena<taiyin_ephemeris_diagnostic>();
@@ -1772,16 +1736,11 @@ final class EclipseApi {
       final status = calculate(output, diagnostic);
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
-      return EphemerisResult(
-        value: _readSolarTt(output.ref),
-        diagnostic: mappedDiagnostic,
-      );
+      return _readSolarTt(output.ref);
     });
   }
 
-  EphemerisResult<SolarEclipseResult<Ut1Scale>> _solarUt(
-    _SolarUtCalculation calculate,
-  ) {
+  SolarEclipseResult<Ut1Scale> _solarUt(_SolarUtCalculation calculate) {
     return using((arena) {
       final output = arena<taiyin_solar_eclipse_result_ut>();
       final diagnostic = arena<taiyin_ephemeris_diagnostic>();
@@ -1791,14 +1750,11 @@ final class EclipseApi {
       final status = calculate(output, diagnostic);
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
-      return EphemerisResult(
-        value: _readSolarUt(output.ref),
-        diagnostic: mappedDiagnostic,
-      );
+      return _readSolarUt(output.ref);
     });
   }
 
-  EphemerisResult<List<SolarEclipseResult<TtScale>>> _solarTtArray(
+  List<SolarEclipseResult<TtScale>> _solarTtArray(
     int capacity,
     _SolarTtArrayCalculation calculate,
   ) {
@@ -1814,17 +1770,14 @@ final class EclipseApi {
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
       final resultCount = _validatedResultCount(count.value, capacity);
-      return EphemerisResult(
-        value: List.unmodifiable([
-          for (var index = 0; index < resultCount; index++)
-            _readSolarTt((output + index).ref),
-        ]),
-        diagnostic: mappedDiagnostic,
-      );
+      return List.unmodifiable([
+        for (var index = 0; index < resultCount; index++)
+          _readSolarTt((output + index).ref),
+      ]);
     });
   }
 
-  EphemerisResult<List<SolarEclipseResult<Ut1Scale>>> _solarUtArray(
+  List<SolarEclipseResult<Ut1Scale>> _solarUtArray(
     int capacity,
     _SolarUtArrayCalculation calculate,
   ) {
@@ -1840,19 +1793,14 @@ final class EclipseApi {
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
       final resultCount = _validatedResultCount(count.value, capacity);
-      return EphemerisResult(
-        value: List.unmodifiable([
-          for (var index = 0; index < resultCount; index++)
-            _readSolarUt((output + index).ref),
-        ]),
-        diagnostic: mappedDiagnostic,
-      );
+      return List.unmodifiable([
+        for (var index = 0; index < resultCount; index++)
+          _readSolarUt((output + index).ref),
+      ]);
     });
   }
 
-  EphemerisResult<SolarEclipseRouteRow> _solarRouteRow(
-    _SolarRouteRowCalculation calculate,
-  ) {
+  SolarEclipseRouteRow _solarRouteRow(_SolarRouteRowCalculation calculate) {
     return using((arena) {
       final output = arena<taiyin_solar_eclipse_route_row>();
       final diagnostic = arena<taiyin_ephemeris_diagnostic>();
@@ -1862,14 +1810,11 @@ final class EclipseApi {
       final status = calculate(output, diagnostic);
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
-      return EphemerisResult(
-        value: _readSolarEclipseRouteRow(output.ref),
-        diagnostic: mappedDiagnostic,
-      );
+      return _readSolarEclipseRouteRow(output.ref);
     });
   }
 
-  EphemerisResult<List<SolarEclipseRouteRow>> _solarRouteRows(
+  List<SolarEclipseRouteRow> _solarRouteRows(
     int capacity,
     _SolarRouteRowsCalculation calculate,
   ) {
@@ -1885,17 +1830,14 @@ final class EclipseApi {
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
       final resultCount = _validatedResultCount(count.value, capacity);
-      return EphemerisResult(
-        value: List.unmodifiable([
-          for (var index = 0; index < resultCount; index++)
-            _readSolarEclipseRouteRow((output + index).ref),
-        ]),
-        diagnostic: mappedDiagnostic,
-      );
+      return List.unmodifiable([
+        for (var index = 0; index < resultCount; index++)
+          _readSolarEclipseRouteRow((output + index).ref),
+      ]);
     });
   }
 
-  EphemerisResult<List<SolarEclipseRouteCurvePoint>> _solarRouteCurves(
+  List<SolarEclipseRouteCurvePoint> _solarRouteCurves(
     _SolarRouteCurvesCalculation calculate,
   ) {
     return using((arena) {
@@ -1912,10 +1854,7 @@ final class EclipseApi {
         );
       }
       if (requiredCount == 0) {
-        return EphemerisResult(
-          value: const <SolarEclipseRouteCurvePoint>[],
-          diagnostic: countDiagnostic,
-        );
+        return const <SolarEclipseRouteCurvePoint>[];
       }
 
       final output = arena<taiyin_solar_eclipse_route_curve_point>(
@@ -1933,17 +1872,14 @@ final class EclipseApi {
         requiredCount,
         'solar eclipse route curve',
       );
-      return EphemerisResult(
-        value: List.unmodifiable([
-          for (var index = 0; index < requiredCount; index++)
-            _readSolarEclipseRouteCurvePoint(output[index]),
-        ]),
-        diagnostic: fillDiagnostic,
-      );
+      return List.unmodifiable([
+        for (var index = 0; index < requiredCount; index++)
+          _readSolarEclipseRouteCurvePoint(output[index]),
+      ]);
     });
   }
 
-  EphemerisResult<SolarEclipseRouteProduct> _solarRouteProduct(
+  SolarEclipseRouteProduct _solarRouteProduct(
     _SolarRouteProductCalculation calculate,
   ) {
     return using((arena) {
@@ -1963,12 +1899,9 @@ final class EclipseApi {
         );
       }
       if (requiredCount == 0) {
-        return EphemerisResult(
-          value: SolarEclipseRouteProduct(
-            points: const <SolarEclipseRouteProductPoint>[],
-            summary: _readSolarEclipseRouteProductSummary(summary.ref),
-          ),
-          diagnostic: countDiagnostic,
+        return SolarEclipseRouteProduct(
+          points: const <SolarEclipseRouteProductPoint>[],
+          summary: _readSolarEclipseRouteProductSummary(summary.ref),
         );
       }
 
@@ -1995,20 +1928,17 @@ final class EclipseApi {
         requiredCount,
         'solar eclipse route product',
       );
-      return EphemerisResult(
-        value: SolarEclipseRouteProduct(
-          points: [
-            for (var index = 0; index < requiredCount; index++)
-              _readSolarEclipseRouteProductPoint(output[index]),
-          ],
-          summary: _readSolarEclipseRouteProductSummary(summary.ref),
-        ),
-        diagnostic: fillDiagnostic,
+      return SolarEclipseRouteProduct(
+        points: [
+          for (var index = 0; index < requiredCount; index++)
+            _readSolarEclipseRouteProductPoint(output[index]),
+        ],
+        summary: _readSolarEclipseRouteProductSummary(summary.ref),
       );
     });
   }
 
-  EphemerisResult<LocalSolarEclipseBoundary> _localSolarBoundary(
+  LocalSolarEclipseBoundary _localSolarBoundary(
     _LocalSolarBoundaryCalculation calculate,
   ) {
     return using((arena) {
@@ -2020,14 +1950,11 @@ final class EclipseApi {
       final status = calculate(output, diagnostic);
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
-      return EphemerisResult(
-        value: _readLocalSolarEclipseBoundary(output.ref),
-        diagnostic: mappedDiagnostic,
-      );
+      return _readLocalSolarEclipseBoundary(output.ref);
     });
   }
 
-  EphemerisResult<LocalSolarEclipseResult<TtScale>> _localSolarTt(
+  LocalSolarEclipseResult<TtScale> _localSolarTt(
     _LocalSolarTtCalculation calculate,
   ) {
     return using((arena) {
@@ -2039,14 +1966,11 @@ final class EclipseApi {
       final status = calculate(output, diagnostic);
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
-      return EphemerisResult(
-        value: _readLocalSolarTt(output.ref),
-        diagnostic: mappedDiagnostic,
-      );
+      return _readLocalSolarTt(output.ref);
     });
   }
 
-  EphemerisResult<LocalSolarEclipseResult<Ut1Scale>> _localSolarUt(
+  LocalSolarEclipseResult<Ut1Scale> _localSolarUt(
     _LocalSolarUtCalculation calculate,
   ) {
     return using((arena) {
@@ -2058,15 +1982,13 @@ final class EclipseApi {
       final status = calculate(output, diagnostic);
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
-      return EphemerisResult(
-        value: _readLocalSolarUt(output.ref),
-        diagnostic: mappedDiagnostic,
-      );
+      return _readLocalSolarUt(output.ref);
     });
   }
 
-  EphemerisResult<LocalSolarEclipseCircumstances<TtScale>>
-  _solarCircumstancesTt(_SolarCircumstancesTtCalculation calculate) {
+  LocalSolarEclipseCircumstances<TtScale> _solarCircumstancesTt(
+    _SolarCircumstancesTtCalculation calculate,
+  ) {
     return using((arena) {
       final output = arena<taiyin_local_solar_eclipse_circumstances_tt>();
       final diagnostic = arena<taiyin_ephemeris_diagnostic>();
@@ -2077,25 +1999,23 @@ final class EclipseApi {
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
       final value = output.ref;
-      return EphemerisResult(
-        value: LocalSolarEclipseCircumstances(
-          coordinate: readJulianDate<TtScale>(value.jd_tt),
-          deltaTSeconds: null,
-          magnitude: value.magnitude,
-          obscuration: value.obscuration,
-          centerSeparationDegrees: value.center_separation_deg,
-          sunAngularRadiusDegrees: value.sun_angular_radius_deg,
-          moonAngularRadiusDegrees: value.moon_angular_radius_deg,
-          sunAltitudeDegrees: value.sun_altitude_deg,
-          sunAzimuthDegrees: value.sun_azimuth_deg,
-        ),
-        diagnostic: mappedDiagnostic,
+      return LocalSolarEclipseCircumstances(
+        coordinate: readJulianDate<TtScale>(value.jd_tt),
+        deltaTSeconds: null,
+        magnitude: value.magnitude,
+        obscuration: value.obscuration,
+        centerSeparationDegrees: value.center_separation_deg,
+        sunAngularRadiusDegrees: value.sun_angular_radius_deg,
+        moonAngularRadiusDegrees: value.moon_angular_radius_deg,
+        sunAltitudeDegrees: value.sun_altitude_deg,
+        sunAzimuthDegrees: value.sun_azimuth_deg,
       );
     });
   }
 
-  EphemerisResult<LocalSolarEclipseCircumstances<Ut1Scale>>
-  _solarCircumstancesUt(_SolarCircumstancesUtCalculation calculate) {
+  LocalSolarEclipseCircumstances<Ut1Scale> _solarCircumstancesUt(
+    _SolarCircumstancesUtCalculation calculate,
+  ) {
     return using((arena) {
       final output = arena<taiyin_local_solar_eclipse_circumstances_ut>();
       final diagnostic = arena<taiyin_ephemeris_diagnostic>();
@@ -2106,19 +2026,16 @@ final class EclipseApi {
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
       final value = output.ref;
-      return EphemerisResult(
-        value: LocalSolarEclipseCircumstances(
-          coordinate: readJulianDate<Ut1Scale>(value.jd_ut),
-          deltaTSeconds: _finiteOrNull(value.delta_t_seconds),
-          magnitude: value.magnitude,
-          obscuration: value.obscuration,
-          centerSeparationDegrees: value.center_separation_deg,
-          sunAngularRadiusDegrees: value.sun_angular_radius_deg,
-          moonAngularRadiusDegrees: value.moon_angular_radius_deg,
-          sunAltitudeDegrees: value.sun_altitude_deg,
-          sunAzimuthDegrees: value.sun_azimuth_deg,
-        ),
-        diagnostic: mappedDiagnostic,
+      return LocalSolarEclipseCircumstances(
+        coordinate: readJulianDate<Ut1Scale>(value.jd_ut),
+        deltaTSeconds: _finiteOrNull(value.delta_t_seconds),
+        magnitude: value.magnitude,
+        obscuration: value.obscuration,
+        centerSeparationDegrees: value.center_separation_deg,
+        sunAngularRadiusDegrees: value.sun_angular_radius_deg,
+        moonAngularRadiusDegrees: value.moon_angular_radius_deg,
+        sunAltitudeDegrees: value.sun_altitude_deg,
+        sunAzimuthDegrees: value.sun_azimuth_deg,
       );
     });
   }

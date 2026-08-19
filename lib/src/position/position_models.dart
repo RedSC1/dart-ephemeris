@@ -232,11 +232,3 @@ final class EphemerisDiagnostic {
   final double dut1Seconds;
   final double deltaTSeconds;
 }
-
-/// A calculated value together with its native ephemeris diagnostic.
-final class EphemerisResult<T> {
-  const EphemerisResult({required this.value, required this.diagnostic});
-
-  final T value;
-  final EphemerisDiagnostic diagnostic;
-}

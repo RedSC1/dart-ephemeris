@@ -84,7 +84,7 @@ void _workerMain((SendPort, String, int) message) {
       JulianDate<TtScale>.fromDouble(2460409.0),
       flags: {PositionFlag.xyz, PositionFlag.speed, PositionFlag.truePosition},
     );
-    sendPort.send(['result', ...result.value.values]);
+    sendPort.send(['result', ...result.values]);
   } catch (error, stackTrace) {
     sendPort.send(['error', '$error', '$stackTrace']);
   } finally {
@@ -102,7 +102,7 @@ void _customTargetWorkerMain((SendPort, String, int) message) {
       JulianDate<TtScale>.fromDouble(2460409.0),
       flags: {PositionFlag.xyz, PositionFlag.speed},
     );
-    sendPort.send(['result', ...result.value.values]);
+    sendPort.send(['result', ...result.values]);
   } catch (error, stackTrace) {
     sendPort.send(['error', '$error', '$stackTrace']);
   } finally {
@@ -250,16 +250,16 @@ void main() {
         );
 
         expect(target, CustomTarget(targetId));
-        expect(result.value.values[0], targetId.toDouble());
-        expect(result.value.values[1], closeTo(2460409.25, 1e-12));
-        expect(result.value.values[2], closeTo(2460409.0, 1e-12));
-        expect(result.value.values[3], 1.0);
-        expect(result.value.values[4], 1.0);
-        expect(result.diagnostic.status, 0);
-        expect(result.diagnostic.targetId, targetId);
-        expect(result.diagnostic.centerId, -1);
-        expect(result.diagnostic.frame, ApparentFrame.unknown);
-        expect(result.diagnostic.rawFrameId, -1);
+        expect(result.values[0], targetId.toDouble());
+        expect(result.values[1], closeTo(2460409.25, 1e-12));
+        expect(result.values[2], closeTo(2460409.0, 1e-12));
+        expect(result.values[3], 1.0);
+        expect(result.values[4], 1.0);
+        expect(taiyin.lastDiagnostic?.status, 0);
+        expect(taiyin.lastDiagnostic?.targetId, targetId);
+        expect(taiyin.lastDiagnostic?.centerId, -1);
+        expect(taiyin.lastDiagnostic?.frame, ApparentFrame.unknown);
+        expect(taiyin.lastDiagnostic?.rawFrameId, -1);
       });
 
       test('uses an exact custom state evaluator', () {
@@ -276,11 +276,11 @@ void main() {
           JulianDate<TtScale>.fromDouble(2460409.0),
         );
 
-        expect(result.value.positionAu.x, targetId.toDouble());
-        expect(result.value.positionAu.y, 2.0);
-        expect(result.value.velocityAuPerDay.values, [4.0, 5.0, 6.0]);
-        expect(result.value.accelerationAuPerDay2.values, [7.0, 8.0, 9.0]);
-        expect(result.diagnostic.targetId, targetId);
+        expect(result.positionAu.x, targetId.toDouble());
+        expect(result.positionAu.y, 2.0);
+        expect(result.velocityAuPerDay.values, [4.0, 5.0, 6.0]);
+        expect(result.accelerationAuPerDay2.values, [7.0, 8.0, 9.0]);
+        expect(taiyin.lastDiagnostic?.targetId, targetId);
       });
 
       test('custom evaluator can calculate a dependency', () {
@@ -303,10 +303,7 @@ void main() {
         final sun = taiyin.position.atTdb(Body.sun, tdb, tt, flags: flags);
 
         for (var index = 0; index < 6; index++) {
-          expect(
-            custom.value.values[index],
-            closeTo(sun.value.values[index], 0),
-          );
+          expect(custom.values[index], closeTo(sun.values[index], 0));
         }
       });
 
@@ -332,7 +329,7 @@ void main() {
           },
         );
         for (var index = 0; index < 6; index++) {
-          expect(values[index], closeTo(sun.value.values[index], 1e-15));
+          expect(values[index], closeTo(sun.values[index], 1e-15));
         }
       });
 
@@ -437,7 +434,6 @@ void main() {
                 JulianDate<TtScale>.fromDouble(2460409.0),
                 flags: const {PositionFlag.xyz},
               )
-              .value
               .values[0],
           targetId.toDouble(),
         );
@@ -558,7 +554,7 @@ void main() {
             JulianDate<TtScale>.fromDouble(2460409.0),
           );
 
-          expect(result.value.values[0], 1.0);
+          expect(result.values[0], 1.0);
         },
       );
 
@@ -577,12 +573,12 @@ void main() {
             JulianDate<TtScale>.fromDouble(2460409.0),
           );
 
-          expect(result.value.positionAu.x, targetId.toDouble());
+          expect(result.positionAu.x, targetId.toDouble());
           expect(
             [
-              ...result.value.positionAu.values,
-              ...result.value.velocityAuPerDay.values,
-              ...result.value.accelerationAuPerDay2.values,
+              ...result.positionAu.values,
+              ...result.velocityAuPerDay.values,
+              ...result.accelerationAuPerDay2.values,
             ],
             everyElement(
               isA<double>().having((value) => value.isFinite, 'finite', isTrue),
@@ -602,35 +598,25 @@ void main() {
         final ut1 = JulianDate<Ut1Scale>.fromDouble(2460409.0);
         const flags = {PositionFlag.xyz};
 
-        final automatic = taiyin.position.atUt1(target, ut1, flags: flags);
-        final explicit = taiyin.position.atUt1WithDeltaT(
-          target,
-          ut1,
-          69.0,
-          flags: flags,
-        );
-        final utc = taiyin.position.atUtc(
+        taiyin.position.atUt1(target, ut1, flags: flags);
+        expect(taiyin.lastDiagnostic?.status, 0);
+        taiyin.position.atUt1WithDeltaT(target, ut1, 69.0, flags: flags);
+        expect(taiyin.lastDiagnostic?.status, 0);
+        taiyin.position.atUtc(
           target,
           AstroDateTime(2024, 4, 8, 18, 0, 0),
           flags: flags,
         );
+        expect(taiyin.lastDiagnostic?.status, 0);
         final batch = taiyin.position.batchAtTt(
           [target, Body.sun],
           JulianDate<TtScale>.fromDouble(2460409.0),
           flags: const {PositionFlag.xyz, PositionFlag.truePosition},
         );
 
-        expect(automatic.diagnostic.status, 0);
-        expect(explicit.diagnostic.status, 0);
-        expect(utc.diagnostic.status, 0);
-        expect(
-          batch.map((result) => result.diagnostic.status),
-          everyElement(0),
-        );
-        expect(batch.map((result) => result.diagnostic.targetId), [
-          targetId,
-          Body.sun.id,
-        ]);
+        expect(taiyin.lastDiagnostic?.status, 0);
+        expect(taiyin.lastDiagnostic?.targetId, Body.sun.id);
+        expect(batch, hasLength(2));
       });
 
       test('matches native fractional calendar conversion', () {

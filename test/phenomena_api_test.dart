@@ -42,7 +42,7 @@ void main() {
             Body.moon,
             JulianDate<Ut1Scale>.fromDouble(2460416.2916666665),
           );
-          final value = result.value;
+          final value = result;
 
           expect(
             value.phaseAngleRadians,
@@ -76,8 +76,8 @@ void main() {
           );
           expect(value.body, Body.moon);
           expect(value.origin, PhenomenaOrigin.geocentric);
-          expect(result.diagnostic.status, 0);
-          expect(result.diagnostic.targetId, Body.moon.id);
+          expect(context.lastDiagnostic?.status, 0);
+          expect(context.lastDiagnostic?.targetId, Body.moon.id);
         },
       );
 
@@ -88,22 +88,22 @@ void main() {
           flags: {PositionFlag.truePosition},
         );
 
-        expect(result.value.phaseAngleRadians, 0.0);
-        expect(result.value.illuminatedFraction, 1.0);
-        expect(result.value.solarElongationRadians, 0.0);
-        expect(result.value.apparentDiameterRadians.isFinite, isTrue);
-        expect(result.value.apparentMagnitude.isFinite, isTrue);
-        expect(result.value.geocentricHorizontalParallaxRadians, isNull);
-        expect(result.value.origin, PhenomenaOrigin.geocentric);
-        expect(result.value.flags, contains(PositionFlag.truePosition));
-        expect(result.diagnostic.status, 0);
+        expect(result.phaseAngleRadians, 0.0);
+        expect(result.illuminatedFraction, 1.0);
+        expect(result.solarElongationRadians, 0.0);
+        expect(result.apparentDiameterRadians.isFinite, isTrue);
+        expect(result.apparentMagnitude.isFinite, isTrue);
+        expect(result.geocentricHorizontalParallaxRadians, isNull);
+        expect(result.origin, PhenomenaOrigin.geocentric);
+        expect(result.flags, contains(PositionFlag.truePosition));
+        expect(context.lastDiagnostic?.status, 0);
       });
 
       test(
         'makes topocentric origin explicit while parallax stays geocentric',
         () {
           final ut1 = JulianDate<Ut1Scale>.fromDouble(2460409.25);
-          final tt = context.solarTime.equationOfTimeAtUt1(ut1).value.tt;
+          final tt = context.solarTime.equationOfTimeAtUt1(ut1).tt;
           final geocentric = context.phenomena.atUt1(Body.moon, ut1);
 
           context.configuration.setSimpleTopocentricObserver(
@@ -121,17 +121,14 @@ void main() {
             origin: PhenomenaOrigin.topocentric,
           );
 
-          expect(topocentric.value.origin, PhenomenaOrigin.topocentric);
+          expect(topocentric.origin, PhenomenaOrigin.topocentric);
           expect(
-            topocentric.value.geocentricHorizontalParallaxRadians,
-            closeTo(
-              geocentric.value.geocentricHorizontalParallaxRadians!,
-              1e-15,
-            ),
+            topocentric.geocentricHorizontalParallaxRadians,
+            closeTo(geocentric.geocentricHorizontalParallaxRadians!, 1e-15),
           );
           expect(
-            (topocentric.value.apparentDiameterRadians -
-                    geocentric.value.apparentDiameterRadians)
+            (topocentric.apparentDiameterRadians -
+                    geocentric.apparentDiameterRadians)
                 .abs(),
             greaterThan(1e-12),
           );

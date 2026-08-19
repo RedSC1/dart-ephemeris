@@ -21,9 +21,7 @@ final class SolarTimeApi {
   final _SolarTimeStatusChecker _checkStatus;
 
   /// Calculates the equation of time from a UT1 coordinate.
-  EphemerisResult<EquationOfTime> equationOfTimeAtUt1(
-    JulianDate<Ut1Scale> ut1,
-  ) {
+  EquationOfTime equationOfTimeAtUt1(JulianDate<Ut1Scale> ut1) {
     _ensureOpen();
     return _equationOfTime(
       (arena, output, diagnostic) => _bindings.taiyin_calc_equation_of_time_ut(
@@ -36,7 +34,7 @@ final class SolarTimeApi {
   }
 
   /// Calculates the equation of time from a TT coordinate.
-  EphemerisResult<EquationOfTime> equationOfTimeAtTt(JulianDate<TtScale> tt) {
+  EquationOfTime equationOfTimeAtTt(JulianDate<TtScale> tt) {
     _ensureOpen();
     return _equationOfTime(
       (arena, output, diagnostic) => _bindings.taiyin_calc_equation_of_time_tt(
@@ -49,9 +47,7 @@ final class SolarTimeApi {
   }
 
   /// Converts local mean solar time to local apparent solar time.
-  EphemerisResult<LocalApparentSolarTime> meanToApparent(
-    LocalMeanSolarTime localMean,
-  ) {
+  LocalApparentSolarTime meanToApparent(LocalMeanSolarTime localMean) {
     _ensureOpen();
     return _convert<LocalApparentSolarTimeScale, LocalApparentSolarTime>(
       (arena, output, diagnostic) =>
@@ -70,9 +66,7 @@ final class SolarTimeApi {
   }
 
   /// Converts local apparent solar time to local mean solar time.
-  EphemerisResult<LocalMeanSolarTime> apparentToMean(
-    LocalApparentSolarTime localApparent,
-  ) {
+  LocalMeanSolarTime apparentToMean(LocalApparentSolarTime localApparent) {
     _ensureOpen();
     return _convert<LocalMeanSolarTimeScale, LocalMeanSolarTime>(
       (arena, output, diagnostic) =>
@@ -90,7 +84,7 @@ final class SolarTimeApi {
     );
   }
 
-  EphemerisResult<EquationOfTime> _equationOfTime(
+  EquationOfTime _equationOfTime(
     int Function(
       Arena,
       Pointer<taiyin_equation_of_time_result>,
@@ -108,17 +102,14 @@ final class SolarTimeApi {
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
       final value = output.ref;
-      return EphemerisResult(
-        value: EquationOfTime(
-          ut1: readJulianDate<Ut1Scale>(value.jd_ut),
-          tt: readJulianDate<TtScale>(value.jd_tt),
-          equationDays: value.equation_days,
-          equationSeconds: value.equation_seconds,
-          apparentSunRightAscensionRadians:
-              value.apparent_sun_right_ascension_rad,
-          greenwichApparentSiderealTimeRadians: value.gast_rad,
-        ),
-        diagnostic: mappedDiagnostic,
+      return EquationOfTime(
+        ut1: readJulianDate<Ut1Scale>(value.jd_ut),
+        tt: readJulianDate<TtScale>(value.jd_tt),
+        equationDays: value.equation_days,
+        equationSeconds: value.equation_seconds,
+        apparentSunRightAscensionRadians:
+            value.apparent_sun_right_ascension_rad,
+        greenwichApparentSiderealTimeRadians: value.gast_rad,
       );
     });
   }
@@ -127,7 +118,7 @@ final class SolarTimeApi {
   ///
   /// The callback writes one split Julian date through its
   /// `Pointer<taiyin_split_julian_date>` output.
-  EphemerisResult<Output> _convert<OutputScale extends TimeScale, Output>(
+  Output _convert<OutputScale extends TimeScale, Output>(
     int Function(
       Arena,
       Pointer<taiyin_split_julian_date>,
@@ -143,10 +134,7 @@ final class SolarTimeApi {
       final status = convert(arena, output, diagnostic);
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
-      return EphemerisResult(
-        value: buildOutput(readJulianDate<OutputScale>(output.ref)),
-        diagnostic: mappedDiagnostic,
-      );
+      return buildOutput(readJulianDate<OutputScale>(output.ref));
     });
   }
 }

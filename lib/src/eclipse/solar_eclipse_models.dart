@@ -326,7 +326,8 @@ final class SolarEclipseWhere {
 /// Identifies one curve in a global solar-eclipse map.
 ///
 /// Points returned by a route-curve calculation are grouped by this value.
-enum SolarEclipseRouteCurveKind {  partialBeginA(0),
+enum SolarEclipseRouteCurveKind {
+  partialBeginA(0),
   partialBeginB(1),
   partialEndA(2),
   partialEndB(3),

@@ -68,16 +68,15 @@ void main() {
       );
       final spica = context.heliacal.starAtUt1('spica', aprilEclipse);
 
-      expect(venus.diagnostic.status, 0);
-      expect(venus.value.modelId, HeliacalVisibilityModel.schaefer1993.id);
-      expect(venus.value.extinctionMagnitudePerAirmass, 0.5);
-      expect(venus.value.skyBrightnessNanolambert, 1234);
-      expect(venus.value.moonlightBrightnessNanolambert, 0);
-      expect(spica.diagnostic.status, 0);
-      expect(spica.value.targetMagnitude.isFinite, isTrue);
-      expect(spica.value.limitingMagnitude.isFinite, isTrue);
-      expect(spica.value.modelId, HeliacalVisibilityModel.schaefer1993.id);
-      expect(spica.value.skyBrightnessNanolambert, greaterThan(0));
+      expect(venus.modelId, HeliacalVisibilityModel.schaefer1993.id);
+      expect(venus.extinctionMagnitudePerAirmass, 0.5);
+      expect(venus.skyBrightnessNanolambert, 1234);
+      expect(venus.moonlightBrightnessNanolambert, 0);
+      expect(context.lastDiagnostic?.status, 0);
+      expect(spica.targetMagnitude.isFinite, isTrue);
+      expect(spica.limitingMagnitude.isFinite, isTrue);
+      expect(spica.modelId, HeliacalVisibilityModel.schaefer1993.id);
+      expect(spica.skyBrightnessNanolambert, greaterThan(0));
     });
 
     test('honors strict meteorology and explicit atmosphere data', () {
@@ -105,8 +104,8 @@ void main() {
         flags: {HeliacalFlag.strictMeteorology},
       );
 
-      expect(result.diagnostic.status, 0);
-      expect(result.value.extinctionMagnitudePerAirmass, greaterThan(0));
+      expect(context.lastDiagnostic?.status, 0);
+      expect(result.extinctionMagnitudePerAirmass, greaterThan(0));
     });
 
     test('matches native Venus heliacal-search oracles', () {
@@ -129,27 +128,15 @@ void main() {
           conditions: conditions,
         );
 
-        expect(result.diagnostic.status, 0);
-        expect(result.value.event, event);
-        expect(result.value.visibility.visible, isTrue);
-        expect(
-          result.value.coordinate.toDouble(),
-          closeTo(coordinate, 10 / 1440),
-        );
-        expect(
-          result.value.windowEnd.isAfter(result.value.windowStart),
-          isTrue,
-        );
-        expect(
-          result.value.coordinate.isAfter(result.value.windowStart),
-          isTrue,
-        );
-        expect(
-          result.value.coordinate.isBefore(result.value.windowEnd),
-          isTrue,
-        );
-        expect(result.value.sampledWindowCount, greaterThan(0));
-        expect(result.value.visibilityEvaluationCount, greaterThan(0));
+        expect(context.lastDiagnostic?.status, 0);
+        expect(result.event, event);
+        expect(result.visibility.visible, isTrue);
+        expect(result.coordinate.toDouble(), closeTo(coordinate, 10 / 1440));
+        expect(result.windowEnd.isAfter(result.windowStart), isTrue);
+        expect(result.coordinate.isAfter(result.windowStart), isTrue);
+        expect(result.coordinate.isBefore(result.windowEnd), isTrue);
+        expect(result.sampledWindowCount, greaterThan(0));
+        expect(result.visibilityEvaluationCount, greaterThan(0));
       }
     });
 
@@ -162,19 +149,19 @@ void main() {
         maxSearchDays: 366,
       );
 
-      expect(result.diagnostic.status, 0);
-      expect(result.value.event, HeliacalEventKind.morningFirst);
-      expect(result.value.coordinate.isAfter(start), isTrue);
+      expect(context.lastDiagnostic?.status, 0);
+      expect(result.event, HeliacalEventKind.morningFirst);
+      expect(result.coordinate.isAfter(start), isTrue);
       expect(
-        result.value.coordinate.isBefore(start.add(const Duration(days: 366))),
+        result.coordinate.isBefore(start.add(const Duration(days: 366))),
         isTrue,
       );
-      expect(result.value.windowEnd.isAfter(result.value.windowStart), isTrue);
-      expect(result.value.coordinate.isAfter(result.value.windowStart), isTrue);
-      expect(result.value.coordinate.isBefore(result.value.windowEnd), isTrue);
-      expect(result.value.sampledWindowCount, greaterThan(0));
-      expect(result.value.visibilityEvaluationCount, greaterThan(0));
-      expect(result.value.visibility.visible, isTrue);
+      expect(result.windowEnd.isAfter(result.windowStart), isTrue);
+      expect(result.coordinate.isAfter(result.windowStart), isTrue);
+      expect(result.coordinate.isBefore(result.windowEnd), isTrue);
+      expect(result.sampledWindowCount, greaterThan(0));
+      expect(result.visibilityEvaluationCount, greaterThan(0));
+      expect(result.visibility.visible, isTrue);
     });
 
     test('rejects unsupported inputs and use after close', () {

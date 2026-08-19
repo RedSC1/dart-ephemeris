@@ -78,57 +78,49 @@ void main() {
           );
           final visibility = context.occultation.localStarVisibilityAtUt1(
             'antares',
-            local.value,
+            local,
             options: {OccultationVisibilityOption.refraction},
           );
           final where = context.occultation.starWhereAtUt1(
             'antares',
-            geocentric.value,
+            geocentric,
             visibilityOptions: {OccultationVisibilityOption.refraction},
           );
 
-          expect(geocentric.value.kind, LunarOccultationKind.lunarStar);
-          expect(geocentric.value.begin, isNotNull);
-          expect(geocentric.value.end, isNotNull);
+          expect(geocentric.kind, LunarOccultationKind.lunarStar);
+          expect(geocentric.begin, isNotNull);
+          expect(geocentric.end, isNotNull);
+          expect(geocentric.begin!.isBefore(geocentric.coordinate), isTrue);
+          expect(geocentric.end!.isAfter(geocentric.coordinate), isTrue);
           expect(
-            geocentric.value.begin!.isBefore(geocentric.value.coordinate),
-            isTrue,
-          );
-          expect(
-            geocentric.value.end!.isAfter(geocentric.value.coordinate),
-            isTrue,
-          );
-          expect(
-            local.value.coordinate.toDouble(),
+            local.coordinate.toDouble(),
             // Native's SwissEph oracle allows three seconds for this local
             // maximum; retain the same end-to-end tolerance here.
             closeTo(2460318.136560418177, 3 / 86400),
           );
-          expect(visibility.value.firstContact, isNotNull);
-          expect(visibility.value.maximum, isNotNull);
-          expect(visibility.value.fourthContact, isNotNull);
-          expect(visibility.value.secondContact, isNull);
-          expect(visibility.value.thirdContact, isNull);
-          expect(visibility.value.visibleIntervals, hasLength(1));
+          expect(visibility.firstContact, isNotNull);
+          expect(visibility.maximum, isNotNull);
+          expect(visibility.fourthContact, isNotNull);
+          expect(visibility.secondContact, isNull);
+          expect(visibility.thirdContact, isNull);
+          expect(visibility.visibleIntervals, hasLength(1));
           expect(
-            visibility.value.visibleIntervals.single.begin.isBefore(
-              local.value.coordinate,
-            ),
+            visibility.visibleIntervals.single.begin.isBefore(local.coordinate),
             isTrue,
           );
-          expect(where.value.centerLineHitsEarth, isTrue);
-          expect(where.value.types, contains(OccultationType.central));
-          expect(where.value.maximumLocation, isNotNull);
+          expect(where.centerLineHitsEarth, isTrue);
+          expect(where.types, contains(OccultationType.central));
+          expect(where.maximumLocation, isNotNull);
           expect(
-            where.value.maximumLocation!.longitudeDegrees,
+            where.maximumLocation!.longitudeDegrees,
             inInclusiveRange(-180.0, 180.0),
           );
           expect(
-            where.value.maximumLocation!.latitudeDegrees,
+            where.maximumLocation!.latitudeDegrees,
             inInclusiveRange(-90.0, 90.0),
           );
-          expect(where.value.centerLinePath, isNotEmpty);
-          expect(where.value.visibleRegionPolygon, isNotEmpty);
+          expect(where.centerLinePath, isNotEmpty);
+          expect(where.visibleRegionPolygon, isNotEmpty);
         },
       );
 
@@ -157,53 +149,51 @@ void main() {
         );
         final visibility = context.occultation.localBodyVisibilityAtUt1(
           Body.mercury,
-          local.value,
+          local,
         );
         final where = context.occultation.bodyWhereAtUt1(
           Body.mercury,
-          geocentric.value,
+          geocentric,
         );
         final whereWithRadius = context.occultation.bodyWhereAtUt1(
           Body.mercury,
-          enlarged.value,
+          enlarged,
           targetRadiusKilometers: 2 * 2439.7,
         );
 
-        expect(geocentric.value.kind, LunarOccultationKind.lunarBody);
+        expect(geocentric.kind, LunarOccultationKind.lunarBody);
         expect(
-          geocentric.value.coordinate.toDouble(),
+          geocentric.coordinate.toDouble(),
           closeTo(2461090.465108, 10 / 86400),
         );
         expect(
-          enlarged.value.targetRadiusRadians,
-          greaterThan(geocentric.value.targetRadiusRadians),
+          enlarged.targetRadiusRadians,
+          greaterThan(geocentric.targetRadiusRadians),
         );
         expect(
-          enlarged.value.firstContact!.isBefore(geocentric.value.firstContact!),
+          enlarged.firstContact!.isBefore(geocentric.firstContact!),
           isTrue,
         );
         expect(
-          enlarged.value.fourthContact!.isAfter(
-            geocentric.value.fourthContact!,
-          ),
+          enlarged.fourthContact!.isAfter(geocentric.fourthContact!),
           isTrue,
         );
-        expect(local.value.secondContact, isNotNull);
-        expect(local.value.thirdContact, isNotNull);
+        expect(local.secondContact, isNotNull);
+        expect(local.thirdContact, isNotNull);
         expect(
-          localWithRadius.value.targetRadiusRadians,
-          greaterThan(local.value.targetRadiusRadians),
+          localWithRadius.targetRadiusRadians,
+          greaterThan(local.targetRadiusRadians),
         );
-        expect(visibility.value.firstContact, isNotNull);
-        expect(visibility.value.secondContact, isNotNull);
-        expect(visibility.value.thirdContact, isNotNull);
-        expect(visibility.value.fourthContact, isNotNull);
-        expect(visibility.value.visibleIntervals, isNotEmpty);
-        expect(where.value.maximumLocation, isNotNull);
-        expect(where.value.types, contains(OccultationType.central));
+        expect(visibility.firstContact, isNotNull);
+        expect(visibility.secondContact, isNotNull);
+        expect(visibility.thirdContact, isNotNull);
+        expect(visibility.fourthContact, isNotNull);
+        expect(visibility.visibleIntervals, isNotEmpty);
+        expect(where.maximumLocation, isNotNull);
+        expect(where.types, contains(OccultationType.central));
         expect(
-          whereWithRadius.value.targetRadiusRadians,
-          greaterThan(where.value.targetRadiusRadians!),
+          whereWithRadius.targetRadiusRadians,
+          greaterThan(where.targetRadiusRadians!),
         );
       });
 
@@ -245,10 +235,8 @@ void main() {
           JulianDate<Ut1Scale>.fromDouble(2460310.5),
         );
         expect(
-          () => context.occultation.localBodyVisibilityAtUt1(
-            Body.mercury,
-            star.value,
-          ),
+          () =>
+              context.occultation.localBodyVisibilityAtUt1(Body.mercury, star),
           throwsArgumentError,
         );
         context.close();

@@ -27,27 +27,31 @@ void main() {
           flags: {PositionFlag.xyz, PositionFlag.speed},
         );
 
-        expect(result.value.values, hasLength(6));
-        expect(result.value.values.every((value) => value.isFinite), isTrue);
-        expect(result.value.isCartesian, isTrue);
-        expect(result.diagnostic.status, 0);
-        expect(result.diagnostic.targetId, Body.moon.id);
-        expect(result.diagnostic.julianDateTdb.toDouble().isFinite, isTrue);
-        expect(result.diagnostic.candidateCount, greaterThanOrEqualTo(0));
+        expect(result.values, hasLength(6));
+        expect(result.values.every((value) => value.isFinite), isTrue);
+        expect(result.isCartesian, isTrue);
+        expect(taiyin.lastDiagnostic?.status, 0);
+        expect(taiyin.lastDiagnostic?.targetId, Body.moon.id);
+        expect(
+          taiyin.lastDiagnostic?.julianDateTdb.toDouble().isFinite,
+          isTrue,
+        );
+        expect(taiyin.lastDiagnostic?.candidateCount, greaterThanOrEqualTo(0));
       });
 
       test('covers TDB, UT1, explicit Delta-T, and UTC routes', () {
-        final results = [
-          taiyin.position.atTdb(Body.sun, tdb, tt),
-          taiyin.position.atUt1(Body.sun, ut1),
-          taiyin.position.atUt1WithDeltaT(Body.sun, ut1, 69.184),
-          taiyin.position.atUtc(Body.sun, utc),
+        final calls = [
+          () => taiyin.position.atTdb(Body.sun, tdb, tt),
+          () => taiyin.position.atUt1(Body.sun, ut1),
+          () => taiyin.position.atUt1WithDeltaT(Body.sun, ut1, 69.184),
+          () => taiyin.position.atUtc(Body.sun, utc),
         ];
 
-        for (final result in results) {
-          expect(result.value.values.every((value) => value.isFinite), isTrue);
-          expect(result.diagnostic.status, 0);
-          expect(result.diagnostic.targetId, Body.sun.id);
+        for (final call in calls) {
+          final result = call();
+          expect(result.values.every((value) => value.isFinite), isTrue);
+          expect(taiyin.lastDiagnostic?.status, 0);
+          expect(taiyin.lastDiagnostic?.targetId, Body.sun.id);
         }
       });
 
@@ -58,31 +62,31 @@ void main() {
         expect(batch, hasLength(bodies.length));
         for (var index = 0; index < bodies.length; index++) {
           final single = taiyin.position.atTt(bodies[index], tt);
-          expect(batch[index].value.values, single.value.values);
-          expect(batch[index].diagnostic.targetId, bodies[index].id);
+          expect(batch[index].values, single.values);
+          expect(taiyin.lastDiagnostic?.targetId, bodies[index].id);
         }
         expect(taiyin.position.batchAtTt(const [], tt), isEmpty);
       });
 
       test('covers batch TDB, UT1, explicit Delta-T, and UTC routes', () {
         const bodies = [Body.sun, Body.moon];
-        final batches = [
-          taiyin.position.batchAtTdb(bodies, tdb, tt),
-          taiyin.position.batchAtUt1(bodies, ut1),
-          taiyin.position.batchAtUt1WithDeltaT(bodies, ut1, 69.184),
-          taiyin.position.batchAtUtc(bodies, utc),
+        final calls = [
+          () => taiyin.position.batchAtTdb(bodies, tdb, tt),
+          () => taiyin.position.batchAtUt1(bodies, ut1),
+          () => taiyin.position.batchAtUt1WithDeltaT(bodies, ut1, 69.184),
+          () => taiyin.position.batchAtUtc(bodies, utc),
         ];
 
-        for (final batch in batches) {
+        for (final call in calls) {
+          final batch = call();
           expect(batch, hasLength(bodies.length));
           expect(
             batch.every(
-              (result) =>
-                  result.value.values.every((value) => value.isFinite) &&
-                  result.diagnostic.status == 0,
+              (result) => result.values.every((value) => value.isFinite),
             ),
             isTrue,
           );
+          expect(taiyin.lastDiagnostic?.status, 0);
         }
       });
 
@@ -91,10 +95,9 @@ void main() {
         final batch = taiyin.position.batchAtTt(bodies, tt);
 
         expect(batch, hasLength(2));
-        expect(batch[0].diagnostic.status, 0);
-        expect(batch[0].value.values.every((value) => value.isFinite), isTrue);
-        expect(batch[1].diagnostic.status, isNot(0));
-        expect(batch[1].diagnostic.targetId, Body.saturn.id);
+        expect(batch[0].values.every((value) => value.isFinite), isTrue);
+        expect(taiyin.lastDiagnostic?.status, isNot(0));
+        expect(taiyin.lastDiagnostic?.targetId, Body.saturn.id);
       });
 
       test('attaches native diagnostics to single-target failures', () {
@@ -129,7 +132,7 @@ void main() {
 
       test('returns finite Cartesian position, velocity, and acceleration', () {
         final result = taiyin.position.stateAtTt(Body.moon, tt);
-        final state = result.value;
+        final state = result;
 
         expect(
           state.positionAu.values.every((value) => value.isFinite),
@@ -143,23 +146,24 @@ void main() {
           state.accelerationAuPerDay2.values.every((value) => value.isFinite),
           isTrue,
         );
-        expect(result.diagnostic.targetId, Body.moon.id);
+        expect(taiyin.lastDiagnostic?.targetId, Body.moon.id);
       });
 
       test('covers Cartesian-state time routes', () {
-        final results = [
-          taiyin.position.stateAtTdb(Body.moon, tdb, tt),
-          taiyin.position.stateAtUt1(Body.moon, ut1),
-          taiyin.position.stateAtUt1WithDeltaT(Body.moon, ut1, 69.184),
-          taiyin.position.stateAtUtc(Body.moon, utc),
+        final calls = [
+          () => taiyin.position.stateAtTdb(Body.moon, tdb, tt),
+          () => taiyin.position.stateAtUt1(Body.moon, ut1),
+          () => taiyin.position.stateAtUt1WithDeltaT(Body.moon, ut1, 69.184),
+          () => taiyin.position.stateAtUtc(Body.moon, utc),
         ];
 
-        for (final result in results) {
+        for (final call in calls) {
+          final result = call();
           expect(
-            result.value.positionAu.values.every((value) => value.isFinite),
+            result.positionAu.values.every((value) => value.isFinite),
             isTrue,
           );
-          expect(result.diagnostic.status, 0);
+          expect(taiyin.lastDiagnostic?.status, 0);
         }
       });
 

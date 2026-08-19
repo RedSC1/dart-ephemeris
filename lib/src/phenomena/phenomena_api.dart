@@ -23,7 +23,7 @@ final class PhenomenaApi {
   /// uses the context's configured observer for observer-dependent values;
   /// lunar [BodyPhenomena.geocentricHorizontalParallaxRadians] remains
   /// geocentric.
-  EphemerisResult<BodyPhenomena> atTt(
+  BodyPhenomena atTt(
     Body body,
     JulianDate<TtScale> tt, {
     PhenomenaOrigin origin = PhenomenaOrigin.geocentric,
@@ -52,7 +52,7 @@ final class PhenomenaApi {
   /// uses the context's configured observer for observer-dependent values;
   /// lunar [BodyPhenomena.geocentricHorizontalParallaxRadians] remains
   /// geocentric.
-  EphemerisResult<BodyPhenomena> atUt1(
+  BodyPhenomena atUt1(
     Body body,
     JulianDate<Ut1Scale> ut1, {
     PhenomenaOrigin origin = PhenomenaOrigin.geocentric,
@@ -75,7 +75,7 @@ final class PhenomenaApi {
     );
   }
 
-  EphemerisResult<BodyPhenomena> _calculate(
+  BodyPhenomena _calculate(
     Body body,
     PhenomenaOrigin origin,
     Set<PositionFlag> flags,
@@ -110,22 +110,19 @@ final class PhenomenaApi {
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
       final value = output.ref;
-      return EphemerisResult(
-        value: BodyPhenomena(
-          body: body,
-          phaseAngleRadians: value.phase_angle_rad,
-          illuminatedFraction: value.illuminated_fraction,
-          solarElongationRadians: value.solar_elongation_rad,
-          apparentDiameterRadians: value.apparent_diameter_rad,
-          apparentMagnitude: value.apparent_magnitude,
-          geocentricHorizontalParallaxRadians:
-              value.horizontal_parallax_rad.isFinite
-              ? value.horizontal_parallax_rad
-              : null,
-          origin: origin,
-          flags: frozenFlags,
-        ),
-        diagnostic: mappedDiagnostic,
+      return BodyPhenomena(
+        body: body,
+        phaseAngleRadians: value.phase_angle_rad,
+        illuminatedFraction: value.illuminated_fraction,
+        solarElongationRadians: value.solar_elongation_rad,
+        apparentDiameterRadians: value.apparent_diameter_rad,
+        apparentMagnitude: value.apparent_magnitude,
+        geocentricHorizontalParallaxRadians:
+            value.horizontal_parallax_rad.isFinite
+            ? value.horizontal_parallax_rad
+            : null,
+        origin: origin,
+        flags: frozenFlags,
       );
     });
   }

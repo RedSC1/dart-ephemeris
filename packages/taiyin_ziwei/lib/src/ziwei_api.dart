@@ -36,9 +36,7 @@ void _checkStatus(
   );
 }
 
-final Expando<ZiweiContext> _ziweiCache = Expando<ZiweiContext>(
-  'taiyin_ziwei',
-);
+final Expando<ZiweiContext> _ziweiCache = Expando<ZiweiContext>('taiyin_ziwei');
 
 /// Ziwei entry points attached to an [EphemerisContext].
 extension ZiweiExtension on EphemerisContext {
@@ -58,7 +56,8 @@ extension ZiweiExtension on EphemerisContext {
   /// Creates an independent Ziwei context owned by the caller.
   ///
   /// [calendar] defaults to the cached default Chinese-calendar context and
-  /// is borrowed, not owned. [catalog] defaults to the bundled default rule
+  /// is borrowed, not owned; it must have been created by this same
+  /// [EphemerisContext]. [catalog] defaults to the bundled default rule
   /// profile; a catalog created implicitly is released by
   /// [ZiweiContext.close], while a caller-supplied catalog stays owned by the
   /// caller.
@@ -69,6 +68,14 @@ extension ZiweiExtension on EphemerisContext {
   }) {
     extensionHost.ensureOpen();
     final effectiveCalendar = calendar ?? chineseCalendar;
+    if (!identical(effectiveCalendar.owner, this)) {
+      throw ArgumentError.value(
+        calendar,
+        'calendar',
+        'must belong to this EphemerisContext',
+      );
+    }
+    effectiveCalendar.extensionHost.ensureOpen();
     return ZiweiContext._create(
       effectiveCalendar.extensionHost,
       effectiveCalendar,
@@ -170,7 +177,10 @@ final class ZiweiDataCatalog implements Finalizable {
   /// Reloads the TOML profile from disk, advancing [generation].
   void reload() {
     _ensureOpen();
-    _checkStatus(_bindings, _bindings.taiyin_ziwei_data_catalog_reload(_catalog));
+    _checkStatus(
+      _bindings,
+      _bindings.taiyin_ziwei_data_catalog_reload(_catalog),
+    );
   }
 
   /// The catalog snapshot generation, incremented by [reload].
@@ -225,7 +235,11 @@ final class ZiweiContext implements Finalizable {
     final effectiveCatalog = catalog ?? ownedCatalog!;
     try {
       final context = using((arena) {
-        final overrides = _writeZiweiOptionOverrides(bindings, arena, selection);
+        final overrides = _writeZiweiOptionOverrides(
+          bindings,
+          arena,
+          selection,
+        );
         final output = arena<Pointer<taiyin_ziwei_context>>();
         _checkStatus(
           bindings,
@@ -238,13 +252,7 @@ final class ZiweiContext implements Finalizable {
         );
         return output.value;
       });
-      return ZiweiContext._(
-        host,
-        context,
-        finalizer,
-        calendar,
-        ownedCatalog,
-      );
+      return ZiweiContext._(host, context, finalizer, calendar, ownedCatalog);
     } catch (_) {
       ownedCatalog?.close();
       rethrow;
@@ -369,7 +377,7 @@ final class ZiweiContext implements Finalizable {
   ///
   /// [virtualTime] must describe the same event as [instantUtc] in the
   /// calendar context's civil time zone.
-  EphemerisResult<ZiweiChart> createChart({
+  ZiweiChart createChart({
     required JulianDate<UtcScale> instantUtc,
     required AstroDateTime virtualTime,
     required ZiweiGender gender,
@@ -393,9 +401,9 @@ final class ZiweiContext implements Finalizable {
         diagnostic,
       );
       final mappedDiagnostic = _host.readDiagnostic(diagnostic.ref);
+      _host.recordDiagnostic(mappedDiagnostic);
       _checkStatus(_bindings, status, diagnostic: mappedDiagnostic);
-      final chart = ZiweiChart._(this, output.value, _chartFinalizer);
-      return EphemerisResult(value: chart, diagnostic: mappedDiagnostic);
+      return ZiweiChart._(this, output.value, _chartFinalizer);
     });
   }
 
@@ -411,15 +419,15 @@ final class ZiweiContext implements Finalizable {
   /// Creates a natal chart from a local wall-clock birth time.
   ///
   /// The UTC instant is derived from the calendar context's civil-day offset.
-  EphemerisResult<ZiweiChart> calculateLocal(
+  ZiweiChart calculateLocal(
     AstroDateTime localTime, {
     required ZiweiGender gender,
     ZiweiBirthOptions options = const ZiweiBirthOptions(),
   }) {
     _ensureOpen();
-    final instantUtc = localTime
-        .toJulianDate<UtcScale>()
-        .addSeconds(-_calendarOffsetSeconds);
+    final instantUtc = localTime.toJulianDate<UtcScale>().addSeconds(
+      -_calendarOffsetSeconds,
+    );
     return createChart(
       instantUtc: instantUtc,
       virtualTime: localTime,
@@ -432,7 +440,7 @@ final class ZiweiContext implements Finalizable {
   ///
   /// The local wall clock is derived from the calendar context's civil-day
   /// offset.
-  EphemerisResult<ZiweiChart> calculateInstant(
+  ZiweiChart calculateInstant(
     JulianDate<UtcScale> instantUtc, {
     required ZiweiGender gender,
     ZiweiBirthOptions options = const ZiweiBirthOptions(),
@@ -450,7 +458,8 @@ final class ZiweiContext implements Finalizable {
 
   double get _calendarOffsetSeconds {
     final config = _calendar.config;
-    if (config.dayBoundaryMode == ChineseCalendarDayBoundaryMode.fixedUtcOffset) {
+    if (config.dayBoundaryMode ==
+        ChineseCalendarDayBoundaryMode.fixedUtcOffset) {
       return config.utcOffsetMinutes * 60.0;
     }
     return config.calendarMeridianDegrees * 240.0;
@@ -577,7 +586,7 @@ final class ZiweiContext implements Finalizable {
   /// The search uses this context's Chinese-calendar policy and data routes.
   /// [startVirtualTime] must describe the same event as [startInstantUtc]; it
   /// is then advanced as canonical logical hours.
-  EphemerisResult<List<ZiweiReverseLookupCandidate>> reverseLookupTier1({
+  List<ZiweiReverseLookupCandidate> reverseLookupTier1({
     required JulianDate<UtcScale> startInstantUtc,
     required JulianDate<UtcScale> endInstantUtc,
     required AstroDateTime startVirtualTime,
@@ -618,17 +627,15 @@ final class ZiweiContext implements Finalizable {
         count,
         diagnostic,
       );
-      _checkStatus(
-        _bindings,
-        countStatus,
-        diagnostic: _host.readDiagnostic(diagnostic.ref),
+      final countDiagnostic = _host.readDiagnostic(diagnostic.ref);
+      _host.recordDiagnostic(countDiagnostic);
+      _checkStatus(_bindings, countStatus, diagnostic: countDiagnostic);
+      final requiredCount = validatedNativeArrayCount(
+        count.value,
+        'Ziwei reverse',
       );
-      final requiredCount = validatedNativeArrayCount(count.value, 'Ziwei reverse');
       if (requiredCount == 0) {
-        return EphemerisResult(
-          value: const <ZiweiReverseLookupCandidate>[],
-          diagnostic: _host.readDiagnostic(diagnostic.ref),
-        );
+        return const <ZiweiReverseLookupCandidate>[];
       }
 
       final output = arena<taiyin_ziwei_reverse_candidate>(requiredCount);
@@ -646,15 +653,16 @@ final class ZiweiContext implements Finalizable {
         diagnostic,
       );
       final mappedDiagnostic = _host.readDiagnostic(diagnostic.ref);
+      _host.recordDiagnostic(mappedDiagnostic);
       _checkStatus(_bindings, fillStatus, diagnostic: mappedDiagnostic);
-      final resultCount = validatedNativeResultCount(count.value, requiredCount);
-      return EphemerisResult(
-        value: List.unmodifiable([
-          for (var index = 0; index < resultCount; index++)
-            _readZiweiReverseCandidate((output + index).ref),
-        ]),
-        diagnostic: mappedDiagnostic,
+      final resultCount = validatedNativeResultCount(
+        count.value,
+        requiredCount,
       );
+      return List.unmodifiable([
+        for (var index = 0; index < resultCount; index++)
+          _readZiweiReverseCandidate((output + index).ref),
+      ]);
     });
   }
 }
@@ -883,7 +891,7 @@ final class ZiweiChart implements Finalizable {
   }
 
   /// Replaces the chart's contiguous flow stack through [deepestLevel].
-  EphemerisResult<ZiweiFlowResolution> setFlow({
+  ZiweiFlowResolution setFlow({
     required JulianDate<UtcScale> targetInstantUtc,
     required AstroDateTime targetVirtualTime,
     ZiweiFlowOptions options = const ZiweiFlowOptions(),
@@ -909,11 +917,9 @@ final class ZiweiChart implements Finalizable {
         diagnostic,
       );
       final mappedDiagnostic = _context._host.readDiagnostic(diagnostic.ref);
+      _context._host.recordDiagnostic(mappedDiagnostic);
       _checkStatus(_bindings, status, diagnostic: mappedDiagnostic);
-      return EphemerisResult(
-        value: _readZiweiFlowResolution(summary.ref),
-        diagnostic: mappedDiagnostic,
-      );
+      return _readZiweiFlowResolution(summary.ref);
     });
   }
 
@@ -1006,12 +1012,14 @@ final class ZiweiChart implements Finalizable {
 List<int> _readZiweiStarIds(
   TaiyinBindings bindings,
   Arena arena,
-  int Function(Pointer<Uint16> buffer, int capacity, Pointer<Size> count)
-  fill,
+  int Function(Pointer<Uint16> buffer, int capacity, Pointer<Size> count) fill,
 ) {
   final count = arena<Size>();
   _checkStatus(bindings, fill(nullptr, 0, count));
-  final requiredCount = validatedNativeArrayCount(count.value, 'Ziwei star list');
+  final requiredCount = validatedNativeArrayCount(
+    count.value,
+    'Ziwei star list',
+  );
   if (requiredCount == 0) return const <int>[];
   final buffer = arena<Uint16>(requiredCount);
   _checkStatus(bindings, fill(buffer, requiredCount, count));
@@ -1027,21 +1035,53 @@ _writeZiweiOptionOverrides(
 ) {
   final entries = <(int, String?, String)>[
     if (selection.placementDefault.isNotEmpty)
-      (taiyin_ziwei_option_component.TAIYIN_ZIWEI_OPTION_PLACEMENT, null, selection.placementDefault),
+      (
+        taiyin_ziwei_option_component.TAIYIN_ZIWEI_OPTION_PLACEMENT,
+        null,
+        selection.placementDefault,
+      ),
     for (final entry in selection.placement.entries)
-      (taiyin_ziwei_option_component.TAIYIN_ZIWEI_OPTION_PLACEMENT, entry.key, entry.value),
+      (
+        taiyin_ziwei_option_component.TAIYIN_ZIWEI_OPTION_PLACEMENT,
+        entry.key,
+        entry.value,
+      ),
     if (selection.brightnessDefault.isNotEmpty)
-      (taiyin_ziwei_option_component.TAIYIN_ZIWEI_OPTION_BRIGHTNESS, null, selection.brightnessDefault),
+      (
+        taiyin_ziwei_option_component.TAIYIN_ZIWEI_OPTION_BRIGHTNESS,
+        null,
+        selection.brightnessDefault,
+      ),
     for (final entry in selection.brightness.entries)
-      (taiyin_ziwei_option_component.TAIYIN_ZIWEI_OPTION_BRIGHTNESS, entry.key, entry.value),
+      (
+        taiyin_ziwei_option_component.TAIYIN_ZIWEI_OPTION_BRIGHTNESS,
+        entry.key,
+        entry.value,
+      ),
     if (selection.sihuaDefault.isNotEmpty)
-      (taiyin_ziwei_option_component.TAIYIN_ZIWEI_OPTION_SIHUA, null, selection.sihuaDefault),
+      (
+        taiyin_ziwei_option_component.TAIYIN_ZIWEI_OPTION_SIHUA,
+        null,
+        selection.sihuaDefault,
+      ),
     for (final entry in selection.sihua.entries)
-      (taiyin_ziwei_option_component.TAIYIN_ZIWEI_OPTION_SIHUA, entry.key, entry.value),
+      (
+        taiyin_ziwei_option_component.TAIYIN_ZIWEI_OPTION_SIHUA,
+        entry.key,
+        entry.value,
+      ),
     if (selection.masters.isNotEmpty)
-      (taiyin_ziwei_option_component.TAIYIN_ZIWEI_OPTION_MASTERS, null, selection.masters),
+      (
+        taiyin_ziwei_option_component.TAIYIN_ZIWEI_OPTION_MASTERS,
+        null,
+        selection.masters,
+      ),
     if (selection.longevity.isNotEmpty)
-      (taiyin_ziwei_option_component.TAIYIN_ZIWEI_OPTION_LONGEVITY, null, selection.longevity),
+      (
+        taiyin_ziwei_option_component.TAIYIN_ZIWEI_OPTION_LONGEVITY,
+        null,
+        selection.longevity,
+      ),
   ];
   if (entries.isEmpty) {
     return (pointer: nullptr, count: 0);
@@ -1053,9 +1093,7 @@ _writeZiweiOptionOverrides(
     bindings.taiyin_ziwei_option_override_init(slot);
     slot.ref
       ..component = component
-      ..key = key == null
-          ? nullptr
-          : key.toNativeUtf8(allocator: arena).cast()
+      ..key = key == null ? nullptr : key.toNativeUtf8(allocator: arena).cast()
       ..option = option.toNativeUtf8(allocator: arena).cast();
   }
   return (pointer: output, count: entries.length);

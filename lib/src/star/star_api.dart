@@ -106,8 +106,9 @@ final class StarCatalog {
 /// Fixed-star calculations owned by one [EphemerisContext].
 ///
 /// Star keys may be canonical IDs, names, or aliases from any loaded global
-/// star catalog. Position batches preserve successful entries and their native
-/// diagnostics when another star fails. Observed batches throw if any entry
+/// star catalog. Position batches fill failed entries with NaN values when
+/// another star succeeds; the batch's final diagnostic is published on
+/// [EphemerisContext.lastDiagnostic]. Observed batches throw if any entry
 /// fails because the native C ABI does not return partial observed values.
 final class StarApi {
   StarApi._(
@@ -125,7 +126,7 @@ final class StarApi {
   final ObservedApi _observedMapper;
 
   /// Calculates one star with explicit TDB and TT coordinates.
-  EphemerisResult<StarPosition> atTdb(
+  StarPosition atTdb(
     String starKey,
     JulianDate<TdbScale> tdb,
     JulianDate<TtScale> tt, {
@@ -149,7 +150,7 @@ final class StarApi {
   }
 
   /// Calculates one star at a TT Julian date.
-  EphemerisResult<StarPosition> atTt(
+  StarPosition atTt(
     String starKey,
     JulianDate<TtScale> julianDate, {
     Set<PositionFlag> flags = const {},
@@ -171,7 +172,7 @@ final class StarApi {
   }
 
   /// Calculates one star at a UT1 Julian date using Taiyin's time policy.
-  EphemerisResult<StarPosition> atUt1(
+  StarPosition atUt1(
     String starKey,
     JulianDate<Ut1Scale> julianDate, {
     Set<PositionFlag> flags = const {},
@@ -193,7 +194,7 @@ final class StarApi {
   }
 
   /// Calculates one star at UT1 with an explicit TT−UT1 value.
-  EphemerisResult<StarPosition> atUt1WithDeltaT(
+  StarPosition atUt1WithDeltaT(
     String starKey,
     JulianDate<Ut1Scale> julianDate,
     double deltaTSeconds, {
@@ -218,7 +219,7 @@ final class StarApi {
   }
 
   /// Calculates several stars with explicit TDB and TT coordinates.
-  List<EphemerisResult<StarPosition>> batchAtTdb(
+  List<StarPosition> batchAtTdb(
     List<String> starKeys,
     JulianDate<TdbScale> tdb,
     JulianDate<TtScale> tt, {
@@ -243,7 +244,7 @@ final class StarApi {
   }
 
   /// Calculates several stars at a TT Julian date.
-  List<EphemerisResult<StarPosition>> batchAtTt(
+  List<StarPosition> batchAtTt(
     List<String> starKeys,
     JulianDate<TtScale> julianDate, {
     Set<PositionFlag> flags = const {},
@@ -266,7 +267,7 @@ final class StarApi {
   }
 
   /// Calculates several stars at a UT1 Julian date.
-  List<EphemerisResult<StarPosition>> batchAtUt1(
+  List<StarPosition> batchAtUt1(
     List<String> starKeys,
     JulianDate<Ut1Scale> julianDate, {
     Set<PositionFlag> flags = const {},
@@ -289,7 +290,7 @@ final class StarApi {
   }
 
   /// Calculates several stars at UT1 with an explicit TT−UT1 value.
-  List<EphemerisResult<StarPosition>> batchAtUt1WithDeltaT(
+  List<StarPosition> batchAtUt1WithDeltaT(
     List<String> starKeys,
     JulianDate<Ut1Scale> julianDate,
     double deltaTSeconds, {
@@ -414,7 +415,7 @@ final class StarApi {
     });
   }
 
-  EphemerisResult<StarPosition> _position(
+  StarPosition _position(
     String starKey,
     Set<PositionFlag> flags,
     _SingleStarPositionCalculation calculate,
@@ -432,18 +433,15 @@ final class StarApi {
         diagnostic.ref,
       );
       _checkStatus(status, mappedDiagnostic, const []);
-      return EphemerisResult(
-        value: StarPosition(
-          starKey: starKey,
-          values: [for (var index = 0; index < 6; index++) output[index]],
-          flags: frozenFlags,
-        ),
-        diagnostic: mappedDiagnostic,
+      return StarPosition(
+        starKey: starKey,
+        values: [for (var index = 0; index < 6; index++) output[index]],
+        flags: frozenFlags,
       );
     });
   }
 
-  List<EphemerisResult<StarPosition>> _positions(
+  List<StarPosition> _positions(
     List<String> starKeys,
     Set<PositionFlag> flags,
     _BatchStarPositionCalculation calculate,
@@ -480,20 +478,19 @@ final class StarApi {
           !entries.any((entry) => entry.diagnostic.status == status)) {
         _checkStatus(status, null, const []);
       }
+      // Publishes the batch's final diagnostic; a zero status never throws.
+      _checkStatus(0, entries.last.diagnostic, const []);
       return List.unmodifiable([
         for (final entry in entries)
-          EphemerisResult(
-            value: StarPosition(
-              starKey: starKeys[entry.starIndex],
-              values: entry.diagnostic.status == 0
-                  ? [
-                      for (var valueIndex = 0; valueIndex < 6; valueIndex++)
-                        output[entry.starIndex * 6 + valueIndex],
-                    ]
-                  : List.filled(6, double.nan),
-              flags: frozenFlags,
-            ),
-            diagnostic: entry.diagnostic,
+          StarPosition(
+            starKey: starKeys[entry.starIndex],
+            values: entry.diagnostic.status == 0
+                ? [
+                    for (var valueIndex = 0; valueIndex < 6; valueIndex++)
+                      output[entry.starIndex * 6 + valueIndex],
+                  ]
+                : List.filled(6, double.nan),
+            flags: frozenFlags,
           ),
       ]);
     });

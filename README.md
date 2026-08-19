@@ -53,9 +53,9 @@ void main() {
         taiyin.PositionFlag.speed,
       },
     );
-    print(moon.value.coordinates);
-    print(moon.value.rates);
-    print(moon.diagnostic.attemptedMethodId);
+    print(moon.coordinates);
+    print(moon.rates);
+    print(context.lastDiagnostic?.attemptedMethodId);
   } finally {
     context.close();
   }
@@ -213,8 +213,8 @@ ephemeris calculation core resolves positions or events at that scale.
 ## Positions and Cartesian states
 
 `context.position` exposes single-target and batch calculations at TDB, TT, UT1,
-explicit Delta-T, and UTC inputs. Every result includes the native ephemeris
-diagnostic. Cartesian states include position in AU, velocity in AU/day, and
+explicit Delta-T, and UTC inputs. Each call publishes its native ephemeris
+diagnostic to `context.lastDiagnostic`. Cartesian states include position in AU, velocity in AU/day, and
 acceleration in AU/day². The current native position/state engine accepts one
 absolute `double` Julian date, so split Dart coordinates are intentionally
 quantized at this calculation boundary (about 40 microseconds near the present
@@ -233,14 +233,15 @@ final state = context.position.stateAtTt(
   Body.moon,
   JulianDate<TtScale>.fromDouble(2460409.0),
 );
-print(state.value.positionAu);
-print(state.diagnostic.frame);
+print(state.positionAu);
+print(context.lastDiagnostic?.frame);
 ```
 
 Single-target failures throw `EphemerisError` with its native `diagnostic`
-attached. Batch calls preserve one result per requested body when individual
-targets fail; inspect each `result.diagnostic.status` before consuming its
-position.
+attached. Every call also publishes its native diagnostic snapshot to
+`context.lastDiagnostic`. Batch calls preserve one result per requested body
+when individual targets fail; the last target's diagnostic lands on
+`context.lastDiagnostic`.
 
 The `context.positionTt` and `context.positionUt` conveniences remain
 available and delegate to this module.
@@ -313,7 +314,7 @@ final houses = context.astrology.housesAtUt1(
 );
 final moonHouse = context.astrology.housePositionOf(
   houses,
-  siderealMoon.value.siderealLongitudeRadians,
+  siderealMoon.siderealLongitudeRadians,
 );
 ```
 
@@ -514,10 +515,10 @@ final sunrise = context.visibility.solarRiseSetAtUt1(
   event: VisibilityEventKind.rise,
 );
 
-if (sunrise.value.coordinate case final coordinate?) {
+if (sunrise.coordinate case final coordinate?) {
   print(coordinate);
 } else {
-  print(sunrise.value.altitudeState); // e.g. alwaysAbove
+  print(sunrise.altitudeState); // e.g. alwaysAbove
 }
 ```
 
@@ -582,7 +583,7 @@ final event = context.heliacal.nextBodyEventAtUt1(
     extinctionMagnitudePerAirmass: 0.25,
   ),
 );
-print(event.value.coordinate);
+print(event.coordinate);
 ```
 
 `conditions` values are optional: omit one to use the selected profile's
@@ -610,12 +611,12 @@ final event = context.occultation.nextLocalStarAtUt1(
 );
 final visibility = context.occultation.localStarVisibilityAtUt1(
   'antares',
-  event.value,
+  event,
   options: {OccultationVisibilityOption.refraction},
 );
 
-print(event.value.firstContact);
-print(visibility.value.visibleIntervals);
+print(event.firstContact);
+print(visibility.visibleIntervals);
 ```
 
 Use `nextGeocentricStarAtUt1` or `nextGeocentricBodyAtUt1` for geocentric
@@ -646,12 +647,12 @@ final eclipse = context.eclipses.nextLunarAtUt1(
   options: {LunarEclipseSearchOption.includeContacts},
 );
 final local = context.eclipses.localLunarVisibilityAtUt1(
-  eclipse.value,
+  eclipse,
   options: {LocalLunarEclipseVisibilityOption.refraction},
 );
 
-print(eclipse.value.contacts[LunarEclipseContact.greatest]);
-print(local.value.contacts[LunarEclipseContact.greatest]);
+print(eclipse.contacts[LunarEclipseContact.greatest]);
+print(local.contacts[LunarEclipseContact.greatest]);
 ```
 
 An empty `kinds` filter accepts penumbral, partial, and total lunar eclipses.
@@ -686,12 +687,12 @@ final local = context.eclipses.nextLocalSolarAtUt1(
   kinds: {EclipseKind.total},
 );
 final geometry = context.eclipses.localSolarCircumstancesAtUt1(
-  local.value.maximum!,
+  local.maximum!,
 );
 
-print(global.value.contacts[SolarEclipseContact.greatest]);
-print(local.value.contacts[LocalSolarEclipseContact.greatest]);
-print(geometry.value.obscuration);
+print(global.contacts[SolarEclipseContact.greatest]);
+print(local.contacts[LocalSolarEclipseContact.greatest]);
+print(geometry.obscuration);
 ```
 
 Global contacts are optional and use P1/C1/greatest/C4/P4 slots. Local solar
@@ -744,8 +745,8 @@ final transit = context.events.nextSolarTransitAtUt1(
   Body.mercury,
   JulianDate<Ut1Scale>.fromDouble(2458799.0),
 );
-print(phases.value.map((date) => date.toDouble()));
-print(transit.value.greatest);
+print(phases.map((date) => date.toDouble()));
+print(transit.greatest);
 ```
 
 Pass ordinary coordinate-correction choices through `positionFlags`; each
@@ -779,8 +780,8 @@ final localMean = LocalMeanSolarTime.fromUt1(
   longitudeRadians: longitudeRadians,
 );
 final localApparent = context.solarTime.meanToApparent(localMean);
-print(equation.value.equationSeconds);
-print(localApparent.value.coordinate);
+print(equation.equationSeconds);
+print(localApparent.coordinate);
 ```
 
 Solar-time calculations have the same roughly 40-microsecond present-epoch
@@ -801,9 +802,9 @@ final moonPhenomena = context.phenomena.atUt1(
   Body.moon,
   JulianDate<Ut1Scale>.fromDouble(2460416.2916666665),
 );
-print(moonPhenomena.value.illuminatedFraction);
-print(moonPhenomena.value.apparentMagnitude);
-print(moonPhenomena.value.geocentricHorizontalParallaxRadians);
+print(moonPhenomena.illuminatedFraction);
+print(moonPhenomena.apparentMagnitude);
+print(moonPhenomena.geocentricHorizontalParallaxRadians);
 ```
 
 Set `origin: PhenomenaOrigin.topocentric` to make observer-dependent
@@ -838,9 +839,9 @@ final previousNode = context.orbits.searchPlaneNodeFromUt1(
   direction: OrbitalSearchDirection.reverse,
 );
 
-print(orbit.value.semiMajorAxisAu);
-print(perigee.value.coordinate);
-print(previousNode.value.referencePlaneAngleRadians);
+print(orbit.semiMajorAxisAu);
+print(perigee.coordinate);
+print(previousNode.referencePlaneAngleRadians);
 ```
 
 Osculating reference points are instantaneous orbit geometry, not searched
@@ -891,8 +892,8 @@ final observedSpica = context.stars.observedAtUt1(
 ```
 
 `context.stars` exposes single and batch position routes for TDB, TT, UT1, and
-explicit Delta-T. Position batches retain one diagnostic per key, including
-partial failures. Observed-star batches throw if any star fails because the
+explicit Delta-T; each call's diagnostic lands on `context.lastDiagnostic`.
+Observed-star batches throw if any star fails because the
 native C ABI does not return partial observed values. Failed position-batch
 entries contain NaN coordinates and rates. Batch exceptions expose every
 available native failure through `EphemerisError.diagnostics`.
@@ -942,17 +943,17 @@ caller-owned context:
 ```dart
 final lunar = context.chineseCalendar
     .fromSolar(const SolarDate(year: 2024, month: 2, day: 10));
-print(lunar.value); // 2024-01-01 (甲辰正月初一)
+print(lunar); // 2024-01-01 (甲辰正月初一)
 
 final year = context.chineseCalendar
     .calcYearUt(JulianDate<Ut1Scale>.fromDouble(2460348.0));
-print(year.value.solarTermCount); // 25
+print(year.solarTermCount); // 25
 
 final pillars = context.chineseCalendar.fourPillars(
   instantUtc: JulianDate<UtcScale>.fromDouble(2460351.0),
   virtualTime: AstroDateTime(2024, 2, 10, 12),
 );
-print(pillars.value.year); // 甲辰
+print(pillars.year); // 甲辰
 ```
 
 The Ganzhi module is part of the core package and always available:
@@ -975,24 +976,25 @@ import 'package:taiyin_bazi/taiyin_bazi.dart';
 
 // Requires TAIYIN_BUILD_BAZI_EXTENSION.
 final bazi = context.bazi;
-final chart = bazi.calcChart(pillars.value); // returns BaziChart
+final chart = bazi.calcChart(pillars); // returns BaziChart
 final qiyun = bazi.calcQiyun(
   birthJdUt: JulianDate<Ut1Scale>.fromDouble(2460351.0),
   birthCivilTime: AstroDateTime(2024, 2, 10, 12),
   chart: chart,
   gender: BaziGender.male,
-  calendar: context.chineseCalendar,
 );
 final dayun = bazi.fillDayun(
   birthCivilTime: AstroDateTime(2024, 2, 10, 12),
   chart: chart,
-  qiyun: qiyun.value, // calcQiyun returns EphemerisResult
+  qiyun: qiyun,
   requestedCount: 5,
 );
 ```
 
-BaZi `calcQiyun` and `calcRenyuanSiling` additionally require a
-`ChineseCalendarContext`, which you pass explicitly.
+A BaZi context binds one `ChineseCalendarContext` at creation — the cached
+default calendar unless you pass `calendar:` to `createBazi` — and
+`calcQiyun`/`calcRenyuanSiling` resolve solar terms through it. The bound
+calendar must belong to the same `EphemerisContext`.
 
 ## Ziwei Doushu (package:taiyin_ziwei)
 
@@ -1010,13 +1012,15 @@ final chart = ziwei.calculateLocal(
   AstroDateTime(2003, 3, 13, 14, 15),
   gender: ZiweiGender.male,
 );
-print(chart.value.anchors.bureau);
-print(chart.value.summary.bureauId);
+print(chart.anchors.bureau);
+print(chart.summary.bureauId);
 ```
 
 `ZiweiDataCatalog` loads a TOML rule profile (the bundled default when
 omitted) and can be shared across Ziwei contexts; pass `profilePath` to use a
-custom rule profile.
+custom rule profile. A Ziwei context borrows the cached default
+Chinese-calendar context; pass `calendar:` to `createZiwei` to bind a
+different calendar from the same `EphemerisContext`.
 
 ## Regenerate bindings
 

@@ -428,7 +428,10 @@ final class ZiweiFlowHourTarget {
 
 /// The same wall-clock field one local civil flow day over.
 final class ZiweiFlowDayTarget {
-  const ZiweiFlowDayTarget({required this.instantUtc, required this.virtualTime});
+  const ZiweiFlowDayTarget({
+    required this.instantUtc,
+    required this.virtualTime,
+  });
 
   final JulianDate<UtcScale> instantUtc;
   final AstroDateTime virtualTime;
@@ -436,7 +439,11 @@ final class ZiweiFlowDayTarget {
 
 /// A star registered in a Ziwei rule catalog.
 final class ZiweiStar {
-  const ZiweiStar({required this.id, required this.key, required this.category});
+  const ZiweiStar({
+    required this.id,
+    required this.key,
+    required this.category,
+  });
 
   final int id;
   final String key;
@@ -505,8 +512,7 @@ final class ZiweiChartSummary {
 
 /// The 31 stable natal anchors, addressable by [ZiweiAnchorSlot].
 final class ZiweiAnchors {
-  ZiweiAnchors(List<int> values)
-    : values = List.unmodifiable(values) {
+  ZiweiAnchors(List<int> values) : values = List.unmodifiable(values) {
     if (this.values.length != ZiweiAnchorSlot.count) {
       throw ArgumentError.value(
         this.values.length,
@@ -520,7 +526,8 @@ final class ZiweiAnchors {
 
   int operator [](ZiweiAnchorSlot slot) => values[slot.id];
 
-  ZiweiBureau get bureau => ZiweiBureau.fromId(values[ZiweiAnchorSlot.bureau.id]);
+  ZiweiBureau get bureau =>
+      ZiweiBureau.fromId(values[ZiweiAnchorSlot.bureau.id]);
   int get ziwei => values[ZiweiAnchorSlot.ziwei.id];
   int get tianfu => values[ZiweiAnchorSlot.tianfu.id];
 

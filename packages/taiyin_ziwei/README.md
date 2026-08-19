@@ -19,7 +19,7 @@ void main() {
       AstroDateTime(2003, 3, 13, 14, 15),
       gender: ZiweiGender.male,
     );
-    print(chart.value.summary.bureauId);
+    print(chart.summary.bureauId);
   } finally {
     context.close();
   }

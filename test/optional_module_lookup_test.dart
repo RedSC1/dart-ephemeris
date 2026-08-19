@@ -74,21 +74,16 @@ void main() {
         // The Chinese calendar is always built and works, and since the
         // calendar-ABI restructure Ganzhi (including four pillars) is always
         // built too.
-        final year = context.chineseCalendar
-            .calcYearUt(JulianDate<Ut1Scale>.fromDouble(2460348.0))
-            .value;
-        expect(year.solarTermCount, 25);
-        final pillars = context.chineseCalendar
-            .fourPillars(
-              instantUtc: JulianDate<UtcScale>.fromDouble(2460351.0),
-              virtualTime: AstroDateTime(2024, 2, 10, 12),
-            )
-            .value;
-        expect(pillars.year.stemId, inInclusiveRange(0, 9));
-        expect(
-          context.ganzhi.make(stemId: 0, branchId: 0).stemId,
-          0,
+        final year = context.chineseCalendar.calcYearUt(
+          JulianDate<Ut1Scale>.fromDouble(2460348.0),
         );
+        expect(year.solarTermCount, 25);
+        final pillars = context.chineseCalendar.fourPillars(
+          instantUtc: JulianDate<UtcScale>.fromDouble(2460351.0),
+          virtualTime: AstroDateTime(2024, 2, 10, 12),
+        );
+        expect(pillars.year.stemId, inInclusiveRange(0, 9));
+        expect(context.ganzhi.make(stemId: 0, branchId: 0).stemId, 0);
         context.close();
       },
       skip: baselineLibraryAvailable

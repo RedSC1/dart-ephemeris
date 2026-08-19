@@ -112,13 +112,16 @@ star.0.magnitude=5.5
         ];
 
         for (final result in results) {
-          expect(result.value.starKey, 'spica');
-          expect(result.value.values, hasLength(6));
-          expect(result.value.values.every((value) => value.isFinite), isTrue);
-          expect(result.value.isCartesian, isTrue);
-          expect(result.diagnostic.status, 0);
-          expect(result.diagnostic.julianDateTdb.toDouble().isFinite, isTrue);
+          expect(result.starKey, 'spica');
+          expect(result.values, hasLength(6));
+          expect(result.values.every((value) => value.isFinite), isTrue);
+          expect(result.isCartesian, isTrue);
         }
+        expect(context.lastDiagnostic?.status, 0);
+        expect(
+          context.lastDiagnostic?.julianDateTdb.toDouble().isFinite,
+          isTrue,
+        );
       });
 
       test('batch time routes preserve keys and match single results', () {
@@ -133,24 +136,23 @@ star.0.magnitude=5.5
 
         for (final batch in batches) {
           expect(batch, hasLength(keys.length));
-          expect([for (final result in batch) result.value.starKey], keys);
+          expect([for (final result in batch) result.starKey], keys);
           expect(
             batch.every(
-              (result) =>
-                  result.diagnostic.status == 0 &&
-                  result.value.values.every((value) => value.isFinite),
+              (result) => result.values.every((value) => value.isFinite),
             ),
             isTrue,
           );
         }
+        expect(context.lastDiagnostic?.status, 0);
 
         final batch = context.stars.batchAtTt(keys, tt, flags: flags);
         for (var index = 0; index < keys.length; index++) {
           final single = context.stars.atTt(keys[index], tt, flags: flags);
           for (var valueIndex = 0; valueIndex < 6; valueIndex++) {
             expect(
-              batch[index].value.values[valueIndex],
-              closeTo(single.value.values[valueIndex], 1e-15),
+              batch[index].values[valueIndex],
+              closeTo(single.values[valueIndex], 1e-15),
             );
           }
         }
@@ -167,13 +169,9 @@ star.0.magnitude=5.5
           );
 
           expect(batch, hasLength(2));
-          expect(batch[0].diagnostic.status, 0);
-          expect(
-            batch[0].value.values.every((value) => value.isFinite),
-            isTrue,
-          );
-          expect(batch[1].diagnostic.status, isNot(0));
-          expect(batch[1].value.values.every((value) => value.isNaN), isTrue);
+          expect(batch[0].values.every((value) => value.isFinite), isTrue);
+          expect(context.lastDiagnostic?.status, isNot(0));
+          expect(batch[1].values.every((value) => value.isNaN), isTrue);
         },
       );
 
@@ -188,7 +186,6 @@ star.0.magnitude=5.5
 
         expect(single.starKey, 'spica');
         expect(single.status, 0);
-        expect(single.diagnostic.status, 0);
         expect(single.apparent.starKey, 'spica');
         expect(single.apparent.longitudeRadians.isFinite, isTrue);
         expect(single.apparent.latitudeRadians.isFinite, isTrue);

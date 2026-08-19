@@ -463,7 +463,8 @@ final class Ephemeris {
   void setEphemerisSourcePriority(String pathOrBasename, int priority) {
     _requirePath(pathOrBasename, 'pathOrBasename');
     using((arena) {
-      final nativePath = pathOrBasename.toNativeUtf8(allocator: arena)
+      final nativePath = pathOrBasename
+          .toNativeUtf8(allocator: arena)
           .cast<Char>();
       _checkStatus(
         _bindings,
@@ -479,7 +480,8 @@ final class Ephemeris {
   void clearEphemerisSourcePriority(String pathOrBasename) {
     _requirePath(pathOrBasename, 'pathOrBasename');
     using((arena) {
-      final nativePath = pathOrBasename.toNativeUtf8(allocator: arena)
+      final nativePath = pathOrBasename
+          .toNativeUtf8(allocator: arena)
           .cast<Char>();
       _checkStatus(
         _bindings,

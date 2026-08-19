@@ -96,26 +96,19 @@ void main() {
         event: VisibilityEventKind.upperTransit,
       );
 
-      expect(rise.diagnostic.status, 0);
-      expect(rise.value.altitudeState, VisibilityAltitudeState.crosses);
-      expect(rise.value.crossingDirection, VisibilityCrossingDirection.rising);
+      expect(rise.altitudeState, VisibilityAltitudeState.crosses);
+      expect(rise.crossingDirection, VisibilityCrossingDirection.rising);
       expect(
-        rise.value.coordinate!.toDouble(),
+        rise.coordinate!.toDouble(),
         closeTo(2460409.020203506574, 5 / JulianDate.secondsPerDay),
       );
-      expect(rise.value.residualRadians.abs(), lessThan(1e-8));
-      expect(fixedDiscRise.diagnostic.status, 0);
-      expect(fixedDiscRise.value.coordinate, isNotNull);
-      expect(customSet.diagnostic.status, 0);
-      expect(customSet.value.coordinate, isNotNull);
+      expect(rise.residualRadians.abs(), lessThan(1e-8));
+      expect(fixedDiscRise.coordinate, isNotNull);
+      expect(customSet.coordinate, isNotNull);
+      expect(customSet.coordinate!.isBefore(plainSet.coordinate!), isTrue);
+      expect(transit.coordinate, isNotNull);
       expect(
-        customSet.value.coordinate!.isBefore(plainSet.value.coordinate!),
-        isTrue,
-      );
-      expect(transit.diagnostic.status, 0);
-      expect(transit.value.coordinate, isNotNull);
-      expect(
-        transit.value.coordinate!.toDouble(),
+        transit.coordinate!.toDouble(),
         closeTo(2460409.293405554257, 2 / JulianDate.secondsPerDay),
       );
     });
@@ -156,34 +149,27 @@ void main() {
         event: VisibilityEventKind.upperTransit,
       );
 
-      expect(mercuryRise.diagnostic.status, 0);
-      expect(mercuryRise.value.altitudeState, VisibilityAltitudeState.crosses);
+      expect(mercuryRise.altitudeState, VisibilityAltitudeState.crosses);
+      expect(mercuryRise.crossingDirection, VisibilityCrossingDirection.rising);
+      expect(mercuryRise.coordinate, isNotNull);
       expect(
-        mercuryRise.value.crossingDirection,
-        VisibilityCrossingDirection.rising,
-      );
-      expect(mercuryRise.value.coordinate, isNotNull);
-      expect(
-        defaultMercuryRise.value.coordinate!.toDouble(),
-        closeTo(mercuryRise.value.coordinate!.toDouble(), 1e-12),
+        defaultMercuryRise.coordinate!.toDouble(),
+        closeTo(mercuryRise.coordinate!.toDouble(), 1e-12),
       );
       expect(
-        unrefractedMercuryRise.value.coordinate!.toDouble(),
+        unrefractedMercuryRise.coordinate!.toDouble(),
         closeTo(2460409.025837766007, 1 / JulianDate.secondsPerDay),
       );
-      expect(mercuryRise.value.residualRadians.abs(), lessThan(1e-8));
-      expect(unrefractedMercuryRise.diagnostic.status, 0);
-      expect(customMercuryRise.diagnostic.status, 0);
-      expect(customMercuryRise.value.coordinate, isNotNull);
+      expect(mercuryRise.residualRadians.abs(), lessThan(1e-8));
+      expect(customMercuryRise.coordinate, isNotNull);
       expect(
-        customMercuryRise.value.coordinate!.isAfter(
-          unrefractedMercuryRise.value.coordinate!,
+        customMercuryRise.coordinate!.isAfter(
+          unrefractedMercuryRise.coordinate!,
         ),
         isTrue,
       );
-      expect(venusTransit.diagnostic.status, 0);
       expect(
-        venusTransit.value.coordinate!.toDouble(),
+        venusTransit.coordinate!.toDouble(),
         closeTo(2460409.256011750549, 2 / JulianDate.secondsPerDay),
       );
     });
@@ -228,32 +214,22 @@ void main() {
         denver,
       );
 
-      expect(sunrise.diagnostic.status, 0);
       expect(
-        sunrise.value.coordinate!.toDouble(),
+        sunrise.coordinate!.toDouble(),
         closeTo(2460409.022335537709, 2 / JulianDate.secondsPerDay),
       );
-      expect(customSunrise.diagnostic.status, 0);
+      expect(customSunrise.coordinate!.isAfter(sunrise.coordinate!), isTrue);
+      expect(fixedDiscSunrise.coordinate, isNotNull);
       expect(
-        customSunrise.value.coordinate!.isAfter(sunrise.value.coordinate!),
-        isTrue,
-      );
-      expect(fixedDiscSunrise.diagnostic.status, 0);
-      expect(fixedDiscSunrise.value.coordinate, isNotNull);
-      expect(twilight.diagnostic.status, 0);
-      expect(
-        twilight.value.coordinate!.toDouble(),
+        twilight.coordinate!.toDouble(),
         closeTo(2460409.605691832025, 0.25 / JulianDate.secondsPerDay),
       );
-      expect(transit.diagnostic.status, 0);
-      expect(transit.value.coordinate, isNotNull);
-      expect(fastRiseSet.diagnostic.status, 0);
-      expect(fastRiseSet.value.rise, isNotNull);
-      expect(fastRiseSet.value.set, isNotNull);
-      expect(fastTransit.diagnostic.status, 0);
-      expect(fastTransit.value.coordinate, isNotNull);
-      expect(fastTransit.value.altitudeRadians.isFinite, isTrue);
-      expect(fastTransit.value.azimuthRadians.isFinite, isTrue);
+      expect(transit.coordinate, isNotNull);
+      expect(fastRiseSet.rise, isNotNull);
+      expect(fastRiseSet.set, isNotNull);
+      expect(fastTransit.coordinate, isNotNull);
+      expect(fastTransit.altitudeRadians.isFinite, isTrue);
+      expect(fastTransit.azimuthRadians.isFinite, isTrue);
     });
 
     test('searches catalogued-star rise, custom horizons, and transits', () {
@@ -279,28 +255,22 @@ void main() {
         event: VisibilityEventKind.upperTransit,
       );
 
-      expect(rise.diagnostic.status, 0);
-      expect(rise.value.altitudeState, VisibilityAltitudeState.crosses);
-      expect(rise.value.coordinate, isNotNull);
-      expect(rise.value.crossingDirection, VisibilityCrossingDirection.rising);
-      expect(rise.value.residualRadians.abs(), lessThan(1e-8));
+      expect(rise.altitudeState, VisibilityAltitudeState.crosses);
+      expect(rise.coordinate, isNotNull);
+      expect(rise.crossingDirection, VisibilityCrossingDirection.rising);
+      expect(rise.residualRadians.abs(), lessThan(1e-8));
       // Deterministic regression baselines for this bundled Spica catalog and
       // native visibility configuration.
       expect(
-        rise.value.coordinate!.toDouble(),
+        rise.coordinate!.toDouble(),
         closeTo(2460409.5787725416, 1 / JulianDate.secondsPerDay),
       );
-      expect(customRise.diagnostic.status, 0);
-      expect(customRise.value.coordinate, isNotNull);
+      expect(customRise.coordinate, isNotNull);
+      expect(customRise.coordinate!.isAfter(rise.coordinate!), isTrue);
+      expect(transit.coordinate, isNotNull);
+      expect(transit.residualRadians.abs(), lessThan(1e-8));
       expect(
-        customRise.value.coordinate!.isAfter(rise.value.coordinate!),
-        isTrue,
-      );
-      expect(transit.diagnostic.status, 0);
-      expect(transit.value.coordinate, isNotNull);
-      expect(transit.value.residualRadians.abs(), lessThan(1e-8));
-      expect(
-        transit.value.coordinate!.toDouble(),
+        transit.coordinate!.toDouble(),
         closeTo(2460408.8043549885, 1 / JulianDate.secondsPerDay),
       );
     });
@@ -355,8 +325,7 @@ void main() {
             VisibilityFlag.noRefraction,
           },
         );
-        expect(unrefracted.diagnostic.status, 0);
-        expect(unrefracted.value.coordinate, isNotNull);
+        expect(unrefracted.coordinate, isNotNull);
 
         // The fast rise/set route enforces the same strict-meteorology rule:
         // strict refraction without complete atmosphere data fails, while
@@ -377,76 +346,62 @@ void main() {
             VisibilityFlag.noRefraction,
           },
         );
-        expect(unrefractedFast.diagnostic.status, 0);
-        expect(unrefractedFast.value.rise, isNotNull);
+        expect(unrefractedFast.rise, isNotNull);
       },
     );
 
-    test('honors limb, refraction, and disc-size options for fast rise/set',
-        () {
-      final upperGeometric = context.visibility.solarRiseSetFastAtTt(
-        centerTt,
-        denver,
-        limb: VisibilityLimb.upper,
-        flags: {VisibilityFlag.noRefraction},
-      );
-      final centerGeometric = context.visibility.solarRiseSetFastAtTt(
-        centerTt,
-        denver,
-        limb: VisibilityLimb.center,
-        flags: {VisibilityFlag.noRefraction},
-      );
-      final lowerFixed = context.visibility.solarRiseSetFastAtTt(
-        centerTt,
-        denver,
-        limb: VisibilityLimb.lower,
-        flags: {
-          VisibilityFlag.fixedDiscSize,
-          VisibilityFlag.noRefraction,
-        },
-      );
-      final upperRefracted = context.visibility.solarRiseSetFastAtTt(
-        centerTt,
-        denver,
-        limb: VisibilityLimb.upper,
-        flags: {VisibilityFlag.refraction},
-      );
-
-      expect(upperGeometric.value.rise, isNotNull);
-      expect(upperGeometric.value.set, isNotNull);
-      expect(centerGeometric.value.rise, isNotNull);
-      expect(lowerFixed.value.rise, isNotNull);
-      expect(upperRefracted.value.rise, isNotNull);
-
-      // At sunrise the upper limb crosses the horizon first, then the center,
-      // then the lower limb; refraction raises the apparent altitude, so the
-      // refracted event precedes the geometric one for the same limb.
-      expect(
-        upperGeometric.value.rise!.isBefore(centerGeometric.value.rise!),
-        isTrue,
-      );
-      expect(
-        centerGeometric.value.rise!.isBefore(lowerFixed.value.rise!),
-        isTrue,
-      );
-      expect(
-        upperRefracted.value.rise!.isBefore(upperGeometric.value.rise!),
-        isTrue,
-      );
-
-      // Mutually exclusive refraction flags are rejected by the Dart API.
-      expect(
-        () => context.visibility.solarRiseSetFastAtTt(
+    test(
+      'honors limb, refraction, and disc-size options for fast rise/set',
+      () {
+        final upperGeometric = context.visibility.solarRiseSetFastAtTt(
           centerTt,
           denver,
-          flags: {
-            VisibilityFlag.refraction,
-            VisibilityFlag.noRefraction,
-          },
-        ),
-        throwsA(isA<ArgumentError>()),
-      );
-    });
+          limb: VisibilityLimb.upper,
+          flags: {VisibilityFlag.noRefraction},
+        );
+        final centerGeometric = context.visibility.solarRiseSetFastAtTt(
+          centerTt,
+          denver,
+          limb: VisibilityLimb.center,
+          flags: {VisibilityFlag.noRefraction},
+        );
+        final lowerFixed = context.visibility.solarRiseSetFastAtTt(
+          centerTt,
+          denver,
+          limb: VisibilityLimb.lower,
+          flags: {VisibilityFlag.fixedDiscSize, VisibilityFlag.noRefraction},
+        );
+        final upperRefracted = context.visibility.solarRiseSetFastAtTt(
+          centerTt,
+          denver,
+          limb: VisibilityLimb.upper,
+          flags: {VisibilityFlag.refraction},
+        );
+
+        expect(upperGeometric.rise, isNotNull);
+        expect(upperGeometric.set, isNotNull);
+        expect(centerGeometric.rise, isNotNull);
+        expect(lowerFixed.rise, isNotNull);
+        expect(upperRefracted.rise, isNotNull);
+
+        // At sunrise the upper limb crosses the horizon first, then the center,
+        // then the lower limb; refraction raises the apparent altitude, so the
+        // refracted event precedes the geometric one for the same limb.
+        expect(upperGeometric.rise!.isBefore(centerGeometric.rise!), isTrue);
+        expect(centerGeometric.rise!.isBefore(lowerFixed.rise!), isTrue);
+        expect(upperRefracted.rise!.isBefore(upperGeometric.rise!), isTrue);
+
+        // Mutually exclusive refraction flags are rejected by the Dart API.
+        expect(
+          () => context.visibility.solarRiseSetFastAtTt(
+            centerTt,
+            denver,
+            flags: {VisibilityFlag.refraction, VisibilityFlag.noRefraction},
+          ),
+          throwsA(isA<ArgumentError>()),
+        );
+      },
+    );
 
     test('maps no-event states and rejects invalid Dart inputs', () {
       context.configuration.setObserverLocation(
@@ -463,9 +418,8 @@ void main() {
         event: VisibilityEventKind.set,
       );
 
-      expect(polar.diagnostic.status, 0);
-      expect(polar.value.altitudeState, VisibilityAltitudeState.alwaysAbove);
-      expect(polar.value.coordinate, isNull);
+      expect(polar.altitudeState, VisibilityAltitudeState.alwaysAbove);
+      expect(polar.coordinate, isNull);
       expect(
         () => context.visibility.planetRiseSetAtUt1(
           Body.earth,

@@ -84,7 +84,7 @@ final class AstrologyApi {
   /// specialized result always has ecliptic spherical coordinates, so
   /// [PositionFlag.xyz] and [PositionFlag.equatorial] are
   /// rejected. [PositionFlag.radians] is added automatically.
-  EphemerisResult<SiderealPosition> siderealPositionAtTt(
+  SiderealPosition siderealPositionAtTt(
     Target target,
     JulianDate<TtScale> tt, {
     AyanamshaModel ayanamsha = Ayanamsha.faganBradley,
@@ -128,7 +128,7 @@ final class AstrologyApi {
   /// Calculates sidereal ecliptic coordinates at UT1 using the context policy.
   ///
   /// [flags] follow the same restrictions as [siderealPositionAtTt].
-  EphemerisResult<SiderealPosition> siderealPositionAtUt1(
+  SiderealPosition siderealPositionAtUt1(
     Target target,
     JulianDate<Ut1Scale> ut1, {
     AyanamshaModel ayanamsha = Ayanamsha.faganBradley,
@@ -181,7 +181,7 @@ final class AstrologyApi {
   /// is independent of [ayanamsha], [precessionPolicy], and [referencePlane].
   /// [PositionFlag.radians] is added automatically. Other position flags
   /// retain their ordinary native physical-correction semantics.
-  EphemerisResult<SiderealCoordinates> siderealCoordinatesAtTt(
+  SiderealCoordinates siderealCoordinatesAtTt(
     Target target,
     JulianDate<TtScale> tt, {
     AyanamshaModel ayanamsha = Ayanamsha.faganBradley,
@@ -225,7 +225,7 @@ final class AstrologyApi {
   /// Calculates generic sidereal coordinates at UT1 using the context policy.
   ///
   /// See [siderealCoordinatesAtTt] for coordinate-mode and frame semantics.
-  EphemerisResult<SiderealCoordinates> siderealCoordinatesAtUt1(
+  SiderealCoordinates siderealCoordinatesAtUt1(
     Target target,
     JulianDate<Ut1Scale> ut1, {
     AyanamshaModel ayanamsha = Ayanamsha.faganBradley,
@@ -272,7 +272,7 @@ final class AstrologyApi {
   /// accepts apparent-correction flags such as `truePosition` and frame
   /// selection through `equatorial` / `noNutation`; it always returns radians
   /// and radians per day, so `radians` and `speed` are not accepted.
-  EphemerisResult<LunarNodePosition> lunarTrueNodeAtTt(
+  LunarNodePosition lunarTrueNodeAtTt(
     JulianDate<TtScale> tt, {
     LunarNodeKind kind = LunarNodeKind.ascending,
     Set<PositionFlag> flags = const {},
@@ -297,7 +297,7 @@ final class AstrologyApi {
   /// Calculates the geocentric osculating ("true") lunar node at UT1.
   ///
   /// See [lunarTrueNodeAtTt] for the result and flag contract.
-  EphemerisResult<LunarNodePosition> lunarTrueNodeAtUt1(
+  LunarNodePosition lunarTrueNodeAtUt1(
     JulianDate<Ut1Scale> ut1, {
     LunarNodeKind kind = LunarNodeKind.ascending,
     Set<PositionFlag> flags = const {},
@@ -323,7 +323,7 @@ final class AstrologyApi {
   ///
   /// This is a mean-model direction, so only `equatorial` and `noNutation`
   /// select its output frame; physical apparent-correction flags do not apply.
-  EphemerisResult<LunarNodePosition> lunarMeanNodeAtTt(
+  LunarNodePosition lunarMeanNodeAtTt(
     JulianDate<TtScale> tt, {
     LunarNodeKind kind = LunarNodeKind.ascending,
     Set<PositionFlag> flags = const {},
@@ -348,7 +348,7 @@ final class AstrologyApi {
   /// Calculates the IERS 2003 conventional mean lunar node at UT1.
   ///
   /// See [lunarMeanNodeAtTt] for the result and flag contract.
-  EphemerisResult<LunarNodePosition> lunarMeanNodeAtUt1(
+  LunarNodePosition lunarMeanNodeAtUt1(
     JulianDate<Ut1Scale> ut1, {
     LunarNodeKind kind = LunarNodeKind.ascending,
     Set<PositionFlag> flags = const {},
@@ -374,7 +374,7 @@ final class AstrologyApi {
   ///
   /// This conventional direction has no physical distance, so its
   /// [LunarApsisPosition.distanceAu] fields are null.
-  EphemerisResult<LunarApsisPosition> lunarMeanApogeeAtTt(
+  LunarApsisPosition lunarMeanApogeeAtTt(
     JulianDate<TtScale> tt, {
     Set<PositionFlag> flags = const {},
   }) {
@@ -395,7 +395,7 @@ final class AstrologyApi {
   /// Calculates the Delaunay mean lunar apogee (mean Lilith) at UT1.
   ///
   /// See [lunarMeanApogeeAtTt] for the result and flag contract.
-  EphemerisResult<LunarApsisPosition> lunarMeanApogeeAtUt1(
+  LunarApsisPosition lunarMeanApogeeAtUt1(
     JulianDate<Ut1Scale> ut1, {
     Set<PositionFlag> flags = const {},
   }) {
@@ -416,7 +416,7 @@ final class AstrologyApi {
   /// Calculates the geocentric osculating lunar apogee at TT.
   ///
   /// This instantaneous two-body apoapsis is commonly called true Lilith.
-  EphemerisResult<LunarApsisPosition> lunarOsculatingApogeeAtTt(
+  LunarApsisPosition lunarOsculatingApogeeAtTt(
     JulianDate<TtScale> tt, {
     Set<PositionFlag> flags = const {},
   }) {
@@ -437,7 +437,7 @@ final class AstrologyApi {
   /// Calculates the geocentric osculating lunar apogee at UT1.
   ///
   /// See [lunarOsculatingApogeeAtTt] for the result and flag contract.
-  EphemerisResult<LunarApsisPosition> lunarOsculatingApogeeAtUt1(
+  LunarApsisPosition lunarOsculatingApogeeAtUt1(
     JulianDate<Ut1Scale> ut1, {
     Set<PositionFlag> flags = const {},
   }) {
@@ -461,7 +461,7 @@ final class AstrologyApi {
   /// requested date lies outside the fitted DE441 interval. Unlike the
   /// conventional mean apogee, it includes a physical distance and rate from
   /// the fitted model.
-  EphemerisResult<LunarApsisPosition> lunarFittedApogeeAtTt(
+  LunarApsisPosition lunarFittedApogeeAtTt(
     JulianDate<TtScale> tt, {
     Set<PositionFlag> flags = const {},
   }) {
@@ -482,7 +482,7 @@ final class AstrologyApi {
   /// Calculates the DE441 fitted-natural lunar apogee at UT1.
   ///
   /// See [lunarFittedApogeeAtTt] for the result and flag contract.
-  EphemerisResult<LunarApsisPosition> lunarFittedApogeeAtUt1(
+  LunarApsisPosition lunarFittedApogeeAtUt1(
     JulianDate<Ut1Scale> ut1, {
     Set<PositionFlag> flags = const {},
   }) {
@@ -595,7 +595,7 @@ final class AstrologyApi {
     return _bindings.taiyin_has_house_system_model(system.id) != 0;
   }
 
-  EphemerisResult<SiderealPosition> _siderealPosition(
+  SiderealPosition _siderealPosition(
     Target target,
     AyanamshaModel ayanamsha,
     SiderealPrecessionPolicy precessionPolicy,
@@ -615,33 +615,30 @@ final class AstrologyApi {
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
       final value = output.ref;
-      return EphemerisResult(
-        value: SiderealPosition(
-          target: target,
-          ayanamsha: ayanamsha,
-          precessionPolicy: precessionPolicy,
-          referencePlane: referencePlane,
-          referenceEpoch: referenceEpoch,
-          coordinateFrame: SiderealCoordinateFrame.fromId(
-            value.coordinate_frame_id,
-          ),
-          rawCoordinateFrameId: value.coordinate_frame_id,
-          tropicalLongitudeRadians: value.tropical_longitude_rad,
-          siderealLongitudeRadians: value.sidereal_longitude_rad,
-          latitudeRadians: value.latitude_rad,
-          distanceAu: value.distance_au,
-          tropicalLongitudeRateRadiansPerDay:
-              value.tropical_longitude_rate_rad_per_day,
-          siderealLongitudeRateRadiansPerDay:
-              value.sidereal_longitude_rate_rad_per_day,
-          flags: flags,
+      return SiderealPosition(
+        target: target,
+        ayanamsha: ayanamsha,
+        precessionPolicy: precessionPolicy,
+        referencePlane: referencePlane,
+        referenceEpoch: referenceEpoch,
+        coordinateFrame: SiderealCoordinateFrame.fromId(
+          value.coordinate_frame_id,
         ),
-        diagnostic: mappedDiagnostic,
+        rawCoordinateFrameId: value.coordinate_frame_id,
+        tropicalLongitudeRadians: value.tropical_longitude_rad,
+        siderealLongitudeRadians: value.sidereal_longitude_rad,
+        latitudeRadians: value.latitude_rad,
+        distanceAu: value.distance_au,
+        tropicalLongitudeRateRadiansPerDay:
+            value.tropical_longitude_rate_rad_per_day,
+        siderealLongitudeRateRadiansPerDay:
+            value.sidereal_longitude_rate_rad_per_day,
+        flags: flags,
       );
     });
   }
 
-  EphemerisResult<SiderealCoordinates> _siderealCoordinates(
+  SiderealCoordinates _siderealCoordinates(
     Target target,
     AyanamshaModel ayanamsha,
     SiderealPrecessionPolicy precessionPolicy,
@@ -665,26 +662,23 @@ final class AstrologyApi {
         for (final flag in PositionFlag.values)
           if ((value.position_flags & flag.mask) != 0) flag,
       });
-      return EphemerisResult(
-        value: SiderealCoordinates(
-          target: target,
-          ayanamsha: ayanamsha,
-          precessionPolicy: precessionPolicy,
-          referencePlane: referencePlane,
-          referenceEpoch: referenceEpoch,
-          coordinateFrame: SiderealCoordinateFrame.fromId(
-            value.coordinate_frame_id,
-          ),
-          rawCoordinateFrameId: value.coordinate_frame_id,
-          values: [for (var index = 0; index < 6; index++) value.values[index]],
-          flags: outputFlags,
+      return SiderealCoordinates(
+        target: target,
+        ayanamsha: ayanamsha,
+        precessionPolicy: precessionPolicy,
+        referencePlane: referencePlane,
+        referenceEpoch: referenceEpoch,
+        coordinateFrame: SiderealCoordinateFrame.fromId(
+          value.coordinate_frame_id,
         ),
-        diagnostic: mappedDiagnostic,
+        rawCoordinateFrameId: value.coordinate_frame_id,
+        values: [for (var index = 0; index < 6; index++) value.values[index]],
+        flags: outputFlags,
       );
     });
   }
 
-  EphemerisResult<LunarNodePosition> _lunarNode(
+  LunarNodePosition _lunarNode(
     LunarNodeKind kind,
     Set<PositionFlag> flags,
     _LunarNodeCalculation calculate,
@@ -699,21 +693,18 @@ final class AstrologyApi {
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
       final value = output.ref;
-      return EphemerisResult(
-        value: LunarNodePosition(
-          kind: kind,
-          referenceFrame: ApparentFrame.fromId(value.reference_frame_id),
-          rawReferenceFrameId: value.reference_frame_id,
-          longitudeRadians: value.longitude_rad,
-          longitudeRateRadiansPerDay: value.longitude_rate_rad_per_day,
-          flags: flags,
-        ),
-        diagnostic: mappedDiagnostic,
+      return LunarNodePosition(
+        kind: kind,
+        referenceFrame: ApparentFrame.fromId(value.reference_frame_id),
+        rawReferenceFrameId: value.reference_frame_id,
+        longitudeRadians: value.longitude_rad,
+        longitudeRateRadiansPerDay: value.longitude_rate_rad_per_day,
+        flags: flags,
       );
     });
   }
 
-  EphemerisResult<LunarApsisPosition> _lunarApsis(
+  LunarApsisPosition _lunarApsis(
     Set<PositionFlag> flags,
     _LunarApsisCalculation calculate,
   ) {
@@ -727,22 +718,19 @@ final class AstrologyApi {
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
       final value = output.ref;
-      return EphemerisResult(
-        value: LunarApsisPosition(
-          referenceFrame: ApparentFrame.fromId(value.reference_frame_id),
-          rawReferenceFrameId: value.reference_frame_id,
-          definition: LunarApsisDefinition.fromId(value.definition),
-          rawDefinitionId: value.definition,
-          longitudeRadians: value.longitude_rad,
-          latitudeRadians: value.latitude_rad,
-          longitudeRateRadiansPerDay: value.longitude_rate_rad_per_day,
-          latitudeRateRadiansPerDay: value.latitude_rate_rad_per_day,
-          distanceAu: _finiteOrNull(value.distance_au),
-          distanceRateAuPerDay: _finiteOrNull(value.distance_rate_au_per_day),
-          extrapolated: value.extrapolated != 0,
-          flags: flags,
-        ),
-        diagnostic: mappedDiagnostic,
+      return LunarApsisPosition(
+        referenceFrame: ApparentFrame.fromId(value.reference_frame_id),
+        rawReferenceFrameId: value.reference_frame_id,
+        definition: LunarApsisDefinition.fromId(value.definition),
+        rawDefinitionId: value.definition,
+        longitudeRadians: value.longitude_rad,
+        latitudeRadians: value.latitude_rad,
+        longitudeRateRadiansPerDay: value.longitude_rate_rad_per_day,
+        latitudeRateRadiansPerDay: value.latitude_rate_rad_per_day,
+        distanceAu: _finiteOrNull(value.distance_au),
+        distanceRateAuPerDay: _finiteOrNull(value.distance_rate_au_per_day),
+        extrapolated: value.extrapolated != 0,
+        flags: flags,
       );
     });
   }

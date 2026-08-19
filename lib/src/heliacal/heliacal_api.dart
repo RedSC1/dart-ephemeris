@@ -40,7 +40,7 @@ final class HeliacalApi {
   /// The Sun, Moon, Earth, and solar-system barycenter are not valid
   /// point-source heliacal targets. Other native body and custom-target IDs
   /// are passed through to the configured context.
-  EphemerisResult<HeliacalVisibilityResult> bodyAtUt1(
+  HeliacalVisibilityResult bodyAtUt1(
     Target target,
     JulianDate<Ut1Scale> ut1, {
     Set<PositionFlag> positionFlags = const {},
@@ -71,7 +71,7 @@ final class HeliacalApi {
   }
 
   /// Evaluates heliacal visibility of a catalogued star at [ut1].
-  EphemerisResult<HeliacalVisibilityResult> starAtUt1(
+  HeliacalVisibilityResult starAtUt1(
     String starKey,
     JulianDate<Ut1Scale> ut1, {
     Set<PositionFlag> positionFlags = const {},
@@ -103,7 +103,7 @@ final class HeliacalApi {
   }
 
   /// Finds the next heliacal [event] of a solar-system [target].
-  EphemerisResult<HeliacalVisibilitySearchResult> nextBodyEventAtUt1(
+  HeliacalVisibilitySearchResult nextBodyEventAtUt1(
     Target target,
     JulianDate<Ut1Scale> start, {
     required HeliacalEventKind event,
@@ -135,7 +135,7 @@ final class HeliacalApi {
   }
 
   /// Finds the next heliacal [event] of a catalogued star.
-  EphemerisResult<HeliacalVisibilitySearchResult> nextStarEventAtUt1(
+  HeliacalVisibilitySearchResult nextStarEventAtUt1(
     String starKey,
     JulianDate<Ut1Scale> start, {
     required HeliacalEventKind event,
@@ -167,7 +167,7 @@ final class HeliacalApi {
     });
   }
 
-  EphemerisResult<HeliacalVisibilityResult> _calculate(
+  HeliacalVisibilityResult _calculate(
     HeliacalVisibilityConditions conditions,
     _HeliacalVisibilityCalculation calculate,
   ) {
@@ -181,14 +181,11 @@ final class HeliacalApi {
       final status = calculate(arena, nativeConditions, output, diagnostic);
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
-      return EphemerisResult(
-        value: _readVisibilityResult(output.ref),
-        diagnostic: mappedDiagnostic,
-      );
+      return _readVisibilityResult(output.ref);
     });
   }
 
-  EphemerisResult<HeliacalVisibilitySearchResult> _search(
+  HeliacalVisibilitySearchResult _search(
     HeliacalVisibilityConditions conditions,
     _HeliacalSearchCalculation calculate,
   ) {
@@ -203,18 +200,15 @@ final class HeliacalApi {
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
       final value = output.ref;
-      return EphemerisResult(
-        value: HeliacalVisibilitySearchResult(
-          event: HeliacalEventKind.fromId(value.event_kind),
-          coordinate: readJulianDate<Ut1Scale>(value.jd_ut),
-          windowStart: readJulianDate<Ut1Scale>(value.window_start_jd_ut),
-          windowEnd: readJulianDate<Ut1Scale>(value.window_end_jd_ut),
-          scannedDayCount: value.scanned_day_count,
-          sampledWindowCount: value.sampled_window_count,
-          visibilityEvaluationCount: value.visibility_evaluation_count,
-          visibility: _readVisibilityResult(value.visibility),
-        ),
-        diagnostic: mappedDiagnostic,
+      return HeliacalVisibilitySearchResult(
+        event: HeliacalEventKind.fromId(value.event_kind),
+        coordinate: readJulianDate<Ut1Scale>(value.jd_ut),
+        windowStart: readJulianDate<Ut1Scale>(value.window_start_jd_ut),
+        windowEnd: readJulianDate<Ut1Scale>(value.window_end_jd_ut),
+        scannedDayCount: value.scanned_day_count,
+        sampledWindowCount: value.sampled_window_count,
+        visibilityEvaluationCount: value.visibility_evaluation_count,
+        visibility: _readVisibilityResult(value.visibility),
       );
     });
   }

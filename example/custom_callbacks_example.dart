@@ -53,8 +53,8 @@ void main(List<String> arguments) {
     );
     print(
       'comet at AU:      '
-      '[${_formatAu(cometState.value.coordinates)}]  '
-      '(${cometState.value.coordinates.length} values)',
+      '[${_formatAu(cometState.coordinates)}]  '
+      '(${cometState.coordinates.length} values)',
     );
 
     // The custom target also works in a batch with built-in bodies.
@@ -67,7 +67,7 @@ void main(List<String> arguments) {
     for (var index = 0; index < bodies.length; index++) {
       print(
         'batch ${bodies[index]}: '
-        '[${_formatAu(batch[index].value.coordinates)}]',
+        '[${_formatAu(batch[index].coordinates)}]',
       );
     }
 
@@ -97,8 +97,8 @@ void main(List<String> arguments) {
       ayanamsha: CustomAyanamshaModel(10000),
     );
     print(
-      'sun sidereal lon:   ${sidereal.value.siderealLongitudeRadians.toStringAsFixed(6)} rad '
-      '(${_radiansToDms(sidereal.value.siderealLongitudeRadians)})',
+      'sun sidereal lon:   ${sidereal.siderealLongitudeRadians.toStringAsFixed(6)} rad '
+      '(${_radiansToDms(sidereal.siderealLongitudeRadians)})',
     );
   } finally {
     // Closing releases the Dart callbacks after unregistering the native

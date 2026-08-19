@@ -51,7 +51,7 @@ final class OccultationApi {
   });
 
   /// Finds the next geocentric lunar occultation of a catalogued star.
-  EphemerisResult<LunarOccultationResult> nextGeocentricStarAtUt1(
+  LunarOccultationResult nextGeocentricStarAtUt1(
     String starKey,
     JulianDate<Ut1Scale> start, {
     Set<PositionFlag> positionFlags = const {},
@@ -76,7 +76,7 @@ final class OccultationApi {
   /// Finds the next local lunar occultation of a catalogued star.
   ///
   /// The context must have a configured geographic observer.
-  EphemerisResult<LunarOccultationResult> nextLocalStarAtUt1(
+  LunarOccultationResult nextLocalStarAtUt1(
     String starKey,
     JulianDate<Ut1Scale> start, {
     Set<PositionFlag> positionFlags = const {},
@@ -103,7 +103,7 @@ final class OccultationApi {
   ///
   /// Omit [targetRadiusKilometers] to use native physical-disc data. Supplying
   /// zero models a point source; a positive value uses that explicit radius.
-  EphemerisResult<LunarOccultationResult> nextGeocentricBodyAtUt1(
+  LunarOccultationResult nextGeocentricBodyAtUt1(
     Target target,
     JulianDate<Ut1Scale> start, {
     double? targetRadiusKilometers,
@@ -146,7 +146,7 @@ final class OccultationApi {
   ///
   /// The context must have a configured geographic observer. See
   /// [nextGeocentricBodyAtUt1] for [targetRadiusKilometers] semantics.
-  EphemerisResult<LunarOccultationResult> nextLocalBodyAtUt1(
+  LunarOccultationResult nextLocalBodyAtUt1(
     Target target,
     JulianDate<Ut1Scale> start, {
     double? targetRadiusKilometers,
@@ -188,7 +188,7 @@ final class OccultationApi {
   ///
   /// The occultation must have come from a lunar-star search and the context
   /// must retain its local observer configuration.
-  EphemerisResult<LunarOccultationLocalVisibility> localStarVisibilityAtUt1(
+  LunarOccultationLocalVisibility localStarVisibilityAtUt1(
     String starKey,
     LunarOccultationResult occultation, {
     Set<OccultationVisibilityOption> options = const {},
@@ -217,7 +217,7 @@ final class OccultationApi {
   }
 
   /// Calculates local visibility samples for a body [occultation].
-  EphemerisResult<LunarOccultationLocalVisibility> localBodyVisibilityAtUt1(
+  LunarOccultationLocalVisibility localBodyVisibilityAtUt1(
     Target target,
     LunarOccultationResult occultation, {
     Set<OccultationVisibilityOption> options = const {},
@@ -240,7 +240,7 @@ final class OccultationApi {
   }
 
   /// Calculates the global location and derived paths for a star occultation.
-  EphemerisResult<LunarOccultationWhereResult> starWhereAtUt1(
+  LunarOccultationWhereResult starWhereAtUt1(
     String starKey,
     LunarOccultationResult occultation, {
     Set<PositionFlag> positionFlags = const {},
@@ -267,7 +267,7 @@ final class OccultationApi {
   ///
   /// Supply the same [targetRadiusKilometers] used for the search when the
   /// event was found with a custom target radius.
-  EphemerisResult<LunarOccultationWhereResult> bodyWhereAtUt1(
+  LunarOccultationWhereResult bodyWhereAtUt1(
     Target target,
     LunarOccultationResult occultation, {
     double? targetRadiusKilometers,
@@ -306,9 +306,7 @@ final class OccultationApi {
     });
   }
 
-  EphemerisResult<LunarOccultationResult> _search(
-    _OccultationSearchCalculation calculate,
-  ) {
+  LunarOccultationResult _search(_OccultationSearchCalculation calculate) {
     return using((arena) {
       final output = arena<taiyin_lunar_occultation_result>();
       final diagnostic = arena<taiyin_ephemeris_diagnostic>();
@@ -318,14 +316,11 @@ final class OccultationApi {
       final status = calculate(arena, output, diagnostic);
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
-      return EphemerisResult(
-        value: _readOccultation(output.ref),
-        diagnostic: mappedDiagnostic,
-      );
+      return _readOccultation(output.ref);
     });
   }
 
-  EphemerisResult<LunarOccultationLocalVisibility> _visibility(
+  LunarOccultationLocalVisibility _visibility(
     LunarOccultationResult occultation,
     _OccultationVisibilityCalculation calculate,
   ) {
@@ -339,14 +334,11 @@ final class OccultationApi {
       final status = calculate(arena, nativeOccultation, output, diagnostic);
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
-      return EphemerisResult(
-        value: _readLocalVisibility(output.ref),
-        diagnostic: mappedDiagnostic,
-      );
+      return _readLocalVisibility(output.ref);
     });
   }
 
-  EphemerisResult<LunarOccultationWhereResult> _where(
+  LunarOccultationWhereResult _where(
     LunarOccultationResult occultation,
     _OccultationWhereCalculation calculate,
   ) {
@@ -360,10 +352,7 @@ final class OccultationApi {
       final status = calculate(arena, nativeOccultation, output, diagnostic);
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
-      return EphemerisResult(
-        value: _readWhere(output.ref),
-        diagnostic: mappedDiagnostic,
-      );
+      return _readWhere(output.ref);
     });
   }
 

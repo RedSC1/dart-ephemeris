@@ -188,7 +188,7 @@ void main() {
             tt,
             ayanamsha: ayanamsha.model,
           );
-          expect(sidereal.value.ayanamsha, ayanamsha.model);
+          expect(sidereal.ayanamsha, ayanamsha.model);
 
           final houses = context.astrology.housesFromArmc(
             armcRadians: 1.0,
@@ -344,7 +344,7 @@ void main() {
           flags: {PositionFlag.speed},
         );
         final fromUt1 = context.astrology.siderealPositionAtUt1(Body.sun, ut1);
-        final position = fromTt.value;
+        final position = fromTt;
         final offset = _normalizeSignedRadians(
           position.tropicalLongitudeRadians - position.siderealLongitudeRadians,
         );
@@ -361,7 +361,7 @@ void main() {
             position.distanceAu,
             position.tropicalLongitudeRateRadiansPerDay,
             position.siderealLongitudeRateRadiansPerDay,
-            fromUt1.value.tropicalLongitudeRadians,
+            fromUt1.tropicalLongitudeRadians,
           ].every((value) => value.isFinite),
           isTrue,
         );
@@ -375,11 +375,8 @@ void main() {
           ),
           closeTo(0, 1e-12),
         );
-        expect(fromTt.diagnostic.status, 0);
-        expect(fromTt.diagnostic.targetId, Body.sun.id);
-        expect(fromUt1.diagnostic.status, 0);
-        expect(fromUt1.value.tropicalLongitudeRateRadiansPerDay.isNaN, isTrue);
-        expect(fromUt1.value.siderealLongitudeRateRadiansPerDay.isNaN, isTrue);
+        expect(fromUt1.tropicalLongitudeRateRadiansPerDay.isNaN, isTrue);
+        expect(fromUt1.siderealLongitudeRateRadiansPerDay.isNaN, isTrue);
       });
 
       test('supports generic sidereal ecliptic, equatorial, and XYZ modes', () {
@@ -443,29 +440,29 @@ void main() {
         );
 
         expect(
-          ecliptic.value.coordinateFrame,
+          ecliptic.coordinateFrame,
           SiderealCoordinateFrame.meanEclipticOfDate,
         );
         expect(
-          equatorial.value.coordinateFrame,
+          equatorial.coordinateFrame,
           SiderealCoordinateFrame.trueEquatorOfDate,
         );
         expect(
-          equatorialXyz.value.coordinateFrame,
+          equatorialXyz.coordinateFrame,
           SiderealCoordinateFrame.trueEquatorOfDate,
         );
         expect(
-          meanEquatorial.value.coordinateFrame,
+          meanEquatorial.coordinateFrame,
           SiderealCoordinateFrame.meanEquatorOfDate,
         );
-        expect(ecliptic.value.isCartesian, isFalse);
-        expect(ecliptic.value.isEquatorial, isFalse);
-        expect(equatorial.value.isCartesian, isFalse);
-        expect(equatorial.value.isEquatorial, isTrue);
-        expect(equatorialXyz.value.isCartesian, isTrue);
-        expect(equatorialXyz.value.isEquatorial, isTrue);
+        expect(ecliptic.isCartesian, isFalse);
+        expect(ecliptic.isEquatorial, isFalse);
+        expect(equatorial.isCartesian, isFalse);
+        expect(equatorial.isEquatorial, isTrue);
+        expect(equatorialXyz.isCartesian, isTrue);
+        expect(equatorialXyz.isEquatorial, isTrue);
         expect(
-          equatorialXyz.value.flags,
+          equatorialXyz.flags,
           containsAll({
             PositionFlag.speed,
             PositionFlag.equatorial,
@@ -473,23 +470,17 @@ void main() {
             PositionFlag.radians,
           }),
         );
-        expect(ecliptic.value.values, hasLength(6));
-        expect(ecliptic.value.values.every((value) => value.isFinite), isTrue);
+        expect(ecliptic.values, hasLength(6));
+        expect(ecliptic.values.every((value) => value.isFinite), isTrue);
         expect(
-          ecliptic.value.values[0],
-          closeTo(structured.value.siderealLongitudeRadians, 1e-12),
+          ecliptic.values[0],
+          closeTo(structured.siderealLongitudeRadians, 1e-12),
         );
+        expect(ecliptic.values[1], closeTo(structured.latitudeRadians, 1e-12));
+        expect(ecliptic.values[2], closeTo(structured.distanceAu, 1e-12));
         expect(
-          ecliptic.value.values[1],
-          closeTo(structured.value.latitudeRadians, 1e-12),
-        );
-        expect(
-          ecliptic.value.values[2],
-          closeTo(structured.value.distanceAu, 1e-12),
-        );
-        expect(
-          ecliptic.value.values[3],
-          closeTo(structured.value.siderealLongitudeRateRadiansPerDay, 1e-12),
+          ecliptic.values[3],
+          closeTo(structured.siderealLongitudeRateRadiansPerDay, 1e-12),
         );
 
         final nativeTrueEquatorial = context.positionTt(
@@ -513,35 +504,32 @@ void main() {
         );
         for (var index = 0; index < 6; index++) {
           expect(
-            equatorial.value.values[index],
+            equatorial.values[index],
             closeTo(nativeTrueEquatorial.values[index], 1e-12),
           );
           expect(
-            meanEquatorial.value.values[index],
+            meanEquatorial.values[index],
             closeTo(nativeMeanEquatorial.values[index], 1e-12),
           );
           expect(
-            faganEquatorial.value.values[index],
-            closeTo(equatorial.value.values[index], 1e-12),
+            faganEquatorial.values[index],
+            closeTo(equatorial.values[index], 1e-12),
           );
         }
 
-        final xyz = equatorialXyz.value.coordinates;
+        final xyz = equatorialXyz.coordinates;
         final xy = math.sqrt(xyz[0] * xyz[0] + xyz[1] * xyz[1]);
         expect(
           _normalizeRadians(math.atan2(xyz[1], xyz[0])),
-          closeTo(equatorial.value.values[0], 1e-12),
+          closeTo(equatorial.values[0], 1e-12),
         );
-        expect(
-          math.atan2(xyz[2], xy),
-          closeTo(equatorial.value.values[1], 1e-12),
-        );
+        expect(math.atan2(xyz[2], xy), closeTo(equatorial.values[1], 1e-12));
         expect(
           math.sqrt(xy * xy + xyz[2] * xyz[2]),
-          closeTo(equatorial.value.values[2], 1e-12),
+          closeTo(equatorial.values[2], 1e-12),
         );
         expect(
-          explicitMean.value.values[0],
+          explicitMean.values[0],
           closeTo(
             context.astrology
                 .siderealCoordinatesAtTt(
@@ -549,17 +537,12 @@ void main() {
                   tt,
                   ayanamsha: Ayanamsha.lahiri,
                 )
-                .value
                 .values[0],
             1e-12,
           ),
         );
-        expect(genericUt1.value.isCartesian, isTrue);
-        expect(
-          genericUt1.value.values.every((value) => value.isFinite),
-          isTrue,
-        );
-        expect(genericUt1.diagnostic.status, 0);
+        expect(genericUt1.isCartesian, isTrue);
+        expect(genericUt1.values.every((value) => value.isFinite), isTrue);
       });
 
       test('supports typed sidereal reference planes and epochs', () {
@@ -651,82 +634,79 @@ void main() {
             );
 
         expect(
-          j2000Position.value.coordinateFrame,
+          j2000Position.coordinateFrame,
           SiderealCoordinateFrame.j2000Ecliptic,
         );
         expect(
-          j2000Coordinates.value.coordinateFrame,
+          j2000Coordinates.coordinateFrame,
           SiderealCoordinateFrame.j2000Ecliptic,
         );
         expect(
-          fixedPosition.value.coordinateFrame,
+          fixedPosition.coordinateFrame,
           SiderealCoordinateFrame.fixedMeanEclipticAtEpoch,
         );
         expect(
-          invariablePosition.value.coordinateFrame,
+          invariablePosition.coordinateFrame,
           SiderealCoordinateFrame.solarSystemInvariable,
         );
         expect(
-          fixedJ2000.value.coordinateFrame,
+          fixedJ2000.coordinateFrame,
           SiderealCoordinateFrame.fixedMeanEclipticAtEpoch,
         );
         expect(
-          invariable.value.coordinateFrame,
+          invariable.coordinateFrame,
           SiderealCoordinateFrame.solarSystemInvariable,
         );
         expect(
-          ut1Fixed.value.coordinateFrame,
+          ut1Fixed.coordinateFrame,
           SiderealCoordinateFrame.fixedMeanEclipticAtEpoch,
         );
         expect(
-          ut1FixedPosition.value.coordinateFrame,
+          ut1FixedPosition.coordinateFrame,
           SiderealCoordinateFrame.fixedMeanEclipticAtEpoch,
         );
         expect(
-          ut1FixedCoordinates.value.coordinateFrame,
+          ut1FixedCoordinates.coordinateFrame,
           SiderealCoordinateFrame.fixedMeanEclipticAtEpoch,
         );
         expect(
-          equatorial.value.coordinateFrame,
+          equatorial.coordinateFrame,
           SiderealCoordinateFrame.trueEquatorOfDate,
         );
         expect(
-          j2000Position.value.siderealLongitudeRadians,
-          closeTo(j2000Coordinates.value.values[0], 1e-12),
+          j2000Position.siderealLongitudeRadians,
+          closeTo(j2000Coordinates.values[0], 1e-12),
         );
         expect(
-          fixedJ2000.value.values,
+          fixedJ2000.values,
           orderedEquals(
-            j2000Coordinates.value.values.map((value) => closeTo(value, 1e-12)),
+            j2000Coordinates.values.map((value) => closeTo(value, 1e-12)),
           ),
         );
+        expect(invariable.values.every((value) => value.isFinite), isTrue);
         expect(
-          invariable.value.values.every((value) => value.isFinite),
+          fixedPosition.tropicalLongitudeRateRadiansPerDay.isFinite,
           isTrue,
         );
         expect(
-          fixedPosition.value.tropicalLongitudeRateRadiansPerDay.isFinite,
+          invariablePosition.unshiftedLongitudeRateRadiansPerDay.isFinite,
           isTrue,
         );
         expect(
-          invariablePosition.value.unshiftedLongitudeRateRadiansPerDay.isFinite,
-          isTrue,
-        );
-        expect(
-          rawFixed.value.precessionPolicy,
+          rawFixed.precessionPolicy,
           SiderealPrecessionPolicy.rawReferenceOffset,
         );
         expect(
-          rawFixed.value.coordinateFrame,
+          rawFixed.coordinateFrame,
           SiderealCoordinateFrame.fixedMeanEclipticAtEpoch,
         );
-        expect(j2000Position.value.referenceEpoch, isNull);
-        expect(fixedPosition.value.referenceEpoch, equals(j2000Epoch));
-        expect(invariablePosition.value.referenceEpoch, equals(j2000Epoch));
-        expect(fixedJ2000.value.referenceEpoch, equals(j2000Epoch));
-        expect(ut1Fixed.value.referenceEpoch, equals(ut1Epoch));
-        expect(ut1FixedPosition.value.referenceEpoch, equals(j2000Epoch));
-        expect(ut1FixedCoordinates.value.referenceEpoch, equals(ut1Epoch));
+        expect(j2000Position.referenceEpoch, isNull);
+        expect(fixedPosition.referenceEpoch, equals(j2000Epoch));
+        expect(invariablePosition.referenceEpoch, equals(j2000Epoch));
+        expect(fixedJ2000.referenceEpoch, equals(j2000Epoch));
+        expect(ut1Fixed.referenceEpoch, equals(ut1Epoch));
+        expect(ut1FixedPosition.referenceEpoch, equals(j2000Epoch));
+        expect(ut1FixedCoordinates.referenceEpoch, equals(ut1Epoch));
         expect(
           j2000Epoch,
           equals(
@@ -737,9 +717,9 @@ void main() {
         );
         expect(j2000Epoch.toString(), contains('JulianDate'));
         expect(
-          equatorialWithIgnoredSiderealOptions.value.values,
+          equatorialWithIgnoredSiderealOptions.values,
           orderedEquals(
-            equatorial.value.values.map((value) => closeTo(value, 1e-12)),
+            equatorial.values.map((value) => closeTo(value, 1e-12)),
           ),
         );
 
@@ -837,135 +817,109 @@ void main() {
           flags: meanFlags,
         );
 
-        expect(
-          trueAscending.value.referenceFrame,
-          ApparentFrame.meanEclipticOfDate,
-        );
-        expect(trueAscending.value.kind, LunarNodeKind.ascending);
+        expect(trueAscending.referenceFrame, ApparentFrame.meanEclipticOfDate);
+        expect(trueAscending.kind, LunarNodeKind.ascending);
         expect(
           _normalizeSignedRadians(
-            trueDescending.value.longitudeRadians -
-                trueAscending.value.longitudeRadians,
+            trueDescending.longitudeRadians - trueAscending.longitudeRadians,
           ).abs(),
           closeTo(math.pi, 1e-13),
         );
         expect(
-          trueDescending.value.longitudeRateRadiansPerDay,
-          closeTo(trueAscending.value.longitudeRateRadiansPerDay, 1e-14),
+          trueDescending.longitudeRateRadiansPerDay,
+          closeTo(trueAscending.longitudeRateRadiansPerDay, 1e-14),
         );
         expect(
-          trueAscending.value.longitudeRadians * 180 / math.pi,
+          trueAscending.longitudeRadians * 180 / math.pi,
           closeTo(15.627613595150201, 0.01),
         );
-        expect(trueAscending.diagnostic.status, 0);
-        expect(trueUt1.value.longitudeRadians.isFinite, isTrue);
+        expect(trueUt1.longitudeRadians.isFinite, isTrue);
         expect(
           _normalizeSignedRadians(
-            trueUt1.value.longitudeRadians -
-                apparentTrueUt1.value.longitudeRadians,
+            trueUt1.longitudeRadians - apparentTrueUt1.longitudeRadians,
           ).abs(),
           greaterThan(1e-11),
         );
         expect(
           _normalizeSignedRadians(
-            trueDescendingUt1.value.longitudeRadians -
-                trueUt1.value.longitudeRadians,
+            trueDescendingUt1.longitudeRadians - trueUt1.longitudeRadians,
           ).abs(),
           closeTo(math.pi, 1e-13),
         );
         expect(
-          trueDescendingUt1.value.longitudeRateRadiansPerDay,
-          closeTo(trueUt1.value.longitudeRateRadiansPerDay, 1e-14),
+          trueDescendingUt1.longitudeRateRadiansPerDay,
+          closeTo(trueUt1.longitudeRateRadiansPerDay, 1e-14),
         );
 
+        expect(meanAscending.referenceFrame, ApparentFrame.meanEclipticOfDate);
         expect(
-          meanAscending.value.referenceFrame,
-          ApparentFrame.meanEclipticOfDate,
-        );
-        expect(
-          meanAscending.value.longitudeRadians * 180 / math.pi,
+          meanAscending.longitudeRadians * 180 / math.pi,
           closeTo(15.662505452962762, 1e-11),
         );
         expect(
           _normalizeSignedRadians(
-            meanDescending.value.longitudeRadians -
-                meanAscending.value.longitudeRadians,
+            meanDescending.longitudeRadians - meanAscending.longitudeRadians,
           ).abs(),
           closeTo(math.pi, 1e-13),
         );
-        expect(meanUt1.value.longitudeRadians.isFinite, isTrue);
+        expect(meanUt1.longitudeRadians.isFinite, isTrue);
         expect(
           _normalizeSignedRadians(
-            meanDescendingUt1.value.longitudeRadians -
-                meanUt1.value.longitudeRadians,
+            meanDescendingUt1.longitudeRadians - meanUt1.longitudeRadians,
           ).abs(),
           closeTo(math.pi, 1e-13),
         );
-        expect(
-          meanEquatorial.value.referenceFrame,
-          ApparentFrame.trueEquatorOfDate,
-        );
+        expect(meanEquatorial.referenceFrame, ApparentFrame.trueEquatorOfDate);
 
-        expect(meanApogee.value.definition, LunarApsisDefinition.delaunayMean);
-        expect(meanApogee.value.distanceAu, isNull);
-        expect(meanApogee.value.distanceRateAuPerDay, isNull);
+        expect(meanApogee.definition, LunarApsisDefinition.delaunayMean);
+        expect(meanApogee.distanceAu, isNull);
+        expect(meanApogee.distanceRateAuPerDay, isNull);
         expect(
-          meanApogee.value.longitudeRadians * 180 / math.pi,
+          meanApogee.longitudeRadians * 180 / math.pi,
           closeTo(170.92150432407695, 1e-11),
         );
         expect(
-          meanApogee.value.latitudeRadians * 180 / math.pi,
+          meanApogee.latitudeRadians * 180 / math.pi,
           closeTo(2.1582226032549934, 1e-11),
         );
-        expect(meanApogeeUt1.value.distanceAu, isNull);
+        expect(meanApogeeUt1.distanceAu, isNull);
 
         expect(
-          osculatingApogee.value.definition,
+          osculatingApogee.definition,
           LunarApsisDefinition.osculatingTwoBody,
         );
-        expect(osculatingApogee.value.distanceAu, greaterThan(0));
-        expect(osculatingApogee.value.distanceRateAuPerDay!.isFinite, isTrue);
+        expect(osculatingApogee.distanceAu, greaterThan(0));
+        expect(osculatingApogee.distanceRateAuPerDay!.isFinite, isTrue);
         expect(
-          osculatingApogee.value.longitudeRadians * 180 / math.pi,
+          osculatingApogee.longitudeRadians * 180 / math.pi,
           closeTo(182.7274859203948, 1 / 60),
         );
-        expect(osculatingApogeeUt1.value.distanceAu, greaterThan(0));
+        expect(osculatingApogeeUt1.distanceAu, greaterThan(0));
         expect(
           _normalizeSignedRadians(
-            osculatingApogeeUt1.value.longitudeRadians -
-                apparentOsculatingApogeeUt1.value.longitudeRadians,
+            osculatingApogeeUt1.longitudeRadians -
+                apparentOsculatingApogeeUt1.longitudeRadians,
           ).abs(),
           greaterThan(1e-11),
         );
 
         expect(
-          fittedApogee.value.definition,
+          fittedApogee.definition,
           LunarApsisDefinition.de441FittedNatural,
         );
-        expect(fittedApogee.value.extrapolated, isFalse);
-        expect(fittedApogee.value.distanceAu, greaterThan(0));
+        expect(fittedApogee.extrapolated, isFalse);
+        expect(fittedApogee.distanceAu, greaterThan(0));
         expect(
-          fittedApogee.value.longitudeRadians,
+          fittedApogee.longitudeRadians,
           closeTo(2.927240809794924, math.pi / 180 / 60),
         );
-        expect(fittedApogeeUt1.value.distanceRateAuPerDay!.isFinite, isTrue);
-        for (final status in [
-          trueUt1.diagnostic.status,
-          trueDescendingUt1.diagnostic.status,
-          meanUt1.diagnostic.status,
-          meanDescendingUt1.diagnostic.status,
-          meanApogeeUt1.diagnostic.status,
-          osculatingApogeeUt1.diagnostic.status,
-          fittedApogeeUt1.diagnostic.status,
-        ]) {
-          expect(status, 0);
-        }
+        expect(fittedApogeeUt1.distanceRateAuPerDay!.isFinite, isTrue);
 
         final extrapolated = context.astrology.lunarFittedApogeeAtTt(
           JulianDate<TtScale>.fromDouble(-3100016.5),
         );
-        expect(extrapolated.value.extrapolated, isTrue);
-        expect(extrapolated.value.distanceAu, greaterThan(0));
+        expect(extrapolated.extrapolated, isTrue);
+        expect(extrapolated.distanceAu, greaterThan(0));
       });
 
       test('validates lunar-point flag contracts before native calls', () {

@@ -71,26 +71,19 @@ void main() {
           JulianDate<TtScale>.fromDouble(equinoxEstimate),
         );
 
-        expect(solarUt1.diagnostic.status, 0);
-        expect(solarUt1.value.toDouble(), closeTo(2460389.6294463626, 5e-8));
+        expect(context.lastDiagnostic?.status, 0);
+        expect(solarUt1.toDouble(), closeTo(2460389.6294463626, 5e-8));
+        expect(reverseSolar.toDouble(), closeTo(2460389.6294463626, 5e-8));
         expect(
-          reverseSolar.value.toDouble(),
-          closeTo(2460389.6294463626, 5e-8),
-        );
-        expect(
-          solarTt.value.isAfter(
-            JulianDate<TtScale>.fromDouble(equinoxEstimate),
-          ),
+          solarTt.isAfter(JulianDate<TtScale>.fromDouble(equinoxEstimate)),
           isTrue,
         );
         expect(
-          moonUt1.value.isAfter(
-            JulianDate<Ut1Scale>.fromDouble(equinoxEstimate),
-          ),
+          moonUt1.isAfter(JulianDate<Ut1Scale>.fromDouble(equinoxEstimate)),
           isTrue,
         );
         expect(
-          moonTt.value.isAfter(JulianDate<TtScale>.fromDouble(equinoxEstimate)),
+          moonTt.isAfter(JulianDate<TtScale>.fromDouble(equinoxEstimate)),
           isTrue,
         );
         expect(
@@ -180,35 +173,34 @@ void main() {
           maxStepDays: 0.5,
         );
 
-        expect(longitudeUt1.value, hasLength(1));
+        expect(longitudeUt1, hasLength(1));
         expect(
-          longitudeUt1.value.single.toDouble(),
+          longitudeUt1.single.toDouble(),
           closeTo(2460389.6294463626, 5e-8),
         );
-        expect(longitudeTt.value, hasLength(1));
-        expect(stationsUt1.value, hasLength(1));
+        expect(longitudeTt, hasLength(1));
+        expect(stationsUt1, hasLength(1));
         expect(
-          stationsUt1.value.single.coordinate.toDouble(),
+          stationsUt1.single.coordinate.toDouble(),
           closeTo(2452880.070395550, 2 / 86400),
         );
-        expect(stationsTt.value, isNotEmpty);
-        expect(aspectsUt1.value, hasLength(1));
-        expect(aspectsTt.value, hasLength(1));
-        expect(exactUt1.value, hasLength(greaterThanOrEqualTo(2)));
-        expect(exactTt.value, hasLength(greaterThanOrEqualTo(2)));
+        expect(stationsTt, isNotEmpty);
+        expect(aspectsUt1, hasLength(1));
+        expect(aspectsTt, hasLength(1));
+        expect(exactUt1, hasLength(greaterThanOrEqualTo(2)));
+        expect(exactTt, hasLength(greaterThanOrEqualTo(2)));
         expect(
-          exactUt1.value,
+          exactUt1,
           orderedEquals(
-            [...exactUt1.value]
-              ..sort((a, b) => a.coordinate.compareTo(b.coordinate)),
+            [...exactUt1]..sort((a, b) => a.coordinate.compareTo(b.coordinate)),
           ),
         );
-        expect(phasesUt1.value, hasLength(1));
+        expect(phasesUt1, hasLength(1));
         expect(
-          phasesUt1.value.single.toDouble(),
-          closeTo(aspectsUt1.value.single.toDouble(), 5e-8),
+          phasesUt1.single.toDouble(),
+          closeTo(aspectsUt1.single.toDouble(), 5e-8),
         );
-        expect(phasesTt.value, hasLength(1));
+        expect(phasesTt, hasLength(1));
       });
 
       test('reports insufficient bounded-search result capacity', () {
@@ -254,7 +246,7 @@ void main() {
           heightMeters: 10,
         );
         final localFromGlobal = context.events.localSolarTransitAtUt1(
-          transit.value,
+          transit,
           newYork,
         );
         final localSearch = context.events.nextLocalSolarTransitAtUt1(
@@ -263,56 +255,54 @@ void main() {
           newYork,
         );
 
-        expect(elongation.value.kind, GreatestElongationKind.eastern);
+        expect(elongation.kind, GreatestElongationKind.eastern);
         expect(
-          elongation.value.coordinate.toDouble(),
+          elongation.coordinate.toDouble(),
           closeTo(2460394.440334700048, 0.02),
         );
         expect(
-          elongation.value.elongationRadians,
+          elongation.elongationRadians,
           inInclusiveRange(15 * math.pi / 180, 30 * math.pi / 180),
         );
         expect(
-          minimumUt1.value.coordinate.toDouble(),
+          minimumUt1.coordinate.toDouble(),
           closeTo(2460409.262042756, 2 / 86400),
         );
         expect(
-          minimumUt1.value.separationRadians,
+          minimumUt1.separationRadians,
           closeTo(
             0.347680257505077 * math.pi / 180,
             0.1 / 3600 * math.pi / 180,
           ),
         );
-        expect(minimumTt.value.separationRadians, lessThan(0.02));
+        expect(minimumTt.separationRadians, lessThan(0.02));
         expect(
-          transit.value.greatest.toDouble(),
+          transit.greatest.toDouble(),
           closeTo(2458799.138751322404, 1 / 86400),
         );
-        expect(transit.value.kinds, contains(SolarTransitKind.fullDisk));
-        expect(transit.value.t1, isNotNull);
-        expect(transit.value.t4, isNotNull);
-        expect(transit.value.t1!.isBefore(transit.value.greatest), isTrue);
-        expect(transit.value.t4!.isAfter(transit.value.greatest), isTrue);
+        expect(transit.kinds, contains(SolarTransitKind.fullDisk));
+        expect(transit.t1, isNotNull);
+        expect(transit.t4, isNotNull);
+        expect(transit.t1!.isBefore(transit.greatest), isTrue);
+        expect(transit.t4!.isAfter(transit.greatest), isTrue);
         expect(
-          (localFromGlobal.value.topocentric.greatest.toDouble() -
-                  transit.value.greatest.toDouble())
+          (localFromGlobal.topocentric.greatest.toDouble() -
+                  transit.greatest.toDouble())
               .abs(),
           greaterThan(0.05 / 86400),
         );
         expect(
-          localSearch.value.visibilityFlags,
+          localSearch.visibilityFlags,
           contains(SolarTransitVisibilityFlag.visibleAtObserver),
         );
         expect(
-          localSearch.value.contactSunAltitudeDegrees.every(
+          localSearch.contactSunAltitudeDegrees.every(
             (value) => value.isFinite,
           ),
           isTrue,
         );
         expect(
-          localSearch.value.contactSunAzimuthDegrees.every(
-            (value) => value.isFinite,
-          ),
+          localSearch.contactSunAzimuthDegrees.every((value) => value.isFinite),
           isTrue,
         );
       });

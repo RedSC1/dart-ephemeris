@@ -104,7 +104,7 @@ void _workerMain(
   final context = EphemerisContext.attach(libraryPath: message.libraryPath);
   try {
     final calendar = context.chineseCalendar;
-    final year = calendar.calcYearUt(message.jd).value;
+    final year = calendar.calcYearUt(message.jd);
     if (year.solarTermCount != 25) {
       message.sendPort.send('unexpected term count');
       return;

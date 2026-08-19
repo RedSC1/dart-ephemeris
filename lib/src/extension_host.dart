@@ -7,7 +7,12 @@ part of 'taiyin.dart';
 /// native library with `package:taiyin`. Its shape tracks the native ABI and
 /// may change without a major version bump of `package:taiyin`.
 final class TaiyinExtensionHost {
-  TaiyinExtensionHost._(this._state, this._nativeHandle, this._onEnsureOpen);
+  TaiyinExtensionHost._(
+    this._state,
+    this._nativeHandle,
+    this._onEnsureOpen,
+    this._onDiagnostic,
+  );
 
   /// Opens the native library without initializing the process-wide runtime,
   /// for extension handles that need no astronomy context (for example Ziwei
@@ -17,12 +22,14 @@ final class TaiyinExtensionHost {
       _nativeLibraryStateFor(_openLibrary(libraryPath)),
       nullptr,
       () {},
+      (_) {},
     );
   }
 
   final _NativeLibraryState _state;
   final Pointer<Void> _nativeHandle;
   final void Function() _onEnsureOpen;
+  final void Function(EphemerisDiagnostic) _onDiagnostic;
 
   /// The generated bindings for the loaded library.
   TaiyinBindings get bindings => _state.bindings;
@@ -61,4 +68,10 @@ final class TaiyinExtensionHost {
   /// Maps a native diagnostic struct to its Dart form.
   EphemerisDiagnostic readDiagnostic(taiyin_ephemeris_diagnostic value) =>
       _readEphemerisDiagnostic(value);
+
+  /// Publishes a diagnostic snapshot on the owning [EphemerisContext]
+  /// ([EphemerisContext.lastDiagnostic]); a no-op for hosts created by
+  /// [TaiyinExtensionHost.open].
+  void recordDiagnostic(EphemerisDiagnostic diagnostic) =>
+      _onDiagnostic(diagnostic);
 }

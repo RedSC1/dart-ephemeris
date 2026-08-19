@@ -25,7 +25,7 @@ void main() {
           instantUtc: JulianDate<UtcScale>.fromDouble(2460351.0),
           virtualTime: AstroDateTime(2024, 2, 10, 12),
         );
-        return context.bazi.calcChart(pillars.value);
+        return context.bazi.calcChart(pillars);
       }
 
       test('computes kong-wang (空亡) of a sexagenary item', () {
@@ -86,17 +86,16 @@ void main() {
           birthCivilTime: AstroDateTime(2024, 2, 10, 12),
           chart: chart,
           gender: BaziGender.male,
-          calendar: context.chineseCalendar,
         );
-        expect(qiyun.diagnostic.status, 0);
-        expect(qiyun.value.startAgeYears, greaterThan(0));
+        expect(context.lastDiagnostic?.status, 0);
+        expect(qiyun.startAgeYears, greaterThan(0));
         // 甲 year male advances forward (+1).
-        expect(qiyun.value.direction, 1);
+        expect(qiyun.direction, 1);
 
         final dayun = context.bazi.fillDayun(
           birthCivilTime: AstroDateTime(2024, 2, 10, 12),
           chart: chart,
-          qiyun: qiyun.value,
+          qiyun: qiyun,
           requestedCount: 5,
         );
         expect(dayun, hasLength(5));

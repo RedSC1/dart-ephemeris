@@ -14,7 +14,8 @@ void main(List<String> arguments) {
   final context = ephemeris.createContext();
 
   try {
-    // Core ephemeris: a Moon position and its native diagnostic.
+    // Core ephemeris: a Moon position; the native diagnostic lands on
+    // context.lastDiagnostic.
     final moon = context.positionTt(
       Body.moon,
       JulianDate<TtScale>.fromDouble(2460409.0),
@@ -28,9 +29,7 @@ void main(List<String> arguments) {
     final lunar = context.chineseCalendar.fromSolar(
       const SolarDate(year: 2024, month: 2, day: 10),
     );
-    print(
-      '2024-02-10 -> lunar ${lunar.value.year}-${lunar.value.month}-${lunar.value.day}',
-    );
+    print('2024-02-10 -> lunar ${lunar.year}-${lunar.month}-${lunar.day}');
 
     // Ganzhi: the day pillar of a civil date.
     final dayPillar = context.ganzhi.dayPillar(AstroDateTime(2024, 2, 10));
@@ -46,27 +45,24 @@ void main(List<String> arguments) {
         virtualTime: AstroDateTime(2024, 2, 10, 12),
       );
       print(
-        'Four pillars: ${pillars.value.year} ${pillars.value.month} '
-        '${pillars.value.day} ${pillars.value.hour}',
+        'Four pillars: ${pillars.year} ${pillars.month} '
+        '${pillars.day} ${pillars.hour}',
       );
 
-      final chart = context.bazi.calcChart(pillars.value);
+      final chart = context.bazi.calcChart(pillars);
       final qiyun = context.bazi.calcQiyun(
         birthJdUt: JulianDate<Ut1Scale>.fromDouble(2460351.0),
         birthCivilTime: AstroDateTime(2024, 2, 10, 12),
         chart: chart,
         gender: BaziGender.male,
-        calendar: context.chineseCalendar,
       );
       final dayun = context.bazi.fillDayun(
         birthCivilTime: AstroDateTime(2024, 2, 10, 12),
         chart: chart,
-        qiyun: qiyun.value,
+        qiyun: qiyun,
         requestedCount: 3,
       );
-      print(
-        'Qi-yun starts at age ${qiyun.value.startAgeYears.toStringAsFixed(2)}',
-      );
+      print('Qi-yun starts at age ${qiyun.startAgeYears.toStringAsFixed(2)}');
       print('Da-yun: ${dayun.map((entry) => entry.ganzhi).join(', ')}');
     } else {
       print('(library built without the BaZi extension; BaZi demo skipped)');

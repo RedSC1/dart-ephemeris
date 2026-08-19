@@ -55,6 +55,36 @@ void main() {
         clone.close();
         cloneBazi.close();
       });
+
+      test('binds an explicit caller-owned calendar', () {
+        final calendar = context.createChineseCalendar();
+        final bazi = context.createBazi(calendar: calendar);
+
+        expect(identical(bazi.chineseCalendar, calendar), isTrue);
+
+        bazi.close();
+        calendar.close();
+      });
+
+      test('rejects a calendar owned by a different ephemeris context', () {
+        final other = context.clone();
+        expect(
+          () => context.createBazi(calendar: other.chineseCalendar),
+          throwsArgumentError,
+        );
+        other.close();
+      });
+
+      test('a cached entry whose calendar was closed is replaced', () {
+        final calendar = context.chineseCalendar;
+        final first = context.bazi;
+        calendar.close();
+
+        final second = context.bazi;
+        expect(identical(first, second), isFalse);
+        expect(second.chineseCalendar.isClosed, isFalse);
+        second.close();
+      });
     },
     skip: nativeLibraryAvailable
         ? false

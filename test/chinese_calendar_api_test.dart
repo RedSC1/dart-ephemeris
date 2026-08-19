@@ -20,9 +20,9 @@ void main() {
       });
 
       test('computes a winter-solstice Chinese calendar year', () {
-        final year = context.chineseCalendar
-            .calcYearUt(JulianDate<Ut1Scale>.fromDouble(2460348.0))
-            .value;
+        final year = context.chineseCalendar.calcYearUt(
+          JulianDate<Ut1Scale>.fromDouble(2460348.0),
+        );
 
         expect(year.solarTerms, hasLength(25));
         expect(year.solarTermCount, 25);
@@ -44,11 +44,11 @@ void main() {
           SolarDate(year: 2024, month: 2, day: 10),
         );
 
-        expect(result.diagnostic.status, 0);
-        expect(result.value.year, 2024);
-        expect(result.value.month, 1);
-        expect(result.value.day, 1);
-        expect(result.value.isLeap, isFalse);
+        expect(context.lastDiagnostic?.status, 0);
+        expect(result.year, 2024);
+        expect(result.month, 1);
+        expect(result.day, 1);
+        expect(result.isLeap, isFalse);
       });
 
       test('computes the four pillars for a birth moment', () {
@@ -57,19 +57,19 @@ void main() {
           virtualTime: AstroDateTime(2024, 2, 10, 12),
         );
 
-        expect(result.diagnostic.status, 0);
+        expect(context.lastDiagnostic?.status, 0);
         // 2024-02-10 is after 立春, so the year pillar is 甲辰 (stem 0, branch 4).
-        expect(result.value.year.stemId, 0);
-        expect(result.value.year.branchId, 4);
+        expect(result.year.stemId, 0);
+        expect(result.year.branchId, 4);
         // 甲 year, first month via 五虎遁 is 丙寅 (stem 2, branch 2).
-        expect(result.value.month.stemId, 2);
-        expect(result.value.month.branchId, 2);
+        expect(result.month.stemId, 2);
+        expect(result.month.branchId, 2);
       });
 
       test('searches previous and next solar terms', () {
         final jd = JulianDate<Ut1Scale>.fromDouble(2460348.0);
-        final prev = context.chineseCalendar.getPrevJieQiUt(jd).value;
-        final next = context.chineseCalendar.getNextJieQiUt(jd).value;
+        final prev = context.chineseCalendar.getPrevJieQiUt(jd);
+        final next = context.chineseCalendar.getNextJieQiUt(jd);
 
         expect(prev.jdUt.toDouble(), lessThanOrEqualTo(jd.toDouble()));
         expect(next.jdUt.toDouble(), greaterThan(jd.toDouble()));
@@ -81,9 +81,9 @@ void main() {
         final custom = context.createChineseCalendar(
           config: const ChineseCalendarConfig.localAstronomicalUtcOffset(0),
         );
-        final year = custom
-            .calcYearUt(JulianDate<Ut1Scale>.fromDouble(2460348.0))
-            .value;
+        final year = custom.calcYearUt(
+          JulianDate<Ut1Scale>.fromDouble(2460348.0),
+        );
         expect(year.solarTermCount, 25);
         custom.close();
         expect(custom.isClosed, isTrue);

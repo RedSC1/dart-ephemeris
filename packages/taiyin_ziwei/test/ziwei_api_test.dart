@@ -22,13 +22,11 @@ void main() {
       ZiweiChart createReferenceChart(ZiweiContext ziwei) {
         final local = AstroDateTime(2003, 3, 13, 14, 15);
         final instant = local.toJulianDate<UtcScale>().addSeconds(-8 * 3600);
-        return ziwei
-            .createChart(
-              instantUtc: instant,
-              virtualTime: local,
-              gender: ZiweiGender.male,
-            )
-            .value;
+        return ziwei.createChart(
+          instantUtc: instant,
+          virtualTime: local,
+          gender: ZiweiGender.male,
+        );
       }
 
       test('default catalog produces a chart', () {
@@ -65,10 +63,7 @@ void main() {
         expect(life.stemId, chart.summary.palaceStems[life.branchId]);
         expect(chart.palaces, hasLength(12));
         expect(chart.palaces[ZiweiPalace.life.id].palace, ZiweiPalace.life);
-        expect(
-          life.stars.map((star) => star.key),
-          contains('lianzhen'),
-        );
+        expect(life.stars.map((star) => star.key), contains('lianzhen'));
       });
 
       test('exposes palace stars and the transform overlay', () {
@@ -110,15 +105,14 @@ void main() {
         final ziwei = context.ziwei;
         final local = AstroDateTime(2003, 3, 13, 14, 15);
 
-        final fromLocal = ziwei
-            .calculateLocal(local, gender: ZiweiGender.male)
-            .value;
+        final fromLocal = ziwei.calculateLocal(local, gender: ZiweiGender.male);
         addTearDown(fromLocal.close);
 
         final instant = local.toJulianDate<UtcScale>().addSeconds(-8 * 3600);
-        final fromInstant = ziwei
-            .calculateInstant(instant, gender: ZiweiGender.male)
-            .value;
+        final fromInstant = ziwei.calculateInstant(
+          instant,
+          gender: ZiweiGender.male,
+        );
         addTearDown(fromInstant.close);
 
         expect(fromLocal.anchors.values, fromInstant.anchors.values);
@@ -130,15 +124,13 @@ void main() {
         final chart = createReferenceChart(ziwei);
 
         final target = AstroDateTime(2024, 2, 10, 12);
-        final targetInstant = target
-            .toJulianDate<UtcScale>()
-            .addSeconds(-8 * 3600);
-        final resolution = chart
-            .setFlow(
-              targetInstantUtc: targetInstant,
-              targetVirtualTime: target,
-            )
-            .value;
+        final targetInstant = target.toJulianDate<UtcScale>().addSeconds(
+          -8 * 3600,
+        );
+        final resolution = chart.setFlow(
+          targetInstantUtc: targetInstant,
+          targetVirtualTime: target,
+        );
 
         expect(chart.flowLayerCount, 5);
         expect(resolution.decade.startAge, lessThan(resolution.decade.endAge));
@@ -157,7 +149,8 @@ void main() {
         if (branch != null) {
           expect(branch, inInclusiveRange(0, 11));
           expect(
-            chart.flowPalaceStars(ZiweiFlowLevel.year, branch)
+            chart
+                .flowPalaceStars(ZiweiFlowLevel.year, branch)
                 .map((star) => star.id),
             contains(ziweiStar.id),
           );
@@ -217,9 +210,9 @@ void main() {
         expect(branch, isNotNull);
 
         final dayStart = AstroDateTime(2003, 3, 13);
-        final startInstant = dayStart
-            .toJulianDate<UtcScale>()
-            .addSeconds(-8 * 3600);
+        final startInstant = dayStart.toJulianDate<UtcScale>().addSeconds(
+          -8 * 3600,
+        );
         final result = ziwei.reverseLookupTier1(
           startInstantUtc: startInstant,
           endInstantUtc: startInstant.addSeconds(86400),
@@ -227,7 +220,7 @@ void main() {
           gender: ZiweiGender.male,
           query: ZiweiTier1ReverseQuery(ziweiBranch: branch),
         );
-        final candidates = result.value;
+        final candidates = result;
 
         expect(candidates, isNotEmpty);
         expect(
@@ -273,6 +266,15 @@ void main() {
 
         final replacement = context.ziwei;
         expect(replacement.isClosed, isFalse);
+      });
+
+      test('rejects a calendar owned by a different ephemeris context', () {
+        final other = context.clone();
+        expect(
+          () => context.createZiwei(calendar: other.chineseCalendar),
+          throwsArgumentError,
+        );
+        other.close();
       });
     },
     skip: nativeLibraryAvailable

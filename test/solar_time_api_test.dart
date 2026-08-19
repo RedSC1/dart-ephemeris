@@ -21,7 +21,7 @@ void main() {
 
       test('calculates equation of time from UT1 and TT', () {
         final fromUt1 = context.solarTime.equationOfTimeAtUt1(ut1);
-        final equation = fromUt1.value;
+        final equation = fromUt1;
         final fromTt = context.solarTime.equationOfTimeAtTt(equation.tt);
 
         expect(equation.equationSeconds, inExclusiveRange(-250.0, -150.0));
@@ -30,10 +30,7 @@ void main() {
           equation.equationDays * JulianDate.secondsPerDay,
           closeTo(equation.equationSeconds, 1e-12),
         );
-        expect(
-          fromTt.value.equationSeconds,
-          closeTo(equation.equationSeconds, 2e-5),
-        );
+        expect(fromTt.equationSeconds, closeTo(equation.equationSeconds, 2e-5));
         expect(
           equation.ut1.coordinateSecondsDifference(ut1),
           closeTo(0, 5e-12),
@@ -45,36 +42,32 @@ void main() {
           ].every((value) => value.isFinite),
           isTrue,
         );
-        expect(fromUt1.diagnostic.status, 0);
-        expect(fromTt.diagnostic.status, 0);
+        expect(context.lastDiagnostic?.status, 0);
       });
 
       test('round-trips local mean and apparent solar time', () {
         final longitudeRadians = 116.3833 * math.pi / 180.0;
-        final equation = context.solarTime.equationOfTimeAtUt1(ut1).value;
+        final equation = context.solarTime.equationOfTimeAtUt1(ut1);
         final localMean = LocalMeanSolarTime.fromUt1(
           ut1,
           longitudeRadians: longitudeRadians,
         );
 
         final apparent = context.solarTime.meanToApparent(localMean);
-        final roundTrip = context.solarTime.apparentToMean(apparent.value);
+        final roundTrip = context.solarTime.apparentToMean(apparent);
 
         expect(
-          apparent.value.coordinate.coordinateSecondsDifference(
-            localMean.coordinate,
-          ),
+          apparent.coordinate.coordinateSecondsDifference(localMean.coordinate),
           closeTo(equation.equationSeconds, 1e-4),
         );
         expect(
-          roundTrip.value.coordinate.coordinateSecondsDifference(
+          roundTrip.coordinate.coordinateSecondsDifference(
             localMean.coordinate,
           ),
           closeTo(0.0, 1e-4),
         );
-        expect(roundTrip.value.longitudeRadians, longitudeRadians);
-        expect(apparent.diagnostic.status, 0);
-        expect(roundTrip.diagnostic.status, 0);
+        expect(roundTrip.longitudeRadians, longitudeRadians);
+        expect(context.lastDiagnostic?.status, 0);
       });
 
       test('rejects invalid longitude and use after close', () {

@@ -134,10 +134,7 @@ void main() {
             tt,
             flags: {PositionFlag.xyz, PositionFlag.topocentric},
           );
-          expect(
-            result.value.coordinates.every((value) => value.isFinite),
-            isTrue,
-          );
+          expect(result.coordinates.every((value) => value.isFinite), isTrue);
         } finally {
           clone.close();
         }
@@ -151,7 +148,6 @@ void main() {
           expect(
             survivingClone.position
                 .atTt(Body.sun, tt)
-                .value
                 .values
                 .every((value) => value.isFinite),
             isTrue,
@@ -170,7 +166,6 @@ void main() {
         expect(
           taiyin.position
               .atTt(Body.sun, tt)
-              .value
               .values
               .every((value) => value.isFinite),
           isTrue,

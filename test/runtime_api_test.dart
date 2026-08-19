@@ -40,13 +40,12 @@ void main() {
       });
 
       test('formats structured native diagnostics for logs', () {
-        final diagnostic = context.position
-            .atTt(
-              Body.moon,
-              JulianDate<TtScale>.fromDouble(2460409.0),
-              flags: {PositionFlag.xyz},
-            )
-            .diagnostic;
+        context.position.atTt(
+          Body.moon,
+          JulianDate<TtScale>.fromDouble(2460409.0),
+          flags: {PositionFlag.xyz},
+        );
+        final diagnostic = context.lastDiagnostic!;
 
         final formatted = runtime.formatEphemerisDiagnostic(diagnostic);
 
@@ -62,13 +61,11 @@ void main() {
             ..registerBuiltinAstrologyTargets()
             ..registerBuiltinAstrologyTargets();
 
-          final position = context.position
-              .atTt(
-                AstrologyTarget.trueNode,
-                JulianDate<TtScale>.fromDouble(2460409.0),
-                flags: {PositionFlag.radians, PositionFlag.speed},
-              )
-              .value;
+          final position = context.position.atTt(
+            AstrologyTarget.trueNode,
+            JulianDate<TtScale>.fromDouble(2460409.0),
+            flags: {PositionFlag.radians, PositionFlag.speed},
+          );
 
           expect(position.values[0].isFinite, isTrue);
           expect(position.values[1], 0.0);
@@ -219,7 +216,6 @@ void main() {
                   JulianDate<TtScale>.fromDouble(2460409.0),
                   flags: {PositionFlag.xyz},
                 )
-                .value
                 .values,
             everyElement(isA<double>()),
           );

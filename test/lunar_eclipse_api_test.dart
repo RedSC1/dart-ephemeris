@@ -86,40 +86,31 @@ void main() {
           options: {LunarEclipseSearchOption.excludePenumbral},
         );
 
-        expect(solvedUt.value.kinds, contains(EclipseKind.total));
-        expect(solvedTt.value.kinds, contains(EclipseKind.total));
-        expect(solvedUt.value.deltaTSeconds, greaterThan(60));
+        expect(solvedUt.kinds, contains(EclipseKind.total));
+        expect(solvedTt.kinds, contains(EclipseKind.total));
+        expect(solvedUt.deltaTSeconds, greaterThan(60));
+        expect(solvedUt.maximum!.toDouble(), closeTo(2460926.258194, 2 / 1440));
+        expect(solvedUt.contacts[LunarEclipseContact.totalBegin], isNotNull);
+        expect(solvedUt.contacts[LunarEclipseContact.totalEnd], isNotNull);
         expect(
-          solvedUt.value.maximum!.toDouble(),
-          closeTo(2460926.258194, 2 / 1440),
+          nextUt.maximum!.toDouble(),
+          closeTo(solvedUt.maximum!.toDouble(), 2 / 1440),
+        );
+        expect(nextTt.kinds, contains(EclipseKind.total));
+        expect(
+          nextTt.maximum!.toDouble(),
+          closeTo(solvedTt.maximum!.toDouble(), 2 / 1440),
         );
         expect(
-          solvedUt.value.contacts[LunarEclipseContact.totalBegin],
-          isNotNull,
+          previousUt.maximum!.toDouble(),
+          closeTo(solvedUt.maximum!.toDouble(), 2 / 1440),
         );
-        expect(
-          solvedUt.value.contacts[LunarEclipseContact.totalEnd],
-          isNotNull,
-        );
-        expect(
-          nextUt.value.maximum!.toDouble(),
-          closeTo(solvedUt.value.maximum!.toDouble(), 2 / 1440),
-        );
-        expect(nextTt.value.kinds, contains(EclipseKind.total));
-        expect(
-          nextTt.value.maximum!.toDouble(),
-          closeTo(solvedTt.value.maximum!.toDouble(), 2 / 1440),
-        );
-        expect(
-          previousUt.value.maximum!.toDouble(),
-          closeTo(solvedUt.value.maximum!.toDouble(), 2 / 1440),
-        );
-        expect(rangeUt.value, hasLength(1));
-        expect(rangeUt.value.single.kinds, contains(EclipseKind.total));
-        expect(rangeTt.value, hasLength(5));
-        expect(rangeTt.value.first.kinds, contains(EclipseKind.total));
-        expect(rangeTt.value.last.kinds, contains(EclipseKind.penumbral));
-        expect(noPenumbral.value, hasLength(4));
+        expect(rangeUt, hasLength(1));
+        expect(rangeUt.single.kinds, contains(EclipseKind.total));
+        expect(rangeTt, hasLength(5));
+        expect(rangeTt.first.kinds, contains(EclipseKind.total));
+        expect(rangeTt.last.kinds, contains(EclipseKind.penumbral));
+        expect(noPenumbral, hasLength(4));
         expect(
           () => context.eclipses.lunarEclipsesAtTt(
             JulianDate<TtScale>.fromDouble(2451545.0),
@@ -140,9 +131,9 @@ void main() {
           kinds: {EclipseKind.total},
           options: {LunarEclipseSearchOption.includeContacts},
         );
-        final local = context.eclipses.localLunarVisibilityAtUt1(global.value);
+        final local = context.eclipses.localLunarVisibilityAtUt1(global);
         final refracted = context.eclipses.localLunarVisibilityAtUt1(
-          global.value,
+          global,
           options: {LocalLunarEclipseVisibilityOption.refraction},
         );
         final localSearchUt = context.eclipses.nextLocalLunarAtUt1(
@@ -159,38 +150,30 @@ void main() {
           kinds: {EclipseKind.total},
           options: {LunarEclipseSearchOption.includeContacts},
         );
-        final localTt = context.eclipses.localLunarVisibilityAtTt(
-          globalTt.value,
-        );
+        final localTt = context.eclipses.localLunarVisibilityAtTt(globalTt);
 
         final greatest = LunarEclipseContact.greatest;
-        expect(local.value.kinds, contains(EclipseKind.total));
+        expect(local.kinds, contains(EclipseKind.total));
         expect(
-          local.value.visibility,
+          local.visibility,
           contains(LocalLunarEclipseVisibilityFlag.maximumVisible),
         );
-        expect(local.value.contacts[greatest], isNotNull);
+        expect(local.contacts[greatest], isNotNull);
+        expect(local.contacts[greatest]!.moonAltitudeDegrees, greaterThan(0));
         expect(
-          local.value.contacts[greatest]!.moonAltitudeDegrees,
-          greaterThan(0),
+          refracted.contacts[greatest]!.moonAltitudeDegrees,
+          greaterThan(local.contacts[greatest]!.moonAltitudeDegrees!),
         );
         expect(
-          refracted.value.contacts[greatest]!.moonAltitudeDegrees,
-          greaterThan(local.value.contacts[greatest]!.moonAltitudeDegrees!),
+          localSearchUt.maximum!.toDouble(),
+          closeTo(global.maximum!.toDouble(), 1e-12),
         );
+        expect(localSearchUt.contacts[greatest], isNotNull);
         expect(
-          localSearchUt.value.maximum!.toDouble(),
-          closeTo(global.value.maximum!.toDouble(), 1e-12),
-        );
-        expect(localSearchUt.value.contacts[greatest], isNotNull);
-        expect(
-          localSearchTt.value.visibility,
+          localSearchTt.visibility,
           contains(LocalLunarEclipseVisibilityFlag.maximumVisible),
         );
-        expect(
-          localTt.value.contacts[greatest]!.moonAltitudeDegrees,
-          greaterThan(0),
-        );
+        expect(localTt.contacts[greatest]!.moonAltitudeDegrees, greaterThan(0));
       },
       skip: !nativeLibraryAvailable,
     );
@@ -201,8 +184,8 @@ void main() {
         final none = context.eclipses.solveLunarAtTt(
           JulianDate<TtScale>.fromDouble(2451594.0),
         );
-        expect(none.value.hasEclipse, isFalse);
-        expect(none.value.maximum, isNull);
+        expect(none.hasEclipse, isFalse);
+        expect(none.maximum, isNull);
         expect(
           () => context.eclipses.nextLunarAtUt1(
             JulianDate<Ut1Scale>.fromDouble(2460926.0),
@@ -244,8 +227,7 @@ void main() {
           JulianDate<Ut1Scale>.fromDouble(2460926.25),
         );
         expect(
-          () =>
-              context.eclipses.localLunarVisibilityAtUt1(withoutContacts.value),
+          () => context.eclipses.localLunarVisibilityAtUt1(withoutContacts),
           throwsArgumentError,
         );
         context.close();

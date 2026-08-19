@@ -42,10 +42,10 @@ typedef _PositionStatusChecker =
 ///
 /// Julian dates cross the native boundary as split `taiyin_split_julian_date`
 /// structs, preserving the full day-number/fraction precision. Batch methods
-/// preserve one result and diagnostic per requested body when individual
-/// targets fail. Callers should inspect [EphemerisDiagnostic.status] on
-/// every returned item. Failures that occur before native per-target
-/// diagnostics are available still throw.
+/// return one result per requested body even when individual targets fail;
+/// the batch's final diagnostic is published on
+/// [EphemerisContext.lastDiagnostic]. Failures that occur before native
+/// per-target diagnostics are available still throw.
 final class PositionApi {
   /// Internal constructor used by an owning [EphemerisContext].
   PositionApi.internal(
@@ -61,7 +61,7 @@ final class PositionApi {
   final _PositionStatusChecker _checkStatus;
 
   /// Calculates one body at a TT Julian date.
-  EphemerisResult<Position> atTt(
+  Position atTt(
     Target body,
     JulianDate<TtScale> julianDate, {
     Set<PositionFlag> flags = const {},
@@ -81,7 +81,7 @@ final class PositionApi {
   }
 
   /// Calculates one body at a UT1 Julian date using Taiyin's time policy.
-  EphemerisResult<Position> atUt1(
+  Position atUt1(
     Target body,
     JulianDate<Ut1Scale> julianDate, {
     Set<PositionFlag> flags = const {},
@@ -101,7 +101,7 @@ final class PositionApi {
   }
 
   /// Calculates one body with explicit TDB and TT coordinates.
-  EphemerisResult<Position> atTdb(
+  Position atTdb(
     Target body,
     JulianDate<TdbScale> tdb,
     JulianDate<TtScale> tt, {
@@ -123,7 +123,7 @@ final class PositionApi {
   }
 
   /// Calculates one body at UT1 with an explicit TT−UT1 value.
-  EphemerisResult<Position> atUt1WithDeltaT(
+  Position atUt1WithDeltaT(
     Target body,
     JulianDate<Ut1Scale> julianDate,
     double deltaTSeconds, {
@@ -147,7 +147,7 @@ final class PositionApi {
   }
 
   /// Calculates one body from a UTC calendar value.
-  EphemerisResult<Position> atUtc(
+  Position atUtc(
     Target body,
     AstroDateTime utc, {
     Set<PositionFlag> flags = const {},
@@ -170,7 +170,7 @@ final class PositionApi {
   }
 
   /// Calculates several bodies at one TT Julian date.
-  List<EphemerisResult<Position>> batchAtTt(
+  List<Position> batchAtTt(
     List<Target> bodies,
     JulianDate<TtScale> julianDate, {
     Set<PositionFlag> flags = const {},
@@ -193,7 +193,7 @@ final class PositionApi {
   }
 
   /// Calculates several bodies at one UT1 Julian date.
-  List<EphemerisResult<Position>> batchAtUt1(
+  List<Position> batchAtUt1(
     List<Target> bodies,
     JulianDate<Ut1Scale> julianDate, {
     Set<PositionFlag> flags = const {},
@@ -216,7 +216,7 @@ final class PositionApi {
   }
 
   /// Calculates several bodies with explicit TDB and TT coordinates.
-  List<EphemerisResult<Position>> batchAtTdb(
+  List<Position> batchAtTdb(
     List<Target> bodies,
     JulianDate<TdbScale> tdb,
     JulianDate<TtScale> tt, {
@@ -241,7 +241,7 @@ final class PositionApi {
   }
 
   /// Calculates several bodies at UT1 with an explicit TT−UT1 value.
-  List<EphemerisResult<Position>> batchAtUt1WithDeltaT(
+  List<Position> batchAtUt1WithDeltaT(
     List<Target> bodies,
     JulianDate<Ut1Scale> julianDate,
     double deltaTSeconds, {
@@ -267,7 +267,7 @@ final class PositionApi {
   }
 
   /// Calculates several bodies from one UTC calendar value.
-  List<EphemerisResult<Position>> batchAtUtc(
+  List<Position> batchAtUtc(
     List<Target> bodies,
     AstroDateTime utc, {
     Set<PositionFlag> flags = const {},
@@ -297,7 +297,7 @@ final class PositionApi {
   /// Cartesian position, velocity, and acceleration are always returned, so
   /// [PositionFlag.xyz] and [PositionFlag.speed] are implied and
   /// have no effect. Frame and apparent-correction flags still apply.
-  EphemerisResult<CartesianState> stateAtTt(
+  CartesianState stateAtTt(
     Target body,
     JulianDate<TtScale> julianDate, {
     Set<PositionFlag> flags = const {},
@@ -319,7 +319,7 @@ final class PositionApi {
   /// Calculates a Cartesian state at a UT1 Julian date.
   ///
   /// Position and derivative flags behave as described by [stateAtTt].
-  EphemerisResult<CartesianState> stateAtUt1(
+  CartesianState stateAtUt1(
     Target body,
     JulianDate<Ut1Scale> julianDate, {
     Set<PositionFlag> flags = const {},
@@ -341,7 +341,7 @@ final class PositionApi {
   /// Calculates a Cartesian state with explicit TDB and TT coordinates.
   ///
   /// Position and derivative flags behave as described by [stateAtTt].
-  EphemerisResult<CartesianState> stateAtTdb(
+  CartesianState stateAtTdb(
     Target body,
     JulianDate<TdbScale> tdb,
     JulianDate<TtScale> tt, {
@@ -365,7 +365,7 @@ final class PositionApi {
   /// Calculates a Cartesian state at UT1 with an explicit TT−UT1 value.
   ///
   /// Position and derivative flags behave as described by [stateAtTt].
-  EphemerisResult<CartesianState> stateAtUt1WithDeltaT(
+  CartesianState stateAtUt1WithDeltaT(
     Target body,
     JulianDate<Ut1Scale> julianDate,
     double deltaTSeconds, {
@@ -391,7 +391,7 @@ final class PositionApi {
   /// Calculates a Cartesian state from a UTC calendar value.
   ///
   /// Position and derivative flags behave as described by [stateAtTt].
-  EphemerisResult<CartesianState> stateAtUtc(
+  CartesianState stateAtUtc(
     Target body,
     AstroDateTime utc, {
     Set<PositionFlag> flags = const {},
@@ -413,7 +413,7 @@ final class PositionApi {
     });
   }
 
-  EphemerisResult<Position> _position(
+  Position _position(
     Set<PositionFlag> flags,
     _SinglePositionCalculation calculate,
   ) {
@@ -426,16 +426,13 @@ final class PositionApi {
       final status = calculate(arena, mask, output, diagnostic);
       final mappedDiagnostic = _readDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
-      return EphemerisResult(
-        value: Position._([
-          for (var index = 0; index < 6; index++) output[index],
-        ], frozenFlags),
-        diagnostic: mappedDiagnostic,
-      );
+      return Position._([
+        for (var index = 0; index < 6; index++) output[index],
+      ], frozenFlags);
     });
   }
 
-  List<EphemerisResult<Position>> _positions(
+  List<Position> _positions(
     List<Target> bodies,
     Set<PositionFlag> flags,
     _BatchPositionCalculation calculate,
@@ -459,28 +456,27 @@ final class PositionApi {
         output,
         diagnostics,
       );
-      final results = List<EphemerisResult<Position>>.unmodifiable([
+      final elementDiagnostics = [
         for (var bodyIndex = 0; bodyIndex < bodies.length; bodyIndex++)
-          EphemerisResult(
-            value: Position._([
-              for (var valueIndex = 0; valueIndex < 6; valueIndex++)
-                output[bodyIndex * 6 + valueIndex],
-            ], frozenFlags),
-            diagnostic: _readDiagnostic(diagnostics[bodyIndex]),
-          ),
-      ]);
+          _readDiagnostic(diagnostics[bodyIndex]),
+      ];
       if (status != 0 &&
-          !results.any((result) => result.diagnostic.status != 0)) {
+          !elementDiagnostics.any((diagnostic) => diagnostic.status != 0)) {
         _checkStatus(status, null);
       }
-      return results;
+      // Publishes the batch's final diagnostic; a zero status never throws.
+      _checkStatus(0, elementDiagnostics.last);
+      return List<Position>.unmodifiable([
+        for (var bodyIndex = 0; bodyIndex < bodies.length; bodyIndex++)
+          Position._([
+            for (var valueIndex = 0; valueIndex < 6; valueIndex++)
+              output[bodyIndex * 6 + valueIndex],
+          ], frozenFlags),
+      ]);
     });
   }
 
-  EphemerisResult<CartesianState> _state(
-    Set<PositionFlag> flags,
-    _StateCalculation calculate,
-  ) {
+  CartesianState _state(Set<PositionFlag> flags, _StateCalculation calculate) {
     final mask = _flagMask(flags);
     return using((arena) {
       final output = arena<taiyin_cartesian_state>();
@@ -492,13 +488,10 @@ final class PositionApi {
       final mappedDiagnostic = _readDiagnostic(diagnostic.ref);
       _checkStatus(status, mappedDiagnostic);
       final state = output.ref;
-      return EphemerisResult(
-        value: CartesianState(
-          positionAu: _readVector(state.position_au),
-          velocityAuPerDay: _readVector(state.velocity_au_per_day),
-          accelerationAuPerDay2: _readVector(state.acceleration_au_per_day2),
-        ),
-        diagnostic: mappedDiagnostic,
+      return CartesianState(
+        positionAu: _readVector(state.position_au),
+        velocityAuPerDay: _readVector(state.velocity_au_per_day),
+        accelerationAuPerDay2: _readVector(state.acceleration_au_per_day2),
       );
     });
   }

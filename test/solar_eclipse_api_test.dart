@@ -90,36 +90,36 @@ void main() {
           positionFlags: {PositionFlag.truePosition},
         );
 
-        expect(solvedUt.value.kinds, contains(EclipseKind.total));
-        expect(solvedUt.value.kinds, contains(EclipseKind.central));
-        expect(solvedTt.value.kinds, contains(EclipseKind.total));
-        expect(solvedUt.value.deltaTSeconds, greaterThan(50));
+        expect(solvedUt.kinds, contains(EclipseKind.total));
+        expect(solvedUt.kinds, contains(EclipseKind.central));
+        expect(solvedTt.kinds, contains(EclipseKind.total));
+        expect(solvedUt.deltaTSeconds, greaterThan(50));
         expect(
-          solvedUt.value.maximum!.toDouble(),
+          solvedUt.maximum!.toDouble(),
           closeTo(2460409.262039739, 2 / 86400),
         );
-        expect(solvedUt.value.coreRadiusKilometers, greaterThan(0));
-        expect(solvedUt.value.penumbralMarginKilometers, lessThan(0));
+        expect(solvedUt.coreRadiusKilometers, greaterThan(0));
+        expect(solvedUt.penumbralMarginKilometers, lessThan(0));
         for (final contact in SolarEclipseContact.values) {
-          expect(solvedUt.value.contacts[contact], isNotNull);
+          expect(solvedUt.contacts[contact], isNotNull);
         }
         expect(
-          nextUt.value.maximum!.toDouble(),
-          closeTo(solvedUt.value.maximum!.toDouble(), 2 / 86400),
+          nextUt.maximum!.toDouble(),
+          closeTo(solvedUt.maximum!.toDouble(), 2 / 86400),
         );
         expect(
-          previousUt.value.maximum!.toDouble(),
-          closeTo(solvedUt.value.maximum!.toDouble(), 2 / 86400),
+          previousUt.maximum!.toDouble(),
+          closeTo(solvedUt.maximum!.toDouble(), 2 / 86400),
         );
-        expect(nextTt.value.kinds, contains(EclipseKind.total));
-        expect(rangeUt.value, hasLength(3));
-        expect(rangeUt.value[1].kinds, contains(EclipseKind.annular));
-        expect(rangeUt.value[1].kinds, contains(EclipseKind.central));
-        expect(rangeUt.value[2].kinds, contains(EclipseKind.partial));
-        expect(rangeUt.value[2].kinds, contains(EclipseKind.noncentral));
-        expect(rangeTt.value, hasLength(3));
-        expect(rangeTt.value[0].kinds, contains(EclipseKind.total));
-        expect(truePosition.value.kinds, contains(EclipseKind.total));
+        expect(nextTt.kinds, contains(EclipseKind.total));
+        expect(rangeUt, hasLength(3));
+        expect(rangeUt[1].kinds, contains(EclipseKind.annular));
+        expect(rangeUt[1].kinds, contains(EclipseKind.central));
+        expect(rangeUt[2].kinds, contains(EclipseKind.partial));
+        expect(rangeUt[2].kinds, contains(EclipseKind.noncentral));
+        expect(rangeTt, hasLength(3));
+        expect(rangeTt[0].kinds, contains(EclipseKind.total));
+        expect(truePosition.kinds, contains(EclipseKind.total));
         expect(
           () => context.eclipses.solarEclipsesAtUt1(
             JulianDate<Ut1Scale>.fromDouble(2460300.0),
@@ -156,36 +156,36 @@ void main() {
           JulianDate<TtScale>.fromDouble(2460409.2575),
         );
 
-        expect(localUt.value.kinds, contains(EclipseKind.total));
+        expect(localUt.kinds, contains(EclipseKind.total));
         expect(
-          localUt.value.visibility,
+          localUt.visibility,
           contains(LocalSolarEclipseVisibilityFlag.visibleAtObserver),
         );
-        expect(localUt.value.magnitude, closeTo(1.057846292, 1e-4));
-        expect(localUt.value.obscuration, closeTo(1, 1e-6));
-        expect(localUt.value.durationSeconds, greaterThan(200));
-        expect(localUt.value.sunAltitudeDegrees, greaterThan(0));
-        expect(localUt.value.sunAzimuthDegrees, isNotNull);
-        expect(localUt.value.positionAngleC1Degrees, isNotNull);
-        expect(localUt.value.positionAngleC4Degrees, isNotNull);
-        expect(localUt.value.vertexAngleC1Degrees, isNotNull);
-        expect(localUt.value.vertexAngleC4Degrees, isNotNull);
-        expect(localUt.value.moonSunRadiusRatio, greaterThan(1));
+        expect(localUt.magnitude, closeTo(1.057846292, 1e-4));
+        expect(localUt.obscuration, closeTo(1, 1e-6));
+        expect(localUt.durationSeconds, greaterThan(200));
+        expect(localUt.sunAltitudeDegrees, greaterThan(0));
+        expect(localUt.sunAzimuthDegrees, isNotNull);
+        expect(localUt.positionAngleC1Degrees, isNotNull);
+        expect(localUt.positionAngleC4Degrees, isNotNull);
+        expect(localUt.vertexAngleC1Degrees, isNotNull);
+        expect(localUt.vertexAngleC4Degrees, isNotNull);
+        expect(localUt.moonSunRadiusRatio, greaterThan(1));
         for (final contact in LocalSolarEclipseContact.values) {
-          expect(localUt.value.contacts[contact], isNotNull);
+          expect(localUt.contacts[contact], isNotNull);
         }
-        expect(localTt.value.kinds, contains(EclipseKind.total));
-        expect(nextLocalUt.value.kinds, contains(EclipseKind.total));
+        expect(localTt.kinds, contains(EclipseKind.total));
+        expect(nextLocalUt.kinds, contains(EclipseKind.total));
         expect(
-          nextLocalUt.value.contacts[LocalSolarEclipseContact.greatest],
+          nextLocalUt.contacts[LocalSolarEclipseContact.greatest],
           isNotNull,
         );
-        expect(nextLocalTt.value.kinds, contains(EclipseKind.total));
-        expect(circumstancesUt.value.deltaTSeconds, greaterThan(50));
-        expect(circumstancesUt.value.magnitude, greaterThan(1));
-        expect(circumstancesUt.value.obscuration, closeTo(1, 1e-6));
-        expect(circumstancesUt.value.sunAltitudeDegrees, greaterThan(0));
-        expect(circumstancesTt.value.magnitude, greaterThan(1));
+        expect(nextLocalTt.kinds, contains(EclipseKind.total));
+        expect(circumstancesUt.deltaTSeconds, greaterThan(50));
+        expect(circumstancesUt.magnitude, greaterThan(1));
+        expect(circumstancesUt.obscuration, closeTo(1, 1e-6));
+        expect(circumstancesUt.sunAltitudeDegrees, greaterThan(0));
+        expect(circumstancesTt.magnitude, greaterThan(1));
 
         final previousLocalUt = context.eclipses.nextLocalSolarAtUt1(
           JulianDate<Ut1Scale>.fromDouble(2460410.0),
@@ -193,8 +193,8 @@ void main() {
           options: {SolarEclipseSearchOption.backward},
         );
         expect(
-          previousLocalUt.value.maximum!.toDouble(),
-          closeTo(localUt.value.maximum!.toDouble(), 2 / 86400),
+          previousLocalUt.maximum!.toDouble(),
+          closeTo(localUt.maximum!.toDouble(), 2 / 86400),
         );
 
         context.configuration.setObserverLocation(
@@ -207,21 +207,15 @@ void main() {
         final newYork = context.eclipses.solveLocalSolarAtUt1(
           JulianDate<Ut1Scale>.fromDouble(2460409.262231433),
         );
-        expect(newYork.value.kinds, contains(EclipseKind.partial));
+        expect(newYork.kinds, contains(EclipseKind.partial));
         expect(
-          newYork.value.contacts[LocalSolarEclipseContact.partialBegin],
+          newYork.contacts[LocalSolarEclipseContact.partialBegin],
           isNotNull,
         );
+        expect(newYork.contacts[LocalSolarEclipseContact.centralBegin], isNull);
+        expect(newYork.contacts[LocalSolarEclipseContact.centralEnd], isNull);
         expect(
-          newYork.value.contacts[LocalSolarEclipseContact.centralBegin],
-          isNull,
-        );
-        expect(
-          newYork.value.contacts[LocalSolarEclipseContact.centralEnd],
-          isNull,
-        );
-        expect(
-          newYork.value.contacts[LocalSolarEclipseContact.partialEnd],
+          newYork.contacts[LocalSolarEclipseContact.partialEnd],
           isNotNull,
         );
 
@@ -235,10 +229,10 @@ void main() {
         final paris = context.eclipses.solveLocalSolarAtUt1(
           JulianDate<Ut1Scale>.fromDouble(2460409.262231433),
         );
-        expect(paris.value.hasEclipse, isTrue);
-        expect(paris.value.visibility, isEmpty);
+        expect(paris.hasEclipse, isTrue);
+        expect(paris.visibility, isEmpty);
         for (final contact in LocalSolarEclipseContact.values) {
-          expect(paris.value.contacts[contact], isNull);
+          expect(paris.contacts[contact], isNull);
         }
       },
       skip: !nativeLibraryAvailable,
@@ -252,13 +246,11 @@ void main() {
         // fallback.
         final refracted = context.eclipses.solveLocalSolarAtUt1(
           JulianDate<Ut1Scale>.fromDouble(2460409.262231433),
-          visibilityOptions: {
-            LocalSolarEclipseVisibilityOption.refraction,
-          },
+          visibilityOptions: {LocalSolarEclipseVisibilityOption.refraction},
         );
-        expect(refracted.value.kinds, contains(EclipseKind.total));
+        expect(refracted.kinds, contains(EclipseKind.total));
         expect(
-          refracted.value.visibility,
+          refracted.visibility,
           contains(LocalSolarEclipseVisibilityFlag.visibleAtObserver),
         );
 
@@ -269,7 +261,7 @@ void main() {
             LocalSolarEclipseVisibilityOption.strictMeteorology,
           },
         );
-        expect(strict.value.kinds, contains(EclipseKind.total));
+        expect(strict.kinds, contains(EclipseKind.total));
 
         // strictMeteorology requires refraction.
         expect(
@@ -309,14 +301,14 @@ void main() {
         );
 
         expect(runtime.hasLunarLimbModel, isTrue);
-        expect(global.value.kinds, contains(EclipseKind.total));
-        expect(local.value.kinds, contains(EclipseKind.total));
+        expect(global.kinds, contains(EclipseKind.total));
+        expect(local.kinds, contains(EclipseKind.total));
         expect(
-          local.value.contacts[LocalSolarEclipseContact.centralBegin],
+          local.contacts[LocalSolarEclipseContact.centralBegin],
           isNotNull,
         );
-        expect(nextLocal.value.kinds, contains(EclipseKind.total));
-        expect(route.value.hasRoute, isTrue);
+        expect(nextLocal.kinds, contains(EclipseKind.total));
+        expect(route.hasRoute, isTrue);
       },
       skip: !nativeLibraryAvailable || !lunarLimbAvailable,
     );
@@ -335,7 +327,7 @@ void main() {
           degree: 4,
         );
         final evaluated = context.eclipses.evaluateSolarBesselianPolynomial(
-          polynomial.value,
+          polynomial,
           0,
         );
         final directAtTwoHours = context.eclipses.solarBesselianElementsAtTt(
@@ -343,7 +335,7 @@ void main() {
           timeOffsetHours: 2,
         );
         final evaluatedAtTwoHours = context.eclipses
-            .evaluateSolarBesselianPolynomial(polynomial.value, 2);
+            .evaluateSolarBesselianPolynomial(polynomial, 2);
         const zeroElements = SolarBesselianElements(
           tHours: 0,
           x: 0,
@@ -379,33 +371,33 @@ void main() {
           maxResidual: zeroElements,
         );
 
-        expect(elements.value.tHours, 0);
+        expect(elements.tHours, 0);
         // Updated after the native precession/nutation fix (2026-08).
-        expect(elements.value.x, closeTo(0.15822277776121665, 1e-9));
-        expect(elements.value.y, closeTo(0.3044938492945148, 1e-9));
-        expect(elements.value.zeta, closeTo(56.410877306293, 1e-8));
-        expect(elements.value.dDegrees, closeTo(-7.590825680172, 1e-9));
-        expect(elements.value.muDegrees, closeTo(273.994309591411, 1e-8));
-        expect(elements.value.l1, closeTo(0.535736741366, 1e-9));
-        expect(elements.value.l2, closeTo(0.010590415175, 1e-9));
+        expect(elements.x, closeTo(0.15822277776121665, 1e-9));
+        expect(elements.y, closeTo(0.3044938492945148, 1e-9));
+        expect(elements.zeta, closeTo(56.410877306293, 1e-8));
+        expect(elements.dDegrees, closeTo(-7.590825680172, 1e-9));
+        expect(elements.muDegrees, closeTo(273.994309591411, 1e-8));
+        expect(elements.l1, closeTo(0.535736741366, 1e-9));
+        expect(elements.l2, closeTo(0.010590415175, 1e-9));
         expect(
-          polynomial.value.referenceEpoch.toDouble(),
+          polynomial.referenceEpoch.toDouble(),
           closeTo(center.toDouble(), 1e-12),
         );
-        expect(polynomial.value.degree, 4);
+        expect(polynomial.degree, 4);
         expect(
-          polynomial.value.xCoefficients,
+          polynomial.xCoefficients,
           hasLength(SolarBesselianPolynomial.coefficientCount),
         );
-        expect(evaluated.x, closeTo(elements.value.x, 1e-8));
-        expect(evaluated.y, closeTo(elements.value.y, 1e-8));
-        expect(evaluated.l1, closeTo(elements.value.l1, 1e-8));
-        expect(evaluated.l2, closeTo(elements.value.l2, 1e-8));
+        expect(evaluated.x, closeTo(elements.x, 1e-8));
+        expect(evaluated.y, closeTo(elements.y, 1e-8));
+        expect(evaluated.l1, closeTo(elements.l1, 1e-8));
+        expect(evaluated.l2, closeTo(elements.l2, 1e-8));
         expect(evaluatedAtTwoHours.tHours, 2);
-        expect(evaluatedAtTwoHours.x, closeTo(directAtTwoHours.value.x, 1e-7));
-        expect(evaluatedAtTwoHours.y, closeTo(directAtTwoHours.value.y, 1e-7));
-        expect(polynomial.value.maxResidual.x, lessThan(1e-7));
-        expect(polynomial.value.maxResidual.y, lessThan(1e-7));
+        expect(evaluatedAtTwoHours.x, closeTo(directAtTwoHours.x, 1e-7));
+        expect(evaluatedAtTwoHours.y, closeTo(directAtTwoHours.y, 1e-7));
+        expect(polynomial.maxResidual.x, lessThan(1e-7));
+        expect(polynomial.maxResidual.y, lessThan(1e-7));
         expect(normalizedPolynomial.xCoefficients, [0, 1, 0, 0, 0, 0, 0, 0]);
         expect(
           () => context.eclipses.solarBesselianElementsAtTt(
@@ -433,7 +425,7 @@ void main() {
         );
         expect(
           () => context.eclipses.evaluateSolarBesselianPolynomial(
-            polynomial.value,
+            polynomial,
             double.infinity,
           ),
           throwsArgumentError,
@@ -442,27 +434,21 @@ void main() {
       skip: !nativeLibraryAvailable,
     );
 
-    test(
-      'computes lightweight instantaneous global geometry with where',
-      () {
-        final centerUt = JulianDate<Ut1Scale>.fromDouble(2460409.262039739);
-        final centerTt = JulianDate<TtScale>.fromDouble(
-          2460409.262039739 + 69 / 86400,
-        );
-        final whereUt = context.eclipses.solarEclipseWhereAtUt1(centerUt).value;
-        final whereTt = context.eclipses.solarEclipseWhereAtTt(centerTt).value;
+    test('computes lightweight instantaneous global geometry with where', () {
+      final centerUt = JulianDate<Ut1Scale>.fromDouble(2460409.262039739);
+      final centerTt = JulianDate<TtScale>.fromDouble(
+        2460409.262039739 + 69 / 86400,
+      );
+      final whereUt = context.eclipses.solarEclipseWhereAtUt1(centerUt);
+      final whereTt = context.eclipses.solarEclipseWhereAtTt(centerTt);
 
-        expect(whereUt.magnitude, greaterThan(1));
-        expect(whereUt.centerLine.intersectsEarth, isTrue);
-        expect(whereUt.centerSeparationDegrees, isNonNegative);
-        expect(whereUt.sunAngularRadiusDegrees, greaterThan(0));
-        expect(whereUt.moonAngularRadiusDegrees, greaterThan(0));
-        expect(
-          whereTt.magnitude,
-          closeTo(whereUt.magnitude, 1e-6),
-        );
-      },
-    );
+      expect(whereUt.magnitude, greaterThan(1));
+      expect(whereUt.centerLine.intersectsEarth, isTrue);
+      expect(whereUt.centerSeparationDegrees, isNonNegative);
+      expect(whereUt.sunAngularRadiusDegrees, greaterThan(0));
+      expect(whereUt.moonAngularRadiusDegrees, greaterThan(0));
+      expect(whereTt.magnitude, closeTo(whereUt.magnitude, 1e-6));
+    });
 
     test(
       'computes global solar-eclipse route rows and inclusive route samples',
@@ -496,37 +482,34 @@ void main() {
           maxRows: 2,
         );
 
-        expect(rowUt.value.hasRoute, isTrue);
-        expect(rowUt.value.centerLine.intersectsEarth, isTrue);
+        expect(rowUt.hasRoute, isTrue);
+        expect(rowUt.centerLine.intersectsEarth, isTrue);
+        expect(rowUt.centerLine.latitudeDegrees, closeTo(25.289608540, 1e-4));
         expect(
-          rowUt.value.centerLine.latitudeDegrees,
-          closeTo(25.289608540, 1e-4),
-        );
-        expect(
-          rowUt.value.centerLine.longitudeDegrees,
+          rowUt.centerLine.longitudeDegrees,
           closeTo(-104.147998749, 1e-4),
         );
-        expect(rowUt.value.pathWidthKilometers, closeTo(197.862736, 5));
-        expect(rowUt.value.durationSeconds, closeTo(268.106442, 8));
-        expect(rowUt.value.northLimit.intersectsEarth, isTrue);
-        expect(rowUt.value.southLimit.intersectsEarth, isTrue);
+        expect(rowUt.pathWidthKilometers, closeTo(197.862736, 5));
+        expect(rowUt.durationSeconds, closeTo(268.106442, 8));
+        expect(rowUt.northLimit.intersectsEarth, isTrue);
+        expect(rowUt.southLimit.intersectsEarth, isTrue);
         final annularEndpoint = context.eclipses.solarEclipseRouteRowAtUt1(
           JulianDate<Ut1Scale>.fromDouble(2461443.2438330743),
         );
-        expect(annularEndpoint.value.northLimit.intersectsEarth, isTrue);
-        expect(annularEndpoint.value.southLimit.intersectsEarth, isFalse);
-        expect(annularEndpoint.value.southLimit.latitudeDegrees, isNull);
-        expect(truePositionRow.value.hasRoute, isTrue);
-        expect(rowTt.value.hasRoute, isTrue);
-        expect(rowTt.value.centerLine.latitudeDegrees, isNotNull);
-        expect(routeUt.value, isNotEmpty);
-        for (final routeRow in routeUt.value) {
+        expect(annularEndpoint.northLimit.intersectsEarth, isTrue);
+        expect(annularEndpoint.southLimit.intersectsEarth, isFalse);
+        expect(annularEndpoint.southLimit.latitudeDegrees, isNull);
+        expect(truePositionRow.hasRoute, isTrue);
+        expect(rowTt.hasRoute, isTrue);
+        expect(rowTt.centerLine.latitudeDegrees, isNotNull);
+        expect(routeUt, isNotEmpty);
+        for (final routeRow in routeUt) {
           expect(routeRow.hasRoute, isTrue);
         }
-        expect(routeTt.value, isNotEmpty);
-        expect(singleCoordinateRoute.value, hasLength(1));
+        expect(routeTt, isNotEmpty);
+        expect(singleCoordinateRoute, hasLength(1));
         expect(
-          routeTt.value.first.coordinateTt.toDouble(),
+          routeTt.first.coordinateTt.toDouble(),
           closeTo(2460409.25 + 69 / 86400, 1e-12),
         );
         expect(
@@ -582,8 +565,8 @@ void main() {
         final none = context.eclipses.solveSolarAtTt(
           JulianDate<TtScale>.fromDouble(2451550.0),
         );
-        expect(none.value.hasEclipse, isFalse);
-        expect(none.value.maximum, isNull);
+        expect(none.hasEclipse, isFalse);
+        expect(none.maximum, isNull);
         final emptyCoreProduct = context.eclipses.solarEclipseRouteProductAtTt(
           JulianDate<TtScale>.fromDouble(2451550.0),
           routeSampleCount: 32,
@@ -593,7 +576,7 @@ void main() {
               JulianDate<TtScale>.fromDouble(2451550.0),
               routeSampleCount: 32,
             );
-        for (final product in [emptyCoreProduct.value, emptyMapProduct.value]) {
+        for (final product in [emptyCoreProduct, emptyMapProduct]) {
           expect(product.points, isEmpty);
           expect(product.summary.flags, isEmpty);
           for (final count in [
@@ -730,130 +713,119 @@ void main() {
           latitudeDegrees: mazatlan.latitudeDegrees,
         );
 
-        expect(curvesUt.value, isNotEmpty);
-        expect(curvesTt.value, isNotEmpty);
+        expect(curvesUt, isNotEmpty);
+        expect(curvesTt, isNotEmpty);
         expect(
-          curvesUt.value.map((point) => point.kind),
+          curvesUt.map((point) => point.kind),
           contains(SolarEclipseRouteCurveKind.centerLine),
         );
         expect(
-          curvesUt.value.map((point) => point.kind),
+          curvesUt.map((point) => point.kind),
           contains(SolarEclipseRouteCurveKind.penumbralNorth),
         );
         expect(
-          curvesUt.value.map((point) => point.kind),
+          curvesUt.map((point) => point.kind),
           contains(SolarEclipseRouteCurveKind.coreNorth),
         );
         expect(
-          curvesUt.value.map((point) => point.kind),
+          curvesUt.map((point) => point.kind),
           contains(SolarEclipseRouteCurveKind.halfMagnitudeNorth),
         );
-        for (final point in curvesUt.value) {
+        for (final point in curvesUt) {
           expect(point.latitudeDegrees.isFinite, isTrue);
           expect(point.longitudeDegrees.isFinite, isTrue);
         }
 
-        expect(coreProduct.value.points, isNotEmpty);
-        expect(coreProductTt.value.points, isNotEmpty);
+        expect(coreProduct.points, isNotEmpty);
+        expect(coreProductTt.points, isNotEmpty);
         expect(
-          coreProduct.value.summary.flags,
+          coreProduct.summary.flags,
           contains(SolarEclipseRouteProductFlag.hasCorePolygon),
         );
         expect(
-          coreProduct.value.summary.corePolygonPointCount,
-          coreProduct.value.points.length,
+          coreProduct.summary.corePolygonPointCount,
+          coreProduct.points.length,
         );
         expect(
-          coreProduct.value.points.first.kind,
+          coreProduct.points.first.kind,
           SolarEclipseRouteProductPointKind.coreNorth,
         );
         expect(
-          coreProduct.value.points.last.kind,
+          coreProduct.points.last.kind,
           SolarEclipseRouteProductPointKind.polygonClose,
         );
         expect(
-          coreProduct.value.points.last.latitudeDegrees,
-          closeTo(coreProduct.value.points.first.latitudeDegrees, 1e-12),
+          coreProduct.points.last.latitudeDegrees,
+          closeTo(coreProduct.points.first.latitudeDegrees, 1e-12),
         );
-        expect(coreProduct.value.summary.minimumLatitudeDegrees, isNotNull);
-        expect(coreProduct.value.summary.maximumLatitudeDegrees, isNotNull);
+        expect(coreProduct.summary.minimumLatitudeDegrees, isNotNull);
+        expect(coreProduct.summary.maximumLatitudeDegrees, isNotNull);
         expect(
-          coreProduct.value.summary.minimumLatitudeDegrees!,
-          lessThan(coreProduct.value.summary.maximumLatitudeDegrees!),
+          coreProduct.summary.minimumLatitudeDegrees!,
+          lessThan(coreProduct.summary.maximumLatitudeDegrees!),
         );
 
         expect(
-          mapProduct.value.summary.flags,
+          mapProduct.summary.flags,
           contains(SolarEclipseRouteProductFlag.hasCorePolygon),
         );
         expect(
-          mapProduct.value.summary.flags,
+          mapProduct.summary.flags,
           contains(SolarEclipseRouteProductFlag.hasPenumbralPolygon),
         );
         expect(
-          mapProduct.value.summary.flags,
+          mapProduct.summary.flags,
           contains(SolarEclipseRouteProductFlag.hasHalfMagnitudePolygon),
         );
+        expect(mapProduct.summary.polygonPointCount, mapProduct.points.length);
         expect(
-          mapProduct.value.summary.polygonPointCount,
-          mapProduct.value.points.length,
+          mapProduct.summary.polygonPointCount,
+          greaterThan(coreProduct.points.length),
+        );
+        expect(mapProductUt.points, isNotEmpty);
+        expect(
+          mapProductUt.summary.polygonPointCount,
+          mapProductUt.points.length,
         );
         expect(
-          mapProduct.value.summary.polygonPointCount,
-          greaterThan(coreProduct.value.points.length),
-        );
-        expect(mapProductUt.value.points, isNotEmpty);
-        expect(
-          mapProductUt.value.summary.polygonPointCount,
-          mapProductUt.value.points.length,
-        );
-        expect(
-          mapProductUt
-              .value
-              .points[mapProductUt.value.summary.corePolygonPointCount]
-              .kind,
+          mapProductUt.points[mapProductUt.summary.corePolygonPointCount].kind,
           SolarEclipseRouteProductPointKind.penumbralNorth,
         );
         expect(
           mapProductUt
-              .value
-              .points[mapProductUt.value.summary.corePolygonPointCount +
-                  mapProductUt.value.summary.penumbralPolygonPointCount]
+              .points[mapProductUt.summary.corePolygonPointCount +
+                  mapProductUt.summary.penumbralPolygonPointCount]
               .kind,
           SolarEclipseRouteProductPointKind.halfMagnitudeNorth,
         );
         expect(
-          antimeridianMapProduct.value.summary.flags,
+          antimeridianMapProduct.summary.flags,
           contains(SolarEclipseRouteProductFlag.crossesAntimeridian),
         );
         expect(
-          mapProduct
-              .value
-              .points[mapProduct.value.summary.corePolygonPointCount]
-              .kind,
+          mapProduct.points[mapProduct.summary.corePolygonPointCount].kind,
           SolarEclipseRouteProductPointKind.penumbralNorth,
         );
         expect(
           mapProduct
-              .value
-              .points[mapProduct.value.summary.corePolygonPointCount +
-                  mapProduct.value.summary.penumbralPolygonPointCount]
+              .points[mapProduct.summary.corePolygonPointCount +
+                  mapProduct.summary.penumbralPolygonPointCount]
               .kind,
           SolarEclipseRouteProductPointKind.halfMagnitudeNorth,
         );
 
-        expect(boundaryUt.value.centerKinds, contains(EclipseKind.total));
-        expect(boundaryUt.value.centerLongitudeDegrees, isNotNull);
-        expect(boundaryUt.value.centerLatitudeDegrees, isNotNull);
-        expect(boundaryUt.value.umbraNorthLongitudeDegrees, isNotNull);
-        expect(boundaryUt.value.umbraSouthLongitudeDegrees, isNotNull);
-        expect(boundaryUt.value.penumbraNorthLongitudeDegrees, isNotNull);
-        expect(boundaryUt.value.penumbraSouthLongitudeDegrees, isNotNull);
-        expect(boundaryUt.value.umbraWidthKilometers, greaterThan(0));
-        expect(boundaryTt.value.centerKinds, contains(EclipseKind.total));
+        expect(boundaryUt.centerKinds, contains(EclipseKind.total));
+        expect(boundaryUt.centerLongitudeDegrees, isNotNull);
+        expect(boundaryUt.centerLatitudeDegrees, isNotNull);
+        expect(boundaryUt.umbraNorthLongitudeDegrees, isNotNull);
+        expect(boundaryUt.umbraSouthLongitudeDegrees, isNotNull);
+        expect(boundaryUt.penumbraNorthLongitudeDegrees, isNotNull);
+        expect(boundaryUt.penumbraSouthLongitudeDegrees, isNotNull);
+        expect(boundaryUt.umbraWidthKilometers, greaterThan(0));
+        expect(boundaryTt.centerKinds, contains(EclipseKind.total));
         expect(
-          boundaryTt.value.centerLongitudeDegrees,
-          closeTo(boundaryUt.value.centerLongitudeDegrees!, 0.002),
+          boundaryTt.centerLongitudeDegrees,
+          closeTo(boundaryUt.centerLongitudeDegrees!, 0.002),
         );
 
         expect(

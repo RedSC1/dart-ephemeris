@@ -33,15 +33,20 @@ final Expando<BaziContext> _baziCache = Expando<BaziContext>('taiyin_bazi');
 
 /// BaZi entry points attached to an [EphemerisContext].
 extension BaziExtension on EphemerisContext {
-  /// A BaZi context using the default configuration.
+  /// A BaZi context using the default configuration, bound to the cached
+  /// default Chinese-calendar context.
   ///
   /// The first access creates and caches the native context; a cached entry
-  /// closed by the caller is replaced on the next access. The BaZi context
-  /// does not borrow this context's native state, so closing the owning
-  /// context does not invalidate it.
+  /// closed by the caller (or whose bound calendar was closed) is replaced on
+  /// the next access. The BaZi context does not borrow this context's native
+  /// state, so closing the owning context does not invalidate it.
   BaziContext get bazi {
     final cached = _baziCache[this];
-    if (cached != null && !cached.isClosed) return cached;
+    if (cached != null &&
+        !cached.isClosed &&
+        !cached.chineseCalendar.isClosed) {
+      return cached;
+    }
     final created = createBazi();
     _baziCache[this] = created;
     return created;
@@ -49,13 +54,25 @@ extension BaziExtension on EphemerisContext {
 
   /// Creates an independent BaZi context owned by the caller.
   ///
-  /// Call [BaziContext.close] when it is no longer needed.
+  /// [calendar] defaults to the cached default Chinese-calendar context and
+  /// must have been created by this same [EphemerisContext]. Call
+  /// [BaziContext.close] when it is no longer needed.
   BaziContext createBazi({
     BaziContextConfig config = const BaziContextConfig(),
+    ChineseCalendarContext? calendar,
   }) {
     final host = extensionHost;
     host.ensureOpen();
-    return BaziContext._create(host, config);
+    final effectiveCalendar = calendar ?? chineseCalendar;
+    if (!identical(effectiveCalendar.owner, this)) {
+      throw ArgumentError.value(
+        calendar,
+        'calendar',
+        'must belong to this EphemerisContext',
+      );
+    }
+    effectiveCalendar.extensionHost.ensureOpen();
+    return BaziContext._create(host, config, effectiveCalendar);
   }
 }
 
@@ -66,13 +83,14 @@ extension BaziExtension on EphemerisContext {
 /// before discarding the handle; a native finalizer is attached as a safety
 /// net for contexts that are not closed explicitly.
 final class BaziContext implements Finalizable {
-  BaziContext._(this._host, this._context, this._finalizer) {
+  BaziContext._(this._host, this._context, this._finalizer, this._calendar) {
     _finalizer.attach(this, _context.cast(), detach: this);
   }
 
   factory BaziContext._create(
     TaiyinExtensionHost host,
     BaziContextConfig config,
+    ChineseCalendarContext calendar,
   ) {
     final finalizer = host.finalizerFor(
       'taiyin_bazi_context_destroy',
@@ -98,18 +116,22 @@ final class BaziContext implements Finalizable {
       );
       return output.value;
     });
-    return BaziContext._(host, context, finalizer);
+    return BaziContext._(host, context, finalizer, calendar);
   }
 
   final TaiyinExtensionHost _host;
   final Pointer<taiyin_bazi_context> _context;
   final NativeFinalizer _finalizer;
+  final ChineseCalendarContext _calendar;
 
   TaiyinBindings get _bindings => _host.bindings;
   int get _capabilities => _host.capabilities;
   bool _closed = false;
 
   bool get isClosed => _closed;
+
+  /// The calendar context shared by four-pillar and BaZi calculations.
+  ChineseCalendarContext get chineseCalendar => _calendar;
 
   /// Releases the native BaZi context. Calling this more than once is safe.
   void close() {
@@ -369,7 +391,10 @@ final class BaziContext implements Finalizable {
         count,
       );
       _checkStatus(_bindings, countStatus);
-      final requiredCount = validatedNativeArrayCount(count.value, 'BaZi xiao-yun');
+      final requiredCount = validatedNativeArrayCount(
+        count.value,
+        'BaZi xiao-yun',
+      );
       if (requiredCount == 0) {
         return const <BaziXiaoyun>[];
       }
@@ -388,7 +413,10 @@ final class BaziContext implements Finalizable {
         count,
       );
       _checkStatus(_bindings, fillStatus);
-      final resultCount = validatedNativeResultCount(count.value, requiredCount);
+      final resultCount = validatedNativeResultCount(
+        count.value,
+        requiredCount,
+      );
       return List.unmodifiable([
         for (var index = 0; index < resultCount; index++)
           _readXiaoyun((output + index).ref),
@@ -415,18 +443,16 @@ final class BaziContext implements Finalizable {
 
   /// Computes the 起运 (qi-yun) start of the first 大运 for a birth instant.
   ///
-  /// [calendar] supplies the astronomical solar-term context used by the
-  /// native BaZi module.
-  EphemerisResult<BaziQiyunResult> calcQiyun({
+  /// Uses the bound [chineseCalendar] as the astronomical solar-term context.
+  BaziQiyunResult calcQiyun({
     required JulianDate<Ut1Scale> birthJdUt,
     required AstroDateTime birthCivilTime,
     required BaziChart chart,
     required BaziGender gender,
-    required ChineseCalendarContext calendar,
   }) {
     _ensureOpen();
     _requireBazi();
-    calendar.extensionHost.ensureOpen();
+    _calendar.extensionHost.ensureOpen();
     return using((arena) {
       final output = arena<taiyin_bazi_qiyun_result>();
       final diagnostic = arena<taiyin_ephemeris_diagnostic>();
@@ -435,8 +461,7 @@ final class BaziContext implements Finalizable {
         ..taiyin_ephemeris_diagnostic_init(diagnostic);
       final status = _bindings.taiyin_bazi_calc_qiyun(
         _context,
-        calendar.extensionHost
-            .nativeHandle<taiyin_chinese_calendar_context>(),
+        _calendar.extensionHost.nativeHandle<taiyin_chinese_calendar_context>(),
         writeJulianDate(arena, birthJdUt),
         writeNativeCalendar(_bindings, arena, birthCivilTime),
         _writeBaziChart(_bindings, arena, chart),
@@ -445,11 +470,9 @@ final class BaziContext implements Finalizable {
         diagnostic,
       );
       final mappedDiagnostic = _host.readDiagnostic(diagnostic.ref);
+      _host.recordDiagnostic(mappedDiagnostic);
       _checkStatus(_bindings, status, diagnostic: mappedDiagnostic);
-      return EphemerisResult(
-        value: _readQiyunResult(output.ref),
-        diagnostic: mappedDiagnostic,
-      );
+      return _readQiyunResult(output.ref);
     });
   }
 
@@ -481,7 +504,10 @@ final class BaziContext implements Finalizable {
         count,
       );
       _checkStatus(_bindings, countStatus);
-      final requiredCount = validatedNativeArrayCount(count.value, 'BaZi da-yun');
+      final requiredCount = validatedNativeArrayCount(
+        count.value,
+        'BaZi da-yun',
+      );
       if (requiredCount == 0) {
         return const <BaziDayun>[];
       }
@@ -501,7 +527,10 @@ final class BaziContext implements Finalizable {
         count,
       );
       _checkStatus(_bindings, fillStatus);
-      final resultCount = validatedNativeResultCount(count.value, requiredCount);
+      final resultCount = validatedNativeResultCount(
+        count.value,
+        requiredCount,
+      );
       return List.unmodifiable([
         for (var index = 0; index < resultCount; index++)
           _readDayun((output + index).ref),
@@ -511,18 +540,16 @@ final class BaziContext implements Finalizable {
 
   /// Determines the 人元司令 (ren-yuan si-ling) in effect at an instant.
   ///
-  /// [calendar] supplies the astronomical solar-term context used by the
-  /// native BaZi module.
-  EphemerisResult<BaziRenyuanSilingResult> calcRenyuanSiling({
+  /// Uses the bound [chineseCalendar] as the astronomical solar-term context.
+  BaziRenyuanSilingResult calcRenyuanSiling({
     required JulianDate<Ut1Scale> instantJdUt,
     required BaziChart chart,
     required BaziRenyuanSilingTableModel tableModel,
     required BaziRenyuanSilingTimeModel timeModel,
-    required ChineseCalendarContext calendar,
   }) {
     _ensureOpen();
     _requireBazi();
-    calendar.extensionHost.ensureOpen();
+    _calendar.extensionHost.ensureOpen();
     return using((arena) {
       final output = arena<taiyin_bazi_renyuan_siling_result>();
       final diagnostic = arena<taiyin_ephemeris_diagnostic>();
@@ -530,8 +557,7 @@ final class BaziContext implements Finalizable {
         ..taiyin_bazi_renyuan_siling_result_init(output)
         ..taiyin_ephemeris_diagnostic_init(diagnostic);
       final status = _bindings.taiyin_bazi_calc_renyuan_siling(
-        calendar.extensionHost
-            .nativeHandle<taiyin_chinese_calendar_context>(),
+        _calendar.extensionHost.nativeHandle<taiyin_chinese_calendar_context>(),
         writeJulianDate(arena, instantJdUt),
         _writeBaziChart(_bindings, arena, chart),
         tableModel.id,
@@ -540,11 +566,9 @@ final class BaziContext implements Finalizable {
         diagnostic,
       );
       final mappedDiagnostic = _host.readDiagnostic(diagnostic.ref);
+      _host.recordDiagnostic(mappedDiagnostic);
       _checkStatus(_bindings, status, diagnostic: mappedDiagnostic);
-      return EphemerisResult(
-        value: _readRenyuanSilingResult(output.ref),
-        diagnostic: mappedDiagnostic,
-      );
+      return _readRenyuanSilingResult(output.ref);
     });
   }
 
@@ -585,7 +609,10 @@ final class BaziContext implements Finalizable {
         count,
       );
       _checkStatus(_bindings, fillStatus);
-      final resultCount = validatedNativeResultCount(count.value, requiredCount);
+      final resultCount = validatedNativeResultCount(
+        count.value,
+        requiredCount,
+      );
       return List.unmodifiable([
         for (var index = 0; index < resultCount; index++)
           _readRenyuanSilingSegment((output + index).ref),
@@ -637,7 +664,10 @@ final class BaziContext implements Finalizable {
         count,
       );
       _checkStatus(_bindings, fillStatus);
-      final resultCount = validatedNativeResultCount(count.value, requiredCount);
+      final resultCount = validatedNativeResultCount(
+        count.value,
+        requiredCount,
+      );
       return List.unmodifiable([
         for (var index = 0; index < resultCount; index++)
           _readRelation((output + index).ref),

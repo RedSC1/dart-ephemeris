@@ -19,13 +19,18 @@ void main() {
       instantUtc: JulianDate<UtcScale>.fromDouble(2460351.0),
       virtualTime: AstroDateTime(2024, 2, 10, 12),
     );
-    final chart = context.bazi.calcChart(pillars.value);
+    final chart = context.bazi.calcChart(pillars);
     print(chart.dayPillar);
   } finally {
     context.close();
   }
 }
 ```
+
+A BaZi context binds one `ChineseCalendarContext` at creation (the cached
+default calendar unless `createBazi(calendar: ...)` says otherwise) and
+resolves solar terms through it; the calendar must belong to the same
+`EphemerisContext`.
 
 Requires a native library built with `TAIYIN_BUILD_BAZI_EXTENSION=ON` (the core
 package's bundled `lib/native/` copy includes it). On a library without the
