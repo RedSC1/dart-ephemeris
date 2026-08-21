@@ -34,7 +34,7 @@ final class RuntimeOptions {
 ///
 /// Every [open] or [fromDynamicLibrary] call currently reinitializes the
 /// process-wide native runtime. Call one of them once in the application's main
-/// isolate. Worker isolates must use [EphemerisContext.attach] instead.
+/// isolate. Worker isolates must use [Ephemeris.attach] instead.
 final class Ephemeris {
   Ephemeris._(this._library, this._bindings, this._nativeState) {
     starCatalog = StarCatalog._(_bindings);
@@ -56,6 +56,16 @@ final class Ephemeris {
     );
   }
 
+  /// Attaches a Dart facade to the already-initialized process-wide runtime.
+  ///
+  /// Unlike [open], this does not initialize or replace the native catalog,
+  /// caches, EOP table, lunar-limb model, or custom registrations. Call [open]
+  /// once in the main isolate before worker isolates call [attach]. Each worker
+  /// can then create its own independent context with [createContext].
+  factory Ephemeris.attach({String? libraryPath}) {
+    return Ephemeris.attachToDynamicLibrary(_openLibrary(libraryPath));
+  }
+
   /// Opens Ephemeris from an already-loaded native library.
   factory Ephemeris.fromDynamicLibrary(
     DynamicLibrary library, {
@@ -71,6 +81,12 @@ final class Ephemeris {
         _closeCustomHouseSystemRegistrationsAfterNativeClear(state);
       },
     );
+    return Ephemeris._(library, state.bindings, state);
+  }
+
+  /// Attaches to an already-loaded library without initializing its runtime.
+  factory Ephemeris.attachToDynamicLibrary(DynamicLibrary library) {
+    final state = _nativeLibraryStateFor(library);
     return Ephemeris._(library, state.bindings, state);
   }
 

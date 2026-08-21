@@ -138,17 +138,16 @@ print(ephemeris.cacheEntryCount);
 `Ephemeris.open()` hides the native runtime initialization step; ordinary callers
 only open the engine. Call it once in the application's main isolate: every
 current `open()` call reinitializes the process-wide runtime. Worker isolates
-must use `EphemerisContext.attach()` instead. `attach()` loads the same native
-library in that isolate and creates a new calculation context, but deliberately
-does **not** initialize or replace the already configured process-wide runtime,
-catalog, EOP table, or caches. It is therefore not attaching to another Dart
-context and does not share that context's mutable configuration or diagnostics.
+must use `Ephemeris.attach()` instead. `attach()` loads the same native library
+in that isolate and creates a Dart runtime facade, but deliberately does **not**
+initialize or replace the already configured process-wide runtime, catalog, EOP
+table, or caches.
 
 `ephemeris.createContext()` creates an independent `EphemerisContext` for one
-user or calculation policy in the main isolate. `attach()` creates the
-corresponding independent context inside a worker isolate. Closing either kind
-of context releases only that context; it does not reset process-wide runtime
-data.
+user or calculation policy. This is the same operation in every isolate: a
+worker calls `Ephemeris.attach()` first and then calls `createContext()` on that
+facade. Closing a context releases only that context; it does not reset
+process-wide runtime data.
 
 ## Time values
 
@@ -951,7 +950,7 @@ This package requires an ABI-9 native library that reports the
 `Capability.splitTime` and `Capability.chineseCalendar`
 capabilities and exposes the required runtime, star, solar-time, phenomena,
 Chinese-calendar, and Ganzhi-rule symbols. Incomplete ABI-9 builds are rejected
-during `Ephemeris.open` or `EphemerisContext.attach` with a clear compatibility error
+during `Ephemeris.open` or `Ephemeris.attach` with a clear compatibility error
 instead of failing later during a lazy symbol lookup.
 
 The Ganzhi calendar is always built into the core package. The BaZi and Ziwei
@@ -972,18 +971,19 @@ Dart runs synchronous FFI calls on the calling isolate. `Future.wait` inside one
 isolate does not turn those calls into parallel native work, and an
 `EphemerisContext` must not be sent to or reconstructed from its native address
 in another isolate. For CPU parallelism, use worker isolates and let each worker
-attach its own context. These contexts have independent mutable configuration
-and diagnostics while sharing the process-wide native ephemeris catalog and
-segment caches. This is also the recommended server model: one context per
-worker or logical user, with runtime mutation and shutdown kept outside active
-calculations.
+attach a runtime facade and create its own context. These contexts have
+independent mutable configuration and diagnostics while sharing the
+process-wide native ephemeris catalog and segment caches. This is also the
+recommended server model: one context per worker or logical user, with runtime
+mutation and shutdown kept outside active calculations.
 
 A worker isolate must not receive a `EphemerisContext` through a `SendPort`.
 Instead, send plain Dart inputs and let the worker attach a new context to the
 already-open process runtime:
 
 ```dart
-final workerContext = EphemerisContext.attach(libraryPath: libraryPath);
+final workerEphemeris = Ephemeris.attach(libraryPath: libraryPath);
+final workerContext = workerEphemeris.createContext();
 try {
   // Concurrent calculation using this isolate's own context.
 } finally {

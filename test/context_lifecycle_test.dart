@@ -105,7 +105,9 @@ Future<String> _attachWorker(
 void _workerMain(
   ({SendPort sendPort, String libraryPath, JulianDate<Ut1Scale> jd}) message,
 ) {
-  final context = EphemerisContext.attach(libraryPath: message.libraryPath);
+  final context = Ephemeris.attach(
+    libraryPath: message.libraryPath,
+  ).createContext();
   try {
     final calendar = context.chineseCalendar;
     final year = calendar.calcYearUt(message.jd).value;

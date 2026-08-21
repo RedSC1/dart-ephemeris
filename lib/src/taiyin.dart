@@ -262,8 +262,9 @@ final class UnknownNativeError extends EphemerisError {
 /// net for contexts that are not closed explicitly.
 ///
 /// This object does not own or reconfigure the process-wide [Ephemeris] runtime.
-/// Create it through [Ephemeris.createContext], or use [attach] in a Dart
-/// isolate after another isolate has initialized the runtime.
+/// Create it through [Ephemeris.createContext]. Worker isolates first obtain a
+/// local runtime facade with [Ephemeris.attach], then create their own context
+/// through the same method.
 final class EphemerisContext implements Finalizable {
   EphemerisContext._(
     this._library,
@@ -378,27 +379,6 @@ final class EphemerisContext implements Finalizable {
       _bindings.taiyin_context_destroy(_context);
       rethrow;
     }
-  }
-
-  /// Opens the native library and creates a context without initializing the
-  /// process-wide runtime.
-  ///
-  /// [Ephemeris.open] must already have configured the runtime in this process.
-  /// This constructor is intended for worker isolates that need an independent
-  /// context while sharing the existing native runtime.
-  ///
-  /// The current C ABI does not expose an initialization-state query, so this
-  /// precondition cannot be checked here. Calling [attach] first is unsupported
-  /// and may report an ephemeris error only when a calculation is attempted.
-  factory EphemerisContext.attach({String? libraryPath}) {
-    return EphemerisContext.attachToDynamicLibrary(_openLibrary(libraryPath));
-  }
-
-  /// Attaches a context to an already-loaded native library without
-  /// reconfiguring the process-wide runtime.
-  factory EphemerisContext.attachToDynamicLibrary(DynamicLibrary library) {
-    final state = _nativeLibraryStateFor(library);
-    return EphemerisContext._create(library, state);
   }
 
   factory EphemerisContext._create(

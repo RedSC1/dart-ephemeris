@@ -78,7 +78,7 @@ void _customAyanamshaWorkerMain((SendPort, String, int) message) {
   final (sendPort, libraryPath, modelId) = message;
   EphemerisContext? context;
   try {
-    context = EphemerisContext.attach(libraryPath: libraryPath);
+    context = Ephemeris.attach(libraryPath: libraryPath).createContext();
     final result = context.astrology.ayanamshaAtTt(
       JulianDate<TtScale>.fromDouble(2460409.0),
       ayanamsha: CustomAyanamshaModel(modelId),
@@ -95,7 +95,7 @@ void _customHouseWorkerMain((SendPort, String, int) message) {
   final (sendPort, libraryPath, modelId) = message;
   EphemerisContext? context;
   try {
-    context = EphemerisContext.attach(libraryPath: libraryPath);
+    context = Ephemeris.attach(libraryPath: libraryPath).createContext();
     final houses = context.astrology
         .housesFromArmc(
           armcRadians: 1.0,

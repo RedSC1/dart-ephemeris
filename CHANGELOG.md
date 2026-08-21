@@ -7,4 +7,7 @@
   diagnostics on failures.
 - Add high-level BaZi and Ziwei result records with aggregated calendar,
   time-scale, and extension flags.
+- Align worker-isolate ownership with the core architecture through
+  `Ephemeris.attach().createContext()`; attaching never reinitializes the
+  process-wide runtime.
 - Update the pinned full-module native library to Taiyin 1.0.0-preview.6.

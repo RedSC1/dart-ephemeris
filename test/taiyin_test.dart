@@ -106,7 +106,7 @@ void _workerMain((SendPort, String, int) message) {
   final (sendPort, libraryPath, workerIndex) = message;
   EphemerisContext? context;
   try {
-    context = EphemerisContext.attach(libraryPath: libraryPath);
+    context = Ephemeris.attach(libraryPath: libraryPath).createContext();
     context.configuration.setRouteRule(
       workerIndex.isEven ? RouteRule.semiAnalytic : RouteRule.opm2,
     );
@@ -133,7 +133,7 @@ void _seriesWorkerMain((SendPort, String, int) message) {
   final (sendPort, libraryPath, iterations) = message;
   EphemerisContext? context;
   try {
-    context = EphemerisContext.attach(libraryPath: libraryPath);
+    context = Ephemeris.attach(libraryPath: libraryPath).createContext();
     const bodies = [Body.mercury, Body.venus, Body.moon, Body.sun];
     var checksum = 0.0;
     for (var index = 0; index < iterations; index++) {
@@ -163,7 +163,7 @@ void _customTargetWorkerMain((SendPort, String, int) message) {
   final (sendPort, libraryPath, targetId) = message;
   EphemerisContext? context;
   try {
-    context = EphemerisContext.attach(libraryPath: libraryPath);
+    context = Ephemeris.attach(libraryPath: libraryPath).createContext();
     final result = context.position
         .atTt(
           CustomTarget(targetId),
@@ -830,9 +830,10 @@ void main() {
       });
 
       test('attaches through a preloaded dynamic library', () {
-        final attached = EphemerisContext.attachToDynamicLibrary(
+        final attachedRuntime = Ephemeris.attachToDynamicLibrary(
           DynamicLibrary.open(libraryPath),
         );
+        final attached = attachedRuntime.createContext();
         try {
           expect(
             attached

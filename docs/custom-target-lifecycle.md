@@ -38,8 +38,8 @@ native pointer.
 ## Isolates
 
 Create registrations in the long-lived main isolate. Worker isolates should
-use `EphemerisContext.attach` and may calculate registered targets, but should not
-own process-wide registration lifecycle changes.
+use `Ephemeris.attach().createContext()` and may calculate registered targets,
+but should not own process-wide registration lifecycle changes.
 
 The `NativeCallable` objects use the default `keepIsolateAlive = true`.
 Consequently, an isolate that owns an active registration cannot exit normally
