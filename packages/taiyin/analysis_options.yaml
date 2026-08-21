@@ -2,4 +2,4 @@ include: package:lints/recommended.yaml
 
 analyzer:
   exclude:
-    - tmp/**
+    - lib/src/bindings/taiyin_bindings.g.dart

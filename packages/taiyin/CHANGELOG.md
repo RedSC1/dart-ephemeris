@@ -1,4 +1,4 @@
-## 0.5.0
+## 1.0.0-alpha.1
 
 - Require Taiyin C ABI 9 and regenerate the native FFI bindings.
 - Return `OperationResult<T>` named records from native calculations, exposing

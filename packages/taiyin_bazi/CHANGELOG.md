@@ -1,4 +1,4 @@
-## 0.5.0
+## 1.0.0-alpha.1
 
 - Require the ABI-9 `taiyin` package.
 - Add `calculateLocal` and `calculateInstant` complete-chart entry points.

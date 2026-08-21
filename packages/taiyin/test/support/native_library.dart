@@ -1,11 +1,21 @@
 import 'dart:io';
+import 'dart:isolate';
+
+String _packageFile(String packageName, String path) {
+  final uri = Isolate.resolvePackageUriSync(
+    Uri.parse('package:$packageName/$path'),
+  );
+  if (uri == null || uri.scheme != 'file') return path;
+  return uri.toFilePath();
+}
 
 /// The ABI-9 Taiyin shared library used by default in native-integration tests.
 ///
 /// Defaults to the modular core copy bundled in `lib/native/`. Override with
 /// `TAIYIN_TEST_LIBRARY` to test against a freshly built library.
 String get libraryPath =>
-    Platform.environment['TAIYIN_TEST_LIBRARY'] ?? 'lib/native/libtaiyin.dylib';
+    Platform.environment['TAIYIN_TEST_LIBRARY'] ??
+    _packageFile('taiyin', 'native/libtaiyin.dylib');
 
 /// Whether [libraryPath] exists on disk.
 bool get nativeLibraryAvailable => File(libraryPath).existsSync();

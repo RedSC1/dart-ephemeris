@@ -1,5 +1,8 @@
 # taiyin_bazi
 
+> **Pre-release:** `1.0.0-alpha.1`, kept in lockstep with the Dart `taiyin`
+> core package.
+
 BaZi (八字) extension bindings for the Taiyin ephemeris, part of the
 [`taiyin-dart`](../..) monorepo. Mirrors `packages/taiyin-bazi` in the Python
 binding.

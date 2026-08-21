@@ -1,5 +1,5 @@
-name: taiyin_ziwei
-description: Ziwei Doushu (紫微斗数) extension bindings for the Taiyin ephemeris.
+name: taiyin
+description: Idiomatic Dart bindings for the Taiyin ephemeris C API.
 version: 1.0.0-alpha.1
 repository: https://github.com/RedSC1/taiyin-dart
 resolution: workspace
@@ -9,7 +9,6 @@ environment:
 
 dependencies:
   ffi: ^2.2.0
-  taiyin: ^1.0.0-alpha.1
 
 dev_dependencies:
   lints: ^6.0.0

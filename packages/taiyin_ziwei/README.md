@@ -1,5 +1,8 @@
 # taiyin_ziwei
 
+> **Pre-release:** `1.0.0-alpha.1`, kept in lockstep with the Dart `taiyin`
+> core package.
+
 Ziwei Doushu (紫微斗数) extension bindings for the Taiyin ephemeris, part of
 the [`taiyin-dart`](../..) monorepo. Mirrors `packages/taiyin-ziwei` in the
 Python binding.
