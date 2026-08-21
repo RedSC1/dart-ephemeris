@@ -25,6 +25,14 @@ The core package deliberately has two layers:
 - `lib/taiyin.dart` exposes Dart enums, immutable results, exceptions, and safe
   native context ownership.
 
+## Platform support
+
+This package currently supports **Dart Native only** through `dart:ffi`, such as
+command-line applications, servers, Flutter mobile, and Flutter desktop. Dart
+Web and Flutter Web are **not currently supported**: browsers cannot load the
+bundled native C ABI shared library. A future Web target would require a
+separate WebAssembly/JavaScript binding and packaging path.
+
 ## Build the native library
 
 From `taiyin-ephemeris`:
@@ -130,9 +138,17 @@ print(ephemeris.cacheEntryCount);
 `Ephemeris.open()` hides the native runtime initialization step; ordinary callers
 only open the engine. Call it once in the application's main isolate: every
 current `open()` call reinitializes the process-wide runtime. Worker isolates
-must use `EphemerisContext.attach()` instead. `ephemeris.createContext()` creates an
-independent `EphemerisContext` for one user or calculation policy. Closing a
-context does not reset process-wide runtime data.
+must use `EphemerisContext.attach()` instead. `attach()` loads the same native
+library in that isolate and creates a new calculation context, but deliberately
+does **not** initialize or replace the already configured process-wide runtime,
+catalog, EOP table, or caches. It is therefore not attaching to another Dart
+context and does not share that context's mutable configuration or diagnostics.
+
+`ephemeris.createContext()` creates an independent `EphemerisContext` for one
+user or calculation policy in the main isolate. `attach()` creates the
+corresponding independent context inside a worker isolate. Closing either kind
+of context releases only that context; it does not reset process-wide runtime
+data.
 
 ## Time values
 
