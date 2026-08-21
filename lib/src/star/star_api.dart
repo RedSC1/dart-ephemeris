@@ -18,7 +18,7 @@ typedef _BatchStarPositionCalculation =
       Pointer<taiyin_ephemeris_diagnostic> diagnostics,
     );
 typedef _StarStatusChecker =
-    void Function(
+    ResultFlags Function(
       int status,
       EphemerisDiagnostic? diagnostic,
       List<EphemerisDiagnostic> diagnostics,
@@ -126,7 +126,7 @@ final class StarApi {
   final ObservedApi _observedMapper;
 
   /// Calculates one star with explicit TDB and TT coordinates.
-  StarPosition atTdb(
+  OperationResult<StarPosition> atTdb(
     String starKey,
     JulianDate<TdbScale> tdb,
     JulianDate<TtScale> tt, {
@@ -150,7 +150,7 @@ final class StarApi {
   }
 
   /// Calculates one star at a TT Julian date.
-  StarPosition atTt(
+  OperationResult<StarPosition> atTt(
     String starKey,
     JulianDate<TtScale> julianDate, {
     Set<PositionFlag> flags = const {},
@@ -172,7 +172,7 @@ final class StarApi {
   }
 
   /// Calculates one star at a UT1 Julian date using Taiyin's time policy.
-  StarPosition atUt1(
+  OperationResult<StarPosition> atUt1(
     String starKey,
     JulianDate<Ut1Scale> julianDate, {
     Set<PositionFlag> flags = const {},
@@ -194,7 +194,7 @@ final class StarApi {
   }
 
   /// Calculates one star at UT1 with an explicit TT−UT1 value.
-  StarPosition atUt1WithDeltaT(
+  OperationResult<StarPosition> atUt1WithDeltaT(
     String starKey,
     JulianDate<Ut1Scale> julianDate,
     double deltaTSeconds, {
@@ -219,7 +219,7 @@ final class StarApi {
   }
 
   /// Calculates several stars with explicit TDB and TT coordinates.
-  List<StarPosition> batchAtTdb(
+  OperationResult<List<StarPosition>> batchAtTdb(
     List<String> starKeys,
     JulianDate<TdbScale> tdb,
     JulianDate<TtScale> tt, {
@@ -244,7 +244,7 @@ final class StarApi {
   }
 
   /// Calculates several stars at a TT Julian date.
-  List<StarPosition> batchAtTt(
+  OperationResult<List<StarPosition>> batchAtTt(
     List<String> starKeys,
     JulianDate<TtScale> julianDate, {
     Set<PositionFlag> flags = const {},
@@ -267,7 +267,7 @@ final class StarApi {
   }
 
   /// Calculates several stars at a UT1 Julian date.
-  List<StarPosition> batchAtUt1(
+  OperationResult<List<StarPosition>> batchAtUt1(
     List<String> starKeys,
     JulianDate<Ut1Scale> julianDate, {
     Set<PositionFlag> flags = const {},
@@ -290,7 +290,7 @@ final class StarApi {
   }
 
   /// Calculates several stars at UT1 with an explicit TT−UT1 value.
-  List<StarPosition> batchAtUt1WithDeltaT(
+  OperationResult<List<StarPosition>> batchAtUt1WithDeltaT(
     List<String> starKeys,
     JulianDate<Ut1Scale> julianDate,
     double deltaTSeconds, {
@@ -316,7 +316,7 @@ final class StarApi {
   }
 
   /// Calculates one complete observed star position at UT1.
-  ObservedStarPosition observedAtUt1(
+  OperationResult<ObservedStarPosition> observedAtUt1(
     String starKey,
     JulianDate<Ut1Scale> julianDate, {
     Set<ObservedFlag> flags = const {},
@@ -344,19 +344,24 @@ final class StarApi {
       final mappedDiagnostic = _observedMapper._readObservedDiagnostic(
         diagnostic.ref,
       );
-      _checkStatus(status, mappedDiagnostic, const []);
-      return _readObservedStarPosition(output.ref, starKey, frozenFlags);
+      final resultFlags = _checkStatus(status, mappedDiagnostic, const []);
+      return operationResult(
+        _readObservedStarPosition(output.ref, starKey, frozenFlags),
+        resultFlags,
+      );
     });
   }
 
   /// Calculates complete observed star positions at UT1.
-  List<ObservedStarPosition> observedBatchAtUt1(
+  OperationResult<List<ObservedStarPosition>> observedBatchAtUt1(
     List<String> starKeys,
     JulianDate<Ut1Scale> julianDate, {
     Set<ObservedFlag> flags = const {},
   }) {
     _ensureOpen();
-    if (starKeys.isEmpty) return const [];
+    if (starKeys.isEmpty) {
+      return operationResult(const <ObservedStarPosition>[], ResultFlags.none);
+    }
     _validateStarKeys(starKeys);
     _observedMapper._validateFlags(flags);
     final frozenFlags = Set<ObservedFlag>.unmodifiable(flags);
@@ -371,7 +376,7 @@ final class StarApi {
           ..taiyin_observed_position_init(output + index)
           ..taiyin_ephemeris_diagnostic_init(diagnostics + index);
       }
-      final status = _bindings.taiyin_calc_observed_stars_ut(
+      final rawResult = _bindings.taiyin_calc_observed_stars_ut(
         _context,
         nativeKeys,
         starKeys.length,
@@ -380,7 +385,8 @@ final class StarApi {
         output,
         diagnostics,
       );
-      if (status != 0) {
+      final decoded = decodeNativeCallResult(rawResult);
+      if (decoded.status != 0) {
         final mapped = [
           for (var index = 0; index < starKeys.length; index++)
             _observedMapper._readObservedDiagnostic(diagnostics[index]),
@@ -389,7 +395,7 @@ final class StarApi {
           for (final diagnostic in mapped)
             if (diagnostic.status != 0) diagnostic,
         ];
-        _checkStatus(status, failures.firstOrNull ?? mapped.first, mapped);
+        _checkStatus(rawResult, failures.firstOrNull ?? mapped.first, mapped);
       }
       final results = List<ObservedStarPosition>.unmodifiable([
         for (var index = 0; index < starKeys.length; index++)
@@ -411,11 +417,16 @@ final class StarApi {
         ];
         _checkStatus(status, first.diagnostic, diagnostics);
       }
-      return results;
+      final resultFlags = _checkStatus(
+        decoded.flags.mask,
+        results.last.diagnostic,
+        const [],
+      );
+      return operationResult(results, resultFlags);
     });
   }
 
-  StarPosition _position(
+  OperationResult<StarPosition> _position(
     String starKey,
     Set<PositionFlag> flags,
     _SingleStarPositionCalculation calculate,
@@ -432,21 +443,26 @@ final class StarApi {
       final mappedDiagnostic = _observedMapper._readObservedDiagnostic(
         diagnostic.ref,
       );
-      _checkStatus(status, mappedDiagnostic, const []);
-      return StarPosition(
-        starKey: starKey,
-        values: [for (var index = 0; index < 6; index++) output[index]],
-        flags: frozenFlags,
+      final resultFlags = _checkStatus(status, mappedDiagnostic, const []);
+      return operationResult(
+        StarPosition(
+          starKey: starKey,
+          values: [for (var index = 0; index < 6; index++) output[index]],
+          flags: frozenFlags,
+        ),
+        resultFlags,
       );
     });
   }
 
-  List<StarPosition> _positions(
+  OperationResult<List<StarPosition>> _positions(
     List<String> starKeys,
     Set<PositionFlag> flags,
     _BatchStarPositionCalculation calculate,
   ) {
-    if (starKeys.isEmpty) return const [];
+    if (starKeys.isEmpty) {
+      return operationResult(const <StarPosition>[], ResultFlags.none);
+    }
     _validateStarKeys(starKeys);
     final frozenFlags = Set<PositionFlag>.unmodifiable(flags);
     final mask = frozenFlags.fold(0, (value, flag) => value | flag.mask);
@@ -457,7 +473,7 @@ final class StarApi {
       for (var index = 0; index < starKeys.length; index++) {
         _bindings.taiyin_ephemeris_diagnostic_init(diagnostics + index);
       }
-      final status = calculate(
+      final rawResult = calculate(
         arena,
         nativeKeys,
         starKeys.length,
@@ -474,25 +490,32 @@ final class StarApi {
             starIndex: starIndex,
           ),
       ];
-      if (status != 0 &&
-          !entries.any((entry) => entry.diagnostic.status == status)) {
-        _checkStatus(status, null, const []);
+      final decoded = decodeNativeCallResult(rawResult);
+      if (decoded.status != 0 &&
+          !entries.any((entry) => entry.diagnostic.status == decoded.status)) {
+        _checkStatus(rawResult, null, const []);
       }
-      // Publishes the batch's final diagnostic; a zero status never throws.
-      _checkStatus(0, entries.last.diagnostic, const []);
-      return List.unmodifiable([
-        for (final entry in entries)
-          StarPosition(
-            starKey: starKeys[entry.starIndex],
-            values: entry.diagnostic.status == 0
-                ? [
-                    for (var valueIndex = 0; valueIndex < 6; valueIndex++)
-                      output[entry.starIndex * 6 + valueIndex],
-                  ]
-                : List.filled(6, double.nan),
-            flags: frozenFlags,
-          ),
-      ]);
+      final resultFlags = _checkStatus(
+        decoded.flags.mask,
+        entries.last.diagnostic,
+        const [],
+      );
+      return operationResult(
+        List.unmodifiable([
+          for (final entry in entries)
+            StarPosition(
+              starKey: starKeys[entry.starIndex],
+              values: entry.diagnostic.status == 0
+                  ? [
+                      for (var valueIndex = 0; valueIndex < 6; valueIndex++)
+                        output[entry.starIndex * 6 + valueIndex],
+                    ]
+                  : List.filled(6, double.nan),
+              flags: frozenFlags,
+            ),
+        ]),
+        resultFlags,
+      );
     });
   }
 

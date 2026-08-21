@@ -18,6 +18,6 @@ void main() {
     },
     skip: baselineLibraryAvailable
         ? false
-        : 'Set TAIYIN_BASELINE_LIBRARY to a baseline ABI-8 library.',
+        : 'Set TAIYIN_BASELINE_LIBRARY to a baseline ABI-9 library.',
   );
 }

@@ -20,9 +20,9 @@ void main() {
       });
 
       test('computes a winter-solstice Chinese calendar year', () {
-        final year = context.chineseCalendar.calcYearUt(
-          JulianDate<Ut1Scale>.fromDouble(2460348.0),
-        );
+        final year = context.chineseCalendar
+            .calcYearUt(JulianDate<Ut1Scale>.fromDouble(2460348.0))
+            .value;
 
         expect(year.solarTerms, hasLength(25));
         expect(year.solarTermCount, 25);
@@ -40,9 +40,9 @@ void main() {
       });
 
       test('converts a solar date to the Chinese lunar calendar', () {
-        final result = context.chineseCalendar.fromSolar(
-          SolarDate(year: 2024, month: 2, day: 10),
-        );
+        final result = context.chineseCalendar
+            .fromSolar(SolarDate(year: 2024, month: 2, day: 10))
+            .value;
 
         expect(context.lastDiagnostic?.status, 0);
         expect(result.year, 2024);
@@ -52,10 +52,12 @@ void main() {
       });
 
       test('computes the four pillars for a birth moment', () {
-        final result = context.chineseCalendar.fourPillars(
-          instantUtc: JulianDate<UtcScale>.fromDouble(2460351.0),
-          virtualTime: AstroDateTime(2024, 2, 10, 12),
-        );
+        final result = context.chineseCalendar
+            .fourPillars(
+              instantUtc: JulianDate<UtcScale>.fromDouble(2460351.0),
+              virtualTime: AstroDateTime(2024, 2, 10, 12),
+            )
+            .value;
 
         expect(context.lastDiagnostic?.status, 0);
         // 2024-02-10 is after 立春, so the year pillar is 甲辰 (stem 0, branch 4).
@@ -68,8 +70,8 @@ void main() {
 
       test('searches previous and next solar terms', () {
         final jd = JulianDate<Ut1Scale>.fromDouble(2460348.0);
-        final prev = context.chineseCalendar.getPrevJieQiUt(jd);
-        final next = context.chineseCalendar.getNextJieQiUt(jd);
+        final prev = context.chineseCalendar.getPrevJieQiUt(jd).value;
+        final next = context.chineseCalendar.getNextJieQiUt(jd).value;
 
         expect(prev.jdUt.toDouble(), lessThanOrEqualTo(jd.toDouble()));
         expect(next.jdUt.toDouble(), greaterThan(jd.toDouble()));
@@ -81,14 +83,16 @@ void main() {
         final custom = context.createChineseCalendar(
           config: const ChineseCalendarConfig.localAstronomicalUtcOffset(0),
         );
-        final year = custom.calcYearUt(
-          JulianDate<Ut1Scale>.fromDouble(2460348.0),
-        );
+        final year = custom
+            .calcYearUt(JulianDate<Ut1Scale>.fromDouble(2460348.0))
+            .value;
         expect(year.solarTermCount, 25);
         custom.close();
         expect(custom.isClosed, isTrue);
         expect(
-          () => custom.calcYearUt(JulianDate<Ut1Scale>.fromDouble(2460348.0)),
+          () => custom
+              .calcYearUt(JulianDate<Ut1Scale>.fromDouble(2460348.0))
+              .value,
           throwsStateError,
         );
       });
@@ -97,7 +101,8 @@ void main() {
         final cal = context.chineseCalendar;
         context.close();
         expect(
-          () => cal.calcYearUt(JulianDate<Ut1Scale>.fromDouble(2460348.0)),
+          () =>
+              cal.calcYearUt(JulianDate<Ut1Scale>.fromDouble(2460348.0)).value,
           throwsStateError,
         );
       });

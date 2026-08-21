@@ -79,11 +79,17 @@ void _workerMain((SendPort, String, int) message) {
     context.configuration.setRouteRule(
       workerIndex.isEven ? RouteRule.semiAnalytic : RouteRule.opm2,
     );
-    final result = context.position.atTt(
-      Body.mercury,
-      JulianDate<TtScale>.fromDouble(2460409.0),
-      flags: {PositionFlag.xyz, PositionFlag.speed, PositionFlag.truePosition},
-    );
+    final result = context.position
+        .atTt(
+          Body.mercury,
+          JulianDate<TtScale>.fromDouble(2460409.0),
+          flags: {
+            PositionFlag.xyz,
+            PositionFlag.speed,
+            PositionFlag.truePosition,
+          },
+        )
+        .value;
     sendPort.send(['result', ...result.values]);
   } catch (error, stackTrace) {
     sendPort.send(['error', '$error', '$stackTrace']);
@@ -97,11 +103,13 @@ void _customTargetWorkerMain((SendPort, String, int) message) {
   EphemerisContext? context;
   try {
     context = EphemerisContext.attach(libraryPath: libraryPath);
-    final result = context.position.atTt(
-      CustomTarget(targetId),
-      JulianDate<TtScale>.fromDouble(2460409.0),
-      flags: {PositionFlag.xyz, PositionFlag.speed},
-    );
+    final result = context.position
+        .atTt(
+          CustomTarget(targetId),
+          JulianDate<TtScale>.fromDouble(2460409.0),
+          flags: {PositionFlag.xyz, PositionFlag.speed},
+        )
+        .value;
     sendPort.send(['result', ...result.values]);
   } catch (error, stackTrace) {
     sendPort.send(['error', '$error', '$stackTrace']);
@@ -189,7 +197,7 @@ void main() {
 
       test('validates metadata and initializes the catalog', () {
         expect(runtime.abiVersion, taiyinSupportedAbiVersion);
-        expect(runtime.libraryVersion, '1.0.0-preview.5');
+        expect(runtime.libraryVersion, '1.0.0-preview.6');
         expect(runtime.catalogSize, greaterThan(0));
         expect(
           runtime.availableCapabilities,
@@ -222,11 +230,13 @@ void main() {
       });
 
       test('calculates a finite Moon state vector', () {
-        final position = taiyin.positionTt(
-          Body.moon,
-          JulianDate<TtScale>.fromDouble(2460409.0),
-          flags: {PositionFlag.xyz, PositionFlag.speed},
-        );
+        final position = taiyin
+            .positionTt(
+              Body.moon,
+              JulianDate<TtScale>.fromDouble(2460409.0),
+              flags: {PositionFlag.xyz, PositionFlag.speed},
+            )
+            .value;
 
         expect(position.values, hasLength(6));
         expect(position.values, everyElement(isA<double>()));
@@ -242,12 +252,14 @@ void main() {
         );
         addTearDown(registration.close);
         final target = registration.target;
-        final result = taiyin.position.atTdb(
-          target,
-          JulianDate<TdbScale>.fromDouble(2460409.25),
-          JulianDate<TtScale>.fromDouble(2460409.0),
-          flags: {PositionFlag.xyz, PositionFlag.speed},
-        );
+        final result = taiyin.position
+            .atTdb(
+              target,
+              JulianDate<TdbScale>.fromDouble(2460409.25),
+              JulianDate<TtScale>.fromDouble(2460409.0),
+              flags: {PositionFlag.xyz, PositionFlag.speed},
+            )
+            .value;
 
         expect(target, CustomTarget(targetId));
         expect(result.values[0], targetId.toDouble());
@@ -271,10 +283,9 @@ void main() {
         );
         addTearDown(registration.close);
         final target = registration.target;
-        final result = taiyin.position.stateAtTt(
-          target,
-          JulianDate<TtScale>.fromDouble(2460409.0),
-        );
+        final result = taiyin.position
+            .stateAtTt(target, JulianDate<TtScale>.fromDouble(2460409.0))
+            .value;
 
         expect(result.positionAu.x, targetId.toDouble());
         expect(result.positionAu.y, 2.0);
@@ -299,8 +310,12 @@ void main() {
           PositionFlag.truePosition,
         };
 
-        final custom = taiyin.position.atTdb(target, tdb, tt, flags: flags);
-        final sun = taiyin.position.atTdb(Body.sun, tdb, tt, flags: flags);
+        final custom = taiyin.position
+            .atTdb(target, tdb, tt, flags: flags)
+            .value;
+        final sun = taiyin.position
+            .atTdb(Body.sun, tdb, tt, flags: flags)
+            .value;
 
         for (var index = 0; index < 6; index++) {
           expect(custom.values[index], closeTo(sun.values[index], 0));
@@ -319,15 +334,17 @@ void main() {
           libraryPath,
           targetId,
         );
-        final sun = taiyin.position.atTt(
-          Body.sun,
-          JulianDate<TtScale>.fromDouble(2460409.0),
-          flags: const {
-            PositionFlag.xyz,
-            PositionFlag.speed,
-            PositionFlag.truePosition,
-          },
-        );
+        final sun = taiyin.position
+            .atTt(
+              Body.sun,
+              JulianDate<TtScale>.fromDouble(2460409.0),
+              flags: const {
+                PositionFlag.xyz,
+                PositionFlag.speed,
+                PositionFlag.truePosition,
+              },
+            )
+            .value;
         for (var index = 0; index < 6; index++) {
           expect(values[index], closeTo(sun.values[index], 1e-15));
         }
@@ -383,10 +400,9 @@ void main() {
         addTearDown(invalidRegistration.close);
         final invalidTarget = invalidRegistration.target;
         expect(
-          () => taiyin.position.atTt(
-            invalidTarget,
-            JulianDate<TtScale>.fromDouble(2460409.0),
-          ),
+          () => taiyin.position
+              .atTt(invalidTarget, JulianDate<TtScale>.fromDouble(2460409.0))
+              .value,
           throwsA(
             isA<EphemerisError>()
                 .having((error) => error.status, 'status', -1)
@@ -405,10 +421,9 @@ void main() {
         addTearDown(failingRegistration.close);
         final failingTarget = failingRegistration.target;
         expect(
-          () => taiyin.position.atTt(
-            failingTarget,
-            JulianDate<TtScale>.fromDouble(2460409.0),
-          ),
+          () => taiyin.position
+              .atTt(failingTarget, JulianDate<TtScale>.fromDouble(2460409.0))
+              .value,
           throwsA(
             isA<EphemerisError>().having(
               (error) => error.status,
@@ -434,6 +449,7 @@ void main() {
                 JulianDate<TtScale>.fromDouble(2460409.0),
                 flags: const {PositionFlag.xyz},
               )
+              .value
               .values[0],
           targetId.toDouble(),
         );
@@ -442,10 +458,9 @@ void main() {
         expect(registration.isClosed, isTrue);
         expect(registration.close, returnsNormally);
         expect(
-          () => taiyin.position.atTt(
-            target,
-            JulianDate<TtScale>.fromDouble(2460409.0),
-          ),
+          () => taiyin.position
+              .atTt(target, JulianDate<TtScale>.fromDouble(2460409.0))
+              .value,
           throwsA(isA<EphemerisError>()),
         );
 
@@ -545,14 +560,12 @@ void main() {
             producer.close();
           });
 
-          taiyin.position.atTt(
-            producer.target,
-            JulianDate<TtScale>.fromDouble(2460409.0),
-          );
-          final result = taiyin.position.atTt(
-            consumer.target,
-            JulianDate<TtScale>.fromDouble(2460409.0),
-          );
+          taiyin.position
+              .atTt(producer.target, JulianDate<TtScale>.fromDouble(2460409.0))
+              .value;
+          final result = taiyin.position
+              .atTt(consumer.target, JulianDate<TtScale>.fromDouble(2460409.0))
+              .value;
 
           expect(result.values[0], 1.0);
         },
@@ -568,10 +581,12 @@ void main() {
           );
           addTearDown(registration.close);
 
-          final result = taiyin.position.stateAtTt(
-            registration.target,
-            JulianDate<TtScale>.fromDouble(2460409.0),
-          );
+          final result = taiyin.position
+              .stateAtTt(
+                registration.target,
+                JulianDate<TtScale>.fromDouble(2460409.0),
+              )
+              .value;
 
           expect(result.positionAu.x, targetId.toDouble());
           expect(
@@ -598,21 +613,21 @@ void main() {
         final ut1 = JulianDate<Ut1Scale>.fromDouble(2460409.0);
         const flags = {PositionFlag.xyz};
 
-        taiyin.position.atUt1(target, ut1, flags: flags);
+        taiyin.position.atUt1(target, ut1, flags: flags).value;
         expect(taiyin.lastDiagnostic?.status, 0);
-        taiyin.position.atUt1WithDeltaT(target, ut1, 69.0, flags: flags);
+        taiyin.position.atUt1WithDeltaT(target, ut1, 69.0, flags: flags).value;
         expect(taiyin.lastDiagnostic?.status, 0);
-        taiyin.position.atUtc(
-          target,
-          AstroDateTime(2024, 4, 8, 18, 0, 0),
-          flags: flags,
-        );
+        taiyin.position
+            .atUtc(target, AstroDateTime(2024, 4, 8, 18, 0, 0), flags: flags)
+            .value;
         expect(taiyin.lastDiagnostic?.status, 0);
-        final batch = taiyin.position.batchAtTt(
-          [target, Body.sun],
-          JulianDate<TtScale>.fromDouble(2460409.0),
-          flags: const {PositionFlag.xyz, PositionFlag.truePosition},
-        );
+        final batch = taiyin.position
+            .batchAtTt(
+              [target, Body.sun],
+              JulianDate<TtScale>.fromDouble(2460409.0),
+              flags: const {PositionFlag.xyz, PositionFlag.truePosition},
+            )
+            .value;
 
         expect(taiyin.lastDiagnostic?.status, 0);
         expect(taiyin.lastDiagnostic?.targetId, Body.sun.id);
@@ -658,8 +673,8 @@ void main() {
         final clone = taiyin.clone();
         try {
           final epoch = JulianDate<TtScale>.fromDouble(2460409.0);
-          final original = taiyin.positionTt(Body.sun, epoch);
-          final copied = clone.positionTt(Body.sun, epoch);
+          final original = taiyin.positionTt(Body.sun, epoch).value;
+          final copied = clone.positionTt(Body.sun, epoch).value;
           expect(copied.values, original.values);
         } finally {
           clone.close();
@@ -713,9 +728,9 @@ void main() {
         final tt = JulianDate<TtScale>.fromDouble(2460409.0);
 
         expect(
-          () => taiyin.position.atTt(recursive.target, tt),
+          () => taiyin.position.atTt(recursive.target, tt).value,
           throwsA(
-            isA<EphemerisError>().having(
+            isA<InternalCalculationError>().having(
               (error) => error.status,
               'recursive status',
               -3,
@@ -723,7 +738,7 @@ void main() {
           ),
         );
         expect(
-          () => taiyin.position.atTt(missing.target, tt),
+          () => taiyin.position.atTt(missing.target, tt).value,
           throwsA(
             isA<EphemerisError>().having(
               (error) => error.status,
@@ -745,6 +760,7 @@ void main() {
                   Body.moon,
                   JulianDate<TtScale>.fromDouble(2460409.0),
                 )
+                .value
                 .values,
             everyElement(isA<double>()),
           );
@@ -756,10 +772,9 @@ void main() {
       test('rejects calls after close', () {
         taiyin.close();
         expect(
-          () => taiyin.positionTt(
-            Body.sun,
-            JulianDate<TtScale>.fromDouble(2460409.0),
-          ),
+          () => taiyin
+              .positionTt(Body.sun, JulianDate<TtScale>.fromDouble(2460409.0))
+              .value,
           throwsStateError,
         );
       });

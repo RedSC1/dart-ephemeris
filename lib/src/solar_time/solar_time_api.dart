@@ -1,7 +1,7 @@
 part of '../taiyin.dart';
 
 typedef _SolarTimeStatusChecker =
-    void Function(int status, EphemerisDiagnostic? diagnostic);
+    ResultFlags Function(int status, EphemerisDiagnostic? diagnostic);
 
 /// Equation-of-time calculations and local solar-time conversions.
 ///
@@ -21,7 +21,9 @@ final class SolarTimeApi {
   final _SolarTimeStatusChecker _checkStatus;
 
   /// Calculates the equation of time from a UT1 coordinate.
-  EquationOfTime equationOfTimeAtUt1(JulianDate<Ut1Scale> ut1) {
+  OperationResult<EquationOfTime> equationOfTimeAtUt1(
+    JulianDate<Ut1Scale> ut1,
+  ) {
     _ensureOpen();
     return _equationOfTime(
       (arena, output, diagnostic) => _bindings.taiyin_calc_equation_of_time_ut(
@@ -34,7 +36,7 @@ final class SolarTimeApi {
   }
 
   /// Calculates the equation of time from a TT coordinate.
-  EquationOfTime equationOfTimeAtTt(JulianDate<TtScale> tt) {
+  OperationResult<EquationOfTime> equationOfTimeAtTt(JulianDate<TtScale> tt) {
     _ensureOpen();
     return _equationOfTime(
       (arena, output, diagnostic) => _bindings.taiyin_calc_equation_of_time_tt(
@@ -47,7 +49,9 @@ final class SolarTimeApi {
   }
 
   /// Converts local mean solar time to local apparent solar time.
-  LocalApparentSolarTime meanToApparent(LocalMeanSolarTime localMean) {
+  OperationResult<LocalApparentSolarTime> meanToApparent(
+    LocalMeanSolarTime localMean,
+  ) {
     _ensureOpen();
     return _convert<LocalApparentSolarTimeScale, LocalApparentSolarTime>(
       (arena, output, diagnostic) =>
@@ -66,7 +70,9 @@ final class SolarTimeApi {
   }
 
   /// Converts local apparent solar time to local mean solar time.
-  LocalMeanSolarTime apparentToMean(LocalApparentSolarTime localApparent) {
+  OperationResult<LocalMeanSolarTime> apparentToMean(
+    LocalApparentSolarTime localApparent,
+  ) {
     _ensureOpen();
     return _convert<LocalMeanSolarTimeScale, LocalMeanSolarTime>(
       (arena, output, diagnostic) =>
@@ -84,7 +90,7 @@ final class SolarTimeApi {
     );
   }
 
-  EquationOfTime _equationOfTime(
+  OperationResult<EquationOfTime> _equationOfTime(
     int Function(
       Arena,
       Pointer<taiyin_equation_of_time_result>,
@@ -100,16 +106,19 @@ final class SolarTimeApi {
         ..taiyin_ephemeris_diagnostic_init(diagnostic);
       final status = calculate(arena, output, diagnostic);
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
-      _checkStatus(status, mappedDiagnostic);
+      final resultFlags = _checkStatus(status, mappedDiagnostic);
       final value = output.ref;
-      return EquationOfTime(
-        ut1: readJulianDate<Ut1Scale>(value.jd_ut),
-        tt: readJulianDate<TtScale>(value.jd_tt),
-        equationDays: value.equation_days,
-        equationSeconds: value.equation_seconds,
-        apparentSunRightAscensionRadians:
-            value.apparent_sun_right_ascension_rad,
-        greenwichApparentSiderealTimeRadians: value.gast_rad,
+      return operationResult(
+        EquationOfTime(
+          ut1: readJulianDate<Ut1Scale>(value.jd_ut),
+          tt: readJulianDate<TtScale>(value.jd_tt),
+          equationDays: value.equation_days,
+          equationSeconds: value.equation_seconds,
+          apparentSunRightAscensionRadians:
+              value.apparent_sun_right_ascension_rad,
+          greenwichApparentSiderealTimeRadians: value.gast_rad,
+        ),
+        resultFlags,
       );
     });
   }
@@ -118,7 +127,7 @@ final class SolarTimeApi {
   ///
   /// The callback writes one split Julian date through its
   /// `Pointer<taiyin_split_julian_date>` output.
-  Output _convert<OutputScale extends TimeScale, Output>(
+  OperationResult<Output> _convert<OutputScale extends TimeScale, Output>(
     int Function(
       Arena,
       Pointer<taiyin_split_julian_date>,
@@ -133,8 +142,11 @@ final class SolarTimeApi {
       _bindings.taiyin_ephemeris_diagnostic_init(diagnostic);
       final status = convert(arena, output, diagnostic);
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
-      _checkStatus(status, mappedDiagnostic);
-      return buildOutput(readJulianDate<OutputScale>(output.ref));
+      final resultFlags = _checkStatus(status, mappedDiagnostic);
+      return operationResult(
+        buildOutput(readJulianDate<OutputScale>(output.ref)),
+        resultFlags,
+      );
     });
   }
 }

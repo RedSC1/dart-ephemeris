@@ -16,25 +16,11 @@ const int _taiyinZiweiInvalidPosition = 0xff;
 /// Package hosting the bundled default Ziwei rule profile.
 const String _ziweiRulePackage = 'taiyin_ziwei';
 
-void _checkStatus(
-  TaiyinBindings bindings,
-  int status, {
+ResultFlags _checkStatus(
+  TaiyinExtensionHost host,
+  int rawResult, {
   EphemerisDiagnostic? diagnostic,
-}) {
-  if (status == 0) return;
-  final namePointer = bindings.taiyin_status_name(status);
-  final messagePointer = bindings.taiyin_status_message(status);
-  throw EphemerisError(
-    status,
-    namePointer == nullptr
-        ? 'Unknown'
-        : namePointer.cast<Utf8>().toDartString(),
-    messagePointer == nullptr
-        ? 'Unknown'
-        : messagePointer.cast<Utf8>().toDartString(),
-    diagnostic: diagnostic,
-  );
-}
+}) => host.checkStatus(rawResult, diagnostic: diagnostic);
 
 final Expando<ZiweiContext> _ziweiCache = Expando<ZiweiContext>('taiyin_ziwei');
 
@@ -137,7 +123,7 @@ final class ZiweiDataCatalog implements Finalizable {
     final catalog = using((arena) {
       final output = arena<Pointer<taiyin_ziwei_data_catalog>>();
       _checkStatus(
-        bindings,
+        host,
         bindings.taiyin_ziwei_data_catalog_create(
           resolvedPath.toNativeUtf8(allocator: arena).cast(),
           output,
@@ -177,10 +163,7 @@ final class ZiweiDataCatalog implements Finalizable {
   /// Reloads the TOML profile from disk, advancing [generation].
   void reload() {
     _ensureOpen();
-    _checkStatus(
-      _bindings,
-      _bindings.taiyin_ziwei_data_catalog_reload(_catalog),
-    );
+    _checkStatus(_host, _bindings.taiyin_ziwei_data_catalog_reload(_catalog));
   }
 
   /// The catalog snapshot generation, incremented by [reload].
@@ -242,7 +225,7 @@ final class ZiweiContext implements Finalizable {
         );
         final output = arena<Pointer<taiyin_ziwei_context>>();
         _checkStatus(
-          bindings,
+          host,
           bindings.taiyin_ziwei_context_create(
             effectiveCatalog._catalog,
             overrides.pointer,
@@ -328,7 +311,8 @@ final class ZiweiContext implements Finalizable {
         key.toNativeUtf8(allocator: arena).cast(),
         output,
       );
-      if (status != 0 || output.value == _taiyinZiweiInvalidStarId) {
+      final decoded = decodeNativeCallResult(status);
+      if (decoded.status != 0 || output.value == _taiyinZiweiInvalidStarId) {
         return null;
       }
       return star(output.value);
@@ -343,7 +327,7 @@ final class ZiweiContext implements Finalizable {
       final category = arena<Int32>();
       final requiredSize = arena<Size>();
       _checkStatus(
-        _bindings,
+        _host,
         _bindings.taiyin_ziwei_get_star_metadata(
           _context,
           starId,
@@ -355,7 +339,7 @@ final class ZiweiContext implements Finalizable {
       );
       final buffer = arena<Char>(requiredSize.value);
       _checkStatus(
-        _bindings,
+        _host,
         _bindings.taiyin_ziwei_get_star_metadata(
           _context,
           starId,
@@ -377,7 +361,7 @@ final class ZiweiContext implements Finalizable {
   ///
   /// [virtualTime] must describe the same event as [instantUtc] in the
   /// calendar context's civil time zone.
-  ZiweiChart createChart({
+  OperationResult<ZiweiChart> createChart({
     required JulianDate<UtcScale> instantUtc,
     required AstroDateTime virtualTime,
     required ZiweiGender gender,
@@ -402,8 +386,11 @@ final class ZiweiContext implements Finalizable {
       );
       final mappedDiagnostic = _host.readDiagnostic(diagnostic.ref);
       _host.recordDiagnostic(mappedDiagnostic);
-      _checkStatus(_bindings, status, diagnostic: mappedDiagnostic);
-      return ZiweiChart._(this, output.value, _chartFinalizer);
+      final flags = _checkStatus(_host, status, diagnostic: mappedDiagnostic);
+      return operationResult(
+        ZiweiChart._(this, output.value, _chartFinalizer),
+        flags,
+      );
     });
   }
 
@@ -419,7 +406,7 @@ final class ZiweiContext implements Finalizable {
   /// Creates a natal chart from a local wall-clock birth time.
   ///
   /// The UTC instant is derived from the calendar context's civil-day offset.
-  ZiweiChart calculateLocal(
+  OperationResult<ZiweiChart> calculateLocal(
     AstroDateTime localTime, {
     required ZiweiGender gender,
     ZiweiBirthOptions options = const ZiweiBirthOptions(),
@@ -440,19 +427,23 @@ final class ZiweiContext implements Finalizable {
   ///
   /// The local wall clock is derived from the calendar context's civil-day
   /// offset.
-  ZiweiChart calculateInstant(
+  OperationResult<ZiweiChart> calculateInstant(
     JulianDate<UtcScale> instantUtc, {
     required ZiweiGender gender,
     ZiweiBirthOptions options = const ZiweiBirthOptions(),
   }) {
     _ensureOpen();
     final localJd = instantUtc.addSeconds(_calendarOffsetSeconds);
-    final localTime = _calendar.owner.time.reverseJulianDay(localJd);
-    return createChart(
+    final localTimeResult = _calendar.owner.time.reverseJulianDay(localJd);
+    final chartResult = createChart(
       instantUtc: instantUtc,
-      virtualTime: localTime,
+      virtualTime: localTimeResult.value,
       gender: gender,
       options: options,
+    );
+    return operationResult(
+      chartResult.value,
+      chartResult.flags | localTimeResult.flags,
     );
   }
 
@@ -485,7 +476,7 @@ final class ZiweiContext implements Finalizable {
       final outSegment = arena<Uint8>();
       outVirtual.ref.struct_size = sizeOf<taiyin_calendar_datetime>();
       _checkStatus(
-        _bindings,
+        _host,
         _bindings.taiyin_ziwei_step_flow_hour_target(
           writeJulianDate(arena, instantUtc),
           writeNativeCalendar(_bindings, arena, virtualTime),
@@ -545,7 +536,7 @@ final class ZiweiContext implements Finalizable {
       final outVirtual = arena<taiyin_calendar_datetime>();
       outVirtual.ref.struct_size = sizeOf<taiyin_calendar_datetime>();
       _checkStatus(
-        _bindings,
+        _host,
         _bindings.taiyin_ziwei_step_flow_day_target(
           writeJulianDate(arena, instantUtc),
           writeNativeCalendar(_bindings, arena, virtualTime),
@@ -586,7 +577,7 @@ final class ZiweiContext implements Finalizable {
   /// The search uses this context's Chinese-calendar policy and data routes.
   /// [startVirtualTime] must describe the same event as [startInstantUtc]; it
   /// is then advanced as canonical logical hours.
-  List<ZiweiReverseLookupCandidate> reverseLookupTier1({
+  OperationResult<List<ZiweiReverseLookupCandidate>> reverseLookupTier1({
     required JulianDate<UtcScale> startInstantUtc,
     required JulianDate<UtcScale> endInstantUtc,
     required AstroDateTime startVirtualTime,
@@ -629,13 +620,20 @@ final class ZiweiContext implements Finalizable {
       );
       final countDiagnostic = _host.readDiagnostic(diagnostic.ref);
       _host.recordDiagnostic(countDiagnostic);
-      _checkStatus(_bindings, countStatus, diagnostic: countDiagnostic);
+      final countFlags = _checkStatus(
+        _host,
+        countStatus,
+        diagnostic: countDiagnostic,
+      );
       final requiredCount = validatedNativeArrayCount(
         count.value,
         'Ziwei reverse',
       );
       if (requiredCount == 0) {
-        return const <ZiweiReverseLookupCandidate>[];
+        return operationResult(
+          const <ZiweiReverseLookupCandidate>[],
+          countFlags,
+        );
       }
 
       final output = arena<taiyin_ziwei_reverse_candidate>(requiredCount);
@@ -654,15 +652,22 @@ final class ZiweiContext implements Finalizable {
       );
       final mappedDiagnostic = _host.readDiagnostic(diagnostic.ref);
       _host.recordDiagnostic(mappedDiagnostic);
-      _checkStatus(_bindings, fillStatus, diagnostic: mappedDiagnostic);
+      final fillFlags = _checkStatus(
+        _host,
+        fillStatus,
+        diagnostic: mappedDiagnostic,
+      );
       final resultCount = validatedNativeResultCount(
         count.value,
         requiredCount,
       );
-      return List.unmodifiable([
-        for (var index = 0; index < resultCount; index++)
-          _readZiweiReverseCandidate((output + index).ref),
-      ]);
+      return operationResult(
+        List.unmodifiable([
+          for (var index = 0; index < resultCount; index++)
+            _readZiweiReverseCandidate((output + index).ref),
+        ]),
+        countFlags | fillFlags,
+      );
     });
   }
 }
@@ -706,7 +711,7 @@ final class ZiweiChart implements Finalizable {
     return using((arena) {
       final output = arena<Uint8>(ZiweiAnchorSlot.count);
       _checkStatus(
-        _bindings,
+        _context._host,
         _bindings.taiyin_ziwei_chart_get_anchors(_chart, output),
       );
       return ZiweiAnchors([
@@ -728,7 +733,7 @@ final class ZiweiChart implements Finalizable {
       final transforms = arena<taiyin_ziwei_transform_set>();
       _bindings.taiyin_ziwei_transform_set_init(transforms);
       _checkStatus(
-        _bindings,
+        _context._host,
         _bindings.taiyin_ziwei_chart_get_summary(
           _chart,
           gender,
@@ -757,7 +762,7 @@ final class ZiweiChart implements Finalizable {
   int _palaceStem(Arena arena, int branch) {
     final output = arena<Uint8>();
     _checkStatus(
-      _bindings,
+      _context._host,
       _bindings.taiyin_ziwei_chart_get_palace_stem(_chart, branch, output),
     );
     return output.value;
@@ -789,7 +794,7 @@ final class ZiweiChart implements Finalizable {
     return using((arena) {
       final output = arena<Uint8>();
       _checkStatus(
-        _bindings,
+        _context._host,
         _bindings.taiyin_ziwei_chart_get_star_position(_chart, starId, output),
       );
       return output.value == _taiyinZiweiInvalidPosition ? null : output.value;
@@ -803,7 +808,7 @@ final class ZiweiChart implements Finalizable {
     return using((arena) {
       final output = arena<Uint8>();
       _checkStatus(
-        _bindings,
+        _context._host,
         _bindings.taiyin_ziwei_chart_get_star_palace(_chart, starId, output),
       );
       return output.value == _taiyinZiweiInvalidPosition ? null : output.value;
@@ -816,7 +821,7 @@ final class ZiweiChart implements Finalizable {
     return using((arena) {
       final output = arena<Int32>();
       _checkStatus(
-        _bindings,
+        _context._host,
         _bindings.taiyin_ziwei_chart_get_brightness(
           _context._context,
           _chart,
@@ -833,6 +838,7 @@ final class ZiweiChart implements Finalizable {
     _ensureOpen();
     return using((arena) {
       final ids = _readZiweiStarIds(
+        _context._host,
         _bindings,
         arena,
         (buffer, capacity, count) =>
@@ -855,7 +861,7 @@ final class ZiweiChart implements Finalizable {
     return using((arena) {
       final output = arena<Uint16>();
       _checkStatus(
-        _bindings,
+        _context._host,
         _bindings.taiyin_ziwei_chart_get_star_transformation_mask(
           _chart,
           starId,
@@ -872,7 +878,7 @@ final class ZiweiChart implements Finalizable {
     return using((arena) {
       final output = arena<Uint8>();
       _checkStatus(
-        _bindings,
+        _context._host,
         _bindings.taiyin_ziwei_chart_has_star_transform_mark(
           _chart,
           mark.id,
@@ -891,7 +897,7 @@ final class ZiweiChart implements Finalizable {
   }
 
   /// Replaces the chart's contiguous flow stack through [deepestLevel].
-  ZiweiFlowResolution setFlow({
+  OperationResult<ZiweiFlowResolution> setFlow({
     required JulianDate<UtcScale> targetInstantUtc,
     required AstroDateTime targetVirtualTime,
     ZiweiFlowOptions options = const ZiweiFlowOptions(),
@@ -918,8 +924,12 @@ final class ZiweiChart implements Finalizable {
       );
       final mappedDiagnostic = _context._host.readDiagnostic(diagnostic.ref);
       _context._host.recordDiagnostic(mappedDiagnostic);
-      _checkStatus(_bindings, status, diagnostic: mappedDiagnostic);
-      return _readZiweiFlowResolution(summary.ref);
+      final flags = _checkStatus(
+        _context._host,
+        status,
+        diagnostic: mappedDiagnostic,
+      );
+      return operationResult(_readZiweiFlowResolution(summary.ref), flags);
     });
   }
 
@@ -927,7 +937,7 @@ final class ZiweiChart implements Finalizable {
   void truncateFlow(ZiweiFlowLevel firstRemovedLevel) {
     _ensureOpen();
     _checkStatus(
-      _bindings,
+      _context._host,
       _bindings.taiyin_ziwei_chart_truncate_flow(_chart, firstRemovedLevel.id),
     );
   }
@@ -942,7 +952,7 @@ final class ZiweiChart implements Finalizable {
       final transforms = arena<taiyin_ziwei_transform_set>();
       _bindings.taiyin_ziwei_transform_set_init(transforms);
       _checkStatus(
-        _bindings,
+        _context._host,
         _bindings.taiyin_ziwei_chart_get_flow_layer_summary(
           _chart,
           level.id,
@@ -952,7 +962,7 @@ final class ZiweiChart implements Finalizable {
         ),
       );
       _checkStatus(
-        _bindings,
+        _context._host,
         _bindings.taiyin_ziwei_chart_get_flow_transforms(
           _chart,
           level.id,
@@ -975,7 +985,7 @@ final class ZiweiChart implements Finalizable {
     return using((arena) {
       final output = arena<Uint8>();
       _checkStatus(
-        _bindings,
+        _context._host,
         _bindings.taiyin_ziwei_chart_get_flow_star_position(
           _chart,
           level.id,
@@ -992,6 +1002,7 @@ final class ZiweiChart implements Finalizable {
     _ensureOpen();
     return using((arena) {
       final ids = _readZiweiStarIds(
+        _context._host,
         _bindings,
         arena,
         (buffer, capacity, count) =>
@@ -1010,19 +1021,20 @@ final class ZiweiChart implements Finalizable {
 }
 
 List<int> _readZiweiStarIds(
+  TaiyinExtensionHost host,
   TaiyinBindings bindings,
   Arena arena,
   int Function(Pointer<Uint16> buffer, int capacity, Pointer<Size> count) fill,
 ) {
   final count = arena<Size>();
-  _checkStatus(bindings, fill(nullptr, 0, count));
+  _checkStatus(host, fill(nullptr, 0, count));
   final requiredCount = validatedNativeArrayCount(
     count.value,
     'Ziwei star list',
   );
   if (requiredCount == 0) return const <int>[];
   final buffer = arena<Uint16>(requiredCount);
-  _checkStatus(bindings, fill(buffer, requiredCount, count));
+  _checkStatus(host, fill(buffer, requiredCount, count));
   final resultCount = validatedNativeResultCount(count.value, requiredCount);
   return [for (var index = 0; index < resultCount; index++) buffer[index]];
 }

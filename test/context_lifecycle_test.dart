@@ -29,7 +29,9 @@ void main() {
 
         expect(calendar.isClosed, isTrue);
         expect(
-          () => calendar.calcYearUt(JulianDate<Ut1Scale>.fromDouble(2460348.0)),
+          () => calendar
+              .calcYearUt(JulianDate<Ut1Scale>.fromDouble(2460348.0))
+              .value,
           throwsStateError,
         );
       });
@@ -48,7 +50,9 @@ void main() {
 
           expect(custom.isClosed, isTrue);
           expect(
-            () => custom.calcYearUt(JulianDate<Ut1Scale>.fromDouble(2460348.0)),
+            () => custom
+                .calcYearUt(JulianDate<Ut1Scale>.fromDouble(2460348.0))
+                .value,
             throwsStateError,
           );
         },
@@ -104,7 +108,7 @@ void _workerMain(
   final context = EphemerisContext.attach(libraryPath: message.libraryPath);
   try {
     final calendar = context.chineseCalendar;
-    final year = calendar.calcYearUt(message.jd);
+    final year = calendar.calcYearUt(message.jd).value;
     if (year.solarTermCount != 25) {
       message.sendPort.send('unexpected term count');
       return;

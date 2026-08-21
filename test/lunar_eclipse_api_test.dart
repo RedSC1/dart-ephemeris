@@ -40,51 +40,67 @@ void main() {
     test(
       'solves and searches TT and UT1 total-lunar eclipse results',
       () {
-        final solvedUt = context.eclipses.solveLunarAtUt1(
-          JulianDate<Ut1Scale>.fromDouble(2460926.25),
-          options: {LunarEclipseSolveOption.includeContacts},
-        );
-        final solvedTt = context.eclipses.solveLunarAtTt(
-          JulianDate<TtScale>.fromDouble(2460926.26),
-          options: {LunarEclipseSolveOption.includeContacts},
-        );
-        final nextUt = context.eclipses.nextLunarAtUt1(
-          JulianDate<Ut1Scale>.fromDouble(2460926.0),
-          kinds: {EclipseKind.total},
-          options: {LunarEclipseSearchOption.includeContacts},
-        );
-        final previousUt = context.eclipses.nextLunarAtUt1(
-          JulianDate<Ut1Scale>.fromDouble(2460927.0),
-          kinds: {EclipseKind.total},
-          options: {
-            LunarEclipseSearchOption.includeContacts,
-            LunarEclipseSearchOption.backward,
-          },
-        );
-        final nextTt = context.eclipses.nextLunarAtTt(
-          JulianDate<TtScale>.fromDouble(2460926.25),
-          kinds: {EclipseKind.total},
-          options: {LunarEclipseSearchOption.includeContacts},
-        );
-        final rangeUt = context.eclipses.lunarEclipsesAtUt1(
-          JulianDate<Ut1Scale>.fromDouble(2460926.0),
-          JulianDate<Ut1Scale>.fromDouble(2460927.0),
-          maxResults: 4,
-          kinds: {EclipseKind.total},
-          options: {LunarEclipseSearchOption.includeContacts},
-        );
-        final rangeTt = context.eclipses.lunarEclipsesAtTt(
-          JulianDate<TtScale>.fromDouble(2451545.0),
-          JulianDate<TtScale>.fromDouble(2452275.0),
-          maxResults: 8,
-          options: {LunarEclipseSearchOption.includeContacts},
-        );
-        final noPenumbral = context.eclipses.lunarEclipsesAtTt(
-          JulianDate<TtScale>.fromDouble(2451545.0),
-          JulianDate<TtScale>.fromDouble(2452275.0),
-          maxResults: 8,
-          options: {LunarEclipseSearchOption.excludePenumbral},
-        );
+        final solvedUt = context.eclipses
+            .solveLunarAtUt1(
+              JulianDate<Ut1Scale>.fromDouble(2460926.25),
+              options: {LunarEclipseSolveOption.includeContacts},
+            )
+            .value;
+        final solvedTt = context.eclipses
+            .solveLunarAtTt(
+              JulianDate<TtScale>.fromDouble(2460926.26),
+              options: {LunarEclipseSolveOption.includeContacts},
+            )
+            .value;
+        final nextUt = context.eclipses
+            .nextLunarAtUt1(
+              JulianDate<Ut1Scale>.fromDouble(2460926.0),
+              kinds: {EclipseKind.total},
+              options: {LunarEclipseSearchOption.includeContacts},
+            )
+            .value;
+        final previousUt = context.eclipses
+            .nextLunarAtUt1(
+              JulianDate<Ut1Scale>.fromDouble(2460927.0),
+              kinds: {EclipseKind.total},
+              options: {
+                LunarEclipseSearchOption.includeContacts,
+                LunarEclipseSearchOption.backward,
+              },
+            )
+            .value;
+        final nextTt = context.eclipses
+            .nextLunarAtTt(
+              JulianDate<TtScale>.fromDouble(2460926.25),
+              kinds: {EclipseKind.total},
+              options: {LunarEclipseSearchOption.includeContacts},
+            )
+            .value;
+        final rangeUt = context.eclipses
+            .lunarEclipsesAtUt1(
+              JulianDate<Ut1Scale>.fromDouble(2460926.0),
+              JulianDate<Ut1Scale>.fromDouble(2460927.0),
+              maxResults: 4,
+              kinds: {EclipseKind.total},
+              options: {LunarEclipseSearchOption.includeContacts},
+            )
+            .value;
+        final rangeTt = context.eclipses
+            .lunarEclipsesAtTt(
+              JulianDate<TtScale>.fromDouble(2451545.0),
+              JulianDate<TtScale>.fromDouble(2452275.0),
+              maxResults: 8,
+              options: {LunarEclipseSearchOption.includeContacts},
+            )
+            .value;
+        final noPenumbral = context.eclipses
+            .lunarEclipsesAtTt(
+              JulianDate<TtScale>.fromDouble(2451545.0),
+              JulianDate<TtScale>.fromDouble(2452275.0),
+              maxResults: 8,
+              options: {LunarEclipseSearchOption.excludePenumbral},
+            )
+            .value;
 
         expect(solvedUt.kinds, contains(EclipseKind.total));
         expect(solvedTt.kinds, contains(EclipseKind.total));
@@ -112,11 +128,13 @@ void main() {
         expect(rangeTt.last.kinds, contains(EclipseKind.penumbral));
         expect(noPenumbral, hasLength(4));
         expect(
-          () => context.eclipses.lunarEclipsesAtTt(
-            JulianDate<TtScale>.fromDouble(2451545.0),
-            JulianDate<TtScale>.fromDouble(2452275.0),
-            maxResults: 1,
-          ),
+          () => context.eclipses
+              .lunarEclipsesAtTt(
+                JulianDate<TtScale>.fromDouble(2451545.0),
+                JulianDate<TtScale>.fromDouble(2452275.0),
+                maxResults: 1,
+              )
+              .value,
           throwsA(isA<EphemerisError>()),
         );
       },
@@ -126,31 +144,43 @@ void main() {
     test(
       'derives local visibility and searches a local eclipse in TT and UT1',
       () {
-        final global = context.eclipses.nextLunarAtUt1(
-          JulianDate<Ut1Scale>.fromDouble(2460926.0),
-          kinds: {EclipseKind.total},
-          options: {LunarEclipseSearchOption.includeContacts},
-        );
-        final local = context.eclipses.localLunarVisibilityAtUt1(global);
-        final refracted = context.eclipses.localLunarVisibilityAtUt1(
-          global,
-          options: {LocalLunarEclipseVisibilityOption.refraction},
-        );
-        final localSearchUt = context.eclipses.nextLocalLunarAtUt1(
-          JulianDate<Ut1Scale>.fromDouble(2460926.0),
-          kinds: {EclipseKind.total},
-          visibilityOptions: {LocalLunarEclipseVisibilityOption.refraction},
-        );
-        final localSearchTt = context.eclipses.nextLocalLunarAtTt(
-          JulianDate<TtScale>.fromDouble(2460926.25),
-          kinds: {EclipseKind.total},
-        );
-        final globalTt = context.eclipses.nextLunarAtTt(
-          JulianDate<TtScale>.fromDouble(2460926.25),
-          kinds: {EclipseKind.total},
-          options: {LunarEclipseSearchOption.includeContacts},
-        );
-        final localTt = context.eclipses.localLunarVisibilityAtTt(globalTt);
+        final global = context.eclipses
+            .nextLunarAtUt1(
+              JulianDate<Ut1Scale>.fromDouble(2460926.0),
+              kinds: {EclipseKind.total},
+              options: {LunarEclipseSearchOption.includeContacts},
+            )
+            .value;
+        final local = context.eclipses.localLunarVisibilityAtUt1(global).value;
+        final refracted = context.eclipses
+            .localLunarVisibilityAtUt1(
+              global,
+              options: {LocalLunarEclipseVisibilityOption.refraction},
+            )
+            .value;
+        final localSearchUt = context.eclipses
+            .nextLocalLunarAtUt1(
+              JulianDate<Ut1Scale>.fromDouble(2460926.0),
+              kinds: {EclipseKind.total},
+              visibilityOptions: {LocalLunarEclipseVisibilityOption.refraction},
+            )
+            .value;
+        final localSearchTt = context.eclipses
+            .nextLocalLunarAtTt(
+              JulianDate<TtScale>.fromDouble(2460926.25),
+              kinds: {EclipseKind.total},
+            )
+            .value;
+        final globalTt = context.eclipses
+            .nextLunarAtTt(
+              JulianDate<TtScale>.fromDouble(2460926.25),
+              kinds: {EclipseKind.total},
+              options: {LunarEclipseSearchOption.includeContacts},
+            )
+            .value;
+        final localTt = context.eclipses
+            .localLunarVisibilityAtTt(globalTt)
+            .value;
 
         final greatest = LunarEclipseContact.greatest;
         expect(local.kinds, contains(EclipseKind.total));
@@ -181,60 +211,71 @@ void main() {
     test(
       'maps a no-eclipse lunation and rejects invalid Dart inputs',
       () {
-        final none = context.eclipses.solveLunarAtTt(
-          JulianDate<TtScale>.fromDouble(2451594.0),
-        );
+        final none = context.eclipses
+            .solveLunarAtTt(JulianDate<TtScale>.fromDouble(2451594.0))
+            .value;
         expect(none.hasEclipse, isFalse);
         expect(none.maximum, isNull);
         expect(
-          () => context.eclipses.nextLunarAtUt1(
-            JulianDate<Ut1Scale>.fromDouble(2460926.0),
-            kinds: {EclipseKind.annular},
-          ),
+          () => context.eclipses
+              .nextLunarAtUt1(
+                JulianDate<Ut1Scale>.fromDouble(2460926.0),
+                kinds: {EclipseKind.annular},
+              )
+              .value,
           throwsArgumentError,
         );
         expect(
-          () => context.eclipses.lunarEclipsesAtUt1(
-            JulianDate<Ut1Scale>.fromDouble(2460927.0),
-            JulianDate<Ut1Scale>.fromDouble(2460926.0),
-          ),
+          () => context.eclipses
+              .lunarEclipsesAtUt1(
+                JulianDate<Ut1Scale>.fromDouble(2460927.0),
+                JulianDate<Ut1Scale>.fromDouble(2460926.0),
+              )
+              .value,
           throwsArgumentError,
         );
         expect(
-          () => context.eclipses.lunarEclipsesAtUt1(
-            JulianDate<Ut1Scale>.fromDouble(2460926.0),
-            JulianDate<Ut1Scale>.fromDouble(2460927.0),
-            maxResults: 0,
-          ),
+          () => context.eclipses
+              .lunarEclipsesAtUt1(
+                JulianDate<Ut1Scale>.fromDouble(2460926.0),
+                JulianDate<Ut1Scale>.fromDouble(2460927.0),
+                maxResults: 0,
+              )
+              .value,
           throwsRangeError,
         );
         expect(
-          () => context.eclipses.lunarEclipsesAtUt1(
-            JulianDate<Ut1Scale>.fromDouble(2460926.0),
-            JulianDate<Ut1Scale>.fromDouble(2460927.0),
-            options: {LunarEclipseSearchOption.backward},
-          ),
+          () => context.eclipses
+              .lunarEclipsesAtUt1(
+                JulianDate<Ut1Scale>.fromDouble(2460926.0),
+                JulianDate<Ut1Scale>.fromDouble(2460927.0),
+                options: {LunarEclipseSearchOption.backward},
+              )
+              .value,
           throwsArgumentError,
         );
         expect(
-          () => context.eclipses.nextLunarAtUt1(
-            JulianDate<Ut1Scale>.fromDouble(2460926.0),
-            positionFlags: {PositionFlag.xyz},
-          ),
+          () => context.eclipses
+              .nextLunarAtUt1(
+                JulianDate<Ut1Scale>.fromDouble(2460926.0),
+                positionFlags: {PositionFlag.xyz},
+              )
+              .value,
           throwsArgumentError,
         );
-        final withoutContacts = context.eclipses.solveLunarAtUt1(
-          JulianDate<Ut1Scale>.fromDouble(2460926.25),
-        );
+        final withoutContacts = context.eclipses
+            .solveLunarAtUt1(JulianDate<Ut1Scale>.fromDouble(2460926.25))
+            .value;
         expect(
-          () => context.eclipses.localLunarVisibilityAtUt1(withoutContacts),
+          () =>
+              context.eclipses.localLunarVisibilityAtUt1(withoutContacts).value,
           throwsArgumentError,
         );
         context.close();
         expect(
-          () => context.eclipses.solveLunarAtUt1(
-            JulianDate<Ut1Scale>.fromDouble(2460926.25),
-          ),
+          () => context.eclipses
+              .solveLunarAtUt1(JulianDate<Ut1Scale>.fromDouble(2460926.25))
+              .value,
           throwsStateError,
         );
       },

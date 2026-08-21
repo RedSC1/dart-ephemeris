@@ -19,11 +19,13 @@ void main() {
       });
 
       test('maps complete UT1 apparent state and diagnostic', () {
-        final result = taiyin.observed.atUt1(
-          Body.sun,
-          ut1,
-          flags: {ObservedFlag.speed, ObservedFlag.truePosition},
-        );
+        final result = taiyin.observed
+            .atUt1(
+              Body.sun,
+              ut1,
+              flags: {ObservedFlag.speed, ObservedFlag.truePosition},
+            )
+            .value;
 
         expect(result.body, Body.sun);
         expect(result.status, 0);
@@ -65,15 +67,15 @@ void main() {
       test('single and batch UT1 routes preserve order and values', () {
         const bodies = [Body.sun, Body.moon];
         const flags = {ObservedFlag.truePosition};
-        final batch = taiyin.observed.batchAtUt1(bodies, ut1, flags: flags);
+        final batch = taiyin.observed
+            .batchAtUt1(bodies, ut1, flags: flags)
+            .value;
 
         expect(batch, hasLength(2));
         for (var index = 0; index < bodies.length; index++) {
-          final single = taiyin.observed.atUt1(
-            bodies[index],
-            ut1,
-            flags: flags,
-          );
+          final single = taiyin.observed
+              .atUt1(bodies[index], ut1, flags: flags)
+              .value;
           expect(batch[index].body, bodies[index]);
           expect(batch[index].diagnostic.targetId, bodies[index].id);
           expect(
@@ -93,11 +95,13 @@ void main() {
 
       test('throws with the failed target when any batch body fails', () {
         expect(
-          () => taiyin.observed.batchAtUt1(
-            const [Body.sun, Body.saturn],
-            ut1,
-            flags: {ObservedFlag.truePosition},
-          ),
+          () => taiyin.observed
+              .batchAtUt1(
+                const [Body.sun, Body.saturn],
+                ut1,
+                flags: {ObservedFlag.truePosition},
+              )
+              .value,
           throwsA(
             isA<EphemerisError>()
                 .having((error) => error.status, 'status', isNot(0))
@@ -117,12 +121,10 @@ void main() {
 
       test('covers UTC single and batch routes with precise time data', () {
         const flags = {ObservedFlag.truePosition};
-        final single = taiyin.observed.atUtc(Body.sun, utc, flags: flags);
-        final batch = taiyin.observed.batchAtUtc(
-          const [Body.sun, Body.moon],
-          utc,
-          flags: flags,
-        );
+        final single = taiyin.observed.atUtc(Body.sun, utc, flags: flags).value;
+        final batch = taiyin.observed
+            .batchAtUtc(const [Body.sun, Body.moon], utc, flags: flags)
+            .value;
 
         expect(single.status, 0);
         expect(single.diagnostic.julianDateTdb.toDouble().isFinite, isTrue);
@@ -145,16 +147,18 @@ void main() {
           ),
         );
 
-        final result = taiyin.observed.atUt1(
-          Body.sun,
-          ut1,
-          flags: {
-            ObservedFlag.speed,
-            ObservedFlag.topocentric,
-            ObservedFlag.horizontal,
-            ObservedFlag.truePosition,
-          },
-        );
+        final result = taiyin.observed
+            .atUt1(
+              Body.sun,
+              ut1,
+              flags: {
+                ObservedFlag.speed,
+                ObservedFlag.topocentric,
+                ObservedFlag.horizontal,
+                ObservedFlag.truePosition,
+              },
+            )
+            .value;
 
         expect(result.horizontal, isNotNull);
         expect(result.horizontal!.azimuthRadians.isFinite, isTrue);
@@ -178,15 +182,17 @@ void main() {
           )
           ..setAtmospherePolicy({AtmospherePolicyFlag.allowStandardFallback});
 
-        final fallback = taiyin.observed.atUt1(
-          Body.sun,
-          ut1,
-          flags: {
-            ObservedFlag.topocentric,
-            ObservedFlag.refraction,
-            ObservedFlag.truePosition,
-          },
-        );
+        final fallback = taiyin.observed
+            .atUt1(
+              Body.sun,
+              ut1,
+              flags: {
+                ObservedFlag.topocentric,
+                ObservedFlag.refraction,
+                ObservedFlag.truePosition,
+              },
+            )
+            .value;
 
         expect(fallback.horizontal, isNotNull);
         expect(fallback.refractedHorizontal, isNotNull);
@@ -197,16 +203,18 @@ void main() {
         );
 
         expect(
-          () => taiyin.observed.atUt1(
-            Body.sun,
-            ut1,
-            flags: {
-              ObservedFlag.topocentric,
-              ObservedFlag.refraction,
-              ObservedFlag.truePosition,
-              ObservedFlag.strictMeteorology,
-            },
-          ),
+          () => taiyin.observed
+              .atUt1(
+                Body.sun,
+                ut1,
+                flags: {
+                  ObservedFlag.topocentric,
+                  ObservedFlag.refraction,
+                  ObservedFlag.truePosition,
+                  ObservedFlag.strictMeteorology,
+                },
+              )
+              .value,
           throwsA(
             isA<EphemerisError>()
                 .having((error) => error.status, 'status', isNot(0))
@@ -222,7 +230,7 @@ void main() {
       test('solar deflector skips self-deflection for the Sun', () {
         taiyin.configuration.useSolarDeflector();
 
-        final result = taiyin.observed.atUt1(Body.sun, ut1);
+        final result = taiyin.observed.atUt1(Body.sun, ut1).value;
 
         expect(result.status, 0);
         expect(result.apparent.longitudeRadians.isFinite, isTrue);
@@ -231,34 +239,31 @@ void main() {
 
       test('rejects invalid bodies, batches, and flag dependencies', () {
         expect(
-          () => taiyin.observed.atUt1(Body.earth, ut1),
+          () => taiyin.observed.atUt1(Body.earth, ut1).value,
           throwsArgumentError,
         );
         expect(
-          () => taiyin.observed.batchAtUt1(List.filled(11, Body.sun), ut1),
+          () =>
+              taiyin.observed.batchAtUt1(List.filled(11, Body.sun), ut1).value,
           throwsArgumentError,
         );
         expect(
-          () => taiyin.observed.atUt1(
-            Body.sun,
-            ut1,
-            flags: {ObservedFlag.horizontal},
-          ),
+          () => taiyin.observed
+              .atUt1(Body.sun, ut1, flags: {ObservedFlag.horizontal})
+              .value,
           throwsArgumentError,
         );
         expect(
-          () => taiyin.observed.atUt1(
-            Body.sun,
-            ut1,
-            flags: {ObservedFlag.refraction},
-          ),
+          () => taiyin.observed
+              .atUt1(Body.sun, ut1, flags: {ObservedFlag.refraction})
+              .value,
           throwsArgumentError,
         );
       });
 
       test('empty batches are immutable and use after close is rejected', () {
-        final emptyUt1 = taiyin.observed.batchAtUt1(const [], ut1);
-        final emptyUtc = taiyin.observed.batchAtUtc(const [], utc);
+        final emptyUt1 = taiyin.observed.batchAtUt1(const [], ut1).value;
+        final emptyUtc = taiyin.observed.batchAtUtc(const [], utc).value;
 
         expect(emptyUt1, isEmpty);
         expect(emptyUtc, isEmpty);
@@ -266,19 +271,15 @@ void main() {
 
         taiyin.close();
         expect(
-          () => taiyin.observed.atUt1(
-            Body.sun,
-            ut1,
-            flags: {ObservedFlag.truePosition},
-          ),
+          () => taiyin.observed
+              .atUt1(Body.sun, ut1, flags: {ObservedFlag.truePosition})
+              .value,
           throwsStateError,
         );
         expect(
-          () => taiyin.observed.atUtc(
-            Body.sun,
-            utc,
-            flags: {ObservedFlag.truePosition},
-          ),
+          () => taiyin.observed
+              .atUtc(Body.sun, utc, flags: {ObservedFlag.truePosition})
+              .value,
           throwsStateError,
         );
       });

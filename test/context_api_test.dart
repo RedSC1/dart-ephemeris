@@ -122,18 +122,22 @@ void main() {
         try {
           taiyin.configuration.reset();
           expect(
-            () => taiyin.position.atTt(
-              Body.moon,
-              tt,
-              flags: {PositionFlag.xyz, PositionFlag.topocentric},
-            ),
+            () => taiyin.position
+                .atTt(
+                  Body.moon,
+                  tt,
+                  flags: {PositionFlag.xyz, PositionFlag.topocentric},
+                )
+                .value,
             throwsA(isA<EphemerisError>()),
           );
-          final result = clone.position.atTt(
-            Body.moon,
-            tt,
-            flags: {PositionFlag.xyz, PositionFlag.topocentric},
-          );
+          final result = clone.position
+              .atTt(
+                Body.moon,
+                tt,
+                flags: {PositionFlag.xyz, PositionFlag.topocentric},
+              )
+              .value;
           expect(result.coordinates.every((value) => value.isFinite), isTrue);
         } finally {
           clone.close();
@@ -148,6 +152,7 @@ void main() {
           expect(
             survivingClone.position
                 .atTt(Body.sun, tt)
+                .value
                 .values
                 .every((value) => value.isFinite),
             isTrue,
@@ -166,6 +171,7 @@ void main() {
         expect(
           taiyin.position
               .atTt(Body.sun, tt)
+              .value
               .values
               .every((value) => value.isFinite),
           isTrue,

@@ -63,38 +63,44 @@ void main() {
     });
 
     test('searches lunar rise, set, custom horizons, and transits', () {
-      final rise = context.visibility.moonRiseSetAtUt1(
-        start,
-        end,
-        event: VisibilityEventKind.rise,
-        flags: {VisibilityFlag.refraction},
-      );
-      final fixedDiscRise = context.visibility.moonRiseSetAtUt1(
-        start,
-        end,
-        event: VisibilityEventKind.rise,
-        flags: {VisibilityFlag.fixedDiscSize, VisibilityFlag.noRefraction},
-      );
-      final plainSet = context.visibility.moonRiseSetAtUt1(
-        start,
-        end,
-        event: VisibilityEventKind.set,
-        limb: VisibilityLimb.center,
-        flags: {VisibilityFlag.noRefraction},
-      );
-      final customSet = context.visibility.moonRiseSetAtUt1(
-        start,
-        end,
-        event: VisibilityEventKind.set,
-        limb: VisibilityLimb.center,
-        horizonAltitudeRadians: math.pi / 180,
-        flags: {VisibilityFlag.noRefraction},
-      );
-      final transit = context.visibility.moonTransitAtUt1(
-        start,
-        end,
-        event: VisibilityEventKind.upperTransit,
-      );
+      final rise = context.visibility
+          .moonRiseSetAtUt1(
+            start,
+            end,
+            event: VisibilityEventKind.rise,
+            flags: {VisibilityFlag.refraction},
+          )
+          .value;
+      final fixedDiscRise = context.visibility
+          .moonRiseSetAtUt1(
+            start,
+            end,
+            event: VisibilityEventKind.rise,
+            flags: {VisibilityFlag.fixedDiscSize, VisibilityFlag.noRefraction},
+          )
+          .value;
+      final plainSet = context.visibility
+          .moonRiseSetAtUt1(
+            start,
+            end,
+            event: VisibilityEventKind.set,
+            limb: VisibilityLimb.center,
+            flags: {VisibilityFlag.noRefraction},
+          )
+          .value;
+      final customSet = context.visibility
+          .moonRiseSetAtUt1(
+            start,
+            end,
+            event: VisibilityEventKind.set,
+            limb: VisibilityLimb.center,
+            horizonAltitudeRadians: math.pi / 180,
+            flags: {VisibilityFlag.noRefraction},
+          )
+          .value;
+      final transit = context.visibility
+          .moonTransitAtUt1(start, end, event: VisibilityEventKind.upperTransit)
+          .value;
 
       expect(rise.altitudeState, VisibilityAltitudeState.crosses);
       expect(rise.crossingDirection, VisibilityCrossingDirection.rising);
@@ -114,40 +120,50 @@ void main() {
     });
 
     test('searches planetary rise, custom horizons, and transits', () {
-      final defaultMercuryRise = context.visibility.planetRiseSetAtUt1(
-        Body.mercury,
-        start,
-        end,
-        event: VisibilityEventKind.rise,
-      );
-      final mercuryRise = context.visibility.planetRiseSetAtUt1(
-        Body.mercury,
-        start,
-        end,
-        event: VisibilityEventKind.rise,
-        flags: {VisibilityFlag.refraction},
-      );
-      final unrefractedMercuryRise = context.visibility.planetRiseSetAtUt1(
-        Body.mercury,
-        start,
-        end,
-        event: VisibilityEventKind.rise,
-        flags: {VisibilityFlag.noRefraction},
-      );
-      final customMercuryRise = context.visibility.planetRiseSetAtUt1(
-        Body.mercury,
-        start,
-        end,
-        event: VisibilityEventKind.rise,
-        horizonAltitudeRadians: math.pi / 180,
-        flags: {VisibilityFlag.noRefraction},
-      );
-      final venusTransit = context.visibility.planetTransitAtUt1(
-        Body.venus,
-        start,
-        end,
-        event: VisibilityEventKind.upperTransit,
-      );
+      final defaultMercuryRise = context.visibility
+          .planetRiseSetAtUt1(
+            Body.mercury,
+            start,
+            end,
+            event: VisibilityEventKind.rise,
+          )
+          .value;
+      final mercuryRise = context.visibility
+          .planetRiseSetAtUt1(
+            Body.mercury,
+            start,
+            end,
+            event: VisibilityEventKind.rise,
+            flags: {VisibilityFlag.refraction},
+          )
+          .value;
+      final unrefractedMercuryRise = context.visibility
+          .planetRiseSetAtUt1(
+            Body.mercury,
+            start,
+            end,
+            event: VisibilityEventKind.rise,
+            flags: {VisibilityFlag.noRefraction},
+          )
+          .value;
+      final customMercuryRise = context.visibility
+          .planetRiseSetAtUt1(
+            Body.mercury,
+            start,
+            end,
+            event: VisibilityEventKind.rise,
+            horizonAltitudeRadians: math.pi / 180,
+            flags: {VisibilityFlag.noRefraction},
+          )
+          .value;
+      final venusTransit = context.visibility
+          .planetTransitAtUt1(
+            Body.venus,
+            start,
+            end,
+            event: VisibilityEventKind.upperTransit,
+          )
+          .value;
 
       expect(mercuryRise.altitudeState, VisibilityAltitudeState.crosses);
       expect(mercuryRise.crossingDirection, VisibilityCrossingDirection.rising);
@@ -175,44 +191,52 @@ void main() {
     });
 
     test('searches solar events and evaluates fast solar approximations', () {
-      final sunrise = context.visibility.solarRiseSetAtUt1(
-        start,
-        end,
-        event: VisibilityEventKind.rise,
-        flags: {VisibilityFlag.refraction},
-      );
-      final customSunrise = context.visibility.solarRiseSetAtUt1(
-        start,
-        end,
-        event: VisibilityEventKind.rise,
-        horizonAltitudeRadians: math.pi / 180,
-        flags: {VisibilityFlag.refraction},
-      );
-      final fixedDiscSunrise = context.visibility.solarRiseSetAtUt1(
-        start,
-        end,
-        event: VisibilityEventKind.rise,
-        flags: {VisibilityFlag.fixedDiscSize, VisibilityFlag.noRefraction},
-      );
-      final twilight = context.visibility.solarTwilightAtUt1(
-        start,
-        end,
-        event: VisibilityEventKind.set,
-        twilight: TwilightKind.nautical,
-      );
-      final transit = context.visibility.solarTransitAtUt1(
-        start,
-        end,
-        event: VisibilityEventKind.upperTransit,
-      );
-      final fastRiseSet = context.visibility.solarRiseSetFastAtTt(
-        centerTt,
-        denver,
-      );
-      final fastTransit = context.visibility.solarTransitFastAtTt(
-        centerTt,
-        denver,
-      );
+      final sunrise = context.visibility
+          .solarRiseSetAtUt1(
+            start,
+            end,
+            event: VisibilityEventKind.rise,
+            flags: {VisibilityFlag.refraction},
+          )
+          .value;
+      final customSunrise = context.visibility
+          .solarRiseSetAtUt1(
+            start,
+            end,
+            event: VisibilityEventKind.rise,
+            horizonAltitudeRadians: math.pi / 180,
+            flags: {VisibilityFlag.refraction},
+          )
+          .value;
+      final fixedDiscSunrise = context.visibility
+          .solarRiseSetAtUt1(
+            start,
+            end,
+            event: VisibilityEventKind.rise,
+            flags: {VisibilityFlag.fixedDiscSize, VisibilityFlag.noRefraction},
+          )
+          .value;
+      final twilight = context.visibility
+          .solarTwilightAtUt1(
+            start,
+            end,
+            event: VisibilityEventKind.set,
+            twilight: TwilightKind.nautical,
+          )
+          .value;
+      final transit = context.visibility
+          .solarTransitAtUt1(
+            start,
+            end,
+            event: VisibilityEventKind.upperTransit,
+          )
+          .value;
+      final fastRiseSet = context.visibility
+          .solarRiseSetFastAtTt(centerTt, denver)
+          .value;
+      final fastTransit = context.visibility
+          .solarTransitFastAtTt(centerTt, denver)
+          .value;
 
       expect(
         sunrise.coordinate!.toDouble(),
@@ -233,27 +257,33 @@ void main() {
     });
 
     test('searches catalogued-star rise, custom horizons, and transits', () {
-      final rise = context.visibility.starRiseSetAtUt1(
-        'spica',
-        start,
-        end,
-        event: VisibilityEventKind.rise,
-        flags: {VisibilityFlag.noRefraction},
-      );
-      final customRise = context.visibility.starRiseSetAtUt1(
-        'spica',
-        start,
-        end,
-        event: VisibilityEventKind.rise,
-        horizonAltitudeRadians: math.pi / 180,
-        flags: {VisibilityFlag.noRefraction},
-      );
-      final transit = context.visibility.starTransitAtUt1(
-        'spica',
-        start,
-        end,
-        event: VisibilityEventKind.upperTransit,
-      );
+      final rise = context.visibility
+          .starRiseSetAtUt1(
+            'spica',
+            start,
+            end,
+            event: VisibilityEventKind.rise,
+            flags: {VisibilityFlag.noRefraction},
+          )
+          .value;
+      final customRise = context.visibility
+          .starRiseSetAtUt1(
+            'spica',
+            start,
+            end,
+            event: VisibilityEventKind.rise,
+            horizonAltitudeRadians: math.pi / 180,
+            flags: {VisibilityFlag.noRefraction},
+          )
+          .value;
+      final transit = context.visibility
+          .starTransitAtUt1(
+            'spica',
+            start,
+            end,
+            event: VisibilityEventKind.upperTransit,
+          )
+          .value;
 
       expect(rise.altitudeState, VisibilityAltitudeState.crosses);
       expect(rise.coordinate, isNotNull);
@@ -301,12 +331,14 @@ void main() {
           );
 
         expect(
-          () => strictContext.visibility.solarRiseSetAtUt1(
-            start,
-            end,
-            event: VisibilityEventKind.rise,
-            flags: {VisibilityFlag.strictMeteorology},
-          ),
+          () => strictContext.visibility
+              .solarRiseSetAtUt1(
+                start,
+                end,
+                event: VisibilityEventKind.rise,
+                flags: {VisibilityFlag.strictMeteorology},
+              )
+              .value,
           throwsA(
             isA<EphemerisError>().having(
               (error) => error.status,
@@ -316,36 +348,42 @@ void main() {
           ),
         );
 
-        final unrefracted = strictContext.visibility.solarRiseSetAtUt1(
-          start,
-          end,
-          event: VisibilityEventKind.rise,
-          flags: {
-            VisibilityFlag.strictMeteorology,
-            VisibilityFlag.noRefraction,
-          },
-        );
+        final unrefracted = strictContext.visibility
+            .solarRiseSetAtUt1(
+              start,
+              end,
+              event: VisibilityEventKind.rise,
+              flags: {
+                VisibilityFlag.strictMeteorology,
+                VisibilityFlag.noRefraction,
+              },
+            )
+            .value;
         expect(unrefracted.coordinate, isNotNull);
 
         // The fast rise/set route enforces the same strict-meteorology rule:
         // strict refraction without complete atmosphere data fails, while
         // strict combined with noRefraction is allowed and ignores the flag.
         expect(
-          () => strictContext.visibility.solarRiseSetFastAtTt(
-            centerTt,
-            denver,
-            flags: {VisibilityFlag.strictMeteorology},
-          ),
+          () => strictContext.visibility
+              .solarRiseSetFastAtTt(
+                centerTt,
+                denver,
+                flags: {VisibilityFlag.strictMeteorology},
+              )
+              .value,
           throwsA(isA<EphemerisError>()),
         );
-        final unrefractedFast = strictContext.visibility.solarRiseSetFastAtTt(
-          centerTt,
-          denver,
-          flags: {
-            VisibilityFlag.strictMeteorology,
-            VisibilityFlag.noRefraction,
-          },
-        );
+        final unrefractedFast = strictContext.visibility
+            .solarRiseSetFastAtTt(
+              centerTt,
+              denver,
+              flags: {
+                VisibilityFlag.strictMeteorology,
+                VisibilityFlag.noRefraction,
+              },
+            )
+            .value;
         expect(unrefractedFast.rise, isNotNull);
       },
     );
@@ -353,30 +391,41 @@ void main() {
     test(
       'honors limb, refraction, and disc-size options for fast rise/set',
       () {
-        final upperGeometric = context.visibility.solarRiseSetFastAtTt(
-          centerTt,
-          denver,
-          limb: VisibilityLimb.upper,
-          flags: {VisibilityFlag.noRefraction},
-        );
-        final centerGeometric = context.visibility.solarRiseSetFastAtTt(
-          centerTt,
-          denver,
-          limb: VisibilityLimb.center,
-          flags: {VisibilityFlag.noRefraction},
-        );
-        final lowerFixed = context.visibility.solarRiseSetFastAtTt(
-          centerTt,
-          denver,
-          limb: VisibilityLimb.lower,
-          flags: {VisibilityFlag.fixedDiscSize, VisibilityFlag.noRefraction},
-        );
-        final upperRefracted = context.visibility.solarRiseSetFastAtTt(
-          centerTt,
-          denver,
-          limb: VisibilityLimb.upper,
-          flags: {VisibilityFlag.refraction},
-        );
+        final upperGeometric = context.visibility
+            .solarRiseSetFastAtTt(
+              centerTt,
+              denver,
+              limb: VisibilityLimb.upper,
+              flags: {VisibilityFlag.noRefraction},
+            )
+            .value;
+        final centerGeometric = context.visibility
+            .solarRiseSetFastAtTt(
+              centerTt,
+              denver,
+              limb: VisibilityLimb.center,
+              flags: {VisibilityFlag.noRefraction},
+            )
+            .value;
+        final lowerFixed = context.visibility
+            .solarRiseSetFastAtTt(
+              centerTt,
+              denver,
+              limb: VisibilityLimb.lower,
+              flags: {
+                VisibilityFlag.fixedDiscSize,
+                VisibilityFlag.noRefraction,
+              },
+            )
+            .value;
+        final upperRefracted = context.visibility
+            .solarRiseSetFastAtTt(
+              centerTt,
+              denver,
+              limb: VisibilityLimb.upper,
+              flags: {VisibilityFlag.refraction},
+            )
+            .value;
 
         expect(upperGeometric.rise, isNotNull);
         expect(upperGeometric.set, isNotNull);
@@ -393,11 +442,13 @@ void main() {
 
         // Mutually exclusive refraction flags are rejected by the Dart API.
         expect(
-          () => context.visibility.solarRiseSetFastAtTt(
-            centerTt,
-            denver,
-            flags: {VisibilityFlag.refraction, VisibilityFlag.noRefraction},
-          ),
+          () => context.visibility
+              .solarRiseSetFastAtTt(
+                centerTt,
+                denver,
+                flags: {VisibilityFlag.refraction, VisibilityFlag.noRefraction},
+              )
+              .value,
           throwsA(isA<ArgumentError>()),
         );
       },
@@ -412,75 +463,83 @@ void main() {
         ),
       );
       final polarStart = JulianDate<Ut1Scale>.fromDouble(2460482.4166666665);
-      final polar = context.visibility.solarRiseSetAtUt1(
-        polarStart,
-        polarStart.add(const Duration(days: 1)),
-        event: VisibilityEventKind.set,
-      );
+      final polar = context.visibility
+          .solarRiseSetAtUt1(
+            polarStart,
+            polarStart.add(const Duration(days: 1)),
+            event: VisibilityEventKind.set,
+          )
+          .value;
 
       expect(polar.altitudeState, VisibilityAltitudeState.alwaysAbove);
       expect(polar.coordinate, isNull);
       expect(
-        () => context.visibility.planetRiseSetAtUt1(
-          Body.earth,
-          start,
-          end,
-          event: VisibilityEventKind.rise,
-        ),
+        () => context.visibility
+            .planetRiseSetAtUt1(
+              Body.earth,
+              start,
+              end,
+              event: VisibilityEventKind.rise,
+            )
+            .value,
         throwsArgumentError,
       );
       expect(
-        () => context.visibility.planetRiseSetAtUt1(
-          Body.mercury,
-          start,
-          end,
-          event: VisibilityEventKind.rise,
-          flags: {VisibilityFlag.fixedDiscSize},
-        ),
+        () => context.visibility
+            .planetRiseSetAtUt1(
+              Body.mercury,
+              start,
+              end,
+              event: VisibilityEventKind.rise,
+              flags: {VisibilityFlag.fixedDiscSize},
+            )
+            .value,
         throwsArgumentError,
       );
       expect(
-        () => context.visibility.starRiseSetAtUt1(
-          'spica',
-          start,
-          end,
-          event: VisibilityEventKind.rise,
-          flags: {VisibilityFlag.refraction, VisibilityFlag.noRefraction},
-        ),
+        () => context.visibility
+            .starRiseSetAtUt1(
+              'spica',
+              start,
+              end,
+              event: VisibilityEventKind.rise,
+              flags: {VisibilityFlag.refraction, VisibilityFlag.noRefraction},
+            )
+            .value,
         throwsArgumentError,
       );
       expect(
-        () => context.visibility.starTransitAtUt1(
-          'spica\u0000suffix',
-          start,
-          end,
-          event: VisibilityEventKind.upperTransit,
-        ),
+        () => context.visibility
+            .starTransitAtUt1(
+              'spica\u0000suffix',
+              start,
+              end,
+              event: VisibilityEventKind.upperTransit,
+            )
+            .value,
         throwsArgumentError,
       );
       expect(
-        () => context.visibility.solarTransitAtUt1(
-          start,
-          end,
-          event: VisibilityEventKind.rise,
-        ),
+        () => context.visibility
+            .solarTransitAtUt1(start, end, event: VisibilityEventKind.rise)
+            .value,
         throwsArgumentError,
       );
       expect(
-        () => context.visibility.solarRiseSetAtUt1(
-          end,
-          start,
-          event: VisibilityEventKind.rise,
-        ),
+        () => context.visibility
+            .solarRiseSetAtUt1(end, start, event: VisibilityEventKind.rise)
+            .value,
         throwsArgumentError,
       );
       context.close();
       expect(
-        () => context.visibility.solarTransitAtUt1(
-          start,
-          end,
-          event: VisibilityEventKind.upperTransit,
-        ),
+        () => context.visibility
+            .solarTransitAtUt1(
+              start,
+              end,
+              event: VisibilityEventKind.upperTransit,
+            )
+            .value,
         throwsStateError,
       );
     });

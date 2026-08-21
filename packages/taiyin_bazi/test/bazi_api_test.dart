@@ -21,10 +21,12 @@ void main() {
       });
 
       BaziChart chartFor2024() {
-        final pillars = context.chineseCalendar.fourPillars(
-          instantUtc: JulianDate<UtcScale>.fromDouble(2460351.0),
-          virtualTime: AstroDateTime(2024, 2, 10, 12),
-        );
+        final pillars = context.chineseCalendar
+            .fourPillars(
+              instantUtc: JulianDate<UtcScale>.fromDouble(2460351.0),
+              virtualTime: AstroDateTime(2024, 2, 10, 12),
+            )
+            .value;
         return context.bazi.calcChart(pillars);
       }
 
@@ -81,12 +83,14 @@ void main() {
 
       test('calculates qi-yun and fills da-yun', () {
         final chart = chartFor2024();
-        final qiyun = context.bazi.calcQiyun(
-          birthJdUt: JulianDate<Ut1Scale>.fromDouble(2460351.0),
-          birthCivilTime: AstroDateTime(2024, 2, 10, 12),
-          chart: chart,
-          gender: BaziGender.male,
-        );
+        final qiyun = context.bazi
+            .calcQiyun(
+              birthJdUt: JulianDate<Ut1Scale>.fromDouble(2460351.0),
+              birthCivilTime: AstroDateTime(2024, 2, 10, 12),
+              chart: chart,
+              gender: BaziGender.male,
+            )
+            .value;
         expect(context.lastDiagnostic?.status, 0);
         expect(qiyun.startAgeYears, greaterThan(0));
         // 甲 year male advances forward (+1).
@@ -105,6 +109,18 @@ void main() {
         // Each step advances one stem and one branch.
         expect(dayun[1].ganzhi.stemId, 4);
         expect(dayun[1].ganzhi.branchId, 4);
+      });
+
+      test('calculates a complete result with call-scoped flags', () {
+        final result = context.bazi.calculateLocal(
+          AstroDateTime(2003, 3, 13, 14, 15),
+          gender: BaziGender.male,
+        );
+
+        expect(result.value.pillars.year, result.value.chart.yearPillar);
+        expect(result.value.qiyun.startAgeYears, greaterThan(0));
+        expect(result.flags, isA<ResultFlags>());
+        expect(context.lastResultFlags, result.flags);
       });
 
       test('fills a contiguous xiao-yun range', () {

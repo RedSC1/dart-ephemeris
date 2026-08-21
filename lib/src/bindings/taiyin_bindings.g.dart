@@ -149,6 +149,52 @@ class TaiyinBindings {
             )
           >();
 
+  int taiyin_make_call_result(int status, int result_flags) {
+    return _taiyin_make_call_result(status, result_flags);
+  }
+
+  late final _taiyin_make_call_resultPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_call_result Function(taiyin_status, ffi.Uint32)
+        >
+      >('taiyin_make_call_result');
+  late final _taiyin_make_call_result = _taiyin_make_call_resultPtr
+      .asFunction<int Function(int, int)>();
+
+  int taiyin_call_result_status(int result) {
+    return _taiyin_call_result_status(result);
+  }
+
+  late final _taiyin_call_result_statusPtr =
+      _lookup<ffi.NativeFunction<taiyin_status Function(taiyin_call_result)>>(
+        'taiyin_call_result_status',
+      );
+  late final _taiyin_call_result_status = _taiyin_call_result_statusPtr
+      .asFunction<int Function(int)>();
+
+  int taiyin_call_result_flags(int result) {
+    return _taiyin_call_result_flags(result);
+  }
+
+  late final _taiyin_call_result_flagsPtr =
+      _lookup<ffi.NativeFunction<ffi.Uint32 Function(taiyin_call_result)>>(
+        'taiyin_call_result_flags',
+      );
+  late final _taiyin_call_result_flags = _taiyin_call_result_flagsPtr
+      .asFunction<int Function(int)>();
+
+  int taiyin_call_result_ok(int result) {
+    return _taiyin_call_result_ok(result);
+  }
+
+  late final _taiyin_call_result_okPtr =
+      _lookup<ffi.NativeFunction<taiyin_bool Function(taiyin_call_result)>>(
+        'taiyin_call_result_ok',
+      );
+  late final _taiyin_call_result_ok = _taiyin_call_result_okPtr
+      .asFunction<int Function(int)>();
+
   ffi.Pointer<ffi.Char> taiyin_status_name(int status) {
     return _taiyin_status_name(status);
   }
@@ -262,7 +308,7 @@ class TaiyinBindings {
   late final _taiyin_context_createPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(ffi.Pointer<ffi.Pointer<taiyin_context>>)
+          taiyin_call_result Function(ffi.Pointer<ffi.Pointer<taiyin_context>>)
         >
       >('taiyin_context_create');
   late final _taiyin_context_create = _taiyin_context_createPtr
@@ -278,7 +324,7 @@ class TaiyinBindings {
   late final _taiyin_context_clonePtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<ffi.Pointer<taiyin_context>>,
           )
@@ -309,7 +355,9 @@ class TaiyinBindings {
 
   late final _taiyin_context_resetPtr =
       _lookup<
-        ffi.NativeFunction<taiyin_status Function(ffi.Pointer<taiyin_context>)>
+        ffi.NativeFunction<
+          taiyin_call_result Function(ffi.Pointer<taiyin_context>)
+        >
       >('taiyin_context_reset');
   late final _taiyin_context_reset = _taiyin_context_resetPtr
       .asFunction<int Function(ffi.Pointer<taiyin_context>)>();
@@ -324,7 +372,7 @@ class TaiyinBindings {
   late final _taiyin_context_set_observer_locationPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<taiyin_observer_location>,
           )
@@ -347,7 +395,9 @@ class TaiyinBindings {
 
   late final _taiyin_context_clear_observer_locationPtr =
       _lookup<
-        ffi.NativeFunction<taiyin_status Function(ffi.Pointer<taiyin_context>)>
+        ffi.NativeFunction<
+          taiyin_call_result Function(ffi.Pointer<taiyin_context>)
+        >
       >('taiyin_context_clear_observer_location');
   late final _taiyin_context_clear_observer_location =
       _taiyin_context_clear_observer_locationPtr
@@ -363,7 +413,7 @@ class TaiyinBindings {
   late final _taiyin_context_set_atmospherePtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<taiyin_atmosphere>,
           )
@@ -392,7 +442,7 @@ class TaiyinBindings {
   late final _taiyin_context_set_atmosphere_pressure_temperaturePtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Double,
             ffi.Double,
@@ -413,7 +463,9 @@ class TaiyinBindings {
 
   late final _taiyin_context_set_standard_atmospherePtr =
       _lookup<
-        ffi.NativeFunction<taiyin_status Function(ffi.Pointer<taiyin_context>)>
+        ffi.NativeFunction<
+          taiyin_call_result Function(ffi.Pointer<taiyin_context>)
+        >
       >('taiyin_context_set_standard_atmosphere');
   late final _taiyin_context_set_standard_atmosphere =
       _taiyin_context_set_standard_atmospherePtr
@@ -429,7 +481,7 @@ class TaiyinBindings {
   late final _taiyin_context_set_atmosphere_policyPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(ffi.Pointer<taiyin_context>, ffi.Uint32)
+          taiyin_call_result Function(ffi.Pointer<taiyin_context>, ffi.Uint32)
         >
       >('taiyin_context_set_atmosphere_policy');
   late final _taiyin_context_set_atmosphere_policy =
@@ -446,7 +498,7 @@ class TaiyinBindings {
   late final _taiyin_context_set_meteorological_range_kmPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(ffi.Pointer<taiyin_context>, ffi.Double)
+          taiyin_call_result Function(ffi.Pointer<taiyin_context>, ffi.Double)
         >
       >('taiyin_context_set_meteorological_range_km');
   late final _taiyin_context_set_meteorological_range_km =
@@ -468,7 +520,7 @@ class TaiyinBindings {
   late final _taiyin_context_set_geocentric_observerPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
             ffi.Int32,
@@ -492,7 +544,7 @@ class TaiyinBindings {
   late final _taiyin_context_set_topocentric_observer_offsetPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<taiyin_cartesian_state>,
           )
@@ -524,7 +576,7 @@ class TaiyinBindings {
   late final _taiyin_context_set_simple_topocentric_observerPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<taiyin_observer_location>,
             ffi.Pointer<taiyin_split_julian_date>,
@@ -560,7 +612,7 @@ class TaiyinBindings {
   late final _taiyin_context_set_precise_topocentric_observerPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<taiyin_observer_location>,
             ffi.Pointer<taiyin_split_julian_date>,
@@ -589,7 +641,7 @@ class TaiyinBindings {
   late final _taiyin_context_set_route_rulePtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(ffi.Pointer<taiyin_context>, ffi.Uint64)
+          taiyin_call_result Function(ffi.Pointer<taiyin_context>, ffi.Uint64)
         >
       >('taiyin_context_set_route_rule');
   late final _taiyin_context_set_route_rule = _taiyin_context_set_route_rulePtr
@@ -605,7 +657,7 @@ class TaiyinBindings {
   late final _taiyin_context_set_allow_utc_out_of_range_estimatePtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(ffi.Pointer<taiyin_context>, taiyin_bool)
+          taiyin_call_result Function(ffi.Pointer<taiyin_context>, taiyin_bool)
         >
       >('taiyin_context_set_allow_utc_out_of_range_estimate');
   late final _taiyin_context_set_allow_utc_out_of_range_estimate =
@@ -627,7 +679,7 @@ class TaiyinBindings {
   late final _taiyin_context_set_delta_t_modelPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
             ffi.Int32,
@@ -648,7 +700,7 @@ class TaiyinBindings {
   late final _taiyin_context_set_tdb_modelPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(ffi.Pointer<taiyin_context>, ffi.Int32)
+          taiyin_call_result Function(ffi.Pointer<taiyin_context>, ffi.Int32)
         >
       >('taiyin_context_set_tdb_model');
   late final _taiyin_context_set_tdb_model = _taiyin_context_set_tdb_modelPtr
@@ -664,7 +716,7 @@ class TaiyinBindings {
   late final _taiyin_context_set_astro_modelsPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<taiyin_astro_model_config>,
           )
@@ -689,7 +741,7 @@ class TaiyinBindings {
   late final _taiyin_context_set_apparent_configPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<taiyin_apparent_config>,
           )
@@ -723,7 +775,7 @@ class TaiyinBindings {
   late final _taiyin_context_set_celestial_pole_offsetPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Double,
             ffi.Double,
@@ -754,7 +806,7 @@ class TaiyinBindings {
   late final _taiyin_context_set_refraction_modelPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(ffi.Pointer<taiyin_context>, ffi.Int32)
+          taiyin_call_result Function(ffi.Pointer<taiyin_context>, ffi.Int32)
         >
       >('taiyin_context_set_refraction_model');
   late final _taiyin_context_set_refraction_model =
@@ -771,7 +823,7 @@ class TaiyinBindings {
   late final _taiyin_context_set_heliacal_visibility_modelPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(ffi.Pointer<taiyin_context>, ffi.Int32)
+          taiyin_call_result Function(ffi.Pointer<taiyin_context>, ffi.Int32)
         >
       >('taiyin_context_set_heliacal_visibility_model');
   late final _taiyin_context_set_heliacal_visibility_model =
@@ -784,7 +836,9 @@ class TaiyinBindings {
 
   late final _taiyin_context_use_solar_deflectorPtr =
       _lookup<
-        ffi.NativeFunction<taiyin_status Function(ffi.Pointer<taiyin_context>)>
+        ffi.NativeFunction<
+          taiyin_call_result Function(ffi.Pointer<taiyin_context>)
+        >
       >('taiyin_context_use_solar_deflector');
   late final _taiyin_context_use_solar_deflector =
       _taiyin_context_use_solar_deflectorPtr
@@ -796,7 +850,9 @@ class TaiyinBindings {
 
   late final _taiyin_context_clear_deflectorsPtr =
       _lookup<
-        ffi.NativeFunction<taiyin_status Function(ffi.Pointer<taiyin_context>)>
+        ffi.NativeFunction<
+          taiyin_call_result Function(ffi.Pointer<taiyin_context>)
+        >
       >('taiyin_context_clear_deflectors');
   late final _taiyin_context_clear_deflectors =
       _taiyin_context_clear_deflectorsPtr
@@ -819,7 +875,7 @@ class TaiyinBindings {
   late final _taiyin_context_set_deflectorsPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<taiyin_apparent_deflector>,
             ffi.Size,
@@ -852,7 +908,7 @@ class TaiyinBindings {
   late final _taiyin_context_set_light_time_iterationPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
             ffi.Double,
@@ -876,7 +932,7 @@ class TaiyinBindings {
   late final _taiyin_context_enable_shapiro_delayPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(ffi.Pointer<taiyin_context>, ffi.Int32)
+          taiyin_call_result Function(ffi.Pointer<taiyin_context>, ffi.Int32)
         >
       >('taiyin_context_enable_shapiro_delay');
   late final _taiyin_context_enable_shapiro_delay =
@@ -891,7 +947,9 @@ class TaiyinBindings {
 
   late final _taiyin_context_disable_shapiro_delayPtr =
       _lookup<
-        ffi.NativeFunction<taiyin_status Function(ffi.Pointer<taiyin_context>)>
+        ffi.NativeFunction<
+          taiyin_call_result Function(ffi.Pointer<taiyin_context>)
+        >
       >('taiyin_context_disable_shapiro_delay');
   late final _taiyin_context_disable_shapiro_delay =
       _taiyin_context_disable_shapiro_delayPtr
@@ -912,7 +970,7 @@ class TaiyinBindings {
   late final _taiyin_context_set_eclipse_modelsPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
             ffi.Int32,
@@ -1038,7 +1096,7 @@ class TaiyinBindings {
   late final _taiyin_calc_ayanamsha_ttPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
             ffi.Pointer<taiyin_split_julian_date>,
@@ -1083,7 +1141,7 @@ class TaiyinBindings {
   late final _taiyin_calc_sidereal_position_ttPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
             ffi.Int32,
@@ -1135,7 +1193,7 @@ class TaiyinBindings {
   late final _taiyin_calc_sidereal_position_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
             ffi.Int32,
@@ -1187,7 +1245,7 @@ class TaiyinBindings {
   late final _taiyin_calc_sidereal_coordinates_ttPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
             ffi.Int32,
@@ -1239,7 +1297,7 @@ class TaiyinBindings {
   late final _taiyin_calc_sidereal_coordinates_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
             ffi.Int32,
@@ -1285,7 +1343,7 @@ class TaiyinBindings {
   late final _taiyin_calc_houses_from_armcPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Double,
             ffi.Double,
             ffi.Double,
@@ -1317,7 +1375,7 @@ class TaiyinBindings {
   late final _taiyin_calc_houses_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Int32,
@@ -1347,7 +1405,7 @@ class TaiyinBindings {
   late final _taiyin_calc_houses_ttPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Int32,
@@ -1380,7 +1438,7 @@ class TaiyinBindings {
   late final _taiyin_calc_house_position_from_longitudePtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_house_result>,
             ffi.Double,
             ffi.Pointer<taiyin_house_position_result>,
@@ -1424,7 +1482,7 @@ class TaiyinBindings {
   }
 
   late final _taiyin_astrology_module_shutdownPtr =
-      _lookup<ffi.NativeFunction<taiyin_status Function()>>(
+      _lookup<ffi.NativeFunction<taiyin_call_result Function()>>(
         'taiyin_astrology_module_shutdown',
       );
   late final _taiyin_astrology_module_shutdown =
@@ -1447,7 +1505,7 @@ class TaiyinBindings {
   late final _taiyin_register_ayanamsha_modelPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Int32,
             taiyin_ayanamsha_evaluator_fn,
             ffi.Int32,
@@ -1483,7 +1541,7 @@ class TaiyinBindings {
   late final _taiyin_register_house_system_modelPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Int32,
             taiyin_house_system_evaluator_fn,
             ffi.Int32,
@@ -1521,7 +1579,7 @@ class TaiyinBindings {
   late final _taiyin_register_ayanamsha_model_with_tokenPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Int32,
             taiyin_ayanamsha_evaluator_fn,
             ffi.Int32,
@@ -1561,7 +1619,7 @@ class TaiyinBindings {
   late final _taiyin_register_house_system_model_with_tokenPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Int32,
             taiyin_house_system_evaluator_fn,
             ffi.Int32,
@@ -1587,7 +1645,7 @@ class TaiyinBindings {
   }
 
   late final _taiyin_unregister_ayanamsha_modelPtr =
-      _lookup<ffi.NativeFunction<taiyin_status Function(ffi.Int32)>>(
+      _lookup<ffi.NativeFunction<taiyin_call_result Function(ffi.Int32)>>(
         'taiyin_unregister_ayanamsha_model',
       );
   late final _taiyin_unregister_ayanamsha_model =
@@ -1598,7 +1656,7 @@ class TaiyinBindings {
   }
 
   late final _taiyin_unregister_house_system_modelPtr =
-      _lookup<ffi.NativeFunction<taiyin_status Function(ffi.Int32)>>(
+      _lookup<ffi.NativeFunction<taiyin_call_result Function(ffi.Int32)>>(
         'taiyin_unregister_house_system_model',
       );
   late final _taiyin_unregister_house_system_model =
@@ -1616,7 +1674,7 @@ class TaiyinBindings {
 
   late final _taiyin_unregister_ayanamsha_model_with_tokenPtr =
       _lookup<
-        ffi.NativeFunction<taiyin_status Function(ffi.Int32, ffi.Uint64)>
+        ffi.NativeFunction<taiyin_call_result Function(ffi.Int32, ffi.Uint64)>
       >('taiyin_unregister_ayanamsha_model_with_token');
   late final _taiyin_unregister_ayanamsha_model_with_token =
       _taiyin_unregister_ayanamsha_model_with_tokenPtr
@@ -1634,7 +1692,7 @@ class TaiyinBindings {
 
   late final _taiyin_unregister_house_system_model_with_tokenPtr =
       _lookup<
-        ffi.NativeFunction<taiyin_status Function(ffi.Int32, ffi.Uint64)>
+        ffi.NativeFunction<taiyin_call_result Function(ffi.Int32, ffi.Uint64)>
       >('taiyin_unregister_house_system_model_with_token');
   late final _taiyin_unregister_house_system_model_with_token =
       _taiyin_unregister_house_system_model_with_tokenPtr
@@ -1676,7 +1734,7 @@ class TaiyinBindings {
   late final _taiyin_calc_lunar_true_node_ttPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Int32,
@@ -1713,7 +1771,7 @@ class TaiyinBindings {
   late final _taiyin_calc_lunar_true_node_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Int32,
@@ -1750,7 +1808,7 @@ class TaiyinBindings {
   late final _taiyin_calc_lunar_mean_node_ttPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Int32,
@@ -1787,7 +1845,7 @@ class TaiyinBindings {
   late final _taiyin_calc_lunar_mean_node_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Int32,
@@ -1823,7 +1881,7 @@ class TaiyinBindings {
   late final _taiyin_calc_lunar_mean_apogee_ttPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint32,
@@ -1857,7 +1915,7 @@ class TaiyinBindings {
   late final _taiyin_calc_lunar_mean_apogee_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint32,
@@ -1897,7 +1955,7 @@ class TaiyinBindings {
   late final _taiyin_calc_lunar_osculating_apogee_ttPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint32,
@@ -1937,7 +1995,7 @@ class TaiyinBindings {
   late final _taiyin_calc_lunar_osculating_apogee_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint32,
@@ -1971,7 +2029,7 @@ class TaiyinBindings {
   late final _taiyin_calc_lunar_fitted_apogee_ttPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint32,
@@ -2005,7 +2063,7 @@ class TaiyinBindings {
   late final _taiyin_calc_lunar_fitted_apogee_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint32,
@@ -2031,7 +2089,7 @@ class TaiyinBindings {
   }
 
   late final _taiyin_register_builtin_astrology_targetsPtr =
-      _lookup<ffi.NativeFunction<taiyin_status Function()>>(
+      _lookup<ffi.NativeFunction<taiyin_call_result Function()>>(
         'taiyin_register_builtin_astrology_targets',
       );
   late final _taiyin_register_builtin_astrology_targets =
@@ -2055,7 +2113,7 @@ class TaiyinBindings {
   late final _taiyin_register_native_position_evaluatorPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Int32,
             taiyin_native_position_evaluator_fn,
             taiyin_native_state_evaluator_fn,
@@ -2079,7 +2137,7 @@ class TaiyinBindings {
   }
 
   late final _taiyin_unregister_native_position_evaluatorPtr =
-      _lookup<ffi.NativeFunction<taiyin_status Function(ffi.Int32)>>(
+      _lookup<ffi.NativeFunction<taiyin_call_result Function(ffi.Int32)>>(
         'taiyin_unregister_native_position_evaluator',
       );
   late final _taiyin_unregister_native_position_evaluator =
@@ -2120,7 +2178,7 @@ class TaiyinBindings {
   late final _taiyin_calc_position_tdbPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
             ffi.Pointer<taiyin_split_julian_date>,
@@ -2165,7 +2223,7 @@ class TaiyinBindings {
   late final _taiyin_calc_position_ttPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
             ffi.Pointer<taiyin_split_julian_date>,
@@ -2208,7 +2266,7 @@ class TaiyinBindings {
   late final _taiyin_calc_position_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
             ffi.Pointer<taiyin_split_julian_date>,
@@ -2253,7 +2311,7 @@ class TaiyinBindings {
   late final _taiyin_calc_position_ut_delta_tPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
             ffi.Pointer<taiyin_split_julian_date>,
@@ -2299,7 +2357,7 @@ class TaiyinBindings {
   late final _taiyin_calc_position_utcPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
             ffi.Pointer<taiyin_calendar_datetime>,
@@ -2344,7 +2402,7 @@ class TaiyinBindings {
   late final _taiyin_calc_positions_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<ffi.Int32>,
             ffi.Size,
@@ -2393,7 +2451,7 @@ class TaiyinBindings {
   late final _taiyin_calc_positions_tdbPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<ffi.Int32>,
             ffi.Size,
@@ -2442,7 +2500,7 @@ class TaiyinBindings {
   late final _taiyin_calc_positions_ttPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<ffi.Int32>,
             ffi.Size,
@@ -2491,7 +2549,7 @@ class TaiyinBindings {
   late final _taiyin_calc_positions_ut_delta_tPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<ffi.Int32>,
             ffi.Size,
@@ -2541,7 +2599,7 @@ class TaiyinBindings {
   late final _taiyin_calc_positions_utcPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<ffi.Int32>,
             ffi.Size,
@@ -2588,7 +2646,7 @@ class TaiyinBindings {
   late final _taiyin_calc_state_tdbPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
             ffi.Pointer<taiyin_split_julian_date>,
@@ -2633,7 +2691,7 @@ class TaiyinBindings {
   late final _taiyin_calc_state_ttPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
             ffi.Pointer<taiyin_split_julian_date>,
@@ -2676,7 +2734,7 @@ class TaiyinBindings {
   late final _taiyin_calc_state_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
             ffi.Pointer<taiyin_split_julian_date>,
@@ -2721,7 +2779,7 @@ class TaiyinBindings {
   late final _taiyin_calc_state_ut_delta_tPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
             ffi.Pointer<taiyin_split_julian_date>,
@@ -2766,7 +2824,7 @@ class TaiyinBindings {
   late final _taiyin_calc_state_utcPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
             ffi.Pointer<taiyin_calendar_datetime>,
@@ -2826,7 +2884,7 @@ class TaiyinBindings {
   late final _taiyin_calc_observed_bodies_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Pointer<ffi.Int32>,
@@ -2874,7 +2932,7 @@ class TaiyinBindings {
   late final _taiyin_calc_observed_bodies_utcPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<taiyin_calendar_datetime>,
             ffi.Pointer<ffi.Int32>,
@@ -2933,7 +2991,7 @@ class TaiyinBindings {
   late final _taiyin_calc_body_phenomena_ttPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
             ffi.Pointer<taiyin_split_julian_date>,
@@ -2976,7 +3034,7 @@ class TaiyinBindings {
   late final _taiyin_calc_body_phenomena_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
             ffi.Pointer<taiyin_split_julian_date>,
@@ -3036,7 +3094,7 @@ class TaiyinBindings {
   late final _taiyin_runtime_initializePtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(ffi.Pointer<taiyin_runtime_config>)
+          taiyin_call_result Function(ffi.Pointer<taiyin_runtime_config>)
         >
       >('taiyin_runtime_initialize');
   late final _taiyin_runtime_initialize = _taiyin_runtime_initializePtr
@@ -3048,7 +3106,7 @@ class TaiyinBindings {
 
   late final _taiyin_runtime_add_source_pathPtr =
       _lookup<
-        ffi.NativeFunction<taiyin_status Function(ffi.Pointer<ffi.Char>)>
+        ffi.NativeFunction<taiyin_call_result Function(ffi.Pointer<ffi.Char>)>
       >('taiyin_runtime_add_source_path');
   late final _taiyin_runtime_add_source_path =
       _taiyin_runtime_add_source_pathPtr
@@ -3067,7 +3125,7 @@ class TaiyinBindings {
   late final _taiyin_runtime_set_ephemeris_source_priorityPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(ffi.Pointer<ffi.Char>, ffi.Int32)
+          taiyin_call_result Function(ffi.Pointer<ffi.Char>, ffi.Int32)
         >
       >('taiyin_runtime_set_ephemeris_source_priority');
   late final _taiyin_runtime_set_ephemeris_source_priority =
@@ -3082,7 +3140,7 @@ class TaiyinBindings {
 
   late final _taiyin_runtime_clear_ephemeris_source_priorityPtr =
       _lookup<
-        ffi.NativeFunction<taiyin_status Function(ffi.Pointer<ffi.Char>)>
+        ffi.NativeFunction<taiyin_call_result Function(ffi.Pointer<ffi.Char>)>
       >('taiyin_runtime_clear_ephemeris_source_priority');
   late final _taiyin_runtime_clear_ephemeris_source_priority =
       _taiyin_runtime_clear_ephemeris_source_priorityPtr
@@ -3106,7 +3164,7 @@ class TaiyinBindings {
 
   late final _taiyin_runtime_load_eop_tablePtr =
       _lookup<
-        ffi.NativeFunction<taiyin_status Function(ffi.Pointer<ffi.Char>)>
+        ffi.NativeFunction<taiyin_call_result Function(ffi.Pointer<ffi.Char>)>
       >('taiyin_runtime_load_eop_table');
   late final _taiyin_runtime_load_eop_table = _taiyin_runtime_load_eop_tablePtr
       .asFunction<int Function(ffi.Pointer<ffi.Char>)>();
@@ -3116,7 +3174,7 @@ class TaiyinBindings {
   }
 
   late final _taiyin_runtime_load_builtin_eop_tablePtr =
-      _lookup<ffi.NativeFunction<taiyin_status Function()>>(
+      _lookup<ffi.NativeFunction<taiyin_call_result Function()>>(
         'taiyin_runtime_load_builtin_eop_table',
       );
   late final _taiyin_runtime_load_builtin_eop_table =
@@ -3150,7 +3208,7 @@ class TaiyinBindings {
 
   late final _taiyin_runtime_load_lunar_limb_modelPtr =
       _lookup<
-        ffi.NativeFunction<taiyin_status Function(ffi.Pointer<ffi.Char>)>
+        ffi.NativeFunction<taiyin_call_result Function(ffi.Pointer<ffi.Char>)>
       >('taiyin_runtime_load_lunar_limb_model');
   late final _taiyin_runtime_load_lunar_limb_model =
       _taiyin_runtime_load_lunar_limb_modelPtr
@@ -3231,7 +3289,7 @@ class TaiyinBindings {
   late final _taiyin_runtime_get_registered_data_sourcePtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Size,
             ffi.Pointer<taiyin_runtime_registered_data_source>,
             ffi.Pointer<ffi.Char>,
@@ -3362,7 +3420,7 @@ class TaiyinBindings {
   late final _taiyin_split_julian_date_from_partsPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Int64,
             ffi.Double,
             ffi.Pointer<taiyin_split_julian_date>,
@@ -3385,7 +3443,7 @@ class TaiyinBindings {
   late final _taiyin_split_julian_date_from_doublePtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Double,
             ffi.Pointer<taiyin_split_julian_date>,
           )
@@ -3407,7 +3465,7 @@ class TaiyinBindings {
   late final _taiyin_split_julian_date_to_doublePtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Pointer<ffi.Double>,
           )
@@ -3432,7 +3490,7 @@ class TaiyinBindings {
   late final _taiyin_julian_dayPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_calendar_datetime>,
             ffi.Pointer<ffi.Double>,
           )
@@ -3456,7 +3514,7 @@ class TaiyinBindings {
   late final _taiyin_julian_day_splitPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_calendar_datetime>,
             ffi.Pointer<taiyin_split_julian_date>,
           )
@@ -3480,7 +3538,7 @@ class TaiyinBindings {
   late final _taiyin_reverse_julian_dayPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Double,
             ffi.Pointer<taiyin_calendar_datetime>,
           )
@@ -3501,7 +3559,7 @@ class TaiyinBindings {
   late final _taiyin_reverse_julian_day_splitPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Pointer<taiyin_calendar_datetime>,
           )
@@ -3584,7 +3642,7 @@ class TaiyinBindings {
   late final _taiyin_add_seconds_to_split_jdPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Double,
             ffi.Pointer<taiyin_split_julian_date>,
@@ -3612,7 +3670,7 @@ class TaiyinBindings {
   late final _taiyin_seconds_between_split_jdPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Pointer<ffi.Double>,
@@ -3699,7 +3757,7 @@ class TaiyinBindings {
   late final _taiyin_tai_minus_utc_secondsPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_calendar_datetime>,
             ffi.Pointer<ffi.Double>,
           )
@@ -3808,7 +3866,7 @@ class TaiyinBindings {
   late final _taiyin_utc_to_tai_splitPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Double,
             ffi.Pointer<taiyin_split_julian_date>,
@@ -3834,7 +3892,7 @@ class TaiyinBindings {
   late final _taiyin_tai_to_tt_splitPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Pointer<taiyin_split_julian_date>,
           )
@@ -3859,7 +3917,7 @@ class TaiyinBindings {
   late final _taiyin_utc_to_tt_splitPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Double,
             ffi.Pointer<taiyin_split_julian_date>,
@@ -3886,7 +3944,7 @@ class TaiyinBindings {
   late final _taiyin_utc_to_ut1_splitPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Double,
             ffi.Pointer<taiyin_split_julian_date>,
@@ -3913,7 +3971,7 @@ class TaiyinBindings {
   late final _taiyin_tt_to_ut1_splitPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Double,
             ffi.Pointer<taiyin_split_julian_date>,
@@ -3940,7 +3998,7 @@ class TaiyinBindings {
   late final _taiyin_ut1_to_tt_splitPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Double,
             ffi.Pointer<taiyin_split_julian_date>,
@@ -3967,7 +4025,7 @@ class TaiyinBindings {
   late final _taiyin_tt_to_tdb_splitPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Int32,
             ffi.Pointer<taiyin_split_julian_date>,
@@ -3994,7 +4052,7 @@ class TaiyinBindings {
   late final _taiyin_tdb_to_tt_splitPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Int32,
             ffi.Pointer<taiyin_split_julian_date>,
@@ -4029,7 +4087,7 @@ class TaiyinBindings {
   late final _taiyin_make_precise_time_scales_from_utcPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_calendar_datetime>,
             ffi.Double,
             ffi.Double,
@@ -4069,7 +4127,7 @@ class TaiyinBindings {
   late final _taiyin_make_split_precise_time_scales_from_utcPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_calendar_datetime>,
             ffi.Double,
             ffi.Double,
@@ -4107,7 +4165,7 @@ class TaiyinBindings {
   late final _taiyin_make_time_scales_from_utcPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<taiyin_calendar_datetime>,
             ffi.Pointer<taiyin_precise_time_scales>,
@@ -4143,7 +4201,7 @@ class TaiyinBindings {
   late final _taiyin_make_split_time_scales_from_utcPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<taiyin_calendar_datetime>,
             ffi.Pointer<taiyin_split_precise_time_scales>,
@@ -4179,7 +4237,7 @@ class TaiyinBindings {
   late final _taiyin_make_time_scales_from_ut_delta_tPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_calendar_datetime>,
             ffi.Double,
             ffi.Int32,
@@ -4215,7 +4273,7 @@ class TaiyinBindings {
   late final _taiyin_make_split_time_scales_from_ut_delta_tPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_calendar_datetime>,
             ffi.Double,
             ffi.Int32,
@@ -4249,7 +4307,7 @@ class TaiyinBindings {
   late final _taiyin_make_estimated_time_scales_from_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_calendar_datetime>,
             ffi.Int32,
             ffi.Pointer<taiyin_estimated_time_scales>,
@@ -4281,7 +4339,7 @@ class TaiyinBindings {
   late final _taiyin_make_split_estimated_time_scales_from_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_calendar_datetime>,
             ffi.Int32,
             ffi.Pointer<taiyin_split_estimated_time_scales>,
@@ -4328,7 +4386,7 @@ class TaiyinBindings {
   late final _taiyin_calc_equation_of_time_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Pointer<taiyin_equation_of_time_result>,
@@ -4359,7 +4417,7 @@ class TaiyinBindings {
   late final _taiyin_calc_equation_of_time_ttPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Pointer<taiyin_equation_of_time_result>,
@@ -4397,7 +4455,7 @@ class TaiyinBindings {
   late final _taiyin_local_mean_to_apparent_solar_timePtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Double,
@@ -4437,7 +4495,7 @@ class TaiyinBindings {
   late final _taiyin_local_apparent_to_mean_solar_timePtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Double,
@@ -4464,7 +4522,7 @@ class TaiyinBindings {
 
   late final _taiyin_star_catalog_add_tsc1Ptr =
       _lookup<
-        ffi.NativeFunction<taiyin_status Function(ffi.Pointer<ffi.Char>)>
+        ffi.NativeFunction<taiyin_call_result Function(ffi.Pointer<ffi.Char>)>
       >('taiyin_star_catalog_add_tsc1');
   late final _taiyin_star_catalog_add_tsc1 = _taiyin_star_catalog_add_tsc1Ptr
       .asFunction<int Function(ffi.Pointer<ffi.Char>)>();
@@ -4479,7 +4537,7 @@ class TaiyinBindings {
   late final _taiyin_star_catalog_add_tsc1_memoryPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(ffi.Pointer<ffi.Uint8>, ffi.Size)
+          taiyin_call_result Function(ffi.Pointer<ffi.Uint8>, ffi.Size)
         >
       >('taiyin_star_catalog_add_tsc1_memory');
   late final _taiyin_star_catalog_add_tsc1_memory =
@@ -4492,7 +4550,7 @@ class TaiyinBindings {
 
   late final _taiyin_star_catalog_add_tsf1Ptr =
       _lookup<
-        ffi.NativeFunction<taiyin_status Function(ffi.Pointer<ffi.Char>)>
+        ffi.NativeFunction<taiyin_call_result Function(ffi.Pointer<ffi.Char>)>
       >('taiyin_star_catalog_add_tsf1');
   late final _taiyin_star_catalog_add_tsf1 = _taiyin_star_catalog_add_tsf1Ptr
       .asFunction<int Function(ffi.Pointer<ffi.Char>)>();
@@ -4529,7 +4587,10 @@ class TaiyinBindings {
   late final _taiyin_star_find_magnitudePtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Double>)
+          taiyin_call_result Function(
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Double>,
+          )
         >
       >('taiyin_star_find_magnitude');
   late final _taiyin_star_find_magnitude = _taiyin_star_find_magnitudePtr
@@ -4560,7 +4621,7 @@ class TaiyinBindings {
   late final _taiyin_calc_star_position_tdbPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<ffi.Char>,
             ffi.Pointer<taiyin_split_julian_date>,
@@ -4605,7 +4666,7 @@ class TaiyinBindings {
   late final _taiyin_calc_star_position_ttPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<ffi.Char>,
             ffi.Pointer<taiyin_split_julian_date>,
@@ -4648,7 +4709,7 @@ class TaiyinBindings {
   late final _taiyin_calc_star_position_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<ffi.Char>,
             ffi.Pointer<taiyin_split_julian_date>,
@@ -4693,7 +4754,7 @@ class TaiyinBindings {
   late final _taiyin_calc_star_position_ut_delta_tPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<ffi.Char>,
             ffi.Pointer<taiyin_split_julian_date>,
@@ -4743,7 +4804,7 @@ class TaiyinBindings {
   late final _taiyin_calc_star_positions_tdbPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<ffi.Pointer<ffi.Char>>,
             ffi.Size,
@@ -4793,7 +4854,7 @@ class TaiyinBindings {
   late final _taiyin_calc_star_positions_ttPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<ffi.Pointer<ffi.Char>>,
             ffi.Size,
@@ -4840,7 +4901,7 @@ class TaiyinBindings {
   late final _taiyin_calc_star_positions_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<ffi.Pointer<ffi.Char>>,
             ffi.Size,
@@ -4889,7 +4950,7 @@ class TaiyinBindings {
   late final _taiyin_calc_star_positions_ut_delta_tPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<ffi.Pointer<ffi.Char>>,
             ffi.Size,
@@ -4937,7 +4998,7 @@ class TaiyinBindings {
   late final _taiyin_calc_observed_star_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<ffi.Char>,
             ffi.Pointer<taiyin_split_julian_date>,
@@ -4982,7 +5043,7 @@ class TaiyinBindings {
   late final _taiyin_calc_observed_stars_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<ffi.Pointer<ffi.Char>>,
             ffi.Size,
@@ -5101,7 +5162,7 @@ class TaiyinBindings {
   late final _taiyin_calc_body_osculating_orbit_ttPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
             ffi.Pointer<taiyin_split_julian_date>,
@@ -5149,7 +5210,7 @@ class TaiyinBindings {
   late final _taiyin_calc_body_osculating_orbit_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
             ffi.Pointer<taiyin_split_julian_date>,
@@ -5197,7 +5258,7 @@ class TaiyinBindings {
   late final _taiyin_calc_body_orbit_reference_points_ttPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
             ffi.Pointer<taiyin_split_julian_date>,
@@ -5245,7 +5306,7 @@ class TaiyinBindings {
   late final _taiyin_calc_body_orbit_reference_points_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
             ffi.Pointer<taiyin_split_julian_date>,
@@ -5293,7 +5354,7 @@ class TaiyinBindings {
   late final _taiyin_search_next_body_apsis_ttPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
             ffi.Int32,
@@ -5341,7 +5402,7 @@ class TaiyinBindings {
   late final _taiyin_search_next_body_apsis_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
             ffi.Int32,
@@ -5391,7 +5452,7 @@ class TaiyinBindings {
   late final _taiyin_search_next_body_plane_node_ttPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
             ffi.Int32,
@@ -5443,7 +5504,7 @@ class TaiyinBindings {
   late final _taiyin_search_next_body_plane_node_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
             ffi.Int32,
@@ -5549,7 +5610,7 @@ class TaiyinBindings {
   late final _taiyin_search_moon_rise_set_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Pointer<taiyin_split_julian_date>,
@@ -5603,7 +5664,7 @@ class TaiyinBindings {
   late final _taiyin_search_moon_rise_set_at_horizon_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Pointer<taiyin_split_julian_date>,
@@ -5653,7 +5714,7 @@ class TaiyinBindings {
   late final _taiyin_search_moon_transit_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Pointer<taiyin_split_julian_date>,
@@ -5702,7 +5763,7 @@ class TaiyinBindings {
   late final _taiyin_search_planet_rise_set_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
             ffi.Pointer<taiyin_split_julian_date>,
@@ -5760,7 +5821,7 @@ class TaiyinBindings {
   late final _taiyin_search_planet_rise_set_at_horizon_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
             ffi.Pointer<taiyin_split_julian_date>,
@@ -5816,7 +5877,7 @@ class TaiyinBindings {
   late final _taiyin_search_planet_transit_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
             ffi.Pointer<taiyin_split_julian_date>,
@@ -5868,7 +5929,7 @@ class TaiyinBindings {
   late final _taiyin_search_solar_rise_set_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Pointer<taiyin_split_julian_date>,
@@ -5922,7 +5983,7 @@ class TaiyinBindings {
   late final _taiyin_search_solar_rise_set_at_horizon_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Pointer<taiyin_split_julian_date>,
@@ -5974,7 +6035,7 @@ class TaiyinBindings {
   late final _taiyin_search_solar_twilight_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Pointer<taiyin_split_julian_date>,
@@ -6020,7 +6081,7 @@ class TaiyinBindings {
   late final _taiyin_search_solar_transit_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Pointer<taiyin_split_julian_date>,
@@ -6072,7 +6133,7 @@ class TaiyinBindings {
   late final _taiyin_compute_solar_rise_set_fast_ttPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Double,
@@ -6126,7 +6187,7 @@ class TaiyinBindings {
   late final _taiyin_compute_solar_transit_fast_ttPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Double,
@@ -6176,7 +6237,7 @@ class TaiyinBindings {
   late final _taiyin_search_star_rise_set_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<ffi.Char>,
             ffi.Pointer<taiyin_split_julian_date>,
@@ -6230,7 +6291,7 @@ class TaiyinBindings {
   late final _taiyin_search_star_rise_set_at_horizon_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<ffi.Char>,
             ffi.Pointer<taiyin_split_julian_date>,
@@ -6282,7 +6343,7 @@ class TaiyinBindings {
   late final _taiyin_search_star_transit_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<ffi.Char>,
             ffi.Pointer<taiyin_split_julian_date>,
@@ -6385,7 +6446,7 @@ class TaiyinBindings {
   late final _taiyin_calc_body_heliacal_visibility_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
             ffi.Pointer<taiyin_split_julian_date>,
@@ -6433,7 +6494,7 @@ class TaiyinBindings {
   late final _taiyin_calc_star_heliacal_visibility_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<ffi.Char>,
             ffi.Pointer<taiyin_split_julian_date>,
@@ -6485,7 +6546,7 @@ class TaiyinBindings {
   late final _taiyin_search_next_body_heliacal_visibility_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
             ffi.Pointer<taiyin_split_julian_date>,
@@ -6541,7 +6602,7 @@ class TaiyinBindings {
   late final _taiyin_search_next_star_heliacal_visibility_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<ffi.Char>,
             ffi.Pointer<taiyin_split_julian_date>,
@@ -6712,7 +6773,7 @@ class TaiyinBindings {
   late final _taiyin_search_solar_longitude_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Double,
             ffi.Pointer<taiyin_split_julian_date>,
@@ -6756,7 +6817,7 @@ class TaiyinBindings {
   late final _taiyin_search_solar_longitude_ttPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Double,
             ffi.Pointer<taiyin_split_julian_date>,
@@ -6800,7 +6861,7 @@ class TaiyinBindings {
   late final _taiyin_search_moon_longitude_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Double,
             ffi.Pointer<taiyin_split_julian_date>,
@@ -6844,7 +6905,7 @@ class TaiyinBindings {
   late final _taiyin_search_moon_longitude_ttPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Double,
             ffi.Pointer<taiyin_split_julian_date>,
@@ -6898,7 +6959,7 @@ class TaiyinBindings {
   late final _taiyin_search_body_longitude_crossings_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
             ffi.Double,
@@ -6962,7 +7023,7 @@ class TaiyinBindings {
   late final _taiyin_search_body_longitude_crossings_ttPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
             ffi.Double,
@@ -7026,7 +7087,7 @@ class TaiyinBindings {
   late final _taiyin_search_body_longitude_stations_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
             ffi.Pointer<taiyin_split_julian_date>,
@@ -7090,7 +7151,7 @@ class TaiyinBindings {
   late final _taiyin_search_body_longitude_stations_ttPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
             ffi.Pointer<taiyin_split_julian_date>,
@@ -7156,7 +7217,7 @@ class TaiyinBindings {
   late final _taiyin_search_body_aspect_crossings_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
             ffi.Int32,
@@ -7224,7 +7285,7 @@ class TaiyinBindings {
   late final _taiyin_search_body_aspect_crossings_ttPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
             ffi.Int32,
@@ -7296,7 +7357,7 @@ class TaiyinBindings {
   late final _taiyin_search_body_exact_aspects_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
             ffi.Int32,
@@ -7372,7 +7433,7 @@ class TaiyinBindings {
   late final _taiyin_search_body_exact_aspects_ttPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
             ffi.Int32,
@@ -7434,7 +7495,7 @@ class TaiyinBindings {
   late final _taiyin_search_greatest_elongation_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
             ffi.Pointer<taiyin_split_julian_date>,
@@ -7486,7 +7547,7 @@ class TaiyinBindings {
   late final _taiyin_search_minimum_angular_separation_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
             ffi.Int32,
@@ -7542,7 +7603,7 @@ class TaiyinBindings {
   late final _taiyin_search_minimum_angular_separation_ttPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
             ffi.Int32,
@@ -7598,7 +7659,7 @@ class TaiyinBindings {
   late final _taiyin_search_minimum_body_star_angular_separation_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
             ffi.Pointer<ffi.Char>,
@@ -7654,7 +7715,7 @@ class TaiyinBindings {
   late final _taiyin_search_minimum_body_star_angular_separation_ttPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
             ffi.Pointer<ffi.Char>,
@@ -7704,7 +7765,7 @@ class TaiyinBindings {
   late final _taiyin_search_next_solar_transit_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
             ffi.Pointer<taiyin_split_julian_date>,
@@ -7752,7 +7813,7 @@ class TaiyinBindings {
   late final _taiyin_compute_local_solar_transit_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<taiyin_solar_transit_result>,
             ffi.Double,
@@ -7806,7 +7867,7 @@ class TaiyinBindings {
   late final _taiyin_search_next_local_solar_transit_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
             ffi.Pointer<taiyin_split_julian_date>,
@@ -7864,7 +7925,7 @@ class TaiyinBindings {
   late final _taiyin_search_lunar_phase_crossings_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Double,
             ffi.Pointer<taiyin_split_julian_date>,
@@ -7924,7 +7985,7 @@ class TaiyinBindings {
   late final _taiyin_search_lunar_phase_crossings_ttPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Double,
             ffi.Pointer<taiyin_split_julian_date>,
@@ -8034,7 +8095,7 @@ class TaiyinBindings {
   late final _taiyin_search_next_geocentric_lunar_star_occultation_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<ffi.Char>,
             ffi.Pointer<taiyin_split_julian_date>,
@@ -8078,7 +8139,7 @@ class TaiyinBindings {
   late final _taiyin_search_next_local_lunar_star_occultation_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<ffi.Char>,
             ffi.Pointer<taiyin_split_julian_date>,
@@ -8122,7 +8183,7 @@ class TaiyinBindings {
   late final _taiyin_search_next_geocentric_lunar_body_occultation_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
             ffi.Pointer<taiyin_split_julian_date>,
@@ -8168,7 +8229,7 @@ class TaiyinBindings {
   late final _taiyin_search_next_geocentric_lunar_body_occultation_with_radius_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
             ffi.Double,
@@ -8214,7 +8275,7 @@ class TaiyinBindings {
   late final _taiyin_search_next_local_lunar_body_occultation_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
             ffi.Pointer<taiyin_split_julian_date>,
@@ -8260,7 +8321,7 @@ class TaiyinBindings {
   late final _taiyin_search_next_local_lunar_body_occultation_with_radius_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
             ffi.Double,
@@ -8306,7 +8367,7 @@ class TaiyinBindings {
   late final _taiyin_compute_lunar_star_occultation_local_visibility_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<ffi.Char>,
             ffi.Pointer<taiyin_lunar_occultation_result>,
@@ -8350,7 +8411,7 @@ class TaiyinBindings {
   late final _taiyin_compute_lunar_body_occultation_local_visibility_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
             ffi.Pointer<taiyin_lunar_occultation_result>,
@@ -8394,7 +8455,7 @@ class TaiyinBindings {
   late final _taiyin_compute_lunar_star_occultation_where_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<ffi.Char>,
             ffi.Pointer<taiyin_lunar_occultation_result>,
@@ -8438,7 +8499,7 @@ class TaiyinBindings {
   late final _taiyin_compute_lunar_body_occultation_where_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
             ffi.Pointer<taiyin_lunar_occultation_result>,
@@ -8484,7 +8545,7 @@ class TaiyinBindings {
   late final _taiyin_compute_lunar_body_occultation_where_with_radius_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Int32,
             ffi.Double,
@@ -8820,7 +8881,7 @@ class TaiyinBindings {
   late final _taiyin_solve_lunar_eclipse_at_ttPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint64,
@@ -8854,7 +8915,7 @@ class TaiyinBindings {
   late final _taiyin_solve_lunar_eclipse_at_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint64,
@@ -8896,7 +8957,7 @@ class TaiyinBindings {
   late final _taiyin_search_next_lunar_eclipse_ttPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint32,
@@ -8940,7 +9001,7 @@ class TaiyinBindings {
   late final _taiyin_search_next_lunar_eclipse_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint32,
@@ -8990,7 +9051,7 @@ class TaiyinBindings {
   late final _taiyin_search_lunar_eclipses_ttPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Pointer<taiyin_split_julian_date>,
@@ -9046,7 +9107,7 @@ class TaiyinBindings {
   late final _taiyin_search_lunar_eclipses_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Pointer<taiyin_split_julian_date>,
@@ -9094,7 +9155,7 @@ class TaiyinBindings {
   late final _taiyin_compute_local_lunar_eclipse_visibility_ttPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<taiyin_lunar_eclipse_result_tt>,
             ffi.Uint64,
@@ -9134,7 +9195,7 @@ class TaiyinBindings {
   late final _taiyin_compute_local_lunar_eclipse_visibility_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<taiyin_lunar_eclipse_result_ut>,
             ffi.Uint64,
@@ -9176,7 +9237,7 @@ class TaiyinBindings {
   late final _taiyin_search_next_local_lunar_eclipse_ttPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint32,
@@ -9220,7 +9281,7 @@ class TaiyinBindings {
   late final _taiyin_search_next_local_lunar_eclipse_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint32,
@@ -9256,7 +9317,7 @@ class TaiyinBindings {
   late final _taiyin_solve_solar_eclipse_at_ttPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint64,
@@ -9290,7 +9351,7 @@ class TaiyinBindings {
   late final _taiyin_solve_solar_eclipse_at_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint64,
@@ -9332,7 +9393,7 @@ class TaiyinBindings {
   late final _taiyin_search_next_solar_eclipse_ttPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint32,
@@ -9376,7 +9437,7 @@ class TaiyinBindings {
   late final _taiyin_search_next_solar_eclipse_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint32,
@@ -9426,7 +9487,7 @@ class TaiyinBindings {
   late final _taiyin_search_solar_eclipses_ttPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Pointer<taiyin_split_julian_date>,
@@ -9482,7 +9543,7 @@ class TaiyinBindings {
   late final _taiyin_search_solar_eclipses_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Pointer<taiyin_split_julian_date>,
@@ -9530,7 +9591,7 @@ class TaiyinBindings {
   late final _taiyin_solve_local_solar_eclipse_at_ttPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint64,
@@ -9570,7 +9631,7 @@ class TaiyinBindings {
   late final _taiyin_solve_local_solar_eclipse_at_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint64,
@@ -9612,7 +9673,7 @@ class TaiyinBindings {
   late final _taiyin_search_next_local_solar_eclipse_ttPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint32,
@@ -9656,7 +9717,7 @@ class TaiyinBindings {
   late final _taiyin_search_next_local_solar_eclipse_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint32,
@@ -9691,7 +9752,7 @@ class TaiyinBindings {
   late final _taiyin_compute_local_solar_circumstances_ttPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Pointer<taiyin_local_solar_eclipse_circumstances_tt>,
@@ -9722,7 +9783,7 @@ class TaiyinBindings {
   late final _taiyin_compute_local_solar_circumstances_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Pointer<taiyin_local_solar_eclipse_circumstances_ut>,
@@ -9760,7 +9821,7 @@ class TaiyinBindings {
   late final _taiyin_compute_solar_besselian_elements_ttPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Double,
@@ -9804,7 +9865,7 @@ class TaiyinBindings {
   late final _taiyin_compute_solar_besselian_polynomial_ttPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Double,
@@ -9840,7 +9901,7 @@ class TaiyinBindings {
   late final _taiyin_evaluate_solar_besselian_polynomialPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_solar_besselian_polynomial>,
             ffi.Double,
             ffi.Pointer<taiyin_solar_besselian_elements>,
@@ -9876,7 +9937,7 @@ class TaiyinBindings {
   late final _taiyin_compute_solar_eclipse_route_row_ttPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint64,
@@ -9916,7 +9977,7 @@ class TaiyinBindings {
   late final _taiyin_compute_solar_eclipse_route_row_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint64,
@@ -9950,7 +10011,7 @@ class TaiyinBindings {
   late final _taiyin_compute_solar_eclipse_where_ttPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint64,
@@ -9984,7 +10045,7 @@ class TaiyinBindings {
   late final _taiyin_compute_solar_eclipse_where_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint64,
@@ -10032,7 +10093,7 @@ class TaiyinBindings {
   late final _taiyin_compute_solar_eclipse_route_ttPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Pointer<taiyin_split_julian_date>,
@@ -10088,7 +10149,7 @@ class TaiyinBindings {
   late final _taiyin_compute_solar_eclipse_route_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Pointer<taiyin_split_julian_date>,
@@ -10142,7 +10203,7 @@ class TaiyinBindings {
   late final _taiyin_compute_solar_eclipse_route_curves_ttPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint64,
@@ -10194,7 +10255,7 @@ class TaiyinBindings {
   late final _taiyin_compute_solar_eclipse_route_curves_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint64,
@@ -10248,7 +10309,7 @@ class TaiyinBindings {
   late final _taiyin_compute_solar_eclipse_route_product_ttPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint64,
@@ -10304,7 +10365,7 @@ class TaiyinBindings {
   late final _taiyin_compute_solar_eclipse_route_product_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint64,
@@ -10360,7 +10421,7 @@ class TaiyinBindings {
   late final _taiyin_compute_solar_eclipse_route_map_product_ttPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint64,
@@ -10416,7 +10477,7 @@ class TaiyinBindings {
   late final _taiyin_compute_solar_eclipse_route_map_product_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Uint64,
@@ -10466,7 +10527,7 @@ class TaiyinBindings {
   late final _taiyin_compute_local_solar_eclipse_boundary_ttPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Double,
@@ -10510,7 +10571,7 @@ class TaiyinBindings {
   late final _taiyin_compute_local_solar_eclipse_boundary_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Double,
@@ -10771,7 +10832,7 @@ class TaiyinBindings {
   late final _taiyin_chinese_calendar_context_createPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_context>,
             ffi.Pointer<taiyin_chinese_calendar_config>,
             ffi.Pointer<ffi.Pointer<taiyin_chinese_calendar_context>>,
@@ -10823,7 +10884,7 @@ class TaiyinBindings {
   late final _taiyin_chinese_calendar_calc_year_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_chinese_calendar_context>,
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Pointer<taiyin_chinese_calendar_year>,
@@ -10861,7 +10922,7 @@ class TaiyinBindings {
   late final _taiyin_chinese_calendar_get_specific_jie_qi_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_chinese_calendar_context>,
             ffi.Int32,
             ffi.Uint8,
@@ -10899,7 +10960,7 @@ class TaiyinBindings {
   late final _taiyin_chinese_calendar_get_prev_jie_qi_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_chinese_calendar_context>,
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Pointer<taiyin_chinese_solar_term_event>,
@@ -10935,7 +10996,7 @@ class TaiyinBindings {
   late final _taiyin_chinese_calendar_get_next_jie_qi_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_chinese_calendar_context>,
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Pointer<taiyin_chinese_solar_term_event>,
@@ -10971,7 +11032,7 @@ class TaiyinBindings {
   late final _taiyin_chinese_calendar_get_prev_jie_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_chinese_calendar_context>,
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Pointer<taiyin_chinese_solar_term_event>,
@@ -11007,7 +11068,7 @@ class TaiyinBindings {
   late final _taiyin_chinese_calendar_get_next_jie_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_chinese_calendar_context>,
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Pointer<taiyin_chinese_solar_term_event>,
@@ -11043,7 +11104,7 @@ class TaiyinBindings {
   late final _taiyin_chinese_calendar_get_prev_qi_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_chinese_calendar_context>,
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Pointer<taiyin_chinese_solar_term_event>,
@@ -11079,7 +11140,7 @@ class TaiyinBindings {
   late final _taiyin_chinese_calendar_get_next_qi_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_chinese_calendar_context>,
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Pointer<taiyin_chinese_solar_term_event>,
@@ -11110,7 +11171,7 @@ class TaiyinBindings {
   late final _taiyin_chinese_calendar_from_solarPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_chinese_calendar_context>,
             ffi.Pointer<taiyin_solar_date>,
             ffi.Pointer<taiyin_lunar_date>,
@@ -11146,7 +11207,7 @@ class TaiyinBindings {
   late final _taiyin_chinese_calendar_from_instant_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_chinese_calendar_context>,
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Pointer<taiyin_lunar_date>,
@@ -11177,7 +11238,7 @@ class TaiyinBindings {
   late final _taiyin_chinese_calendar_from_lunarPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_chinese_calendar_context>,
             ffi.Pointer<taiyin_lunar_date>,
             ffi.Pointer<taiyin_solar_date>,
@@ -11217,7 +11278,7 @@ class TaiyinBindings {
   late final _taiyin_chinese_calendar_get_month_daysPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_chinese_calendar_context>,
             ffi.Int32,
             ffi.Uint8,
@@ -11267,7 +11328,7 @@ class TaiyinBindings {
   late final _taiyin_ganzhi_makePtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Uint8,
             ffi.Uint8,
             ffi.Pointer<taiyin_ganzhi>,
@@ -11288,7 +11349,7 @@ class TaiyinBindings {
   late final _taiyin_ganzhi_advancePtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             taiyin_ganzhi,
             ffi.Int32,
             ffi.Pointer<taiyin_ganzhi>,
@@ -11309,7 +11370,7 @@ class TaiyinBindings {
   late final _taiyin_ganzhi_get_monthPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Uint8,
             ffi.Uint8,
             ffi.Pointer<taiyin_ganzhi>,
@@ -11330,7 +11391,7 @@ class TaiyinBindings {
   late final _taiyin_ganzhi_get_hourPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Uint8,
             ffi.Uint8,
             ffi.Pointer<taiyin_ganzhi>,
@@ -11350,7 +11411,7 @@ class TaiyinBindings {
   late final _taiyin_ganzhi_calc_day_pillarPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_calendar_datetime>,
             ffi.Pointer<taiyin_ganzhi>,
           )
@@ -11374,7 +11435,7 @@ class TaiyinBindings {
   late final _taiyin_ganzhi_get_nayin_elementPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(taiyin_ganzhi, ffi.Pointer<ffi.Uint8>)
+          taiyin_call_result Function(taiyin_ganzhi, ffi.Pointer<ffi.Uint8>)
         >
       >('taiyin_ganzhi_get_nayin_element');
   late final _taiyin_ganzhi_get_nayin_element =
@@ -11391,7 +11452,7 @@ class TaiyinBindings {
   late final _taiyin_ganzhi_get_nayin_idPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(taiyin_ganzhi, ffi.Pointer<ffi.Uint8>)
+          taiyin_call_result Function(taiyin_ganzhi, ffi.Pointer<ffi.Uint8>)
         >
       >('taiyin_ganzhi_get_nayin_id');
   late final _taiyin_ganzhi_get_nayin_id = _taiyin_ganzhi_get_nayin_idPtr
@@ -11418,7 +11479,7 @@ class TaiyinBindings {
   late final _taiyin_chinese_calendar_calc_four_pillars_utPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_chinese_calendar_context>,
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Pointer<taiyin_calendar_datetime>,
@@ -11562,7 +11623,7 @@ class TaiyinBindings {
   late final _taiyin_bazi_context_createPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_bazi_context_config>,
             ffi.Pointer<ffi.Pointer<taiyin_bazi_context>>,
           )
@@ -11597,7 +11658,7 @@ class TaiyinBindings {
   late final _taiyin_bazi_get_kong_wangPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(taiyin_ganzhi, ffi.Pointer<ffi.Uint8>)
+          taiyin_call_result Function(taiyin_ganzhi, ffi.Pointer<ffi.Uint8>)
         >
       >('taiyin_bazi_get_kong_wang');
   late final _taiyin_bazi_get_kong_wang = _taiyin_bazi_get_kong_wangPtr
@@ -11618,7 +11679,11 @@ class TaiyinBindings {
   late final _taiyin_bazi_get_ten_godPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(ffi.Uint8, ffi.Uint8, ffi.Pointer<ffi.Uint8>)
+          taiyin_call_result Function(
+            ffi.Uint8,
+            ffi.Uint8,
+            ffi.Pointer<ffi.Uint8>,
+          )
         >
       >('taiyin_bazi_get_ten_god');
   late final _taiyin_bazi_get_ten_god = _taiyin_bazi_get_ten_godPtr
@@ -11635,7 +11700,7 @@ class TaiyinBindings {
   late final _taiyin_bazi_get_hidden_stemsPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Uint8,
             ffi.Pointer<ffi.Uint8>,
             ffi.Pointer<ffi.Uint8>,
@@ -11664,7 +11729,7 @@ class TaiyinBindings {
   late final _taiyin_bazi_calc_stem_relationPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Uint8,
             ffi.Uint8,
             ffi.Pointer<ffi.Uint32>,
@@ -11700,7 +11765,7 @@ class TaiyinBindings {
   late final _taiyin_bazi_calc_branch_relationPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Uint8,
             ffi.Uint8,
             ffi.Pointer<ffi.Uint32>,
@@ -11738,7 +11803,7 @@ class TaiyinBindings {
   late final _taiyin_bazi_calc_branch_triple_relationPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Uint8,
             ffi.Uint8,
             ffi.Uint8,
@@ -11776,7 +11841,7 @@ class TaiyinBindings {
   late final _taiyin_bazi_get_life_stagePtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Uint8,
             ffi.Uint8,
             ffi.Int32,
@@ -11798,7 +11863,7 @@ class TaiyinBindings {
   late final _taiyin_bazi_calc_chartPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_bazi_context>,
             ffi.Pointer<taiyin_ganzhi_four_pillars>,
             ffi.Pointer<taiyin_bazi_chart>,
@@ -11824,7 +11889,7 @@ class TaiyinBindings {
   late final _taiyin_bazi_calc_liunianPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(ffi.Int32, ffi.Pointer<taiyin_ganzhi>)
+          taiyin_call_result Function(ffi.Int32, ffi.Pointer<taiyin_ganzhi>)
         >
       >('taiyin_bazi_calc_liunian');
   late final _taiyin_bazi_calc_liunian = _taiyin_bazi_calc_liunianPtr
@@ -11841,7 +11906,7 @@ class TaiyinBindings {
   late final _taiyin_bazi_calc_liuyuePtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             taiyin_ganzhi,
             ffi.Uint8,
             ffi.Pointer<taiyin_ganzhi>,
@@ -11861,7 +11926,7 @@ class TaiyinBindings {
   late final _taiyin_bazi_calc_liuriPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_calendar_datetime>,
             ffi.Pointer<taiyin_ganzhi>,
           )
@@ -11886,7 +11951,7 @@ class TaiyinBindings {
   late final _taiyin_bazi_calc_liushiPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             taiyin_ganzhi,
             ffi.Uint8,
             ffi.Pointer<taiyin_ganzhi>,
@@ -11908,7 +11973,7 @@ class TaiyinBindings {
   late final _taiyin_bazi_calc_xiaoyunPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_bazi_chart>,
             ffi.Int32,
             ffi.Int32,
@@ -11949,7 +12014,7 @@ class TaiyinBindings {
   late final _taiyin_bazi_fill_xiaoyunPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_bazi_chart>,
             ffi.Int32,
             ffi.Int32,
@@ -11994,7 +12059,7 @@ class TaiyinBindings {
   late final _taiyin_bazi_collect_chart_relationsPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_bazi_chart>,
             ffi.Uint32,
             ffi.Uint32,
@@ -12038,7 +12103,7 @@ class TaiyinBindings {
   late final _taiyin_bazi_collect_target_shen_shaPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_bazi_chart>,
             taiyin_ganzhi,
             ffi.Int32,
@@ -12084,7 +12149,7 @@ class TaiyinBindings {
   late final _taiyin_bazi_collect_target_shen_sha_with_genderPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_bazi_chart>,
             taiyin_ganzhi,
             ffi.Int32,
@@ -12134,7 +12199,7 @@ class TaiyinBindings {
   late final _taiyin_bazi_calc_qiyunPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_bazi_context>,
             ffi.Pointer<taiyin_chinese_calendar_context>,
             ffi.Pointer<taiyin_split_julian_date>,
@@ -12185,7 +12250,7 @@ class TaiyinBindings {
   late final _taiyin_bazi_fill_dayunPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_bazi_context>,
             ffi.Pointer<taiyin_calendar_datetime>,
             ffi.Pointer<taiyin_bazi_chart>,
@@ -12230,7 +12295,7 @@ class TaiyinBindings {
   late final _taiyin_bazi_get_renyuan_siling_segmentsPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Uint8,
             ffi.Int32,
             ffi.Pointer<taiyin_bazi_renyuan_siling_segment>,
@@ -12274,7 +12339,7 @@ class TaiyinBindings {
   late final _taiyin_bazi_calc_renyuan_silingPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_chinese_calendar_context>,
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Pointer<taiyin_bazi_chart>,
@@ -12443,7 +12508,7 @@ class TaiyinBindings {
   late final _taiyin_ziwei_data_catalog_createPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<ffi.Char>,
             ffi.Pointer<ffi.Pointer<taiyin_ziwei_data_catalog>>,
           )
@@ -12483,7 +12548,7 @@ class TaiyinBindings {
   late final _taiyin_ziwei_data_catalog_reloadPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(ffi.Pointer<taiyin_ziwei_data_catalog>)
+          taiyin_call_result Function(ffi.Pointer<taiyin_ziwei_data_catalog>)
         >
       >('taiyin_ziwei_data_catalog_reload');
   late final _taiyin_ziwei_data_catalog_reload =
@@ -12523,7 +12588,7 @@ class TaiyinBindings {
   late final _taiyin_ziwei_context_createPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_ziwei_data_catalog>,
             ffi.Pointer<taiyin_ziwei_option_override>,
             ffi.Size,
@@ -12590,7 +12655,7 @@ class TaiyinBindings {
   late final _taiyin_ziwei_find_starPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_ziwei_context>,
             ffi.Pointer<ffi.Char>,
             ffi.Pointer<ffi.Uint16>,
@@ -12627,7 +12692,7 @@ class TaiyinBindings {
   late final _taiyin_ziwei_get_star_metadataPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_ziwei_context>,
             ffi.Uint16,
             ffi.Pointer<ffi.Int32>,
@@ -12675,7 +12740,7 @@ class TaiyinBindings {
   late final _taiyin_ziwei_chart_createPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_ziwei_context>,
             ffi.Pointer<taiyin_chinese_calendar_context>,
             ffi.Pointer<taiyin_split_julian_date>,
@@ -12735,7 +12800,7 @@ class TaiyinBindings {
   late final _taiyin_ziwei_reverse_lookup_tier1Ptr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_ziwei_context>,
             ffi.Pointer<taiyin_chinese_calendar_context>,
             ffi.Pointer<taiyin_ziwei_reverse_request>,
@@ -12770,7 +12835,7 @@ class TaiyinBindings {
   late final _taiyin_ziwei_chart_get_anchorsPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_ziwei_chart>,
             ffi.Pointer<ffi.Uint8>,
           )
@@ -12808,7 +12873,7 @@ class TaiyinBindings {
   late final _taiyin_ziwei_chart_get_summaryPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_ziwei_chart>,
             ffi.Pointer<ffi.Uint8>,
             ffi.Pointer<ffi.Uint8>,
@@ -12844,7 +12909,7 @@ class TaiyinBindings {
   late final _taiyin_ziwei_chart_get_palace_branchPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_ziwei_chart>,
             ffi.Uint8,
             ffi.Pointer<ffi.Uint8>,
@@ -12872,7 +12937,7 @@ class TaiyinBindings {
   late final _taiyin_ziwei_chart_get_palace_stemPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_ziwei_chart>,
             ffi.Uint8,
             ffi.Pointer<ffi.Uint8>,
@@ -12900,7 +12965,7 @@ class TaiyinBindings {
   late final _taiyin_ziwei_chart_get_star_positionPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_ziwei_chart>,
             ffi.Uint16,
             ffi.Pointer<ffi.Uint8>,
@@ -12928,7 +12993,7 @@ class TaiyinBindings {
   late final _taiyin_ziwei_chart_get_star_palacePtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_ziwei_chart>,
             ffi.Uint16,
             ffi.Pointer<ffi.Uint8>,
@@ -12962,7 +13027,7 @@ class TaiyinBindings {
   late final _taiyin_ziwei_chart_get_brightnessPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_ziwei_context>,
             ffi.Pointer<taiyin_ziwei_chart>,
             ffi.Uint16,
@@ -12998,7 +13063,7 @@ class TaiyinBindings {
   late final _taiyin_ziwei_chart_has_star_transform_markPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_ziwei_chart>,
             ffi.Int32,
             ffi.Uint16,
@@ -13032,7 +13097,7 @@ class TaiyinBindings {
   late final _taiyin_ziwei_chart_get_star_transformation_maskPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_ziwei_chart>,
             ffi.Uint16,
             ffi.Pointer<ffi.Uint16>,
@@ -13068,7 +13133,7 @@ class TaiyinBindings {
   late final _taiyin_ziwei_chart_get_palace_starsPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_ziwei_chart>,
             ffi.Uint8,
             ffi.Pointer<ffi.Uint16>,
@@ -13116,7 +13181,7 @@ class TaiyinBindings {
   late final _taiyin_ziwei_chart_set_flowPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_ziwei_context>,
             ffi.Pointer<taiyin_chinese_calendar_context>,
             ffi.Pointer<taiyin_split_julian_date>,
@@ -13154,7 +13219,10 @@ class TaiyinBindings {
   late final _taiyin_ziwei_chart_truncate_flowPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(ffi.Pointer<taiyin_ziwei_chart>, ffi.Int32)
+          taiyin_call_result Function(
+            ffi.Pointer<taiyin_ziwei_chart>,
+            ffi.Int32,
+          )
         >
       >('taiyin_ziwei_chart_truncate_flow');
   late final _taiyin_ziwei_chart_truncate_flow =
@@ -13192,7 +13260,7 @@ class TaiyinBindings {
   late final _taiyin_ziwei_chart_get_flow_star_positionPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_ziwei_chart>,
             ffi.Int32,
             ffi.Uint16,
@@ -13230,7 +13298,7 @@ class TaiyinBindings {
   late final _taiyin_ziwei_chart_get_flow_layer_summaryPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_ziwei_chart>,
             ffi.Int32,
             ffi.Pointer<ffi.Uint8>,
@@ -13272,7 +13340,7 @@ class TaiyinBindings {
   late final _taiyin_ziwei_chart_get_flow_palace_starsPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_ziwei_chart>,
             ffi.Int32,
             ffi.Uint8,
@@ -13310,7 +13378,7 @@ class TaiyinBindings {
   late final _taiyin_ziwei_chart_get_flow_transformsPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_ziwei_chart>,
             ffi.Int32,
             ffi.Pointer<taiyin_ziwei_transform_set>,
@@ -13350,7 +13418,7 @@ class TaiyinBindings {
   late final _taiyin_ziwei_step_flow_hour_targetPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Pointer<taiyin_calendar_datetime>,
             ffi.Int32,
@@ -13394,7 +13462,7 @@ class TaiyinBindings {
   late final _taiyin_ziwei_step_flow_day_targetPtr =
       _lookup<
         ffi.NativeFunction<
-          taiyin_status Function(
+          taiyin_call_result Function(
             ffi.Pointer<taiyin_split_julian_date>,
             ffi.Pointer<taiyin_calendar_datetime>,
             ffi.Int32,
@@ -13676,6 +13744,18 @@ typedef taiyin_status = ffi.Int32;
 typedef Darttaiyin_status = int;
 typedef taiyin_bool = ffi.Uint8;
 typedef Darttaiyin_bool = int;
+typedef taiyin_call_result = ffi.Int64;
+typedef Darttaiyin_call_result = int;
+
+sealed class taiyin_result_flag {
+  static const TAIYIN_RESULT_FLAG_FALLBACK_OCCURRED = 1;
+  static const TAIYIN_RESULT_FLAG_NUMERICAL_DERIVATIVE = 2;
+  static const TAIYIN_RESULT_FLAG_BARYCENTER_APPROX = 4;
+  static const TAIYIN_RESULT_FLAG_TIME_SCALE_FALLBACK = 8;
+  static const TAIYIN_RESULT_FLAG_HISTORICAL_EVENT_ASSIGNMENT_APPLIED = 16;
+  static const TAIYIN_RESULT_FLAG_HISTORICAL_CALENDAR_RULES_APPLIED = 32;
+  static const TAIYIN_RESULT_FLAG_HISTORICAL_PILLAR_TERMS_APPLIED = 64;
+}
 
 final class taiyin_split_julian_date extends ffi.Struct {
   @ffi.Int64()
@@ -16395,6 +16475,12 @@ sealed class taiyin_chinese_calendar_day_boundary_mode {
   static const TAIYIN_C_CHINESE_CALENDAR_MEAN_SOLAR_MERIDIAN = 1;
 }
 
+sealed class taiyin_ganzhi_pillar_historical_mode {
+  static const TAIYIN_C_GANZHI_PILLAR_HISTORICAL_FOLLOW_CALENDAR = 0;
+  static const TAIYIN_C_GANZHI_PILLAR_HISTORICAL_OFF = 1;
+  static const TAIYIN_C_GANZHI_PILLAR_HISTORICAL_ON = 2;
+}
+
 sealed class taiyin_chinese_calendar_month_name {
   static const TAIYIN_C_CHINESE_MONTH_NAME_NORMAL = 0;
   static const TAIYIN_C_CHINESE_MONTH_NAME_THIRTEEN = 1;
@@ -16418,7 +16504,7 @@ final class taiyin_chinese_calendar_config extends ffi.Struct {
   external int utc_offset_minutes;
 
   @ffi.Int32()
-  external int reserved;
+  external int pillar_historical_mode;
 
   @ffi.Double()
   external double calendar_meridian_deg;

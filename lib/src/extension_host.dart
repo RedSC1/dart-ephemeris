@@ -12,17 +12,25 @@ final class TaiyinExtensionHost {
     this._nativeHandle,
     this._onEnsureOpen,
     this._onDiagnostic,
+    this._onComplete,
   );
 
   /// Opens the native library without initializing the process-wide runtime,
   /// for extension handles that need no astronomy context (for example Ziwei
   /// rule-catalog loading).
   factory TaiyinExtensionHost.open({String? libraryPath}) {
+    final state = _nativeLibraryStateFor(_openLibrary(libraryPath));
     return TaiyinExtensionHost._(
-      _nativeLibraryStateFor(_openLibrary(libraryPath)),
+      state,
       nullptr,
       () {},
       (_) {},
+      (rawResult, {diagnostic, diagnostics = const []}) => _checkStatus(
+        state.bindings,
+        rawResult,
+        diagnostic: diagnostic,
+        diagnostics: diagnostics,
+      ),
     );
   }
 
@@ -30,6 +38,12 @@ final class TaiyinExtensionHost {
   final Pointer<Void> _nativeHandle;
   final void Function() _onEnsureOpen;
   final void Function(EphemerisDiagnostic) _onDiagnostic;
+  final ResultFlags Function(
+    int rawResult, {
+    EphemerisDiagnostic? diagnostic,
+    Iterable<EphemerisDiagnostic> diagnostics,
+  })
+  _onComplete;
 
   /// The generated bindings for the loaded library.
   TaiyinBindings get bindings => _state.bindings;
@@ -61,9 +75,12 @@ final class TaiyinExtensionHost {
   }
 
   /// Throws [EphemerisError] when [status] is not `TAIYIN_STATUS_OK`.
-  void checkStatus(int status, {EphemerisDiagnostic? diagnostic}) {
-    _checkStatus(bindings, status, diagnostic: diagnostic);
-  }
+  ResultFlags checkStatus(
+    int rawResult, {
+    EphemerisDiagnostic? diagnostic,
+    Iterable<EphemerisDiagnostic> diagnostics = const [],
+  }) =>
+      _onComplete(rawResult, diagnostic: diagnostic, diagnostics: diagnostics);
 
   /// Maps a native diagnostic struct to its Dart form.
   EphemerisDiagnostic readDiagnostic(taiyin_ephemeris_diagnostic value) =>

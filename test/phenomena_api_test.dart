@@ -38,10 +38,12 @@ void main() {
         'matches the first-quarter Moon oracle on the semi-analytical route',
         () {
           context.configuration.setRouteRule(RouteRule.semiAnalytic);
-          final result = context.phenomena.atUt1(
-            Body.moon,
-            JulianDate<Ut1Scale>.fromDouble(2460416.2916666665),
-          );
+          final result = context.phenomena
+              .atUt1(
+                Body.moon,
+                JulianDate<Ut1Scale>.fromDouble(2460416.2916666665),
+              )
+              .value;
           final value = result;
 
           expect(
@@ -82,11 +84,13 @@ void main() {
       );
 
       test('covers the TT route and nullable non-lunar parallax', () {
-        final result = context.phenomena.atTt(
-          Body.sun,
-          JulianDate<TtScale>.fromDouble(2460409.2508),
-          flags: {PositionFlag.truePosition},
-        );
+        final result = context.phenomena
+            .atTt(
+              Body.sun,
+              JulianDate<TtScale>.fromDouble(2460409.2508),
+              flags: {PositionFlag.truePosition},
+            )
+            .value;
 
         expect(result.phaseAngleRadians, 0.0);
         expect(result.illuminatedFraction, 1.0);
@@ -103,8 +107,8 @@ void main() {
         'makes topocentric origin explicit while parallax stays geocentric',
         () {
           final ut1 = JulianDate<Ut1Scale>.fromDouble(2460409.25);
-          final tt = context.solarTime.equationOfTimeAtUt1(ut1).tt;
-          final geocentric = context.phenomena.atUt1(Body.moon, ut1);
+          final tt = context.solarTime.equationOfTimeAtUt1(ut1).value.tt;
+          final geocentric = context.phenomena.atUt1(Body.moon, ut1).value;
 
           context.configuration.setSimpleTopocentricObserver(
             const ObserverLocation(
@@ -115,11 +119,9 @@ void main() {
             ut1: ut1,
             tt: tt,
           );
-          final topocentric = context.phenomena.atUt1(
-            Body.moon,
-            ut1,
-            origin: PhenomenaOrigin.topocentric,
-          );
+          final topocentric = context.phenomena
+              .atUt1(Body.moon, ut1, origin: PhenomenaOrigin.topocentric)
+              .value;
 
           expect(topocentric.origin, PhenomenaOrigin.topocentric);
           expect(
@@ -138,24 +140,25 @@ void main() {
       test('rejects unsupported bodies and use after close', () {
         final ut1 = JulianDate<Ut1Scale>.fromDouble(2460409.25);
         expect(
-          () => context.phenomena.atUt1(Body.earth, ut1),
+          () => context.phenomena.atUt1(Body.earth, ut1).value,
           throwsArgumentError,
         );
         expect(
-          () => context.phenomena.atUt1(Body.jupiterBarycenter, ut1),
+          () => context.phenomena.atUt1(Body.jupiterBarycenter, ut1).value,
           throwsArgumentError,
         );
         expect(
-          () => context.phenomena.atUt1(
-            Body.moon,
-            ut1,
-            flags: {PositionFlag.topocentric},
-          ),
+          () => context.phenomena
+              .atUt1(Body.moon, ut1, flags: {PositionFlag.topocentric})
+              .value,
           throwsArgumentError,
         );
 
         context.close();
-        expect(() => context.phenomena.atUt1(Body.moon, ut1), throwsStateError);
+        expect(
+          () => context.phenomena.atUt1(Body.moon, ut1).value,
+          throwsStateError,
+        );
       });
     },
     skip: nativeLibraryAvailable

@@ -10,6 +10,7 @@ library;
 
 export 'src/bindings/taiyin_bindings.g.dart';
 export 'src/interop/calendar.dart';
+export 'src/interop/call_result.dart';
 export 'src/interop/julian_date.dart';
 export 'src/interop/native_arrays.dart';
 export 'src/native_compatibility.dart';

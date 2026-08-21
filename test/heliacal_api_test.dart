@@ -59,14 +59,16 @@ void main() {
         extinctionMagnitudePerAirmass: 0.5,
         skyBrightnessNanolambert: 1234,
       );
-      final venus = context.heliacal.bodyAtUt1(
-        Body.venus,
-        aprilEclipse,
-        positionFlags: {PositionFlag.truePosition},
-        flags: {HeliacalFlag.includeMoonlight},
-        conditions: conditions,
-      );
-      final spica = context.heliacal.starAtUt1('spica', aprilEclipse);
+      final venus = context.heliacal
+          .bodyAtUt1(
+            Body.venus,
+            aprilEclipse,
+            positionFlags: {PositionFlag.truePosition},
+            flags: {HeliacalFlag.includeMoonlight},
+            conditions: conditions,
+          )
+          .value;
+      final spica = context.heliacal.starAtUt1('spica', aprilEclipse).value;
 
       expect(venus.modelId, HeliacalVisibilityModel.schaefer1993.id);
       expect(venus.extinctionMagnitudePerAirmass, 0.5);
@@ -81,11 +83,13 @@ void main() {
 
     test('honors strict meteorology and explicit atmosphere data', () {
       expect(
-        () => context.heliacal.bodyAtUt1(
-          Body.venus,
-          aprilEclipse,
-          flags: {HeliacalFlag.strictMeteorology},
-        ),
+        () => context.heliacal
+            .bodyAtUt1(
+              Body.venus,
+              aprilEclipse,
+              flags: {HeliacalFlag.strictMeteorology},
+            )
+            .value,
         throwsA(
           isA<EphemerisError>().having(
             (error) => error.status,
@@ -98,11 +102,13 @@ void main() {
       context.configuration
         ..setAtmosphere(const Atmosphere(relativeHumidityPercent: 40))
         ..setMeteorologicalRangeKm(40);
-      final result = context.heliacal.bodyAtUt1(
-        Body.venus,
-        aprilEclipse,
-        flags: {HeliacalFlag.strictMeteorology},
-      );
+      final result = context.heliacal
+          .bodyAtUt1(
+            Body.venus,
+            aprilEclipse,
+            flags: {HeliacalFlag.strictMeteorology},
+          )
+          .value;
 
       expect(context.lastDiagnostic?.status, 0);
       expect(result.extinctionMagnitudePerAirmass, greaterThan(0));
@@ -120,13 +126,15 @@ void main() {
       ];
 
       for (final (event, coordinate) in cases) {
-        final result = context.heliacal.nextBodyEventAtUt1(
-          Body.venus,
-          JulianDate<Ut1Scale>.fromDouble(coordinate - 2),
-          event: event,
-          maxSearchDays: 5,
-          conditions: conditions,
-        );
+        final result = context.heliacal
+            .nextBodyEventAtUt1(
+              Body.venus,
+              JulianDate<Ut1Scale>.fromDouble(coordinate - 2),
+              event: event,
+              maxSearchDays: 5,
+              conditions: conditions,
+            )
+            .value;
 
         expect(context.lastDiagnostic?.status, 0);
         expect(result.event, event);
@@ -142,12 +150,14 @@ void main() {
 
     test('searches a catalogued-star heliacal event', () {
       final start = JulianDate<Ut1Scale>.fromDouble(2460310.5);
-      final result = context.heliacal.nextStarEventAtUt1(
-        'spica',
-        start,
-        event: HeliacalEventKind.morningFirst,
-        maxSearchDays: 366,
-      );
+      final result = context.heliacal
+          .nextStarEventAtUt1(
+            'spica',
+            start,
+            event: HeliacalEventKind.morningFirst,
+            maxSearchDays: 366,
+          )
+          .value;
 
       expect(context.lastDiagnostic?.status, 0);
       expect(result.event, HeliacalEventKind.morningFirst);
@@ -166,65 +176,76 @@ void main() {
 
     test('rejects unsupported inputs and use after close', () {
       expect(
-        () => context.heliacal.bodyAtUt1(Body.sun, aprilEclipse),
+        () => context.heliacal.bodyAtUt1(Body.sun, aprilEclipse).value,
         throwsArgumentError,
       );
       expect(
-        () => context.heliacal.bodyAtUt1(Body.moon, aprilEclipse),
+        () => context.heliacal.bodyAtUt1(Body.moon, aprilEclipse).value,
         throwsArgumentError,
       );
       expect(
-        () => context.heliacal.starAtUt1('spica\u0000suffix', aprilEclipse),
+        () =>
+            context.heliacal.starAtUt1('spica\u0000suffix', aprilEclipse).value,
         throwsArgumentError,
       );
       expect(
-        () => context.heliacal.bodyAtUt1(
-          Body.venus,
-          aprilEclipse,
-          positionFlags: {PositionFlag.speed},
-        ),
+        () => context.heliacal
+            .bodyAtUt1(
+              Body.venus,
+              aprilEclipse,
+              positionFlags: {PositionFlag.speed},
+            )
+            .value,
         throwsArgumentError,
       );
       expect(
-        () => context.heliacal.bodyAtUt1(
-          Body.venus,
-          aprilEclipse,
-          positionFlags: {PositionFlag.xyz},
-        ),
+        () => context.heliacal
+            .bodyAtUt1(
+              Body.venus,
+              aprilEclipse,
+              positionFlags: {PositionFlag.xyz},
+            )
+            .value,
         throwsArgumentError,
       );
       expect(
-        () => context.heliacal.nextBodyEventAtUt1(
-          Body.venus,
-          aprilEclipse,
-          event: HeliacalEventKind.morningFirst,
-          maxSearchDays: 0,
-        ),
+        () => context.heliacal
+            .nextBodyEventAtUt1(
+              Body.venus,
+              aprilEclipse,
+              event: HeliacalEventKind.morningFirst,
+              maxSearchDays: 0,
+            )
+            .value,
         throwsArgumentError,
       );
       expect(
-        () => context.heliacal.bodyAtUt1(
-          Body.venus,
-          aprilEclipse,
-          conditions: const HeliacalVisibilityConditions(
-            extinctionMagnitudePerAirmass: 0,
-          ),
-        ),
+        () => context.heliacal
+            .bodyAtUt1(
+              Body.venus,
+              aprilEclipse,
+              conditions: const HeliacalVisibilityConditions(
+                extinctionMagnitudePerAirmass: 0,
+              ),
+            )
+            .value,
         throwsArgumentError,
       );
       expect(
-        () => context.heliacal.bodyAtUt1(
-          Body.venus,
-          aprilEclipse,
-          conditions: const HeliacalVisibilityConditions(
-            skyBrightnessNanolambert: 0,
-          ),
-        ),
+        () => context.heliacal
+            .bodyAtUt1(
+              Body.venus,
+              aprilEclipse,
+              conditions: const HeliacalVisibilityConditions(
+                skyBrightnessNanolambert: 0,
+              ),
+            )
+            .value,
         throwsArgumentError,
       );
       context.close();
       expect(
-        () => context.heliacal.bodyAtUt1(Body.venus, aprilEclipse),
+        () => context.heliacal.bodyAtUt1(Body.venus, aprilEclipse).value,
         throwsStateError,
       );
     });

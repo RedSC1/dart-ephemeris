@@ -105,10 +105,12 @@ star.0.magnitude=5.5
           PositionFlag.truePosition,
         };
         final results = [
-          context.stars.atTdb('spica', tdb, tt, flags: flags),
-          context.stars.atTt('spica', tt, flags: flags),
-          context.stars.atUt1('spica', ut1, flags: flags),
-          context.stars.atUt1WithDeltaT('spica', ut1, 69.184, flags: flags),
+          context.stars.atTdb('spica', tdb, tt, flags: flags).value,
+          context.stars.atTt('spica', tt, flags: flags).value,
+          context.stars.atUt1('spica', ut1, flags: flags).value,
+          context.stars
+              .atUt1WithDeltaT('spica', ut1, 69.184, flags: flags)
+              .value,
         ];
 
         for (final result in results) {
@@ -128,10 +130,12 @@ star.0.magnitude=5.5
         const keys = ['spica', 'antares'];
         const flags = {PositionFlag.xyz, PositionFlag.truePosition};
         final batches = [
-          context.stars.batchAtTdb(keys, tdb, tt, flags: flags),
-          context.stars.batchAtTt(keys, tt, flags: flags),
-          context.stars.batchAtUt1(keys, ut1, flags: flags),
-          context.stars.batchAtUt1WithDeltaT(keys, ut1, 69.184, flags: flags),
+          context.stars.batchAtTdb(keys, tdb, tt, flags: flags).value,
+          context.stars.batchAtTt(keys, tt, flags: flags).value,
+          context.stars.batchAtUt1(keys, ut1, flags: flags).value,
+          context.stars
+              .batchAtUt1WithDeltaT(keys, ut1, 69.184, flags: flags)
+              .value,
         ];
 
         for (final batch in batches) {
@@ -146,9 +150,11 @@ star.0.magnitude=5.5
         }
         expect(context.lastDiagnostic?.status, 0);
 
-        final batch = context.stars.batchAtTt(keys, tt, flags: flags);
+        final batch = context.stars.batchAtTt(keys, tt, flags: flags).value;
         for (var index = 0; index < keys.length; index++) {
-          final single = context.stars.atTt(keys[index], tt, flags: flags);
+          final single = context.stars
+              .atTt(keys[index], tt, flags: flags)
+              .value;
           for (var valueIndex = 0; valueIndex < 6; valueIndex++) {
             expect(
               batch[index].values[valueIndex],
@@ -156,17 +162,19 @@ star.0.magnitude=5.5
             );
           }
         }
-        expect(context.stars.batchAtTt(const [], tt), isEmpty);
+        expect(context.stars.batchAtTt(const [], tt).value, isEmpty);
       });
 
       test(
         'position batches preserve a successful star when another fails',
         () {
-          final batch = context.stars.batchAtTt(
-            const ['spica', 'missing-star'],
-            tt,
-            flags: {PositionFlag.xyz},
-          );
+          final batch = context.stars
+              .batchAtTt(
+                const ['spica', 'missing-star'],
+                tt,
+                flags: {PositionFlag.xyz},
+              )
+              .value;
 
           expect(batch, hasLength(2));
           expect(batch[0].values.every((value) => value.isFinite), isTrue);
@@ -177,12 +185,12 @@ star.0.magnitude=5.5
 
       test('calculates single and batch observed star positions', () {
         const flags = {ObservedFlag.speed, ObservedFlag.truePosition};
-        final single = context.stars.observedAtUt1('spica', ut1, flags: flags);
-        final batch = context.stars.observedBatchAtUt1(
-          const ['spica', 'antares'],
-          ut1,
-          flags: flags,
-        );
+        final single = context.stars
+            .observedAtUt1('spica', ut1, flags: flags)
+            .value;
+        final batch = context.stars
+            .observedBatchAtUt1(const ['spica', 'antares'], ut1, flags: flags)
+            .value;
 
         expect(single.starKey, 'spica');
         expect(single.status, 0);
@@ -205,7 +213,7 @@ star.0.magnitude=5.5
           batch.first.apparent.longitudeRadians,
           closeTo(single.apparent.longitudeRadians, 1e-15),
         );
-        expect(context.stars.observedBatchAtUt1(const [], ut1), isEmpty);
+        expect(context.stars.observedBatchAtUt1(const [], ut1).value, isEmpty);
       });
 
       test('maps topocentric horizontal observed star output', () {
@@ -216,16 +224,18 @@ star.0.magnitude=5.5
             heightMeters: 50,
           ),
         );
-        final result = context.stars.observedAtUt1(
-          'spica',
-          ut1,
-          flags: {
-            ObservedFlag.speed,
-            ObservedFlag.topocentric,
-            ObservedFlag.horizontal,
-            ObservedFlag.truePosition,
-          },
-        );
+        final result = context.stars
+            .observedAtUt1(
+              'spica',
+              ut1,
+              flags: {
+                ObservedFlag.speed,
+                ObservedFlag.topocentric,
+                ObservedFlag.horizontal,
+                ObservedFlag.truePosition,
+              },
+            )
+            .value;
 
         expect(result.horizontal, isNotNull);
         expect(result.horizontal!.azimuthRadians.isFinite, isTrue);
@@ -240,7 +250,7 @@ star.0.magnitude=5.5
           () => context.stars.observedBatchAtUt1(const [
             'spica',
             'missing-star',
-          ], ut1),
+          ], ut1).value,
           throwsA(
             isA<EphemerisError>().having(
               (error) => error.status,
@@ -253,7 +263,7 @@ star.0.magnitude=5.5
           () => context.stars.observedBatchAtUt1(const [
             'missing-star-one',
             'missing-star-two',
-          ], ut1),
+          ], ut1).value,
           throwsA(
             isA<EphemerisError>()
                 .having(
@@ -271,24 +281,22 @@ star.0.magnitude=5.5
           ),
         );
         expect(
-          () => context.stars.observedAtUt1(
-            'spica',
-            ut1,
-            flags: {ObservedFlag.horizontal},
-          ),
+          () => context.stars
+              .observedAtUt1('spica', ut1, flags: {ObservedFlag.horizontal})
+              .value,
           throwsArgumentError,
         );
-        expect(() => context.stars.atTt('', tt), throwsArgumentError);
+        expect(() => context.stars.atTt('', tt).value, throwsArgumentError);
         expect(
-          () => context.stars.atTt('spica\u0000ignored', tt),
-          throwsArgumentError,
-        );
-        expect(
-          () => context.stars.batchAtTt(const ['spica', ''], tt),
+          () => context.stars.atTt('spica\u0000ignored', tt).value,
           throwsArgumentError,
         );
         expect(
-          () => context.stars.atUt1WithDeltaT('spica', ut1, double.nan),
+          () => context.stars.batchAtTt(const ['spica', ''], tt).value,
+          throwsArgumentError,
+        );
+        expect(
+          () => context.stars.atUt1WithDeltaT('spica', ut1, double.nan).value,
           throwsArgumentError,
         );
         expect(() => runtime.starCatalog.addTsc1(''), throwsArgumentError);
@@ -309,7 +317,7 @@ star.0.magnitude=5.5
         );
 
         context.close();
-        expect(() => context.stars.atTt('spica', tt), throwsStateError);
+        expect(() => context.stars.atTt('spica', tt).value, throwsStateError);
       });
     },
     skip: nativeLibraryAvailable

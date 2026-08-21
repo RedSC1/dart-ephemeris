@@ -18,7 +18,7 @@ import 'package:taiyin/taiyin.dart';
 /// 3. **Custom ayanamsha** (`modelId >= 10000`): a sidereal offset computed by
 ///    Dart. Passed as the `ayanamsha:` argument to the sidereal calculations.
 ///
-/// Run with a path to a built ABI-6 Taiyin shared library:
+/// Run with a path to a built ABI-9 Taiyin shared library:
 ///
 /// ```sh
 /// dart run example/custom_callbacks_example.dart ../taiyin-ephemeris/build-bazi/libtaiyin.dylib
@@ -46,11 +46,13 @@ void main(List<String> arguments) {
     final jd = JulianDate<TtScale>.fromDouble(2460409.0);
 
     // 1. Custom target: a synthetic comet in a circular inclined orbit.
-    final cometState = context.position.atTt(
-      CustomTarget(-42),
-      jd,
-      flags: const {PositionFlag.xyz, PositionFlag.speed},
-    );
+    final cometState = context.position
+        .atTt(
+          CustomTarget(-42),
+          jd,
+          flags: const {PositionFlag.xyz, PositionFlag.speed},
+        )
+        .value;
     print(
       'comet at AU:      '
       '[${_formatAu(cometState.coordinates)}]  '
@@ -59,11 +61,9 @@ void main(List<String> arguments) {
 
     // The custom target also works in a batch with built-in bodies.
     final bodies = <Target>[Body.sun, CustomTarget(-42)];
-    final batch = context.position.batchAtTt(
-      bodies,
-      jd,
-      flags: const {PositionFlag.xyz},
-    );
+    final batch = context.position
+        .batchAtTt(bodies, jd, flags: const {PositionFlag.xyz})
+        .value;
     for (var index = 0; index < bodies.length; index++) {
       print(
         'batch ${bodies[index]}: '
@@ -80,10 +80,9 @@ void main(List<String> arguments) {
         latitudeDegrees: 39.9042,
       ),
     );
-    final houses = context.astrology.housesAtTt(
-      jd,
-      system: CustomHouseSystemModel(10001),
-    );
+    final houses = context.astrology
+        .housesAtTt(jd, system: CustomHouseSystemModel(10001))
+        .value;
     print(
       'custom houses:     '
       '${_formatRadians(houses.cuspLongitudesRadians)} '
@@ -91,11 +90,13 @@ void main(List<String> arguments) {
     );
 
     // 3. Custom ayanamsha: a fixed 24-degree offset.
-    final sidereal = context.astrology.siderealPositionAtTt(
-      Body.sun,
-      jd,
-      ayanamsha: CustomAyanamshaModel(10000),
-    );
+    final sidereal = context.astrology
+        .siderealPositionAtTt(
+          Body.sun,
+          jd,
+          ayanamsha: CustomAyanamshaModel(10000),
+        )
+        .value;
     print(
       'sun sidereal lon:   ${sidereal.siderealLongitudeRadians.toStringAsFixed(6)} rad '
       '(${_radiansToDms(sidereal.siderealLongitudeRadians)})',

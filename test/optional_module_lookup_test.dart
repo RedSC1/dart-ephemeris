@@ -12,7 +12,7 @@ import 'support/native_library.dart';
 /// `TAIYIN_BUILD_BAZI_EXTENSION` / `TAIYIN_BUILD_ZIWEI_EXTENSION`. The core
 /// package must never look up a `taiyin_bazi_*` or `taiyin_ziwei_*` symbol;
 /// the extension packages gate their own lookups by capability (covered by
-/// their own baseline tests). This file runs against the ABI-8 baseline
+/// their own baseline tests). This file runs against the ABI-9 baseline
 /// library (Chinese calendar only) to verify that discipline.
 void main() {
   group('optional-module symbol lookup discipline', () {
@@ -62,7 +62,7 @@ void main() {
       },
       skip: baselineLibraryAvailable
           ? false
-          : 'Set TAIYIN_BASELINE_LIBRARY to a baseline ABI-8 library.',
+          : 'Set TAIYIN_BASELINE_LIBRARY to a baseline ABI-9 library.',
     );
 
     test(
@@ -74,21 +74,23 @@ void main() {
         // The Chinese calendar is always built and works, and since the
         // calendar-ABI restructure Ganzhi (including four pillars) is always
         // built too.
-        final year = context.chineseCalendar.calcYearUt(
-          JulianDate<Ut1Scale>.fromDouble(2460348.0),
-        );
+        final year = context.chineseCalendar
+            .calcYearUt(JulianDate<Ut1Scale>.fromDouble(2460348.0))
+            .value;
         expect(year.solarTermCount, 25);
-        final pillars = context.chineseCalendar.fourPillars(
-          instantUtc: JulianDate<UtcScale>.fromDouble(2460351.0),
-          virtualTime: AstroDateTime(2024, 2, 10, 12),
-        );
+        final pillars = context.chineseCalendar
+            .fourPillars(
+              instantUtc: JulianDate<UtcScale>.fromDouble(2460351.0),
+              virtualTime: AstroDateTime(2024, 2, 10, 12),
+            )
+            .value;
         expect(pillars.year.stemId, inInclusiveRange(0, 9));
         expect(context.ganzhi.make(stemId: 0, branchId: 0).stemId, 0);
         context.close();
       },
       skip: baselineLibraryAvailable
           ? false
-          : 'Set TAIYIN_BASELINE_LIBRARY to a baseline ABI-8 library.',
+          : 'Set TAIYIN_BASELINE_LIBRARY to a baseline ABI-9 library.',
     );
   });
 }

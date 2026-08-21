@@ -1,7 +1,7 @@
 part of '../taiyin.dart';
 
 typedef _OrbitalStatusChecker =
-    void Function(int status, EphemerisDiagnostic? diagnostic);
+    ResultFlags Function(int status, EphemerisDiagnostic? diagnostic);
 
 const int _taiyinOrbitalReverseMask = 1 << 32;
 
@@ -20,7 +20,7 @@ final class OrbitalApi {
   final _OrbitalStatusChecker _checkStatus;
 
   /// Calculates osculating elements at a TT coordinate.
-  OsculatingOrbit osculatingAtTt(
+  OperationResult<OsculatingOrbit> osculatingAtTt(
     Body body,
     JulianDate<TtScale> tt, {
     ApparentFrame referenceFrame = ApparentFrame.j2000Ecliptic,
@@ -45,7 +45,7 @@ final class OrbitalApi {
   }
 
   /// Calculates osculating elements at a UT1 coordinate.
-  OsculatingOrbit osculatingAtUt1(
+  OperationResult<OsculatingOrbit> osculatingAtUt1(
     Body body,
     JulianDate<Ut1Scale> ut1, {
     ApparentFrame referenceFrame = ApparentFrame.j2000Ecliptic,
@@ -70,7 +70,7 @@ final class OrbitalApi {
   }
 
   /// Constructs instantaneous osculating reference points at TT.
-  OrbitReferencePoints referencePointsAtTt(
+  OperationResult<OrbitReferencePoints> referencePointsAtTt(
     Body body,
     JulianDate<TtScale> tt, {
     ApparentFrame referenceFrame = ApparentFrame.j2000Ecliptic,
@@ -95,7 +95,7 @@ final class OrbitalApi {
   }
 
   /// Constructs instantaneous osculating reference points at UT1.
-  OrbitReferencePoints referencePointsAtUt1(
+  OperationResult<OrbitReferencePoints> referencePointsAtUt1(
     Body body,
     JulianDate<Ut1Scale> ut1, {
     ApparentFrame referenceFrame = ApparentFrame.j2000Ecliptic,
@@ -120,7 +120,7 @@ final class OrbitalApi {
   }
 
   /// Searches from a TT coordinate for a pericenter or apocenter.
-  ApsisEvent<TtScale> searchApsisFromTt(
+  OperationResult<ApsisEvent<TtScale>> searchApsisFromTt(
     Body body,
     ApsisKind kind,
     JulianDate<TtScale> start, {
@@ -147,7 +147,7 @@ final class OrbitalApi {
   }
 
   /// Searches from a UT1 coordinate for a pericenter or apocenter.
-  ApsisEvent<Ut1Scale> searchApsisFromUt1(
+  OperationResult<ApsisEvent<Ut1Scale>> searchApsisFromUt1(
     Body body,
     ApsisKind kind,
     JulianDate<Ut1Scale> start, {
@@ -174,7 +174,7 @@ final class OrbitalApi {
   }
 
   /// Searches from a TT coordinate for a reference-plane crossing.
-  PlaneNodeEvent<TtScale> searchPlaneNodeFromTt(
+  OperationResult<PlaneNodeEvent<TtScale>> searchPlaneNodeFromTt(
     Body body,
     PlaneNodeKind kind,
     JulianDate<TtScale> start, {
@@ -204,7 +204,7 @@ final class OrbitalApi {
   }
 
   /// Searches from a UT1 coordinate for a reference-plane crossing.
-  PlaneNodeEvent<Ut1Scale> searchPlaneNodeFromUt1(
+  OperationResult<PlaneNodeEvent<Ut1Scale>> searchPlaneNodeFromUt1(
     Body body,
     PlaneNodeKind kind,
     JulianDate<Ut1Scale> start, {
@@ -233,7 +233,7 @@ final class OrbitalApi {
     );
   }
 
-  OsculatingOrbit _osculating(
+  OperationResult<OsculatingOrbit> _osculating(
     Body body,
     ApparentFrame referenceFrame,
     bool allowBarycenterApproximation,
@@ -260,33 +260,37 @@ final class OrbitalApi {
         _flags(allowBarycenterApproximation),
       );
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
-      _checkStatus(status, mappedDiagnostic);
+      final resultFlags = _checkStatus(status, mappedDiagnostic);
       final value = output.ref;
-      return OsculatingOrbit(
-        body: _bodyFromId(value.body_id),
-        center: _bodyFromId(value.center_id),
-        referenceFrame: ApparentFrame.fromId(value.reference_frame_id),
-        rawReferenceFrameId: value.reference_frame_id,
-        gravitationalParameterAu3PerDay2:
-            value.gravitational_parameter_au3_per_day2,
-        semiMajorAxisAu: value.semi_major_axis_au,
-        eccentricity: value.eccentricity,
-        inclinationRadians: value.inclination_rad,
-        longitudeOfAscendingNodeRadians: value.longitude_of_ascending_node_rad,
-        argumentOfPeriapsisRadians: value.argument_of_periapsis_rad,
-        trueAnomalyRadians: value.true_anomaly_rad,
-        meanAnomalyRadians: value.mean_anomaly_rad,
-        periapsisDistanceAu: value.periapsis_distance_au,
-        apoapsisDistanceAu: value.apoapsis_distance_au,
-        osculatingPeriodDays: value.osculating_period_days,
-        currentDistanceAu: value.current_distance_au,
-        radialVelocityAuPerDay: value.radial_velocity_au_per_day,
-        allowBarycenterApproximation: allowBarycenterApproximation,
+      return operationResult(
+        OsculatingOrbit(
+          body: _bodyFromId(value.body_id),
+          center: _bodyFromId(value.center_id),
+          referenceFrame: ApparentFrame.fromId(value.reference_frame_id),
+          rawReferenceFrameId: value.reference_frame_id,
+          gravitationalParameterAu3PerDay2:
+              value.gravitational_parameter_au3_per_day2,
+          semiMajorAxisAu: value.semi_major_axis_au,
+          eccentricity: value.eccentricity,
+          inclinationRadians: value.inclination_rad,
+          longitudeOfAscendingNodeRadians:
+              value.longitude_of_ascending_node_rad,
+          argumentOfPeriapsisRadians: value.argument_of_periapsis_rad,
+          trueAnomalyRadians: value.true_anomaly_rad,
+          meanAnomalyRadians: value.mean_anomaly_rad,
+          periapsisDistanceAu: value.periapsis_distance_au,
+          apoapsisDistanceAu: value.apoapsis_distance_au,
+          osculatingPeriodDays: value.osculating_period_days,
+          currentDistanceAu: value.current_distance_au,
+          radialVelocityAuPerDay: value.radial_velocity_au_per_day,
+          allowBarycenterApproximation: allowBarycenterApproximation,
+        ),
+        resultFlags,
       );
     });
   }
 
-  OrbitReferencePoints _referencePoints(
+  OperationResult<OrbitReferencePoints> _referencePoints(
     Body body,
     ApparentFrame referenceFrame,
     bool allowBarycenterApproximation,
@@ -313,26 +317,29 @@ final class OrbitalApi {
         _flags(allowBarycenterApproximation),
       );
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
-      _checkStatus(status, mappedDiagnostic);
+      final resultFlags = _checkStatus(status, mappedDiagnostic);
       final value = output.ref;
-      return OrbitReferencePoints(
-        body: _bodyFromId(value.body_id),
-        center: _bodyFromId(value.center_id),
-        referenceFrame: ApparentFrame.fromId(value.reference_frame_id),
-        rawReferenceFrameId: value.reference_frame_id,
-        model: OrbitReferencePointModel.fromId(value.model_id),
-        rawModelId: value.model_id,
-        ascendingNode: _readReferencePoint(value.ascending_node),
-        descendingNode: _readReferencePoint(value.descending_node),
-        periapsis: _readReferencePoint(value.periapsis),
-        apoapsis: _readReferencePoint(value.apoapsis),
-        secondFocus: _readReferencePoint(value.second_focus),
-        allowBarycenterApproximation: allowBarycenterApproximation,
+      return operationResult(
+        OrbitReferencePoints(
+          body: _bodyFromId(value.body_id),
+          center: _bodyFromId(value.center_id),
+          referenceFrame: ApparentFrame.fromId(value.reference_frame_id),
+          rawReferenceFrameId: value.reference_frame_id,
+          model: OrbitReferencePointModel.fromId(value.model_id),
+          rawModelId: value.model_id,
+          ascendingNode: _readReferencePoint(value.ascending_node),
+          descendingNode: _readReferencePoint(value.descending_node),
+          periapsis: _readReferencePoint(value.periapsis),
+          apoapsis: _readReferencePoint(value.apoapsis),
+          secondFocus: _readReferencePoint(value.second_focus),
+          allowBarycenterApproximation: allowBarycenterApproximation,
+        ),
+        resultFlags,
       );
     });
   }
 
-  ApsisEvent<Scale> _searchApsis<Scale extends TimeScale>(
+  OperationResult<ApsisEvent<Scale>> _searchApsis<Scale extends TimeScale>(
     Body body,
     ApsisKind kind,
     OrbitalSearchDirection direction,
@@ -359,24 +366,28 @@ final class OrbitalApi {
         _flags(allowBarycenterApproximation, direction: direction),
       );
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
-      _checkStatus(status, mappedDiagnostic);
+      final resultFlags = _checkStatus(status, mappedDiagnostic);
       final value = output.ref;
-      return ApsisEvent<Scale>(
-        body: _bodyFromId(value.body_id),
-        center: _bodyFromId(value.center_id),
-        kind: ApsisKind.fromId(value.kind),
-        coordinate: readJulianDate<Scale>(value.jd),
-        distanceAu: value.distance_au,
-        radialVelocityAuPerDay: value.radial_velocity_au_per_day,
-        iterationCount: value.iteration_count,
-        evaluationCount: value.evaluation_count,
-        direction: direction,
-        allowBarycenterApproximation: allowBarycenterApproximation,
+      return operationResult(
+        ApsisEvent<Scale>(
+          body: _bodyFromId(value.body_id),
+          center: _bodyFromId(value.center_id),
+          kind: ApsisKind.fromId(value.kind),
+          coordinate: readJulianDate<Scale>(value.jd),
+          distanceAu: value.distance_au,
+          radialVelocityAuPerDay: value.radial_velocity_au_per_day,
+          iterationCount: value.iteration_count,
+          evaluationCount: value.evaluation_count,
+          direction: direction,
+          allowBarycenterApproximation: allowBarycenterApproximation,
+        ),
+        resultFlags,
       );
     });
   }
 
-  PlaneNodeEvent<Scale> _searchPlaneNode<Scale extends TimeScale>(
+  OperationResult<PlaneNodeEvent<Scale>>
+  _searchPlaneNode<Scale extends TimeScale>(
     Body body,
     PlaneNodeKind kind,
     ApparentFrame referenceFrame,
@@ -405,21 +416,24 @@ final class OrbitalApi {
         _flags(allowBarycenterApproximation, direction: direction),
       );
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
-      _checkStatus(status, mappedDiagnostic);
+      final resultFlags = _checkStatus(status, mappedDiagnostic);
       final value = output.ref;
-      return PlaneNodeEvent<Scale>(
-        body: _bodyFromId(value.body_id),
-        center: _bodyFromId(value.center_id),
-        referenceFrame: ApparentFrame.fromId(value.reference_frame_id),
-        rawReferenceFrameId: value.reference_frame_id,
-        kind: PlaneNodeKind.fromId(value.kind),
-        coordinate: readJulianDate<Scale>(value.jd),
-        referencePlaneAngleRadians: value.reference_plane_angle_rad,
-        distanceAu: value.distance_au,
-        iterationCount: value.iteration_count,
-        evaluationCount: value.evaluation_count,
-        direction: direction,
-        allowBarycenterApproximation: allowBarycenterApproximation,
+      return operationResult(
+        PlaneNodeEvent<Scale>(
+          body: _bodyFromId(value.body_id),
+          center: _bodyFromId(value.center_id),
+          referenceFrame: ApparentFrame.fromId(value.reference_frame_id),
+          rawReferenceFrameId: value.reference_frame_id,
+          kind: PlaneNodeKind.fromId(value.kind),
+          coordinate: readJulianDate<Scale>(value.jd),
+          referencePlaneAngleRadians: value.reference_plane_angle_rad,
+          distanceAu: value.distance_au,
+          iterationCount: value.iteration_count,
+          evaluationCount: value.evaluation_count,
+          direction: direction,
+          allowBarycenterApproximation: allowBarycenterApproximation,
+        ),
+        resultFlags,
       );
     });
   }

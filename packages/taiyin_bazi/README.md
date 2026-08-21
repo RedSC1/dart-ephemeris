@@ -15,12 +15,13 @@ void main() {
   final ephemeris = Ephemeris.open();
   final context = ephemeris.createContext();
   try {
-    final pillars = context.chineseCalendar.fourPillars(
-      instantUtc: JulianDate<UtcScale>.fromDouble(2460351.0),
-      virtualTime: AstroDateTime(2024, 2, 10, 12),
+    final result = context.bazi.calculateLocal(
+      AstroDateTime(2003, 3, 13, 14, 15),
+      gender: BaziGender.male,
     );
-    final chart = context.bazi.calcChart(pillars);
-    print(chart.dayPillar);
+    print(result.value.chart.dayPillar);
+    print(result.value.qiyun.startCivilTime);
+    print(result.flags.values);
   } finally {
     context.close();
   }

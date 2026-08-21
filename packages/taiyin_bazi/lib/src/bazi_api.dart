@@ -9,25 +9,11 @@ import 'bazi_models.dart';
 /// The native "invalid five-element" sentinel (`TAIYIN_BAZI_INVALID_WUXING`).
 const int _taiyinBaziInvalidWuxing = 0xff;
 
-void _checkStatus(
-  TaiyinBindings bindings,
-  int status, {
+ResultFlags _checkStatus(
+  TaiyinExtensionHost host,
+  int rawResult, {
   EphemerisDiagnostic? diagnostic,
-}) {
-  if (status == 0) return;
-  final namePointer = bindings.taiyin_status_name(status);
-  final messagePointer = bindings.taiyin_status_message(status);
-  throw EphemerisError(
-    status,
-    namePointer == nullptr
-        ? 'Unknown'
-        : namePointer.cast<Utf8>().toDartString(),
-    messagePointer == nullptr
-        ? 'Unknown'
-        : messagePointer.cast<Utf8>().toDartString(),
-    diagnostic: diagnostic,
-  );
-}
+}) => host.checkStatus(rawResult, diagnostic: diagnostic);
 
 final Expando<BaziContext> _baziCache = Expando<BaziContext>('taiyin_bazi');
 
@@ -111,7 +97,7 @@ final class BaziContext implements Finalizable {
       final nativeConfig = _writeBaziConfig(bindings, arena, config);
       final output = arena<Pointer<taiyin_bazi_context>>();
       _checkStatus(
-        bindings,
+        host,
         bindings.taiyin_bazi_context_create(nativeConfig, output),
       );
       return output.value;
@@ -163,7 +149,7 @@ final class BaziContext implements Finalizable {
     return using((arena) {
       final output = arena<Uint8>(2);
       _checkStatus(
-        _bindings,
+        _host,
         _bindings.taiyin_bazi_get_kong_wang(value.raw, output),
       );
       return (
@@ -180,7 +166,7 @@ final class BaziContext implements Finalizable {
     return using((arena) {
       final output = arena<Uint8>();
       _checkStatus(
-        _bindings,
+        _host,
         _bindings.taiyin_bazi_get_ten_god(dayStemId, targetStemId, output),
       );
       return BaziTenGod.fromId(output.value);
@@ -195,7 +181,7 @@ final class BaziContext implements Finalizable {
       final output = arena<Uint8>(3);
       final count = arena<Uint8>();
       _checkStatus(
-        _bindings,
+        _host,
         _bindings.taiyin_bazi_get_hidden_stems(branchId, output, count),
       );
       final stemCount = count.value;
@@ -216,7 +202,7 @@ final class BaziContext implements Finalizable {
       final flags = arena<Uint32>();
       final combinedElement = arena<Uint8>();
       _checkStatus(
-        _bindings,
+        _host,
         _bindings.taiyin_bazi_calc_stem_relation(
           stemA,
           stemB,
@@ -236,7 +222,7 @@ final class BaziContext implements Finalizable {
       final flags = arena<Uint32>();
       final combinedElement = arena<Uint8>();
       _checkStatus(
-        _bindings,
+        _host,
         _bindings.taiyin_bazi_calc_branch_relation(
           branchA,
           branchB,
@@ -260,7 +246,7 @@ final class BaziContext implements Finalizable {
       final flags = arena<Uint32>();
       final combinedElement = arena<Uint8>();
       _checkStatus(
-        _bindings,
+        _host,
         _bindings.taiyin_bazi_calc_branch_triple_relation(
           branchA,
           branchB,
@@ -284,7 +270,7 @@ final class BaziContext implements Finalizable {
     return using((arena) {
       final output = arena<Uint8>();
       _checkStatus(
-        _bindings,
+        _host,
         _bindings.taiyin_bazi_get_life_stage(stemId, branchId, mode.id, output),
       );
       return output.value;
@@ -298,7 +284,7 @@ final class BaziContext implements Finalizable {
     return using((arena) {
       final output = arena<taiyin_ganzhi>();
       _checkStatus(
-        _bindings,
+        _host,
         _bindings.taiyin_bazi_calc_liunian(effectiveYear, output),
       );
       return Ganzhi.fromNative(output.value);
@@ -314,7 +300,7 @@ final class BaziContext implements Finalizable {
     return using((arena) {
       final output = arena<taiyin_ganzhi>();
       _checkStatus(
-        _bindings,
+        _host,
         _bindings.taiyin_bazi_calc_liuyue(yearPillar.raw, monthBranch, output),
       );
       return Ganzhi.fromNative(output.value);
@@ -328,10 +314,7 @@ final class BaziContext implements Finalizable {
     return using((arena) {
       final calendar = writeNativeCalendar(_bindings, arena, civilDate);
       final output = arena<taiyin_ganzhi>();
-      _checkStatus(
-        _bindings,
-        _bindings.taiyin_bazi_calc_liuri(calendar, output),
-      );
+      _checkStatus(_host, _bindings.taiyin_bazi_calc_liuri(calendar, output));
       return Ganzhi.fromNative(output.value);
     });
   }
@@ -345,7 +328,7 @@ final class BaziContext implements Finalizable {
     return using((arena) {
       final output = arena<taiyin_ganzhi>();
       _checkStatus(
-        _bindings,
+        _host,
         _bindings.taiyin_bazi_calc_liushi(dayPillar.raw, hourIndex, output),
       );
       return Ganzhi.fromNative(output.value);
@@ -360,7 +343,7 @@ final class BaziContext implements Finalizable {
       final nativeChart = _writeBaziChart(_bindings, arena, chart);
       final output = arena<taiyin_ganzhi>();
       _checkStatus(
-        _bindings,
+        _host,
         _bindings.taiyin_bazi_calc_xiaoyun(nativeChart, direction, age, output),
       );
       return Ganzhi.fromNative(output.value);
@@ -390,7 +373,7 @@ final class BaziContext implements Finalizable {
         0,
         count,
       );
-      _checkStatus(_bindings, countStatus);
+      _checkStatus(_host, countStatus);
       final requiredCount = validatedNativeArrayCount(
         count.value,
         'BaZi xiao-yun',
@@ -412,7 +395,7 @@ final class BaziContext implements Finalizable {
         requiredCount,
         count,
       );
-      _checkStatus(_bindings, fillStatus);
+      _checkStatus(_host, fillStatus);
       final resultCount = validatedNativeResultCount(
         count.value,
         requiredCount,
@@ -434,17 +417,95 @@ final class BaziContext implements Finalizable {
       final output = arena<taiyin_bazi_chart>();
       _bindings.taiyin_bazi_chart_init(output);
       _checkStatus(
-        _bindings,
+        _host,
         _bindings.taiyin_bazi_calc_chart(_context, nativePillars, output),
       );
       return _readBaziChart(output.ref);
     });
   }
 
+  OperationResult<BaziResult> _calculateResolved({
+    required JulianDate<UtcScale> instantUtc,
+    required AstroDateTime localTime,
+    required BaziGender gender,
+    required GanzhiRatHourMode ratHourMode,
+  }) {
+    final pillarsResult = _calendar.fourPillars(
+      instantUtc: instantUtc,
+      virtualTime: localTime,
+      ratHourMode: ratHourMode,
+    );
+    final chart = calcChart(pillarsResult.value);
+    final qiyunResult = calcQiyun(
+      birthJdUt: JulianDate<Ut1Scale>.fromParts(
+        instantUtc.dayNumber,
+        instantUtc.dayFraction,
+      ),
+      birthCivilTime: localTime,
+      chart: chart,
+      gender: gender,
+    );
+    return operationResult(
+      BaziResult(
+        instantUtc: instantUtc,
+        localTime: localTime,
+        pillars: pillarsResult.value,
+        chart: chart,
+        qiyun: qiyunResult.value,
+      ),
+      pillarsResult.flags | qiyunResult.flags,
+    );
+  }
+
+  /// Calculates a complete BaZi result from a local civil clock.
+  OperationResult<BaziResult> calculateLocal(
+    AstroDateTime localTime, {
+    required BaziGender gender,
+    GanzhiRatHourMode ratHourMode = GanzhiRatHourMode.noSplit,
+  }) {
+    _ensureOpen();
+    final instantUtc = localTime.toJulianDate<UtcScale>().addSeconds(
+      -_calendarOffsetSeconds,
+    );
+    return _calculateResolved(
+      instantUtc: instantUtc,
+      localTime: localTime,
+      gender: gender,
+      ratHourMode: ratHourMode,
+    );
+  }
+
+  /// Calculates a complete BaZi result from one UTC instant.
+  OperationResult<BaziResult> calculateInstant(
+    JulianDate<UtcScale> instantUtc, {
+    required BaziGender gender,
+    GanzhiRatHourMode ratHourMode = GanzhiRatHourMode.noSplit,
+  }) {
+    _ensureOpen();
+    final localJd = instantUtc.addSeconds(_calendarOffsetSeconds);
+    final localTimeResult = _calendar.owner.time.reverseJulianDay(localJd);
+    final result = _calculateResolved(
+      instantUtc: instantUtc,
+      localTime: localTimeResult.value,
+      gender: gender,
+      ratHourMode: ratHourMode,
+    );
+    return operationResult(result.value, result.flags | localTimeResult.flags);
+  }
+
+  double get _calendarOffsetSeconds {
+    final config = _calendar.config;
+    if (config.dayBoundaryMode ==
+        ChineseCalendarDayBoundaryMode.fixedUtcOffset) {
+      return config.utcOffsetMinutes * 60.0;
+    }
+    return config.calendarMeridianDegrees * 240.0;
+  }
+
   /// Computes the 起运 (qi-yun) start of the first 大运 for a birth instant.
   ///
   /// Uses the bound [chineseCalendar] as the astronomical solar-term context.
-  BaziQiyunResult calcQiyun({
+  OperationResult<BaziQiyunResult> calcQiyun({
     required JulianDate<Ut1Scale> birthJdUt,
     required AstroDateTime birthCivilTime,
     required BaziChart chart,
@@ -471,8 +532,8 @@ final class BaziContext implements Finalizable {
       );
       final mappedDiagnostic = _host.readDiagnostic(diagnostic.ref);
       _host.recordDiagnostic(mappedDiagnostic);
-      _checkStatus(_bindings, status, diagnostic: mappedDiagnostic);
-      return _readQiyunResult(output.ref);
+      final flags = _checkStatus(_host, status, diagnostic: mappedDiagnostic);
+      return operationResult(_readQiyunResult(output.ref), flags);
     });
   }
 
@@ -503,7 +564,7 @@ final class BaziContext implements Finalizable {
         0,
         count,
       );
-      _checkStatus(_bindings, countStatus);
+      _checkStatus(_host, countStatus);
       final requiredCount = validatedNativeArrayCount(
         count.value,
         'BaZi da-yun',
@@ -526,7 +587,7 @@ final class BaziContext implements Finalizable {
         requiredCount,
         count,
       );
-      _checkStatus(_bindings, fillStatus);
+      _checkStatus(_host, fillStatus);
       final resultCount = validatedNativeResultCount(
         count.value,
         requiredCount,
@@ -541,7 +602,7 @@ final class BaziContext implements Finalizable {
   /// Determines the 人元司令 (ren-yuan si-ling) in effect at an instant.
   ///
   /// Uses the bound [chineseCalendar] as the astronomical solar-term context.
-  BaziRenyuanSilingResult calcRenyuanSiling({
+  OperationResult<BaziRenyuanSilingResult> calcRenyuanSiling({
     required JulianDate<Ut1Scale> instantJdUt,
     required BaziChart chart,
     required BaziRenyuanSilingTableModel tableModel,
@@ -567,8 +628,8 @@ final class BaziContext implements Finalizable {
       );
       final mappedDiagnostic = _host.readDiagnostic(diagnostic.ref);
       _host.recordDiagnostic(mappedDiagnostic);
-      _checkStatus(_bindings, status, diagnostic: mappedDiagnostic);
-      return _readRenyuanSilingResult(output.ref);
+      final flags = _checkStatus(_host, status, diagnostic: mappedDiagnostic);
+      return operationResult(_readRenyuanSilingResult(output.ref), flags);
     });
   }
 
@@ -588,7 +649,7 @@ final class BaziContext implements Finalizable {
         0,
         count,
       );
-      _checkStatus(_bindings, countStatus);
+      _checkStatus(_host, countStatus);
       final requiredCount = validatedNativeArrayCount(
         count.value,
         'BaZi renyuan siling segments',
@@ -608,7 +669,7 @@ final class BaziContext implements Finalizable {
         requiredCount,
         count,
       );
-      _checkStatus(_bindings, fillStatus);
+      _checkStatus(_host, fillStatus);
       final resultCount = validatedNativeResultCount(
         count.value,
         requiredCount,
@@ -642,7 +703,7 @@ final class BaziContext implements Finalizable {
         0,
         count,
       );
-      _checkStatus(_bindings, countStatus);
+      _checkStatus(_host, countStatus);
       final requiredCount = validatedNativeArrayCount(
         count.value,
         'BaZi chart relations',
@@ -663,7 +724,7 @@ final class BaziContext implements Finalizable {
         requiredCount,
         count,
       );
-      _checkStatus(_bindings, fillStatus);
+      _checkStatus(_host, fillStatus);
       final resultCount = validatedNativeResultCount(
         count.value,
         requiredCount,
@@ -710,7 +771,7 @@ final class BaziContext implements Finalizable {
               wordCapacity,
               wordCount,
             );
-      _checkStatus(_bindings, status);
+      _checkStatus(_host, status);
       final count = wordCount.value;
       if (count < 1 || count > wordCapacity) {
         throw StateError(

@@ -547,6 +547,23 @@ final class BaziChart {
   final List<int> nayinIds;
 }
 
+/// A complete BaZi calculation resolved from one birth event.
+final class BaziResult {
+  const BaziResult({
+    required this.instantUtc,
+    required this.localTime,
+    required this.pillars,
+    required this.chart,
+    required this.qiyun,
+  });
+
+  final JulianDate<UtcScale> instantUtc;
+  final AstroDateTime localTime;
+  final GanzhiFourPillars pillars;
+  final BaziChart chart;
+  final BaziQiyunResult qiyun;
+}
+
 /// A single relation between two pillars of a chart.
 final class BaziRelation {
   const BaziRelation({

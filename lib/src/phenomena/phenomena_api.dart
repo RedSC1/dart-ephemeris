@@ -1,7 +1,7 @@
 part of '../taiyin.dart';
 
 typedef _PhenomenaStatusChecker =
-    void Function(int status, EphemerisDiagnostic? diagnostic);
+    ResultFlags Function(int status, EphemerisDiagnostic? diagnostic);
 
 /// Physical and apparent phenomena for major solar-system bodies.
 final class PhenomenaApi {
@@ -23,7 +23,7 @@ final class PhenomenaApi {
   /// uses the context's configured observer for observer-dependent values;
   /// lunar [BodyPhenomena.geocentricHorizontalParallaxRadians] remains
   /// geocentric.
-  BodyPhenomena atTt(
+  OperationResult<BodyPhenomena> atTt(
     Body body,
     JulianDate<TtScale> tt, {
     PhenomenaOrigin origin = PhenomenaOrigin.geocentric,
@@ -52,7 +52,7 @@ final class PhenomenaApi {
   /// uses the context's configured observer for observer-dependent values;
   /// lunar [BodyPhenomena.geocentricHorizontalParallaxRadians] remains
   /// geocentric.
-  BodyPhenomena atUt1(
+  OperationResult<BodyPhenomena> atUt1(
     Body body,
     JulianDate<Ut1Scale> ut1, {
     PhenomenaOrigin origin = PhenomenaOrigin.geocentric,
@@ -75,7 +75,7 @@ final class PhenomenaApi {
     );
   }
 
-  BodyPhenomena _calculate(
+  OperationResult<BodyPhenomena> _calculate(
     Body body,
     PhenomenaOrigin origin,
     Set<PositionFlag> flags,
@@ -108,21 +108,24 @@ final class PhenomenaApi {
         ..taiyin_ephemeris_diagnostic_init(diagnostic);
       final status = calculate(arena, mask, output, diagnostic);
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
-      _checkStatus(status, mappedDiagnostic);
+      final resultFlags = _checkStatus(status, mappedDiagnostic);
       final value = output.ref;
-      return BodyPhenomena(
-        body: body,
-        phaseAngleRadians: value.phase_angle_rad,
-        illuminatedFraction: value.illuminated_fraction,
-        solarElongationRadians: value.solar_elongation_rad,
-        apparentDiameterRadians: value.apparent_diameter_rad,
-        apparentMagnitude: value.apparent_magnitude,
-        geocentricHorizontalParallaxRadians:
-            value.horizontal_parallax_rad.isFinite
-            ? value.horizontal_parallax_rad
-            : null,
-        origin: origin,
-        flags: frozenFlags,
+      return operationResult(
+        BodyPhenomena(
+          body: body,
+          phaseAngleRadians: value.phase_angle_rad,
+          illuminatedFraction: value.illuminated_fraction,
+          solarElongationRadians: value.solar_elongation_rad,
+          apparentDiameterRadians: value.apparent_diameter_rad,
+          apparentMagnitude: value.apparent_magnitude,
+          geocentricHorizontalParallaxRadians:
+              value.horizontal_parallax_rad.isFinite
+              ? value.horizontal_parallax_rad
+              : null,
+          origin: origin,
+          flags: frozenFlags,
+        ),
+        resultFlags,
       );
     });
   }

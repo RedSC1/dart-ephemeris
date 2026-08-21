@@ -4,7 +4,9 @@ import 'package:ffi/ffi.dart';
 
 import '../bindings/taiyin_bindings.g.dart';
 import '../interop/calendar.dart';
+import '../interop/call_result.dart';
 import '../interop/julian_date.dart';
+import '../result_flags.dart';
 import '../time/astro_date_time.dart';
 import '../time/julian_date.dart';
 import '../time/time_models.dart';
@@ -36,7 +38,7 @@ typedef _StateCalculation =
       Pointer<taiyin_ephemeris_diagnostic> diagnostic,
     );
 typedef _PositionStatusChecker =
-    void Function(int status, EphemerisDiagnostic? diagnostic);
+    ResultFlags Function(int status, EphemerisDiagnostic? diagnostic);
 
 /// Position and Cartesian-state calculations backed by Ephemeris.
 ///
@@ -61,7 +63,7 @@ final class PositionApi {
   final _PositionStatusChecker _checkStatus;
 
   /// Calculates one body at a TT Julian date.
-  Position atTt(
+  OperationResult<Position> atTt(
     Target body,
     JulianDate<TtScale> julianDate, {
     Set<PositionFlag> flags = const {},
@@ -81,7 +83,7 @@ final class PositionApi {
   }
 
   /// Calculates one body at a UT1 Julian date using Taiyin's time policy.
-  Position atUt1(
+  OperationResult<Position> atUt1(
     Target body,
     JulianDate<Ut1Scale> julianDate, {
     Set<PositionFlag> flags = const {},
@@ -101,7 +103,7 @@ final class PositionApi {
   }
 
   /// Calculates one body with explicit TDB and TT coordinates.
-  Position atTdb(
+  OperationResult<Position> atTdb(
     Target body,
     JulianDate<TdbScale> tdb,
     JulianDate<TtScale> tt, {
@@ -123,7 +125,7 @@ final class PositionApi {
   }
 
   /// Calculates one body at UT1 with an explicit TT−UT1 value.
-  Position atUt1WithDeltaT(
+  OperationResult<Position> atUt1WithDeltaT(
     Target body,
     JulianDate<Ut1Scale> julianDate,
     double deltaTSeconds, {
@@ -147,7 +149,7 @@ final class PositionApi {
   }
 
   /// Calculates one body from a UTC calendar value.
-  Position atUtc(
+  OperationResult<Position> atUtc(
     Target body,
     AstroDateTime utc, {
     Set<PositionFlag> flags = const {},
@@ -170,7 +172,7 @@ final class PositionApi {
   }
 
   /// Calculates several bodies at one TT Julian date.
-  List<Position> batchAtTt(
+  OperationResult<List<Position>> batchAtTt(
     List<Target> bodies,
     JulianDate<TtScale> julianDate, {
     Set<PositionFlag> flags = const {},
@@ -193,7 +195,7 @@ final class PositionApi {
   }
 
   /// Calculates several bodies at one UT1 Julian date.
-  List<Position> batchAtUt1(
+  OperationResult<List<Position>> batchAtUt1(
     List<Target> bodies,
     JulianDate<Ut1Scale> julianDate, {
     Set<PositionFlag> flags = const {},
@@ -216,7 +218,7 @@ final class PositionApi {
   }
 
   /// Calculates several bodies with explicit TDB and TT coordinates.
-  List<Position> batchAtTdb(
+  OperationResult<List<Position>> batchAtTdb(
     List<Target> bodies,
     JulianDate<TdbScale> tdb,
     JulianDate<TtScale> tt, {
@@ -241,7 +243,7 @@ final class PositionApi {
   }
 
   /// Calculates several bodies at UT1 with an explicit TT−UT1 value.
-  List<Position> batchAtUt1WithDeltaT(
+  OperationResult<List<Position>> batchAtUt1WithDeltaT(
     List<Target> bodies,
     JulianDate<Ut1Scale> julianDate,
     double deltaTSeconds, {
@@ -267,7 +269,7 @@ final class PositionApi {
   }
 
   /// Calculates several bodies from one UTC calendar value.
-  List<Position> batchAtUtc(
+  OperationResult<List<Position>> batchAtUtc(
     List<Target> bodies,
     AstroDateTime utc, {
     Set<PositionFlag> flags = const {},
@@ -297,7 +299,7 @@ final class PositionApi {
   /// Cartesian position, velocity, and acceleration are always returned, so
   /// [PositionFlag.xyz] and [PositionFlag.speed] are implied and
   /// have no effect. Frame and apparent-correction flags still apply.
-  CartesianState stateAtTt(
+  OperationResult<CartesianState> stateAtTt(
     Target body,
     JulianDate<TtScale> julianDate, {
     Set<PositionFlag> flags = const {},
@@ -319,7 +321,7 @@ final class PositionApi {
   /// Calculates a Cartesian state at a UT1 Julian date.
   ///
   /// Position and derivative flags behave as described by [stateAtTt].
-  CartesianState stateAtUt1(
+  OperationResult<CartesianState> stateAtUt1(
     Target body,
     JulianDate<Ut1Scale> julianDate, {
     Set<PositionFlag> flags = const {},
@@ -341,7 +343,7 @@ final class PositionApi {
   /// Calculates a Cartesian state with explicit TDB and TT coordinates.
   ///
   /// Position and derivative flags behave as described by [stateAtTt].
-  CartesianState stateAtTdb(
+  OperationResult<CartesianState> stateAtTdb(
     Target body,
     JulianDate<TdbScale> tdb,
     JulianDate<TtScale> tt, {
@@ -365,7 +367,7 @@ final class PositionApi {
   /// Calculates a Cartesian state at UT1 with an explicit TT−UT1 value.
   ///
   /// Position and derivative flags behave as described by [stateAtTt].
-  CartesianState stateAtUt1WithDeltaT(
+  OperationResult<CartesianState> stateAtUt1WithDeltaT(
     Target body,
     JulianDate<Ut1Scale> julianDate,
     double deltaTSeconds, {
@@ -391,7 +393,7 @@ final class PositionApi {
   /// Calculates a Cartesian state from a UTC calendar value.
   ///
   /// Position and derivative flags behave as described by [stateAtTt].
-  CartesianState stateAtUtc(
+  OperationResult<CartesianState> stateAtUtc(
     Target body,
     AstroDateTime utc, {
     Set<PositionFlag> flags = const {},
@@ -413,7 +415,7 @@ final class PositionApi {
     });
   }
 
-  Position _position(
+  OperationResult<Position> _position(
     Set<PositionFlag> flags,
     _SinglePositionCalculation calculate,
   ) {
@@ -425,19 +427,24 @@ final class PositionApi {
       _bindings.taiyin_ephemeris_diagnostic_init(diagnostic);
       final status = calculate(arena, mask, output, diagnostic);
       final mappedDiagnostic = _readDiagnostic(diagnostic.ref);
-      _checkStatus(status, mappedDiagnostic);
-      return Position._([
-        for (var index = 0; index < 6; index++) output[index],
-      ], frozenFlags);
+      final resultFlags = _checkStatus(status, mappedDiagnostic);
+      return operationResult(
+        Position._([
+          for (var index = 0; index < 6; index++) output[index],
+        ], frozenFlags),
+        resultFlags,
+      );
     });
   }
 
-  List<Position> _positions(
+  OperationResult<List<Position>> _positions(
     List<Target> bodies,
     Set<PositionFlag> flags,
     _BatchPositionCalculation calculate,
   ) {
-    if (bodies.isEmpty) return const [];
+    if (bodies.isEmpty) {
+      return operationResult(const <Position>[], ResultFlags.none);
+    }
     final frozenFlags = Set<PositionFlag>.unmodifiable(flags);
     final mask = _flagMask(frozenFlags);
     return using((arena) {
@@ -448,7 +455,7 @@ final class PositionApi {
         targetIds[index] = bodies[index].id;
         _bindings.taiyin_ephemeris_diagnostic_init(diagnostics + index);
       }
-      final status = calculate(
+      final rawResult = calculate(
         arena,
         targetIds,
         bodies.length,
@@ -460,23 +467,34 @@ final class PositionApi {
         for (var bodyIndex = 0; bodyIndex < bodies.length; bodyIndex++)
           _readDiagnostic(diagnostics[bodyIndex]),
       ];
-      if (status != 0 &&
+      final decoded = decodeNativeCallResult(rawResult);
+      if (decoded.status != 0 &&
           !elementDiagnostics.any((diagnostic) => diagnostic.status != 0)) {
-        _checkStatus(status, null);
+        _checkStatus(rawResult, null);
       }
-      // Publishes the batch's final diagnostic; a zero status never throws.
-      _checkStatus(0, elementDiagnostics.last);
-      return List<Position>.unmodifiable([
-        for (var bodyIndex = 0; bodyIndex < bodies.length; bodyIndex++)
-          Position._([
-            for (var valueIndex = 0; valueIndex < 6; valueIndex++)
-              output[bodyIndex * 6 + valueIndex],
-          ], frozenFlags),
-      ]);
+      // Publish the batch's final diagnostic without converting a per-target
+      // failure into a whole-batch exception.
+      final resultFlags = _checkStatus(
+        decoded.flags.mask,
+        elementDiagnostics.last,
+      );
+      return operationResult(
+        List<Position>.unmodifiable([
+          for (var bodyIndex = 0; bodyIndex < bodies.length; bodyIndex++)
+            Position._([
+              for (var valueIndex = 0; valueIndex < 6; valueIndex++)
+                output[bodyIndex * 6 + valueIndex],
+            ], frozenFlags),
+        ]),
+        resultFlags,
+      );
     });
   }
 
-  CartesianState _state(Set<PositionFlag> flags, _StateCalculation calculate) {
+  OperationResult<CartesianState> _state(
+    Set<PositionFlag> flags,
+    _StateCalculation calculate,
+  ) {
     final mask = _flagMask(flags);
     return using((arena) {
       final output = arena<taiyin_cartesian_state>();
@@ -486,12 +504,15 @@ final class PositionApi {
         ..taiyin_ephemeris_diagnostic_init(diagnostic);
       final status = calculate(arena, mask, output, diagnostic);
       final mappedDiagnostic = _readDiagnostic(diagnostic.ref);
-      _checkStatus(status, mappedDiagnostic);
+      final resultFlags = _checkStatus(status, mappedDiagnostic);
       final state = output.ref;
-      return CartesianState(
-        positionAu: _readVector(state.position_au),
-        velocityAuPerDay: _readVector(state.velocity_au_per_day),
-        accelerationAuPerDay2: _readVector(state.acceleration_au_per_day2),
+      return operationResult(
+        CartesianState(
+          positionAu: _readVector(state.position_au),
+          velocityAuPerDay: _readVector(state.velocity_au_per_day),
+          accelerationAuPerDay2: _readVector(state.acceleration_au_per_day2),
+        ),
+        resultFlags,
       );
     });
   }

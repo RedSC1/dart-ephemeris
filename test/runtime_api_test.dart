@@ -30,7 +30,7 @@ void main() {
 
       test('reports Singularity release metadata', () {
         expect(runtime.abiVersion, taiyinSupportedAbiVersion);
-        expect(runtime.libraryVersion, '1.0.0-preview.5');
+        expect(runtime.libraryVersion, '1.0.0-preview.6');
         expect(runtime.libraryCodename, 'Singularity');
       });
 
@@ -40,11 +40,13 @@ void main() {
       });
 
       test('formats structured native diagnostics for logs', () {
-        context.position.atTt(
-          Body.moon,
-          JulianDate<TtScale>.fromDouble(2460409.0),
-          flags: {PositionFlag.xyz},
-        );
+        context.position
+            .atTt(
+              Body.moon,
+              JulianDate<TtScale>.fromDouble(2460409.0),
+              flags: {PositionFlag.xyz},
+            )
+            .value;
         final diagnostic = context.lastDiagnostic!;
 
         final formatted = runtime.formatEphemerisDiagnostic(diagnostic);
@@ -61,11 +63,13 @@ void main() {
             ..registerBuiltinAstrologyTargets()
             ..registerBuiltinAstrologyTargets();
 
-          final position = context.position.atTt(
-            AstrologyTarget.trueNode,
-            JulianDate<TtScale>.fromDouble(2460409.0),
-            flags: {PositionFlag.radians, PositionFlag.speed},
-          );
+          final position = context.position
+              .atTt(
+                AstrologyTarget.trueNode,
+                JulianDate<TtScale>.fromDouble(2460409.0),
+                flags: {PositionFlag.radians, PositionFlag.speed},
+              )
+              .value;
 
           expect(position.values[0].isFinite, isTrue);
           expect(position.values[1], 0.0);
@@ -134,11 +138,13 @@ void main() {
 
         runtime.addSourcePath(nativeDataPath);
         context.configuration.setRouteRule(RouteRule.opm2);
-        context.position.atTt(
-          Body.mercury,
-          JulianDate<TtScale>.fromDouble(2460409.0),
-          flags: {PositionFlag.xyz, PositionFlag.truePosition},
-        );
+        context.position
+            .atTt(
+              Body.mercury,
+              JulianDate<TtScale>.fromDouble(2460409.0),
+              flags: {PositionFlag.xyz, PositionFlag.truePosition},
+            )
+            .value;
         expect(runtime.cacheEntryCount, greaterThan(0));
 
         runtime.clearEphemerisCache();
@@ -216,6 +222,7 @@ void main() {
                   JulianDate<TtScale>.fromDouble(2460409.0),
                   flags: {PositionFlag.xyz},
                 )
+                .value
                 .values,
             everyElement(isA<double>()),
           );

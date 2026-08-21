@@ -1,7 +1,7 @@
 part of '../taiyin.dart';
 
 typedef _EventsStatusChecker =
-    void Function(int status, EphemerisDiagnostic? diagnostic);
+    ResultFlags Function(int status, EphemerisDiagnostic? diagnostic);
 typedef _EventScalarCalculation =
     int Function(
       Arena arena,
@@ -65,7 +65,7 @@ final class EventsApi {
   }
 
   /// Finds a solar ecliptic-longitude crossing near a UT1 estimate.
-  JulianDate<Ut1Scale> solarLongitudeAtUt1(
+  OperationResult<JulianDate<Ut1Scale>> solarLongitudeAtUt1(
     double targetLongitudeRadians,
     JulianDate<Ut1Scale> estimate, {
     Set<PositionFlag> positionFlags = const {},
@@ -91,7 +91,7 @@ final class EventsApi {
   }
 
   /// Finds a solar ecliptic-longitude crossing near a TT estimate.
-  JulianDate<TtScale> solarLongitudeAtTt(
+  OperationResult<JulianDate<TtScale>> solarLongitudeAtTt(
     double targetLongitudeRadians,
     JulianDate<TtScale> estimate, {
     Set<PositionFlag> positionFlags = const {},
@@ -117,7 +117,7 @@ final class EventsApi {
   }
 
   /// Finds a lunar ecliptic-longitude crossing near a UT1 estimate.
-  JulianDate<Ut1Scale> moonLongitudeAtUt1(
+  OperationResult<JulianDate<Ut1Scale>> moonLongitudeAtUt1(
     double targetLongitudeRadians,
     JulianDate<Ut1Scale> estimate, {
     Set<PositionFlag> positionFlags = const {},
@@ -143,7 +143,7 @@ final class EventsApi {
   }
 
   /// Finds a lunar ecliptic-longitude crossing near a TT estimate.
-  JulianDate<TtScale> moonLongitudeAtTt(
+  OperationResult<JulianDate<TtScale>> moonLongitudeAtTt(
     double targetLongitudeRadians,
     JulianDate<TtScale> estimate, {
     Set<PositionFlag> positionFlags = const {},
@@ -169,7 +169,7 @@ final class EventsApi {
   }
 
   /// Finds all [body] longitude crossings in a UT1 interval.
-  List<JulianDate<Ut1Scale>> longitudeCrossingsAtUt1(
+  OperationResult<List<JulianDate<Ut1Scale>>> longitudeCrossingsAtUt1(
     Target body,
     double targetLongitudeRadians,
     JulianDate<Ut1Scale> start,
@@ -209,7 +209,7 @@ final class EventsApi {
   }
 
   /// Finds all [body] longitude crossings in a TT interval.
-  List<JulianDate<TtScale>> longitudeCrossingsAtTt(
+  OperationResult<List<JulianDate<TtScale>>> longitudeCrossingsAtTt(
     Target body,
     double targetLongitudeRadians,
     JulianDate<TtScale> start,
@@ -249,7 +249,7 @@ final class EventsApi {
   }
 
   /// Finds stationary longitudes of [body] in a UT1 interval.
-  List<LongitudeStation<Ut1Scale>> longitudeStationsAtUt1(
+  OperationResult<List<LongitudeStation<Ut1Scale>>> longitudeStationsAtUt1(
     Target body,
     JulianDate<Ut1Scale> start,
     JulianDate<Ut1Scale> end, {
@@ -286,7 +286,7 @@ final class EventsApi {
   }
 
   /// Finds stationary longitudes of [body] in a TT interval.
-  List<LongitudeStation<TtScale>> longitudeStationsAtTt(
+  OperationResult<List<LongitudeStation<TtScale>>> longitudeStationsAtTt(
     Target body,
     JulianDate<TtScale> start,
     JulianDate<TtScale> end, {
@@ -323,7 +323,7 @@ final class EventsApi {
   }
 
   /// Finds [aspectRadians] crossings between two targets in a UT1 interval.
-  List<JulianDate<Ut1Scale>> aspectCrossingsAtUt1(
+  OperationResult<List<JulianDate<Ut1Scale>>> aspectCrossingsAtUt1(
     Target bodyA,
     Target bodyB,
     double aspectRadians,
@@ -365,7 +365,7 @@ final class EventsApi {
   }
 
   /// Finds [aspectRadians] crossings between two targets in a TT interval.
-  List<JulianDate<TtScale>> aspectCrossingsAtTt(
+  OperationResult<List<JulianDate<TtScale>>> aspectCrossingsAtTt(
     Target bodyA,
     Target bodyB,
     double aspectRadians,
@@ -407,7 +407,7 @@ final class EventsApi {
   }
 
   /// Finds exact matches against any of [aspectSeparationsRadians] in UT1.
-  List<ExactAspectEvent<Ut1Scale>> exactAspectsAtUt1(
+  OperationResult<List<ExactAspectEvent<Ut1Scale>>> exactAspectsAtUt1(
     Target bodyA,
     Target bodyB,
     List<double> aspectSeparationsRadians,
@@ -458,7 +458,7 @@ final class EventsApi {
   }
 
   /// Finds exact matches against any of [aspectSeparationsRadians] in TT.
-  List<ExactAspectEvent<TtScale>> exactAspectsAtTt(
+  OperationResult<List<ExactAspectEvent<TtScale>>> exactAspectsAtTt(
     Target bodyA,
     Target bodyB,
     List<double> aspectSeparationsRadians,
@@ -509,7 +509,7 @@ final class EventsApi {
   }
 
   /// Finds the greatest elongation of Mercury or Venus in a UT1 interval.
-  GreatestElongationEvent greatestElongationAtUt1(
+  OperationResult<GreatestElongationEvent> greatestElongationAtUt1(
     Body body,
     JulianDate<Ut1Scale> start,
     JulianDate<Ut1Scale> end, {
@@ -535,32 +535,36 @@ final class EventsApi {
         diagnostic,
       );
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
-      _checkStatus(status, mappedDiagnostic);
+      final resultFlags = _checkStatus(status, mappedDiagnostic);
       final value = output.ref;
-      return GreatestElongationEvent(
-        bodyId: value.body_id,
-        coordinate: readJulianDate<Ut1Scale>(value.jd_ut),
-        elongationRadians: value.elongation_rad,
-        relativeLongitudeRadians: value.relative_longitude_rad,
-        kind: GreatestElongationKind.fromMask(value.kind),
-        iterationCount: value.iteration_count,
-        evaluationCount: value.evaluation_count,
-        phenomena: EventPhenomena(
-          phaseAngleRadians: value.phenomena.phase_angle_rad,
-          illuminatedFraction: value.phenomena.illuminated_fraction,
-          solarElongationRadians: value.phenomena.solar_elongation_rad,
-          apparentDiameterRadians: value.phenomena.apparent_diameter_rad,
-          apparentMagnitude: value.phenomena.apparent_magnitude,
-          horizontalParallaxRadians: _finiteOrNull(
-            value.phenomena.horizontal_parallax_rad,
+      return operationResult(
+        GreatestElongationEvent(
+          bodyId: value.body_id,
+          coordinate: readJulianDate<Ut1Scale>(value.jd_ut),
+          elongationRadians: value.elongation_rad,
+          relativeLongitudeRadians: value.relative_longitude_rad,
+          kind: GreatestElongationKind.fromMask(value.kind),
+          iterationCount: value.iteration_count,
+          evaluationCount: value.evaluation_count,
+          phenomena: EventPhenomena(
+            phaseAngleRadians: value.phenomena.phase_angle_rad,
+            illuminatedFraction: value.phenomena.illuminated_fraction,
+            solarElongationRadians: value.phenomena.solar_elongation_rad,
+            apparentDiameterRadians: value.phenomena.apparent_diameter_rad,
+            apparentMagnitude: value.phenomena.apparent_magnitude,
+            horizontalParallaxRadians: _finiteOrNull(
+              value.phenomena.horizontal_parallax_rad,
+            ),
           ),
         ),
+        resultFlags,
       );
     });
   }
 
   /// Finds a local minimum of separation between two targets in UT1.
-  MinimumAngularSeparationEvent<Ut1Scale> minimumAngularSeparationAtUt1(
+  OperationResult<MinimumAngularSeparationEvent<Ut1Scale>>
+  minimumAngularSeparationAtUt1(
     Target bodyA,
     Target bodyB,
     JulianDate<Ut1Scale> start,
@@ -592,7 +596,8 @@ final class EventsApi {
   }
 
   /// Finds a local minimum of separation between two targets in TT.
-  MinimumAngularSeparationEvent<TtScale> minimumAngularSeparationAtTt(
+  OperationResult<MinimumAngularSeparationEvent<TtScale>>
+  minimumAngularSeparationAtTt(
     Target bodyA,
     Target bodyB,
     JulianDate<TtScale> start,
@@ -624,7 +629,7 @@ final class EventsApi {
   }
 
   /// Finds the next global Mercury or Venus solar transit from [start].
-  SolarTransitEvent nextSolarTransitAtUt1(
+  OperationResult<SolarTransitEvent> nextSolarTransitAtUt1(
     Body body,
     JulianDate<Ut1Scale> start, {
     Set<PositionFlag> positionFlags = const {},
@@ -651,7 +656,7 @@ final class EventsApi {
   }
 
   /// Computes local circumstances for a previously found [globalTransit].
-  LocalSolarTransitEvent localSolarTransitAtUt1(
+  OperationResult<LocalSolarTransitEvent> localSolarTransitAtUt1(
     SolarTransitEvent globalTransit,
     ObserverLocation observer, {
     Set<PositionFlag> positionFlags = const {},
@@ -687,7 +692,7 @@ final class EventsApi {
   }
 
   /// Finds the next local Mercury or Venus solar transit from [start].
-  LocalSolarTransitEvent nextLocalSolarTransitAtUt1(
+  OperationResult<LocalSolarTransitEvent> nextLocalSolarTransitAtUt1(
     Body body,
     JulianDate<Ut1Scale> start,
     ObserverLocation observer, {
@@ -723,7 +728,7 @@ final class EventsApi {
   }
 
   /// Finds lunar phase crossings in a UT1 interval.
-  List<JulianDate<Ut1Scale>> lunarPhaseCrossingsAtUt1(
+  OperationResult<List<JulianDate<Ut1Scale>>> lunarPhaseCrossingsAtUt1(
     double phaseRadians,
     JulianDate<Ut1Scale> start,
     JulianDate<Ut1Scale> end, {
@@ -760,7 +765,7 @@ final class EventsApi {
   }
 
   /// Finds lunar phase crossings in a TT interval.
-  List<JulianDate<TtScale>> lunarPhaseCrossingsAtTt(
+  OperationResult<List<JulianDate<TtScale>>> lunarPhaseCrossingsAtTt(
     double phaseRadians,
     JulianDate<TtScale> start,
     JulianDate<TtScale> end, {
@@ -796,7 +801,7 @@ final class EventsApi {
     });
   }
 
-  JulianDate<S> _scalar<S extends TimeScale>(
+  OperationResult<JulianDate<S>> _scalar<S extends TimeScale>(
     _EventScalarCalculation calculate,
   ) {
     return using((arena) {
@@ -805,12 +810,12 @@ final class EventsApi {
       _bindings.taiyin_ephemeris_diagnostic_init(diagnostic);
       final status = calculate(arena, output, diagnostic);
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
-      _checkStatus(status, mappedDiagnostic);
-      return readJulianDate<S>(output.ref);
+      final resultFlags = _checkStatus(status, mappedDiagnostic);
+      return operationResult(readJulianDate<S>(output.ref), resultFlags);
     });
   }
 
-  List<JulianDate<S>> _dateArray<S extends TimeScale>(
+  OperationResult<List<JulianDate<S>>> _dateArray<S extends TimeScale>(
     int maxResults,
     _EventDateArrayCalculation calculate,
   ) {
@@ -821,7 +826,7 @@ final class EventsApi {
       _bindings.taiyin_ephemeris_diagnostic_init(diagnostic);
       final status = calculate(arena, output, maxResults, count, diagnostic);
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
-      _checkStatus(status, mappedDiagnostic);
+      final resultFlags = _checkStatus(status, mappedDiagnostic);
       final resultCount = _validatedResultCount(count.value, maxResults);
       final values = List<JulianDate<S>>.unmodifiable(
         List.generate(
@@ -829,11 +834,11 @@ final class EventsApi {
           (index) => readJulianDate<S>((output + index).ref),
         ),
       );
-      return values;
+      return operationResult(values, resultFlags);
     });
   }
 
-  List<T> _pairArray<S extends TimeScale, T>(
+  OperationResult<List<T>> _pairArray<S extends TimeScale, T>(
     int maxResults,
     _EventPairArrayCalculation calculate,
     T Function(JulianDate<S> coordinate, double secondary) read,
@@ -853,7 +858,7 @@ final class EventsApi {
         diagnostic,
       );
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
-      _checkStatus(status, mappedDiagnostic);
+      final resultFlags = _checkStatus(status, mappedDiagnostic);
       final resultCount = _validatedResultCount(count.value, maxResults);
       final values = List<T>.unmodifiable(
         List.generate(
@@ -864,11 +869,11 @@ final class EventsApi {
           ),
         ),
       );
-      return values;
+      return operationResult(values, resultFlags);
     });
   }
 
-  List<ExactAspectEvent<S>> _exactAspects<S extends TimeScale>(
+  OperationResult<List<ExactAspectEvent<S>>> _exactAspects<S extends TimeScale>(
     Target bodyA,
     Target bodyB,
     List<double> aspectSeparationsRadians,
@@ -927,7 +932,7 @@ final class EventsApi {
         mask,
       );
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
-      _checkStatus(status, mappedDiagnostic);
+      final resultFlags = _checkStatus(status, mappedDiagnostic);
       final resultCount = _validatedResultCount(count.value, maxResults);
       final values = List<ExactAspectEvent<S>>.unmodifiable(
         List.generate(
@@ -938,11 +943,12 @@ final class EventsApi {
           ),
         ),
       );
-      return values;
+      return operationResult(values, resultFlags);
     });
   }
 
-  MinimumAngularSeparationEvent<S> _minimumSeparation<S extends TimeScale>(
+  OperationResult<MinimumAngularSeparationEvent<S>>
+  _minimumSeparation<S extends TimeScale>(
     Target bodyA,
     Target bodyB,
     JulianDate<S> start,
@@ -969,21 +975,24 @@ final class EventsApi {
         ..taiyin_ephemeris_diagnostic_init(diagnostic);
       final status = calculate(arena, output, diagnostic, mask);
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
-      _checkStatus(status, mappedDiagnostic);
+      final resultFlags = _checkStatus(status, mappedDiagnostic);
       final value = output.ref;
-      return MinimumAngularSeparationEvent<S>(
-        bodyAId: value.body_a_id,
-        bodyBId: value.body_b_id,
-        coordinate: readJulianDate<S>(value.jd),
-        separationRadians: value.separation_rad,
-        separationRateRadiansPerDay: value.separation_rate_rad_per_day,
-        iterationCount: value.iteration_count,
-        evaluationCount: value.evaluation_count,
+      return operationResult(
+        MinimumAngularSeparationEvent<S>(
+          bodyAId: value.body_a_id,
+          bodyBId: value.body_b_id,
+          coordinate: readJulianDate<S>(value.jd),
+          separationRadians: value.separation_rad,
+          separationRateRadiansPerDay: value.separation_rate_rad_per_day,
+          iterationCount: value.iteration_count,
+          evaluationCount: value.evaluation_count,
+        ),
+        resultFlags,
       );
     });
   }
 
-  SolarTransitEvent _solarTransit(
+  OperationResult<SolarTransitEvent> _solarTransit(
     int Function(
       Arena,
       Pointer<taiyin_solar_transit_result>,
@@ -999,12 +1008,12 @@ final class EventsApi {
         ..taiyin_ephemeris_diagnostic_init(diagnostic);
       final status = calculate(arena, output, diagnostic);
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
-      _checkStatus(status, mappedDiagnostic);
-      return _readSolarTransit(output.ref);
+      final resultFlags = _checkStatus(status, mappedDiagnostic);
+      return operationResult(_readSolarTransit(output.ref), resultFlags);
     });
   }
 
-  LocalSolarTransitEvent _localSolarTransit(
+  OperationResult<LocalSolarTransitEvent> _localSolarTransit(
     int Function(
       Arena,
       Pointer<taiyin_local_solar_transit_result>,
@@ -1020,24 +1029,27 @@ final class EventsApi {
         ..taiyin_ephemeris_diagnostic_init(diagnostic);
       final status = calculate(arena, output, diagnostic);
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
-      _checkStatus(status, mappedDiagnostic);
+      final resultFlags = _checkStatus(status, mappedDiagnostic);
       final value = output.ref;
-      return LocalSolarTransitEvent(
-        global: _readSolarTransit(value.global),
-        topocentric: _readSolarTransit(value.topocentric),
-        visibilityFlags: SolarTransitVisibilityFlag.fromMask(
-          value.visibility_flags,
+      return operationResult(
+        LocalSolarTransitEvent(
+          global: _readSolarTransit(value.global),
+          topocentric: _readSolarTransit(value.topocentric),
+          visibilityFlags: SolarTransitVisibilityFlag.fromMask(
+            value.visibility_flags,
+          ),
+          contactSunAltitudeDegrees: List.generate(
+            LocalSolarTransitEvent.contactSlotCount,
+            (index) => value.contact_sun_altitude_deg[index],
+          ),
+          contactSunAzimuthDegrees: List.generate(
+            LocalSolarTransitEvent.contactSlotCount,
+            (index) => value.contact_sun_azimuth_deg[index],
+          ),
+          sunrise: _ut1OrNull(value.sunrise_jd_ut),
+          sunset: _ut1OrNull(value.sunset_jd_ut),
         ),
-        contactSunAltitudeDegrees: List.generate(
-          LocalSolarTransitEvent.contactSlotCount,
-          (index) => value.contact_sun_altitude_deg[index],
-        ),
-        contactSunAzimuthDegrees: List.generate(
-          LocalSolarTransitEvent.contactSlotCount,
-          (index) => value.contact_sun_azimuth_deg[index],
-        ),
-        sunrise: _ut1OrNull(value.sunrise_jd_ut),
-        sunset: _ut1OrNull(value.sunset_jd_ut),
+        resultFlags,
       );
     });
   }

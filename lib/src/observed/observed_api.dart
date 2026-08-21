@@ -10,7 +10,7 @@ typedef _ObservedCalculation =
       Pointer<taiyin_ephemeris_diagnostic> diagnostics,
     );
 typedef _ObservedStatusChecker =
-    void Function(
+    ResultFlags Function(
       int status,
       EphemerisDiagnostic? diagnostic,
       List<EphemerisDiagnostic> diagnostics,
@@ -49,18 +49,19 @@ final class ObservedApi {
   /// Delta-T model. It does not apply EOP-backed celestial-pole offsets. Prefer
   /// [atUtc] when EOP data is available and maximum topocentric precision is
   /// required.
-  ObservedPosition atUt1(
+  OperationResult<ObservedPosition> atUt1(
     Body body,
     JulianDate<Ut1Scale> julianDate, {
     Set<ObservedFlag> flags = const {},
   }) {
-    return batchAtUt1([body], julianDate, flags: flags).single;
+    final result = batchAtUt1([body], julianDate, flags: flags);
+    return operationResult(result.value.single, result.flags);
   }
 
   /// Calculates observed positions at a UT1 Julian date.
   ///
   /// This has the same model-based precision behavior as [atUt1].
-  List<ObservedPosition> batchAtUt1(
+  OperationResult<List<ObservedPosition>> batchAtUt1(
     List<Body> bodies,
     JulianDate<Ut1Scale> julianDate, {
     Set<ObservedFlag> flags = const {},
@@ -86,19 +87,20 @@ final class ObservedApi {
   ///
   /// The native runtime must have Earth-orientation data covering [utc]. This
   /// route uses EOP-backed time scales and celestial-pole offsets.
-  ObservedPosition atUtc(
+  OperationResult<ObservedPosition> atUtc(
     Body body,
     AstroDateTime utc, {
     Set<ObservedFlag> flags = const {},
   }) {
-    return batchAtUtc([body], utc, flags: flags).single;
+    final result = batchAtUtc([body], utc, flags: flags);
+    return operationResult(result.value.single, result.flags);
   }
 
   /// Calculates observed positions from a UTC calendar value.
   ///
   /// The native runtime must have Earth-orientation data covering [utc]. This
   /// route uses EOP-backed time scales and celestial-pole offsets.
-  List<ObservedPosition> batchAtUtc(
+  OperationResult<List<ObservedPosition>> batchAtUtc(
     List<Body> bodies,
     AstroDateTime utc, {
     Set<ObservedFlag> flags = const {},
@@ -123,12 +125,14 @@ final class ObservedApi {
     });
   }
 
-  List<ObservedPosition> _calculate(
+  OperationResult<List<ObservedPosition>> _calculate(
     List<Body> bodies,
     Set<ObservedFlag> flags,
     _ObservedCalculation calculate,
   ) {
-    if (bodies.isEmpty) return const [];
+    if (bodies.isEmpty) {
+      return operationResult(const <ObservedPosition>[], ResultFlags.none);
+    }
     if (bodies.length > 10) {
       throw ArgumentError.value(
         bodies.length,
@@ -152,7 +156,7 @@ final class ObservedApi {
           ..taiyin_ephemeris_diagnostic_init(diagnostics + index);
       }
 
-      final status = calculate(
+      final rawResult = calculate(
         arena,
         bodyIds,
         bodies.length,
@@ -160,7 +164,8 @@ final class ObservedApi {
         output,
         diagnostics,
       );
-      if (status != 0) {
+      final decoded = decodeNativeCallResult(rawResult);
+      if (decoded.status != 0) {
         final mapped = [
           for (var index = 0; index < bodies.length; index++)
             _readObservedDiagnostic(diagnostics[index]),
@@ -169,13 +174,17 @@ final class ObservedApi {
           for (final diagnostic in mapped)
             if (diagnostic.status != 0) diagnostic,
         ];
-        _checkStatus(status, failures.firstOrNull ?? mapped.first, mapped);
+        _checkStatus(rawResult, failures.firstOrNull ?? mapped.first, mapped);
       }
 
-      return List.unmodifiable([
-        for (var index = 0; index < bodies.length; index++)
-          _readObservedPosition(output[index], bodies[index], frozenFlags),
-      ]);
+      final resultFlags = _checkStatus(rawResult, null, const []);
+      return operationResult(
+        List.unmodifiable([
+          for (var index = 0; index < bodies.length; index++)
+            _readObservedPosition(output[index], bodies[index], frozenFlags),
+        ]),
+        resultFlags,
+      );
     });
   }
 

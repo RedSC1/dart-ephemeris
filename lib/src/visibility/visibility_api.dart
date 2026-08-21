@@ -1,7 +1,7 @@
 part of '../taiyin.dart';
 
 typedef _VisibilityStatusChecker =
-    void Function(int status, EphemerisDiagnostic? diagnostic);
+    ResultFlags Function(int status, EphemerisDiagnostic? diagnostic);
 typedef _VisibilityEventCalculation =
     int Function(
       Arena arena,
@@ -44,7 +44,7 @@ final class VisibilityApi {
   ///
   /// Set [horizonAltitudeRadians] to search against a custom geometric
   /// horizon. Otherwise the native standard-horizon route is used.
-  VisibilityEvent moonRiseSetAtUt1(
+  OperationResult<VisibilityEvent> moonRiseSetAtUt1(
     JulianDate<Ut1Scale> start,
     JulianDate<Ut1Scale> end, {
     required VisibilityEventKind event,
@@ -85,7 +85,7 @@ final class VisibilityApi {
   }
 
   /// Searches a UT1 interval for an upper or lower lunar meridian transit.
-  VisibilityEvent moonTransitAtUt1(
+  OperationResult<VisibilityEvent> moonTransitAtUt1(
     JulianDate<Ut1Scale> start,
     JulianDate<Ut1Scale> end, {
     required VisibilityEventKind event,
@@ -110,7 +110,7 @@ final class VisibilityApi {
   ///
   /// [body] may be Mercury through Pluto. The Sun and Moon have dedicated
   /// methods. [VisibilityFlag.fixedDiscSize] is not supported here.
-  VisibilityEvent planetRiseSetAtUt1(
+  OperationResult<VisibilityEvent> planetRiseSetAtUt1(
     Body body,
     JulianDate<Ut1Scale> start,
     JulianDate<Ut1Scale> end, {
@@ -155,7 +155,7 @@ final class VisibilityApi {
   }
 
   /// Searches a UT1 interval for an upper or lower planetary transit.
-  VisibilityEvent planetTransitAtUt1(
+  OperationResult<VisibilityEvent> planetTransitAtUt1(
     Body body,
     JulianDate<Ut1Scale> start,
     JulianDate<Ut1Scale> end, {
@@ -185,7 +185,7 @@ final class VisibilityApi {
   ///
   /// Set [horizonAltitudeRadians] to search against a custom geometric
   /// horizon. Otherwise the native standard-horizon route is used.
-  VisibilityEvent solarRiseSetAtUt1(
+  OperationResult<VisibilityEvent> solarRiseSetAtUt1(
     JulianDate<Ut1Scale> start,
     JulianDate<Ut1Scale> end, {
     required VisibilityEventKind event,
@@ -229,7 +229,7 @@ final class VisibilityApi {
   ///
   /// [VisibilityEventKind.rise] finds morning twilight (dawn), while
   /// [VisibilityEventKind.set] finds evening twilight (dusk).
-  VisibilityEvent solarTwilightAtUt1(
+  OperationResult<VisibilityEvent> solarTwilightAtUt1(
     JulianDate<Ut1Scale> start,
     JulianDate<Ut1Scale> end, {
     required VisibilityEventKind event,
@@ -253,7 +253,7 @@ final class VisibilityApi {
   }
 
   /// Searches a UT1 interval for an upper or lower solar meridian transit.
-  VisibilityEvent solarTransitAtUt1(
+  OperationResult<VisibilityEvent> solarTransitAtUt1(
     JulianDate<Ut1Scale> start,
     JulianDate<Ut1Scale> end, {
     required VisibilityEventKind event,
@@ -281,7 +281,7 @@ final class VisibilityApi {
   /// [limb] selects the solar disc limb whose crossing defines the event;
   /// [flags] controls refraction and disc-size handling, with the same default
   /// and rejection semantics as [solarRiseSetAtUt1].
-  SolarRiseSetFastResult solarRiseSetFastAtTt(
+  OperationResult<SolarRiseSetFastResult> solarRiseSetFastAtTt(
     JulianDate<TtScale> center,
     ObserverLocation observer, {
     VisibilityLimb limb = VisibilityLimb.upper,
@@ -312,7 +312,7 @@ final class VisibilityApi {
   ///
   /// This fast route receives [observer] directly; it does not use the
   /// context's configured observer location for the supplied coordinates.
-  SolarTransitFastResult solarTransitFastAtTt(
+  OperationResult<SolarTransitFastResult> solarTransitFastAtTt(
     JulianDate<TtScale> center,
     ObserverLocation observer,
   ) {
@@ -335,7 +335,7 @@ final class VisibilityApi {
   ///
   /// The runtime star catalog must contain [starKey]. Set
   /// [horizonAltitudeRadians] to search against a custom geometric horizon.
-  VisibilityEvent starRiseSetAtUt1(
+  OperationResult<VisibilityEvent> starRiseSetAtUt1(
     String starKey,
     JulianDate<Ut1Scale> start,
     JulianDate<Ut1Scale> end, {
@@ -380,7 +380,7 @@ final class VisibilityApi {
   }
 
   /// Searches a UT1 interval for an upper or lower catalogued-star transit.
-  VisibilityEvent starTransitAtUt1(
+  OperationResult<VisibilityEvent> starTransitAtUt1(
     String starKey,
     JulianDate<Ut1Scale> start,
     JulianDate<Ut1Scale> end, {
@@ -408,7 +408,7 @@ final class VisibilityApi {
     });
   }
 
-  VisibilityEvent _searchEvent(
+  OperationResult<VisibilityEvent> _searchEvent(
     VisibilityEventKind event,
     _VisibilityEventCalculation calculate,
   ) {
@@ -420,27 +420,30 @@ final class VisibilityApi {
         ..taiyin_ephemeris_diagnostic_init(diagnostic);
       final status = calculate(arena, output, diagnostic);
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
-      _checkStatus(status, mappedDiagnostic);
+      final resultFlags = _checkStatus(status, mappedDiagnostic);
       final value = output.ref;
-      return VisibilityEvent(
-        requestedEvent: event,
-        altitudeState: VisibilityAltitudeState.fromId(value.altitude_state),
-        crossingDirection: VisibilityCrossingDirection.fromId(
-          value.crossing_direction,
+      return operationResult(
+        VisibilityEvent(
+          requestedEvent: event,
+          altitudeState: VisibilityAltitudeState.fromId(value.altitude_state),
+          crossingDirection: VisibilityCrossingDirection.fromId(
+            value.crossing_direction,
+          ),
+          coordinate: _ut1OrNull(value.jd_ut),
+          residualRadians: value.residual_rad,
+          minimumResidualRadians: value.min_residual_rad,
+          maximumResidualRadians: value.max_residual_rad,
+          minimumResidualCoordinate: _ut1OrNull(value.min_residual_jd_ut),
+          maximumResidualCoordinate: _ut1OrNull(value.max_residual_jd_ut),
+          sampleCount: value.sample_count,
+          refineCount: value.refine_count,
         ),
-        coordinate: _ut1OrNull(value.jd_ut),
-        residualRadians: value.residual_rad,
-        minimumResidualRadians: value.min_residual_rad,
-        maximumResidualRadians: value.max_residual_rad,
-        minimumResidualCoordinate: _ut1OrNull(value.min_residual_jd_ut),
-        maximumResidualCoordinate: _ut1OrNull(value.max_residual_jd_ut),
-        sampleCount: value.sample_count,
-        refineCount: value.refine_count,
+        resultFlags,
       );
     });
   }
 
-  SolarRiseSetFastResult _solarRiseSetFast(
+  OperationResult<SolarRiseSetFastResult> _solarRiseSetFast(
     _SolarRiseSetFastCalculation calculate,
   ) {
     return using((arena) {
@@ -451,19 +454,22 @@ final class VisibilityApi {
         ..taiyin_ephemeris_diagnostic_init(diagnostic);
       final status = calculate(arena, output, diagnostic);
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
-      _checkStatus(status, mappedDiagnostic);
+      final resultFlags = _checkStatus(status, mappedDiagnostic);
       final value = output.ref;
-      return SolarRiseSetFastResult(
-        altitudeState: VisibilityAltitudeState.fromId(value.altitude_state),
-        rise: _ttOrNull(value.rise_jd_tt),
-        set: _ttOrNull(value.set_jd_tt),
-        sampleCount: value.sample_count,
-        refineCount: value.refine_count,
+      return operationResult(
+        SolarRiseSetFastResult(
+          altitudeState: VisibilityAltitudeState.fromId(value.altitude_state),
+          rise: _ttOrNull(value.rise_jd_tt),
+          set: _ttOrNull(value.set_jd_tt),
+          sampleCount: value.sample_count,
+          refineCount: value.refine_count,
+        ),
+        resultFlags,
       );
     });
   }
 
-  SolarTransitFastResult _solarTransitFast(
+  OperationResult<SolarTransitFastResult> _solarTransitFast(
     _SolarTransitFastCalculation calculate,
   ) {
     return using((arena) {
@@ -474,14 +480,17 @@ final class VisibilityApi {
         ..taiyin_ephemeris_diagnostic_init(diagnostic);
       final status = calculate(arena, output, diagnostic);
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
-      _checkStatus(status, mappedDiagnostic);
+      final resultFlags = _checkStatus(status, mappedDiagnostic);
       final value = output.ref;
-      return SolarTransitFastResult(
-        coordinate: _ttOrNull(value.transit_jd_tt),
-        altitudeRadians: value.altitude_rad,
-        azimuthRadians: value.azimuth_rad,
-        sampleCount: value.sample_count,
-        refineCount: value.refine_count,
+      return operationResult(
+        SolarTransitFastResult(
+          coordinate: _ttOrNull(value.transit_jd_tt),
+          altitudeRadians: value.altitude_rad,
+          azimuthRadians: value.azimuth_rad,
+          sampleCount: value.sample_count,
+          refineCount: value.refine_count,
+        ),
+        resultFlags,
       );
     });
   }

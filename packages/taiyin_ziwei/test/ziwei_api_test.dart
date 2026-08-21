@@ -22,11 +22,13 @@ void main() {
       ZiweiChart createReferenceChart(ZiweiContext ziwei) {
         final local = AstroDateTime(2003, 3, 13, 14, 15);
         final instant = local.toJulianDate<UtcScale>().addSeconds(-8 * 3600);
-        return ziwei.createChart(
-          instantUtc: instant,
-          virtualTime: local,
-          gender: ZiweiGender.male,
-        );
+        return ziwei
+            .createChart(
+              instantUtc: instant,
+              virtualTime: local,
+              gender: ZiweiGender.male,
+            )
+            .value;
       }
 
       test('default catalog produces a chart', () {
@@ -105,18 +107,25 @@ void main() {
         final ziwei = context.ziwei;
         final local = AstroDateTime(2003, 3, 13, 14, 15);
 
-        final fromLocal = ziwei.calculateLocal(local, gender: ZiweiGender.male);
+        final localResult = ziwei.calculateLocal(
+          local,
+          gender: ZiweiGender.male,
+        );
+        final fromLocal = localResult.value;
         addTearDown(fromLocal.close);
 
         final instant = local.toJulianDate<UtcScale>().addSeconds(-8 * 3600);
-        final fromInstant = ziwei.calculateInstant(
+        final instantResult = ziwei.calculateInstant(
           instant,
           gender: ZiweiGender.male,
         );
+        final fromInstant = instantResult.value;
         addTearDown(fromInstant.close);
 
         expect(fromLocal.anchors.values, fromInstant.anchors.values);
         expect(fromLocal.summary.bureau, fromInstant.summary.bureau);
+        expect(localResult.flags, isA<ResultFlags>());
+        expect(instantResult.flags, isA<ResultFlags>());
       });
 
       test('sets and truncates the flow stack', () {
@@ -127,14 +136,16 @@ void main() {
         final targetInstant = target.toJulianDate<UtcScale>().addSeconds(
           -8 * 3600,
         );
-        final resolution = chart.setFlow(
+        final flowResult = chart.setFlow(
           targetInstantUtc: targetInstant,
           targetVirtualTime: target,
         );
+        final resolution = flowResult.value;
 
         expect(chart.flowLayerCount, 5);
         expect(resolution.decade.startAge, lessThan(resolution.decade.endAge));
         expect(resolution.smallLimit.virtualAge, greaterThan(0));
+        expect(flowResult.flags, isA<ResultFlags>());
 
         final decadeSummary = chart.flowLayerSummary(ZiweiFlowLevel.decade);
         expect(decadeSummary.lifePalace, inInclusiveRange(0, 11));
@@ -213,13 +224,15 @@ void main() {
         final startInstant = dayStart.toJulianDate<UtcScale>().addSeconds(
           -8 * 3600,
         );
-        final result = ziwei.reverseLookupTier1(
-          startInstantUtc: startInstant,
-          endInstantUtc: startInstant.addSeconds(86400),
-          startVirtualTime: dayStart,
-          gender: ZiweiGender.male,
-          query: ZiweiTier1ReverseQuery(ziweiBranch: branch),
-        );
+        final result = ziwei
+            .reverseLookupTier1(
+              startInstantUtc: startInstant,
+              endInstantUtc: startInstant.addSeconds(86400),
+              startVirtualTime: dayStart,
+              gender: ZiweiGender.male,
+              query: ZiweiTier1ReverseQuery(ziweiBranch: branch),
+            )
+            .value;
         final candidates = result;
 
         expect(candidates, isNotEmpty);
@@ -235,23 +248,27 @@ void main() {
         );
 
         expect(
-          () => ziwei.reverseLookupTier1(
-            startInstantUtc: startInstant,
-            endInstantUtc: startInstant,
-            startVirtualTime: dayStart,
-            gender: ZiweiGender.male,
-            query: const ZiweiTier1ReverseQuery(),
-          ),
+          () => ziwei
+              .reverseLookupTier1(
+                startInstantUtc: startInstant,
+                endInstantUtc: startInstant,
+                startVirtualTime: dayStart,
+                gender: ZiweiGender.male,
+                query: const ZiweiTier1ReverseQuery(),
+              )
+              .value,
           throwsArgumentError,
         );
         expect(
-          () => ziwei.reverseLookupTier1(
-            startInstantUtc: startInstant,
-            endInstantUtc: startInstant,
-            startVirtualTime: dayStart,
-            gender: ZiweiGender.male,
-            query: const ZiweiTier1ReverseQuery(ziweiBranch: 12),
-          ),
+          () => ziwei
+              .reverseLookupTier1(
+                startInstantUtc: startInstant,
+                endInstantUtc: startInstant,
+                startVirtualTime: dayStart,
+                gender: ZiweiGender.male,
+                query: const ZiweiTier1ReverseQuery(ziweiBranch: 12),
+              )
+              .value,
           throwsArgumentError,
         );
       });

@@ -1,7 +1,7 @@
 part of '../taiyin.dart';
 
 typedef _AstrologyStatusChecker =
-    void Function(int status, EphemerisDiagnostic? diagnostic);
+    ResultFlags Function(int status, EphemerisDiagnostic? diagnostic);
 typedef _SiderealCalculation =
     int Function(
       Arena arena,
@@ -84,7 +84,7 @@ final class AstrologyApi {
   /// specialized result always has ecliptic spherical coordinates, so
   /// [PositionFlag.xyz] and [PositionFlag.equatorial] are
   /// rejected. [PositionFlag.radians] is added automatically.
-  SiderealPosition siderealPositionAtTt(
+  OperationResult<SiderealPosition> siderealPositionAtTt(
     Target target,
     JulianDate<TtScale> tt, {
     AyanamshaModel ayanamsha = Ayanamsha.faganBradley,
@@ -128,7 +128,7 @@ final class AstrologyApi {
   /// Calculates sidereal ecliptic coordinates at UT1 using the context policy.
   ///
   /// [flags] follow the same restrictions as [siderealPositionAtTt].
-  SiderealPosition siderealPositionAtUt1(
+  OperationResult<SiderealPosition> siderealPositionAtUt1(
     Target target,
     JulianDate<Ut1Scale> ut1, {
     AyanamshaModel ayanamsha = Ayanamsha.faganBradley,
@@ -181,7 +181,7 @@ final class AstrologyApi {
   /// is independent of [ayanamsha], [precessionPolicy], and [referencePlane].
   /// [PositionFlag.radians] is added automatically. Other position flags
   /// retain their ordinary native physical-correction semantics.
-  SiderealCoordinates siderealCoordinatesAtTt(
+  OperationResult<SiderealCoordinates> siderealCoordinatesAtTt(
     Target target,
     JulianDate<TtScale> tt, {
     AyanamshaModel ayanamsha = Ayanamsha.faganBradley,
@@ -225,7 +225,7 @@ final class AstrologyApi {
   /// Calculates generic sidereal coordinates at UT1 using the context policy.
   ///
   /// See [siderealCoordinatesAtTt] for coordinate-mode and frame semantics.
-  SiderealCoordinates siderealCoordinatesAtUt1(
+  OperationResult<SiderealCoordinates> siderealCoordinatesAtUt1(
     Target target,
     JulianDate<Ut1Scale> ut1, {
     AyanamshaModel ayanamsha = Ayanamsha.faganBradley,
@@ -272,7 +272,7 @@ final class AstrologyApi {
   /// accepts apparent-correction flags such as `truePosition` and frame
   /// selection through `equatorial` / `noNutation`; it always returns radians
   /// and radians per day, so `radians` and `speed` are not accepted.
-  LunarNodePosition lunarTrueNodeAtTt(
+  OperationResult<LunarNodePosition> lunarTrueNodeAtTt(
     JulianDate<TtScale> tt, {
     LunarNodeKind kind = LunarNodeKind.ascending,
     Set<PositionFlag> flags = const {},
@@ -297,7 +297,7 @@ final class AstrologyApi {
   /// Calculates the geocentric osculating ("true") lunar node at UT1.
   ///
   /// See [lunarTrueNodeAtTt] for the result and flag contract.
-  LunarNodePosition lunarTrueNodeAtUt1(
+  OperationResult<LunarNodePosition> lunarTrueNodeAtUt1(
     JulianDate<Ut1Scale> ut1, {
     LunarNodeKind kind = LunarNodeKind.ascending,
     Set<PositionFlag> flags = const {},
@@ -323,7 +323,7 @@ final class AstrologyApi {
   ///
   /// This is a mean-model direction, so only `equatorial` and `noNutation`
   /// select its output frame; physical apparent-correction flags do not apply.
-  LunarNodePosition lunarMeanNodeAtTt(
+  OperationResult<LunarNodePosition> lunarMeanNodeAtTt(
     JulianDate<TtScale> tt, {
     LunarNodeKind kind = LunarNodeKind.ascending,
     Set<PositionFlag> flags = const {},
@@ -348,7 +348,7 @@ final class AstrologyApi {
   /// Calculates the IERS 2003 conventional mean lunar node at UT1.
   ///
   /// See [lunarMeanNodeAtTt] for the result and flag contract.
-  LunarNodePosition lunarMeanNodeAtUt1(
+  OperationResult<LunarNodePosition> lunarMeanNodeAtUt1(
     JulianDate<Ut1Scale> ut1, {
     LunarNodeKind kind = LunarNodeKind.ascending,
     Set<PositionFlag> flags = const {},
@@ -374,7 +374,7 @@ final class AstrologyApi {
   ///
   /// This conventional direction has no physical distance, so its
   /// [LunarApsisPosition.distanceAu] fields are null.
-  LunarApsisPosition lunarMeanApogeeAtTt(
+  OperationResult<LunarApsisPosition> lunarMeanApogeeAtTt(
     JulianDate<TtScale> tt, {
     Set<PositionFlag> flags = const {},
   }) {
@@ -395,7 +395,7 @@ final class AstrologyApi {
   /// Calculates the Delaunay mean lunar apogee (mean Lilith) at UT1.
   ///
   /// See [lunarMeanApogeeAtTt] for the result and flag contract.
-  LunarApsisPosition lunarMeanApogeeAtUt1(
+  OperationResult<LunarApsisPosition> lunarMeanApogeeAtUt1(
     JulianDate<Ut1Scale> ut1, {
     Set<PositionFlag> flags = const {},
   }) {
@@ -416,7 +416,7 @@ final class AstrologyApi {
   /// Calculates the geocentric osculating lunar apogee at TT.
   ///
   /// This instantaneous two-body apoapsis is commonly called true Lilith.
-  LunarApsisPosition lunarOsculatingApogeeAtTt(
+  OperationResult<LunarApsisPosition> lunarOsculatingApogeeAtTt(
     JulianDate<TtScale> tt, {
     Set<PositionFlag> flags = const {},
   }) {
@@ -437,7 +437,7 @@ final class AstrologyApi {
   /// Calculates the geocentric osculating lunar apogee at UT1.
   ///
   /// See [lunarOsculatingApogeeAtTt] for the result and flag contract.
-  LunarApsisPosition lunarOsculatingApogeeAtUt1(
+  OperationResult<LunarApsisPosition> lunarOsculatingApogeeAtUt1(
     JulianDate<Ut1Scale> ut1, {
     Set<PositionFlag> flags = const {},
   }) {
@@ -461,7 +461,7 @@ final class AstrologyApi {
   /// requested date lies outside the fitted DE441 interval. Unlike the
   /// conventional mean apogee, it includes a physical distance and rate from
   /// the fitted model.
-  LunarApsisPosition lunarFittedApogeeAtTt(
+  OperationResult<LunarApsisPosition> lunarFittedApogeeAtTt(
     JulianDate<TtScale> tt, {
     Set<PositionFlag> flags = const {},
   }) {
@@ -482,7 +482,7 @@ final class AstrologyApi {
   /// Calculates the DE441 fitted-natural lunar apogee at UT1.
   ///
   /// See [lunarFittedApogeeAtTt] for the result and flag contract.
-  LunarApsisPosition lunarFittedApogeeAtUt1(
+  OperationResult<LunarApsisPosition> lunarFittedApogeeAtUt1(
     JulianDate<Ut1Scale> ut1, {
     Set<PositionFlag> flags = const {},
   }) {
@@ -501,7 +501,7 @@ final class AstrologyApi {
   }
 
   /// Calculates houses directly from ARMC, latitude, and true obliquity.
-  Houses housesFromArmc({
+  OperationResult<Houses> housesFromArmc({
     required double armcRadians,
     required double observerLatitudeRadians,
     required double trueObliquityRadians,
@@ -525,7 +525,7 @@ final class AstrologyApi {
   }
 
   /// Calculates houses at a UT1 coordinate using the context observer.
-  Houses housesAtUt1(
+  OperationResult<Houses> housesAtUt1(
     JulianDate<Ut1Scale> ut1, {
     HouseSystemModel system = HouseSystem.porphyry,
   }) {
@@ -541,7 +541,7 @@ final class AstrologyApi {
   }
 
   /// Calculates houses at a TT coordinate using the context observer.
-  Houses housesAtTt(
+  OperationResult<Houses> housesAtTt(
     JulianDate<TtScale> tt, {
     HouseSystemModel system = HouseSystem.porphyry,
   }) {
@@ -557,7 +557,7 @@ final class AstrologyApi {
   }
 
   /// Locates an ecliptic longitude within [houses].
-  HousePosition housePositionOf(
+  OperationResult<HousePosition> housePositionOf(
     Houses houses,
     double eclipticLongitudeRadians,
   ) {
@@ -567,7 +567,7 @@ final class AstrologyApi {
       final nativeHouses = _writeHouses(arena, houses);
       final output = arena<taiyin_house_position_result>();
       _bindings.taiyin_house_position_result_init(output);
-      _checkStatus(
+      final resultFlags = _checkStatus(
         _bindings.taiyin_calc_house_position_from_longitude(
           nativeHouses,
           eclipticLongitudeRadians,
@@ -575,10 +575,13 @@ final class AstrologyApi {
         ),
         null,
       );
-      return HousePosition(
-        houseNumber: output.ref.house_number,
-        fraction: output.ref.fraction,
-        continuousHousePosition: output.ref.continuous_house_position,
+      return operationResult(
+        HousePosition(
+          houseNumber: output.ref.house_number,
+          fraction: output.ref.fraction,
+          continuousHousePosition: output.ref.continuous_house_position,
+        ),
+        resultFlags,
       );
     });
   }
@@ -595,7 +598,7 @@ final class AstrologyApi {
     return _bindings.taiyin_has_house_system_model(system.id) != 0;
   }
 
-  SiderealPosition _siderealPosition(
+  OperationResult<SiderealPosition> _siderealPosition(
     Target target,
     AyanamshaModel ayanamsha,
     SiderealPrecessionPolicy precessionPolicy,
@@ -613,32 +616,35 @@ final class AstrologyApi {
         ..taiyin_ephemeris_diagnostic_init(diagnostic);
       final status = calculate(arena, nativeFlags, output, diagnostic);
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
-      _checkStatus(status, mappedDiagnostic);
+      final resultFlags = _checkStatus(status, mappedDiagnostic);
       final value = output.ref;
-      return SiderealPosition(
-        target: target,
-        ayanamsha: ayanamsha,
-        precessionPolicy: precessionPolicy,
-        referencePlane: referencePlane,
-        referenceEpoch: referenceEpoch,
-        coordinateFrame: SiderealCoordinateFrame.fromId(
-          value.coordinate_frame_id,
+      return operationResult(
+        SiderealPosition(
+          target: target,
+          ayanamsha: ayanamsha,
+          precessionPolicy: precessionPolicy,
+          referencePlane: referencePlane,
+          referenceEpoch: referenceEpoch,
+          coordinateFrame: SiderealCoordinateFrame.fromId(
+            value.coordinate_frame_id,
+          ),
+          rawCoordinateFrameId: value.coordinate_frame_id,
+          tropicalLongitudeRadians: value.tropical_longitude_rad,
+          siderealLongitudeRadians: value.sidereal_longitude_rad,
+          latitudeRadians: value.latitude_rad,
+          distanceAu: value.distance_au,
+          tropicalLongitudeRateRadiansPerDay:
+              value.tropical_longitude_rate_rad_per_day,
+          siderealLongitudeRateRadiansPerDay:
+              value.sidereal_longitude_rate_rad_per_day,
+          flags: flags,
         ),
-        rawCoordinateFrameId: value.coordinate_frame_id,
-        tropicalLongitudeRadians: value.tropical_longitude_rad,
-        siderealLongitudeRadians: value.sidereal_longitude_rad,
-        latitudeRadians: value.latitude_rad,
-        distanceAu: value.distance_au,
-        tropicalLongitudeRateRadiansPerDay:
-            value.tropical_longitude_rate_rad_per_day,
-        siderealLongitudeRateRadiansPerDay:
-            value.sidereal_longitude_rate_rad_per_day,
-        flags: flags,
+        resultFlags,
       );
     });
   }
 
-  SiderealCoordinates _siderealCoordinates(
+  OperationResult<SiderealCoordinates> _siderealCoordinates(
     Target target,
     AyanamshaModel ayanamsha,
     SiderealPrecessionPolicy precessionPolicy,
@@ -656,29 +662,32 @@ final class AstrologyApi {
         ..taiyin_ephemeris_diagnostic_init(diagnostic);
       final status = calculate(arena, nativeFlags, output, diagnostic);
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
-      _checkStatus(status, mappedDiagnostic);
+      final resultFlags = _checkStatus(status, mappedDiagnostic);
       final value = output.ref;
       final outputFlags = Set<PositionFlag>.unmodifiable({
         for (final flag in PositionFlag.values)
           if ((value.position_flags & flag.mask) != 0) flag,
       });
-      return SiderealCoordinates(
-        target: target,
-        ayanamsha: ayanamsha,
-        precessionPolicy: precessionPolicy,
-        referencePlane: referencePlane,
-        referenceEpoch: referenceEpoch,
-        coordinateFrame: SiderealCoordinateFrame.fromId(
-          value.coordinate_frame_id,
+      return operationResult(
+        SiderealCoordinates(
+          target: target,
+          ayanamsha: ayanamsha,
+          precessionPolicy: precessionPolicy,
+          referencePlane: referencePlane,
+          referenceEpoch: referenceEpoch,
+          coordinateFrame: SiderealCoordinateFrame.fromId(
+            value.coordinate_frame_id,
+          ),
+          rawCoordinateFrameId: value.coordinate_frame_id,
+          values: [for (var index = 0; index < 6; index++) value.values[index]],
+          flags: outputFlags,
         ),
-        rawCoordinateFrameId: value.coordinate_frame_id,
-        values: [for (var index = 0; index < 6; index++) value.values[index]],
-        flags: outputFlags,
+        resultFlags,
       );
     });
   }
 
-  LunarNodePosition _lunarNode(
+  OperationResult<LunarNodePosition> _lunarNode(
     LunarNodeKind kind,
     Set<PositionFlag> flags,
     _LunarNodeCalculation calculate,
@@ -691,20 +700,23 @@ final class AstrologyApi {
         ..taiyin_ephemeris_diagnostic_init(diagnostic);
       final status = calculate(arena, _flagMask(flags), output, diagnostic);
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
-      _checkStatus(status, mappedDiagnostic);
+      final resultFlags = _checkStatus(status, mappedDiagnostic);
       final value = output.ref;
-      return LunarNodePosition(
-        kind: kind,
-        referenceFrame: ApparentFrame.fromId(value.reference_frame_id),
-        rawReferenceFrameId: value.reference_frame_id,
-        longitudeRadians: value.longitude_rad,
-        longitudeRateRadiansPerDay: value.longitude_rate_rad_per_day,
-        flags: flags,
+      return operationResult(
+        LunarNodePosition(
+          kind: kind,
+          referenceFrame: ApparentFrame.fromId(value.reference_frame_id),
+          rawReferenceFrameId: value.reference_frame_id,
+          longitudeRadians: value.longitude_rad,
+          longitudeRateRadiansPerDay: value.longitude_rate_rad_per_day,
+          flags: flags,
+        ),
+        resultFlags,
       );
     });
   }
 
-  LunarApsisPosition _lunarApsis(
+  OperationResult<LunarApsisPosition> _lunarApsis(
     Set<PositionFlag> flags,
     _LunarApsisCalculation calculate,
   ) {
@@ -716,31 +728,34 @@ final class AstrologyApi {
         ..taiyin_ephemeris_diagnostic_init(diagnostic);
       final status = calculate(arena, _flagMask(flags), output, diagnostic);
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
-      _checkStatus(status, mappedDiagnostic);
+      final resultFlags = _checkStatus(status, mappedDiagnostic);
       final value = output.ref;
-      return LunarApsisPosition(
-        referenceFrame: ApparentFrame.fromId(value.reference_frame_id),
-        rawReferenceFrameId: value.reference_frame_id,
-        definition: LunarApsisDefinition.fromId(value.definition),
-        rawDefinitionId: value.definition,
-        longitudeRadians: value.longitude_rad,
-        latitudeRadians: value.latitude_rad,
-        longitudeRateRadiansPerDay: value.longitude_rate_rad_per_day,
-        latitudeRateRadiansPerDay: value.latitude_rate_rad_per_day,
-        distanceAu: _finiteOrNull(value.distance_au),
-        distanceRateAuPerDay: _finiteOrNull(value.distance_rate_au_per_day),
-        extrapolated: value.extrapolated != 0,
-        flags: flags,
+      return operationResult(
+        LunarApsisPosition(
+          referenceFrame: ApparentFrame.fromId(value.reference_frame_id),
+          rawReferenceFrameId: value.reference_frame_id,
+          definition: LunarApsisDefinition.fromId(value.definition),
+          rawDefinitionId: value.definition,
+          longitudeRadians: value.longitude_rad,
+          latitudeRadians: value.latitude_rad,
+          longitudeRateRadiansPerDay: value.longitude_rate_rad_per_day,
+          latitudeRateRadiansPerDay: value.latitude_rate_rad_per_day,
+          distanceAu: _finiteOrNull(value.distance_au),
+          distanceRateAuPerDay: _finiteOrNull(value.distance_rate_au_per_day),
+          extrapolated: value.extrapolated != 0,
+          flags: flags,
+        ),
+        resultFlags,
       );
     });
   }
 
-  Houses _houses(_HouseCalculation calculate) {
+  OperationResult<Houses> _houses(_HouseCalculation calculate) {
     return using((arena) {
       final output = arena<taiyin_house_result>();
       _bindings.taiyin_house_result_init(output);
-      _checkStatus(calculate(arena, output), null);
-      return _readHouses(output.ref);
+      final resultFlags = _checkStatus(calculate(arena, output), null);
+      return operationResult(_readHouses(output.ref), resultFlags);
     });
   }
 

@@ -16,6 +16,7 @@ import 'eclipse/solar_eclipse_models.dart';
 import 'events/event_models.dart';
 import 'heliacal/heliacal_models.dart';
 import 'interop/calendar.dart';
+import 'interop/call_result.dart';
 import 'interop/julian_date.dart';
 import 'native_compatibility.dart';
 import 'observed/observed_models.dart';
@@ -24,6 +25,7 @@ import 'orbital/orbital_models.dart';
 import 'phenomena/phenomena_models.dart';
 import 'position/position_api.dart';
 import 'runtime/runtime_models.dart';
+import 'result_flags.dart';
 import 'solar_time/solar_time_models.dart';
 import 'star/star_models.dart';
 import 'time/astro_date_time.dart';
@@ -101,11 +103,12 @@ enum StatusCategory {
 }
 
 /// A non-success status returned by the Taiyin C ABI.
-final class EphemerisError implements Exception {
+class EphemerisError implements Exception {
   EphemerisError(
     this.status,
     this.name,
     this.message, {
+    this.resultFlags = ResultFlags.none,
     this.diagnostic,
     Iterable<EphemerisDiagnostic> diagnostics = const [],
   }) : diagnostics = List.unmodifiable(
@@ -115,6 +118,9 @@ final class EphemerisError implements Exception {
   final int status;
   final String name;
   final String message;
+
+  /// Execution facts reported before this operation failed.
+  final ResultFlags resultFlags;
 
   /// Native route and coverage details for a failed ephemeris calculation.
   final EphemerisDiagnostic? diagnostic;
@@ -127,6 +133,127 @@ final class EphemerisError implements Exception {
 
   @override
   String toString() => 'EphemerisError($status, $name): $message';
+}
+
+final class InvalidArgumentError extends EphemerisError {
+  InvalidArgumentError(
+    super.status,
+    super.name,
+    super.message, {
+    super.resultFlags,
+    super.diagnostic,
+    super.diagnostics,
+  });
+}
+
+final class EphemerisOutOfMemoryError extends EphemerisError {
+  EphemerisOutOfMemoryError(
+    super.status,
+    super.name,
+    super.message, {
+    super.resultFlags,
+    super.diagnostic,
+    super.diagnostics,
+  });
+}
+
+final class InternalCalculationError extends EphemerisError {
+  InternalCalculationError(
+    super.status,
+    super.name,
+    super.message, {
+    super.resultFlags,
+    super.diagnostic,
+    super.diagnostics,
+  });
+}
+
+final class UnsupportedOperationError extends EphemerisError {
+  UnsupportedOperationError(
+    super.status,
+    super.name,
+    super.message, {
+    super.resultFlags,
+    super.diagnostic,
+    super.diagnostics,
+  });
+}
+
+final class EphemerisRouteError extends EphemerisError {
+  EphemerisRouteError(
+    super.status,
+    super.name,
+    super.message, {
+    super.resultFlags,
+    super.diagnostic,
+    super.diagnostics,
+  });
+}
+
+final class DataFileError extends EphemerisError {
+  DataFileError(
+    super.status,
+    super.name,
+    super.message, {
+    super.resultFlags,
+    super.diagnostic,
+    super.diagnostics,
+  });
+}
+
+final class TimeScaleError extends EphemerisError {
+  TimeScaleError(
+    super.status,
+    super.name,
+    super.message, {
+    super.resultFlags,
+    super.diagnostic,
+    super.diagnostics,
+  });
+}
+
+final class ObserverError extends EphemerisError {
+  ObserverError(
+    super.status,
+    super.name,
+    super.message, {
+    super.resultFlags,
+    super.diagnostic,
+    super.diagnostics,
+  });
+}
+
+final class EventSearchError extends EphemerisError {
+  EventSearchError(
+    super.status,
+    super.name,
+    super.message, {
+    super.resultFlags,
+    super.diagnostic,
+    super.diagnostics,
+  });
+}
+
+final class RuntimeServiceError extends EphemerisError {
+  RuntimeServiceError(
+    super.status,
+    super.name,
+    super.message, {
+    super.resultFlags,
+    super.diagnostic,
+    super.diagnostics,
+  });
+}
+
+final class UnknownNativeError extends EphemerisError {
+  UnknownNativeError(
+    super.status,
+    super.name,
+    super.message, {
+    super.resultFlags,
+    super.diagnostic,
+    super.diagnostics,
+  });
 }
 
 /// One user-owned Ephemeris calculation context.
@@ -153,36 +280,32 @@ final class EphemerisContext implements Finalizable {
         _bindings,
         _context,
         _ensureOpen,
-        (status) => _checkStatus(_bindings, status),
+        (status) => _completeOperation(status),
       );
       time = Time.internal(
         _bindings,
         _context,
         _ensureOpen,
-        (status) => _checkStatus(_bindings, status),
+        (status) => _completeOperation(status),
       );
       astrology = AstrologyApi._(_bindings, _context, _ensureOpen, (
         status,
         diagnostic,
       ) {
-        if (diagnostic != null) _recordDiagnostic(diagnostic);
-        _checkStatus(_bindings, status, diagnostic: diagnostic);
+        return _completeOperation(status, diagnostic: diagnostic);
       });
       position = PositionApi.internal(_bindings, _context, _ensureOpen, (
         status,
         diagnostic,
       ) {
-        if (diagnostic != null) _recordDiagnostic(diagnostic);
-        _checkStatus(_bindings, status, diagnostic: diagnostic);
+        return _completeOperation(status, diagnostic: diagnostic);
       });
       observed = ObservedApi._(_bindings, _context, _ensureOpen, (
         status,
         diagnostic,
         diagnostics,
       ) {
-        if (diagnostic != null) _recordDiagnostic(diagnostic);
-        _checkStatus(
-          _bindings,
+        return _completeOperation(
           status,
           diagnostic: diagnostic,
           diagnostics: diagnostics,
@@ -192,66 +315,56 @@ final class EphemerisContext implements Finalizable {
         status,
         diagnostic,
       ) {
-        if (diagnostic != null) _recordDiagnostic(diagnostic);
-        _checkStatus(_bindings, status, diagnostic: diagnostic);
+        return _completeOperation(status, diagnostic: diagnostic);
       });
       phenomena = PhenomenaApi._(_bindings, _context, _ensureOpen, (
         status,
         diagnostic,
       ) {
-        if (diagnostic != null) _recordDiagnostic(diagnostic);
-        _checkStatus(_bindings, status, diagnostic: diagnostic);
+        return _completeOperation(status, diagnostic: diagnostic);
       });
       solarTime = SolarTimeApi._(_bindings, _context, _ensureOpen, (
         status,
         diagnostic,
       ) {
-        if (diagnostic != null) _recordDiagnostic(diagnostic);
-        _checkStatus(_bindings, status, diagnostic: diagnostic);
+        return _completeOperation(status, diagnostic: diagnostic);
       });
       visibility = VisibilityApi._(_bindings, _context, _ensureOpen, (
         status,
         diagnostic,
       ) {
-        if (diagnostic != null) _recordDiagnostic(diagnostic);
-        _checkStatus(_bindings, status, diagnostic: diagnostic);
+        return _completeOperation(status, diagnostic: diagnostic);
       });
       heliacal = HeliacalApi._(_bindings, _context, _ensureOpen, (
         status,
         diagnostic,
       ) {
-        if (diagnostic != null) _recordDiagnostic(diagnostic);
-        _checkStatus(_bindings, status, diagnostic: diagnostic);
+        return _completeOperation(status, diagnostic: diagnostic);
       });
       events = EventsApi._(_bindings, _context, _ensureOpen, (
         status,
         diagnostic,
       ) {
-        if (diagnostic != null) _recordDiagnostic(diagnostic);
-        _checkStatus(_bindings, status, diagnostic: diagnostic);
+        return _completeOperation(status, diagnostic: diagnostic);
       });
       eclipses = EclipseApi._(_bindings, _context, _ensureOpen, (
         status,
         diagnostic,
       ) {
-        if (diagnostic != null) _recordDiagnostic(diagnostic);
-        _checkStatus(_bindings, status, diagnostic: diagnostic);
+        return _completeOperation(status, diagnostic: diagnostic);
       });
       occultation = OccultationApi._(_bindings, _context, _ensureOpen, (
         status,
         diagnostic,
       ) {
-        if (diagnostic != null) _recordDiagnostic(diagnostic);
-        _checkStatus(_bindings, status, diagnostic: diagnostic);
+        return _completeOperation(status, diagnostic: diagnostic);
       });
       stars = StarApi._(_bindings, _context, _ensureOpen, (
         status,
         diagnostic,
         diagnostics,
       ) {
-        if (diagnostic != null) _recordDiagnostic(diagnostic);
-        _checkStatus(
-          _bindings,
+        return _completeOperation(
           status,
           diagnostic: diagnostic,
           diagnostics: diagnostics,
@@ -331,6 +444,7 @@ final class EphemerisContext implements Finalizable {
   late final GanzhiApi ganzhi;
   ChineseCalendarContext? _chineseCalendar;
   EphemerisDiagnostic? _lastDiagnostic;
+  ResultFlags _lastResultFlags = ResultFlags.none;
 
   /// The diagnostic snapshot published by the most recent operation that
   /// produced one, or null when no such operation has run yet.
@@ -340,8 +454,31 @@ final class EphemerisContext implements Finalizable {
   /// before throwing.
   EphemerisDiagnostic? get lastDiagnostic => _lastDiagnostic;
 
+  /// Execution facts reported by the most recently completed native call.
+  ///
+  /// Prefer the `flags` field returned with an [OperationResult]. This
+  /// snapshot exists for diagnostics and for mutating APIs that return no
+  /// value; it is not a substitute for the call-scoped record.
+  ResultFlags get lastResultFlags => _lastResultFlags;
+
   void _recordDiagnostic(EphemerisDiagnostic diagnostic) {
     _lastDiagnostic = diagnostic;
+  }
+
+  ResultFlags _completeOperation(
+    int rawResult, {
+    EphemerisDiagnostic? diagnostic,
+    Iterable<EphemerisDiagnostic> diagnostics = const [],
+  }) {
+    if (diagnostic != null) _recordDiagnostic(diagnostic);
+    final flags = _checkStatus(
+      _bindings,
+      rawResult,
+      diagnostic: diagnostic,
+      diagnostics: diagnostics,
+    );
+    _lastResultFlags = flags;
+    return flags;
   }
 
   /// Every calendar context created from this context, tracked so closing the
@@ -404,10 +541,11 @@ final class EphemerisContext implements Finalizable {
     _context.cast(),
     _ensureOpen,
     _recordDiagnostic,
+    _completeOperation,
   );
 
   /// Calculates a position at a TT Julian date.
-  Position positionTt(
+  OperationResult<Position> positionTt(
     Target body,
     JulianDate<TtScale> julianDate, {
     Set<PositionFlag> flags = const {},
@@ -416,7 +554,7 @@ final class EphemerisContext implements Finalizable {
   }
 
   /// Calculates a position at a UT Julian date.
-  Position positionUt(
+  OperationResult<Position> positionUt(
     Target body,
     JulianDate<Ut1Scale> julianDate, {
     Set<PositionFlag> flags = const {},
@@ -532,32 +670,100 @@ _NativeLibraryState _nativeLibraryStateFor(DynamicLibrary library) {
 Never _throwStatus(
   TaiyinBindings bindings,
   int status, {
+  ResultFlags resultFlags = ResultFlags.none,
   EphemerisDiagnostic? diagnostic,
   Iterable<EphemerisDiagnostic> diagnostics = const [],
 }) {
-  throw EphemerisError(
-    status,
-    _readNativeString(bindings.taiyin_status_name(status)),
-    _readNativeString(bindings.taiyin_status_message(status)),
+  final name = _readNativeString(bindings.taiyin_status_name(status));
+  final message = _readNativeString(bindings.taiyin_status_message(status));
+  final category = StatusCategory.fromId(
+    bindings.taiyin_status_category_of(status),
+  );
+  final arguments = (
+    status: status,
+    name: name,
+    message: message,
+    resultFlags: resultFlags,
     diagnostic: diagnostic,
     diagnostics: diagnostics,
   );
+  if (status == -1) {
+    throw InvalidArgumentError(
+      arguments.status,
+      arguments.name,
+      arguments.message,
+      resultFlags: arguments.resultFlags,
+      diagnostic: arguments.diagnostic,
+      diagnostics: arguments.diagnostics,
+    );
+  }
+  if (status == -2) {
+    throw EphemerisOutOfMemoryError(
+      arguments.status,
+      arguments.name,
+      arguments.message,
+      resultFlags: arguments.resultFlags,
+      diagnostic: arguments.diagnostic,
+      diagnostics: arguments.diagnostics,
+    );
+  }
+  if (status == -3) {
+    throw InternalCalculationError(
+      arguments.status,
+      arguments.name,
+      arguments.message,
+      resultFlags: arguments.resultFlags,
+      diagnostic: arguments.diagnostic,
+      diagnostics: arguments.diagnostics,
+    );
+  }
+  if (status == -4) {
+    throw UnsupportedOperationError(
+      arguments.status,
+      arguments.name,
+      arguments.message,
+      resultFlags: arguments.resultFlags,
+      diagnostic: arguments.diagnostic,
+      diagnostics: arguments.diagnostics,
+    );
+  }
+  final error = switch (category) {
+    StatusCategory.ephemeris => EphemerisRouteError.new,
+    StatusCategory.file => DataFileError.new,
+    StatusCategory.time => TimeScaleError.new,
+    StatusCategory.observer => ObserverError.new,
+    StatusCategory.event => EventSearchError.new,
+    StatusCategory.runtime => RuntimeServiceError.new,
+    _ => UnknownNativeError.new,
+  };
+  throw error(
+    arguments.status,
+    arguments.name,
+    arguments.message,
+    resultFlags: arguments.resultFlags,
+    diagnostic: arguments.diagnostic,
+    diagnostics: arguments.diagnostics,
+  );
 }
 
-void _checkStatus(
+ResultFlags _checkStatus(
   TaiyinBindings bindings,
-  int status, {
+  int rawResult, {
   EphemerisDiagnostic? diagnostic,
   Iterable<EphemerisDiagnostic> diagnostics = const [],
 }) {
+  final decoded = decodeNativeCallResult(rawResult);
+  final status = decoded.status;
   if (status != 0) {
     _throwStatus(
       bindings,
       status,
+      resultFlags: decoded.flags,
       diagnostic: diagnostic,
       diagnostics: diagnostics,
     );
   }
+  return decoded.flags;
 }
 
 String _readNativeString(Pointer<Char> value) {

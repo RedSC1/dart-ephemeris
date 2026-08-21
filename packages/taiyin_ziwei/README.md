@@ -15,11 +15,12 @@ void main() {
   final ephemeris = Ephemeris.open();
   final context = ephemeris.createContext();
   try {
-    final chart = context.ziwei.calculateLocal(
+    final result = context.ziwei.calculateLocal(
       AstroDateTime(2003, 3, 13, 14, 15),
       gender: ZiweiGender.male,
     );
-    print(chart.summary.bureauId);
+    print(result.value.summary.bureauId);
+    print(result.flags.values);
   } finally {
     context.close();
   }

@@ -26,10 +26,10 @@ void main() {
         ];
 
         for (final (calendar, expected) in fixtures) {
-          final actual = taiyin.time.julianDay<Ut1Scale>(calendar);
+          final actual = taiyin.time.julianDay<Ut1Scale>(calendar).value;
           expect(actual.toDouble(), closeTo(expected, 1e-9));
 
-          final roundTrip = taiyin.time.reverseJulianDay(actual);
+          final roundTrip = taiyin.time.reverseJulianDay(actual).value;
           expect(roundTrip.year, calendar.year);
           expect(roundTrip.month, calendar.month);
           expect(roundTrip.day, calendar.day);
@@ -62,23 +62,26 @@ void main() {
 
       test('built-in leap-second table oracles', () {
         expect(
-          () =>
-              taiyin.time.taiMinusUtc(AstroDateTime(1971, 12, 31, 23, 59, 59)),
+          () => taiyin.time
+              .taiMinusUtc(AstroDateTime(1971, 12, 31, 23, 59, 59))
+              .value,
           throwsA(isA<EphemerisError>()),
         );
-        expect(taiyin.time.taiMinusUtc(AstroDateTime(1972, 1, 1)), 10);
+        expect(taiyin.time.taiMinusUtc(AstroDateTime(1972, 1, 1)).value, 10);
         expect(
-          taiyin.time.taiMinusUtc(AstroDateTime(2024, 4, 8, 18, 17, 20)),
+          taiyin.time.taiMinusUtc(AstroDateTime(2024, 4, 8, 18, 17, 20)).value,
           37,
         );
       });
 
       test('UTC, TAI, TT, and UT1 conversion oracles', () {
         final utc = JulianDate<UtcScale>.fromDouble(2460409.262037037);
-        final tai = taiyin.time.utcToTai(utc, taiMinusUtcSeconds: 37);
-        final ttFromTai = taiyin.time.taiToTt(tai);
-        final ttFromUtc = taiyin.time.utcToTt(utc, taiMinusUtcSeconds: 37);
-        final ut1 = taiyin.time.utcToUt1(utc, dut1Seconds: -0.1);
+        final tai = taiyin.time.utcToTai(utc, taiMinusUtcSeconds: 37).value;
+        final ttFromTai = taiyin.time.taiToTt(tai).value;
+        final ttFromUtc = taiyin.time
+            .utcToTt(utc, taiMinusUtcSeconds: 37)
+            .value;
+        final ut1 = taiyin.time.utcToUt1(utc, dut1Seconds: -0.1).value;
 
         expect(tai.coordinateSecondsDifference(utc), closeTo(37, 1e-11));
         expect(
@@ -93,23 +96,23 @@ void main() {
         );
 
         final sourceUt1 = JulianDate<Ut1Scale>.fromDouble(2460409.5);
-        final tt = taiyin.time.ut1ToTt(
-          sourceUt1,
-          deltaTSeconds: 69.17035296181177,
-        );
-        final roundTrip = taiyin.time.ttToUt1(
-          tt,
-          deltaTSeconds: 69.17035296181177,
-        );
+        final tt = taiyin.time
+            .ut1ToTt(sourceUt1, deltaTSeconds: 69.17035296181177)
+            .value;
+        final roundTrip = taiyin.time
+            .ttToUt1(tt, deltaTSeconds: 69.17035296181177)
+            .value;
         expect(roundTrip.secondsDifference(sourceUt1), closeTo(0, 1e-7));
       });
 
       test('explicit precise-scale aggregate oracle', () {
-        final scales = taiyin.time.preciseScalesFromUtc(
-          AstroDateTime(2024, 4, 8, 18, 17, 20),
-          taiMinusUtcSeconds: 37,
-          dut1Seconds: -0.1,
-        );
+        final scales = taiyin.time
+            .preciseScalesFromUtc(
+              AstroDateTime(2024, 4, 8, 18, 17, 20),
+              taiMinusUtcSeconds: 37,
+              dut1Seconds: -0.1,
+            )
+            .value;
 
         expect(scales.utc.toDouble(), closeTo(2460409.262037037, 1e-12));
         expect(
@@ -139,13 +142,13 @@ void main() {
 
         for (final (value, model, expectedOffset) in fixtures) {
           final tt = JulianDate<TtScale>.fromDouble(value);
-          final tdb = taiyin.time.ttToTdb(tt, model: model);
+          final tdb = taiyin.time.ttToTdb(tt, model: model).value;
           expect(
             tdb.coordinateSecondsDifference(tt),
             closeTo(expectedOffset, 5e-5),
           );
           expect(
-            taiyin.time.tdbToTt(tdb, model: model).secondsDifference(tt),
+            taiyin.time.tdbToTt(tdb, model: model).value.secondsDifference(tt),
             closeTo(0, 5e-12),
           );
         }
@@ -224,10 +227,9 @@ void main() {
 
       test('estimated-scale aggregate oracles', () {
         final calendar = AstroDateTime(2024, 4, 8, 18, 17, 20);
-        final manual = taiyin.time.estimatedScalesFromUt1(
-          calendar,
-          deltaTSeconds: 69.17035296181177,
-        );
+        final manual = taiyin.time
+            .estimatedScalesFromUt1(calendar, deltaTSeconds: 69.17035296181177)
+            .value;
 
         expect(manual.ut1.toDouble(), closeTo(2460409.262037037, 1e-12));
         expect(
@@ -236,7 +238,7 @@ void main() {
         );
         expect(manual.deltaTSeconds, 69.17035296181177);
 
-        final estimated = taiyin.time.estimatedScalesFromUt1(calendar);
+        final estimated = taiyin.time.estimatedScalesFromUt1(calendar).value;
         expect(
           estimated.tt.coordinateSecondsDifference(estimated.ut1),
           closeTo(estimated.deltaTSeconds, 1e-11),
@@ -246,7 +248,10 @@ void main() {
           closeTo(taiyin.time.estimatedDeltaTFromUt1(estimated.ut1), 1e-12),
         );
         expect(
-          taiyin.time.tdbToTt(estimated.tdb).secondsDifference(estimated.tt),
+          taiyin.time
+              .tdbToTt(estimated.tdb)
+              .value
+              .secondsDifference(estimated.tt),
           closeTo(0, 5e-12),
         );
       });

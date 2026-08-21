@@ -3,7 +3,7 @@ import 'package:taiyin_bazi/taiyin_bazi.dart';
 
 /// A small end-to-end tour of the Ephemeris Dart API.
 ///
-/// Run with a path to a built ABI-8 Taiyin shared library (or no argument to
+/// Run with a path to a built ABI-9 Taiyin shared library (or no argument to
 /// use the copy bundled in `lib/native/`):
 ///
 /// ```sh
@@ -16,7 +16,7 @@ void main(List<String> arguments) {
   try {
     // Core ephemeris: a Moon position; the native diagnostic lands on
     // context.lastDiagnostic.
-    final moon = context.positionTt(
+    final (value: moon, flags: moonFlags) = context.positionTt(
       Body.moon,
       JulianDate<TtScale>.fromDouble(2460409.0),
       flags: {PositionFlag.xyz, PositionFlag.speed},
@@ -24,11 +24,12 @@ void main(List<String> arguments) {
     print('Taiyin ${ephemeris.libraryVersion}, ABI ${ephemeris.abiVersion}');
     print('Moon position: ${moon.coordinates}');
     print('Moon velocity: ${moon.rates}');
+    print('Moon result flags: ${moonFlags.values}');
 
     // Chinese calendar: solar -> lunar conversion.
-    final lunar = context.chineseCalendar.fromSolar(
-      const SolarDate(year: 2024, month: 2, day: 10),
-    );
+    final lunar = context.chineseCalendar
+        .fromSolar(const SolarDate(year: 2024, month: 2, day: 10))
+        .value;
     print('2024-02-10 -> lunar ${lunar.year}-${lunar.month}-${lunar.day}');
 
     // Ganzhi: the day pillar of a civil date.
@@ -40,22 +41,26 @@ void main(List<String> arguments) {
     // BaZi (requires a library built with the BaZi extension): four pillars,
     // the natal chart, and the first da-yun.
     if (ephemeris.hasCapability(Capability.bazi)) {
-      final pillars = context.chineseCalendar.fourPillars(
-        instantUtc: JulianDate<UtcScale>.fromDouble(2460351.0),
-        virtualTime: AstroDateTime(2024, 2, 10, 12),
-      );
+      final pillars = context.chineseCalendar
+          .fourPillars(
+            instantUtc: JulianDate<UtcScale>.fromDouble(2460351.0),
+            virtualTime: AstroDateTime(2024, 2, 10, 12),
+          )
+          .value;
       print(
         'Four pillars: ${pillars.year} ${pillars.month} '
         '${pillars.day} ${pillars.hour}',
       );
 
       final chart = context.bazi.calcChart(pillars);
-      final qiyun = context.bazi.calcQiyun(
-        birthJdUt: JulianDate<Ut1Scale>.fromDouble(2460351.0),
-        birthCivilTime: AstroDateTime(2024, 2, 10, 12),
-        chart: chart,
-        gender: BaziGender.male,
-      );
+      final qiyun = context.bazi
+          .calcQiyun(
+            birthJdUt: JulianDate<Ut1Scale>.fromDouble(2460351.0),
+            birthCivilTime: AstroDateTime(2024, 2, 10, 12),
+            chart: chart,
+            gender: BaziGender.male,
+          )
+          .value;
       final dayun = context.bazi.fillDayun(
         birthCivilTime: AstroDateTime(2024, 2, 10, 12),
         chart: chart,

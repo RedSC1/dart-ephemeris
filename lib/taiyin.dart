@@ -16,6 +16,7 @@ export 'src/orbital/orbital_models.dart';
 export 'src/phenomena/phenomena_models.dart';
 export 'src/position/position_api.dart';
 export 'src/runtime/runtime_models.dart';
+export 'src/result_flags.dart';
 export 'src/solar_time/solar_time_models.dart';
 export 'src/star/star_models.dart';
 export 'src/time/astro_date_time.dart';

@@ -1,6 +1,6 @@
 name: taiyin_ziwei
 description: Ziwei Doushu (紫微斗数) extension bindings for the Taiyin ephemeris.
-version: 0.4.0
+version: 0.5.0
 repository: https://github.com/RedSC1/taiyin-dart
 resolution: workspace
 publish_to: none

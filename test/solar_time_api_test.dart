@@ -20,9 +20,9 @@ void main() {
       });
 
       test('calculates equation of time from UT1 and TT', () {
-        final fromUt1 = context.solarTime.equationOfTimeAtUt1(ut1);
+        final fromUt1 = context.solarTime.equationOfTimeAtUt1(ut1).value;
         final equation = fromUt1;
-        final fromTt = context.solarTime.equationOfTimeAtTt(equation.tt);
+        final fromTt = context.solarTime.equationOfTimeAtTt(equation.tt).value;
 
         expect(equation.equationSeconds, inExclusiveRange(-250.0, -150.0));
         expect(equation.equationSeconds, closeTo(-198.9342282623329, 2.0));
@@ -47,14 +47,14 @@ void main() {
 
       test('round-trips local mean and apparent solar time', () {
         final longitudeRadians = 116.3833 * math.pi / 180.0;
-        final equation = context.solarTime.equationOfTimeAtUt1(ut1);
+        final equation = context.solarTime.equationOfTimeAtUt1(ut1).value;
         final localMean = LocalMeanSolarTime.fromUt1(
           ut1,
           longitudeRadians: longitudeRadians,
         );
 
-        final apparent = context.solarTime.meanToApparent(localMean);
-        final roundTrip = context.solarTime.apparentToMean(apparent);
+        final apparent = context.solarTime.meanToApparent(localMean).value;
+        final roundTrip = context.solarTime.apparentToMean(apparent).value;
 
         expect(
           apparent.coordinate.coordinateSecondsDifference(localMean.coordinate),
@@ -84,11 +84,11 @@ void main() {
 
         context.close();
         expect(
-          () => context.solarTime.equationOfTimeAtUt1(ut1),
+          () => context.solarTime.equationOfTimeAtUt1(ut1).value,
           throwsStateError,
         );
         expect(
-          () => context.solarTime.meanToApparent(localMean),
+          () => context.solarTime.meanToApparent(localMean).value,
           throwsStateError,
         );
       });

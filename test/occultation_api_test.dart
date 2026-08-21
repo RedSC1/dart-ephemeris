@@ -66,26 +66,34 @@ void main() {
         'searches star occultations and derives visibility and where data',
         () {
           final start = JulianDate<Ut1Scale>.fromDouble(2460310.5);
-          final geocentric = context.occultation.nextGeocentricStarAtUt1(
-            'antares',
-            start,
-            positionFlags: {PositionFlag.truePosition},
-          );
-          final local = context.occultation.nextLocalStarAtUt1(
-            'antares',
-            start,
-            options: {OccultationSearchOption.oneCandidate},
-          );
-          final visibility = context.occultation.localStarVisibilityAtUt1(
-            'antares',
-            local,
-            options: {OccultationVisibilityOption.refraction},
-          );
-          final where = context.occultation.starWhereAtUt1(
-            'antares',
-            geocentric,
-            visibilityOptions: {OccultationVisibilityOption.refraction},
-          );
+          final geocentric = context.occultation
+              .nextGeocentricStarAtUt1(
+                'antares',
+                start,
+                positionFlags: {PositionFlag.truePosition},
+              )
+              .value;
+          final local = context.occultation
+              .nextLocalStarAtUt1(
+                'antares',
+                start,
+                options: {OccultationSearchOption.oneCandidate},
+              )
+              .value;
+          final visibility = context.occultation
+              .localStarVisibilityAtUt1(
+                'antares',
+                local,
+                options: {OccultationVisibilityOption.refraction},
+              )
+              .value;
+          final where = context.occultation
+              .starWhereAtUt1(
+                'antares',
+                geocentric,
+                visibilityOptions: {OccultationVisibilityOption.refraction},
+              )
+              .value;
 
           expect(geocentric.kind, LunarOccultationKind.lunarStar);
           expect(geocentric.begin, isNotNull);
@@ -126,40 +134,42 @@ void main() {
 
       test('searches body occultations with standard and custom radii', () {
         final start = JulianDate<Ut1Scale>.fromDouble(2460900.5);
-        final geocentric = context.occultation.nextGeocentricBodyAtUt1(
-          Body.mercury,
-          start,
-        );
-        final enlarged = context.occultation.nextGeocentricBodyAtUt1(
-          Body.mercury,
-          start,
-          targetRadiusKilometers: 2 * 2439.7,
-          options: {OccultationSearchOption.filterTotal},
-        );
+        final geocentric = context.occultation
+            .nextGeocentricBodyAtUt1(Body.mercury, start)
+            .value;
+        final enlarged = context.occultation
+            .nextGeocentricBodyAtUt1(
+              Body.mercury,
+              start,
+              targetRadiusKilometers: 2 * 2439.7,
+              options: {OccultationSearchOption.filterTotal},
+            )
+            .value;
 
         context.configuration.setObserverLocation(mercuryLocation);
-        final local = context.occultation.nextLocalBodyAtUt1(
-          Body.mercury,
-          start,
-        );
-        final localWithRadius = context.occultation.nextLocalBodyAtUt1(
-          Body.mercury,
-          start,
-          targetRadiusKilometers: 2 * 2439.7,
-        );
-        final visibility = context.occultation.localBodyVisibilityAtUt1(
-          Body.mercury,
-          local,
-        );
-        final where = context.occultation.bodyWhereAtUt1(
-          Body.mercury,
-          geocentric,
-        );
-        final whereWithRadius = context.occultation.bodyWhereAtUt1(
-          Body.mercury,
-          enlarged,
-          targetRadiusKilometers: 2 * 2439.7,
-        );
+        final local = context.occultation
+            .nextLocalBodyAtUt1(Body.mercury, start)
+            .value;
+        final localWithRadius = context.occultation
+            .nextLocalBodyAtUt1(
+              Body.mercury,
+              start,
+              targetRadiusKilometers: 2 * 2439.7,
+            )
+            .value;
+        final visibility = context.occultation
+            .localBodyVisibilityAtUt1(Body.mercury, local)
+            .value;
+        final where = context.occultation
+            .bodyWhereAtUt1(Body.mercury, geocentric)
+            .value;
+        final whereWithRadius = context.occultation
+            .bodyWhereAtUt1(
+              Body.mercury,
+              enlarged,
+              targetRadiusKilometers: 2 * 2439.7,
+            )
+            .value;
 
         expect(geocentric.kind, LunarOccultationKind.lunarBody);
         expect(
@@ -200,48 +210,58 @@ void main() {
       test('rejects invalid Dart inputs and use after close', () {
         final start = JulianDate<Ut1Scale>.fromDouble(2460900.5);
         expect(
-          () => context.occultation.nextGeocentricBodyAtUt1(Body.moon, start),
+          () => context.occultation
+              .nextGeocentricBodyAtUt1(Body.moon, start)
+              .value,
           throwsArgumentError,
         );
         expect(
-          () => context.occultation.nextGeocentricBodyAtUt1(
-            Body.solarSystemBarycenter,
-            start,
-          ),
+          () => context.occultation
+              .nextGeocentricBodyAtUt1(Body.solarSystemBarycenter, start)
+              .value,
           throwsArgumentError,
         );
         expect(
-          () => context.occultation.nextGeocentricBodyAtUt1(
-            Body.mercury,
-            start,
-            targetRadiusKilometers: -1,
-          ),
+          () => context.occultation
+              .nextGeocentricBodyAtUt1(
+                Body.mercury,
+                start,
+                targetRadiusKilometers: -1,
+              )
+              .value,
           throwsArgumentError,
         );
         expect(
-          () => context.occultation.nextGeocentricStarAtUt1('', start),
+          () => context.occultation.nextGeocentricStarAtUt1('', start).value,
           throwsArgumentError,
         );
         expect(
-          () => context.occultation.nextGeocentricStarAtUt1(
-            'antares',
-            start,
-            positionFlags: {PositionFlag.xyz},
-          ),
+          () => context.occultation
+              .nextGeocentricStarAtUt1(
+                'antares',
+                start,
+                positionFlags: {PositionFlag.xyz},
+              )
+              .value,
           throwsArgumentError,
         );
-        final star = context.occultation.nextGeocentricStarAtUt1(
-          'antares',
-          JulianDate<Ut1Scale>.fromDouble(2460310.5),
-        );
+        final star = context.occultation
+            .nextGeocentricStarAtUt1(
+              'antares',
+              JulianDate<Ut1Scale>.fromDouble(2460310.5),
+            )
+            .value;
         expect(
-          () =>
-              context.occultation.localBodyVisibilityAtUt1(Body.mercury, star),
+          () => context.occultation
+              .localBodyVisibilityAtUt1(Body.mercury, star)
+              .value,
           throwsArgumentError,
         );
         context.close();
         expect(
-          () => context.occultation.nextGeocentricStarAtUt1('antares', start),
+          () => context.occultation
+              .nextGeocentricStarAtUt1('antares', start)
+              .value,
           throwsStateError,
         );
       });

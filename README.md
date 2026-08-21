@@ -45,7 +45,7 @@ void main() {
   );
   final context = ephemeris.createContext();
   try {
-    final moon = context.position.atTt(
+    final moonResult = context.position.atTt(
       taiyin.Body.moon,
       taiyin.JulianDate<taiyin.TtScale>.fromDouble(2460409.0),
       flags: {
@@ -53,8 +53,9 @@ void main() {
         taiyin.PositionFlag.speed,
       },
     );
-    print(moon.coordinates);
-    print(moon.rates);
+    print(moonResult.value.coordinates);
+    print(moonResult.value.rates);
+    print(moonResult.flags.values);
     print(context.lastDiagnostic?.attemptedMethodId);
   } finally {
     context.close();
@@ -84,7 +85,7 @@ final ephemeris = taiyin.Ephemeris.open();
 final moon = context.position.atTt(
   taiyin.Body.moon,
   taiyin.JulianDate<taiyin.TtScale>.fromDouble(2460409.0),
-);
+).value;
 ```
 
 Prefixing makes collisions impossible. Note that collisions only error on the
@@ -107,7 +108,7 @@ code that coexists with other packages, prefer the prefixed form above.
 Ephemeris exposes its semantic version and major-release codename independently:
 
 ```dart
-print(ephemeris.libraryVersion);  // 1.0.0
+print(ephemeris.libraryVersion);  // 1.0.0-preview.6
 print(ephemeris.libraryCodename); // Singularity
 ```
 
@@ -148,7 +149,7 @@ final tt = calendar.toJulianDate<TtScale>();
 scale is part of the Dart type, so a `JulianDate<Ut1Scale>` cannot be passed to
 `positionTt`. `toJulianDate<S>()` interprets the calendar fields in that scale;
 it does not perform UTC/TAI/TT conversion. The split representation crosses
-the FFI boundary end to end: the ABI-8 native entry points use
+the FFI boundary end to end: the ABI-9 native entry points use
 `taiyin_split_julian_date` for every calculation time, so the Dart value is
 never merged to a scalar `double` mid-calculation.
 
@@ -193,13 +194,15 @@ Use the context-owned time service for actual scale conversion:
 
 ```dart
 final utcCalendar = AstroDateTime(2000, 1, 1);
-final scales = context.time.scalesFromUtc(utcCalendar);
+final scalesResult = context.time.scalesFromUtc(utcCalendar);
+final scales = scalesResult.value;
 
 print(scales.value.utc);
 print(scales.value.ut1);
 print(scales.value.tt);
 print(scales.value.tdb);
 print(scales.diagnostic.route);
+print(scalesResult.flags.values);
 ```
 
 `Time` also exposes explicit UTC/TAI/TT/UT1/TDB conversions, Delta-T
@@ -209,6 +212,36 @@ conversion, and aggregate time-scale results all use Taiyin's split-Julian-Date
 C ABI, preserving sub-microsecond coordinate separation across the FFI
 boundary. This is a time-coordinate guarantee, not a claim that the current
 ephemeris calculation core resolves positions or events at that scale.
+
+## Values and result flags
+
+Native ABI-9 calculations return an immutable named record:
+
+```dart
+typedef OperationResult<T> = ({T value, ResultFlags flags});
+```
+
+Use `.value` when only the answer matters, or destructure both fields when the
+execution route matters:
+
+```dart
+final (value: mars, flags: resultFlags) = context.position.atUt1(
+  Body.mars,
+  JulianDate<Ut1Scale>.fromDouble(2460310.5),
+);
+
+print(mars.coordinates);
+if (resultFlags.contains(ResultFlag.fallbackOccurred)) {
+  print('The requested route used a fallback.');
+}
+```
+
+Fatal native statuses throw a typed `EphemerisError` subclass such as
+`EphemerisRouteError`, `DataFileError`, `TimeScaleError`, or
+`EventSearchError`. `error.resultFlags` preserves execution facts reported
+before failure. `context.lastResultFlags` and `context.lastDiagnostic` are
+debugging conveniences; in concurrent code, trust the record or exception
+returned by that specific call rather than mutable “last call” state.
 
 ## Positions and Cartesian states
 
@@ -390,7 +423,7 @@ final result = context.position.atTt(
   registration.target,
   JulianDate<TtScale>.fromDouble(2460409.0),
   flags: {PositionFlag.xyz},
-);
+).value;
 registration.close();
 ```
 
@@ -482,7 +515,7 @@ final observedSun = context.observed.atUtc(
     ObservedFlag.topocentric,
     ObservedFlag.refraction,
   },
-);
+).value;
 print(observedSun.refractedHorizontal?.altitudeRadians);
 ```
 
@@ -513,7 +546,7 @@ final sunrise = context.visibility.solarRiseSetAtUt1(
   start,
   start.add(const Duration(days: 1)),
   event: VisibilityEventKind.rise,
-);
+).value;
 
 if (sunrise.coordinate case final coordinate?) {
   print(coordinate);
@@ -582,7 +615,7 @@ final event = context.heliacal.nextBodyEventAtUt1(
   conditions: const HeliacalVisibilityConditions(
     extinctionMagnitudePerAirmass: 0.25,
   ),
-);
+).value;
 print(event.coordinate);
 ```
 
@@ -608,12 +641,12 @@ also require the star key to be present in the process-wide catalog.
 final event = context.occultation.nextLocalStarAtUt1(
   'antares',
   JulianDate<Ut1Scale>.fromDouble(2460310.5),
-);
+).value;
 final visibility = context.occultation.localStarVisibilityAtUt1(
   'antares',
   event,
   options: {OccultationVisibilityOption.refraction},
-);
+).value;
 
 print(event.firstContact);
 print(visibility.visibleIntervals);
@@ -645,11 +678,11 @@ final eclipse = context.eclipses.nextLunarAtUt1(
   JulianDate<Ut1Scale>.fromDouble(2460926.0),
   kinds: {EclipseKind.total},
   options: {LunarEclipseSearchOption.includeContacts},
-);
+).value;
 final local = context.eclipses.localLunarVisibilityAtUt1(
   eclipse,
   options: {LocalLunarEclipseVisibilityOption.refraction},
-);
+).value;
 
 print(eclipse.contacts[LunarEclipseContact.greatest]);
 print(local.contacts[LunarEclipseContact.greatest]);
@@ -681,14 +714,14 @@ final global = context.eclipses.nextSolarAtUt1(
   JulianDate<Ut1Scale>.fromDouble(2460400.0),
   kinds: {EclipseKind.total},
   options: {SolarEclipseSearchOption.includeContacts},
-);
+).value;
 final local = context.eclipses.nextLocalSolarAtUt1(
   JulianDate<Ut1Scale>.fromDouble(2460400.0),
   kinds: {EclipseKind.total},
-);
+).value;
 final geometry = context.eclipses.localSolarCircumstancesAtUt1(
   local.maximum!,
-);
+).value;
 
 print(global.contacts[SolarEclipseContact.greatest]);
 print(local.contacts[LocalSolarEclipseContact.greatest]);
@@ -715,7 +748,7 @@ final refracted = context.eclipses.solveLocalSolarAtUt1(
     LocalSolarEclipseVisibilityOption.refraction,
     LocalSolarEclipseVisibilityOption.strictMeteorology,
   },
-);
+).value;
 ```
 
 As with lunar eclipses, these physical calculation times currently cross the C
@@ -739,12 +772,12 @@ final phases = context.events.lunarPhaseCrossingsAtUt1(
   start.add(const Duration(days: 60)),
   maxStepDays: 1,
   maxResults: 4,
-);
+).value;
 
 final transit = context.events.nextSolarTransitAtUt1(
   Body.mercury,
   JulianDate<Ut1Scale>.fromDouble(2458799.0),
-);
+).value;
 print(phases.map((date) => date.toDouble()));
 print(transit.greatest);
 ```
@@ -772,14 +805,14 @@ mismatched meridian:
 
 ```dart
 final ut1 = JulianDate<Ut1Scale>.fromDouble(2460311.0);
-final equation = context.solarTime.equationOfTimeAtUt1(ut1);
+final equation = context.solarTime.equationOfTimeAtUt1(ut1).value;
 
 final longitudeRadians = 116.3833 * 3.141592653589793 / 180;
 final localMean = LocalMeanSolarTime.fromUt1(
   ut1,
   longitudeRadians: longitudeRadians,
 );
-final localApparent = context.solarTime.meanToApparent(localMean);
+final localApparent = context.solarTime.meanToApparent(localMean).value;
 print(equation.equationSeconds);
 print(localApparent.coordinate);
 ```
@@ -801,7 +834,7 @@ parallax:
 final moonPhenomena = context.phenomena.atUt1(
   Body.moon,
   JulianDate<Ut1Scale>.fromDouble(2460416.2916666665),
-);
+).value;
 print(moonPhenomena.illuminatedFraction);
 print(moonPhenomena.apparentMagnitude);
 print(moonPhenomena.geocentricHorizontalParallaxRadians);
@@ -879,7 +912,7 @@ final spica = context.stars.atTt(
     PositionFlag.xyz,
     PositionFlag.speed,
   },
-);
+).value;
 
 final observedSpica = context.stars.observedAtUt1(
   'spica',
@@ -888,7 +921,7 @@ final observedSpica = context.stars.observedAtUt1(
     ObservedFlag.topocentric,
     ObservedFlag.horizontal,
   },
-);
+).value;
 ```
 
 `context.stars` exposes single and batch position routes for TDB, TT, UT1, and
@@ -898,10 +931,10 @@ native C ABI does not return partial observed values. Failed position-batch
 entries contain NaN coordinates and rates. Batch exceptions expose every
 available native failure through `EphemerisError.diagnostics`.
 
-This package requires an ABI-8 native library that reports the
+This package requires an ABI-9 native library that reports the
 `Capability.splitTime` and `Capability.chineseCalendar`
 capabilities and exposes the required runtime, star, solar-time, phenomena,
-Chinese-calendar, and Ganzhi-rule symbols. Incomplete ABI-8 builds are rejected
+Chinese-calendar, and Ganzhi-rule symbols. Incomplete ABI-9 builds are rejected
 during `Ephemeris.open` or `EphemerisContext.attach` with a clear compatibility error
 instead of failing later during a lazy symbol lookup.
 
@@ -942,17 +975,20 @@ caller-owned context:
 
 ```dart
 final lunar = context.chineseCalendar
-    .fromSolar(const SolarDate(year: 2024, month: 2, day: 10));
+    .fromSolar(const SolarDate(year: 2024, month: 2, day: 10))
+    .value;
 print(lunar); // 2024-01-01 (甲辰正月初一)
 
 final year = context.chineseCalendar
-    .calcYearUt(JulianDate<Ut1Scale>.fromDouble(2460348.0));
+    .calcYearUt(JulianDate<Ut1Scale>.fromDouble(2460348.0))
+    .value;
 print(year.solarTermCount); // 25
 
-final pillars = context.chineseCalendar.fourPillars(
+final pillarsResult = context.chineseCalendar.fourPillars(
   instantUtc: JulianDate<UtcScale>.fromDouble(2460351.0),
   virtualTime: AstroDateTime(2024, 2, 10, 12),
 );
+final pillars = pillarsResult.value;
 print(pillars.year); // 甲辰
 ```
 
@@ -976,15 +1012,14 @@ import 'package:taiyin_bazi/taiyin_bazi.dart';
 
 // Requires TAIYIN_BUILD_BAZI_EXTENSION.
 final bazi = context.bazi;
-final chart = bazi.calcChart(pillars); // returns BaziChart
-final qiyun = bazi.calcQiyun(
-  birthJdUt: JulianDate<Ut1Scale>.fromDouble(2460351.0),
-  birthCivilTime: AstroDateTime(2024, 2, 10, 12),
-  chart: chart,
+final result = bazi.calculateLocal(
+  AstroDateTime(2003, 3, 13, 14, 15),
   gender: BaziGender.male,
 );
+final chart = result.value.chart;
+final qiyun = result.value.qiyun;
 final dayun = bazi.fillDayun(
-  birthCivilTime: AstroDateTime(2024, 2, 10, 12),
+  birthCivilTime: result.value.localTime,
   chart: chart,
   qiyun: qiyun,
   requestedCount: 5,
@@ -1008,10 +1043,11 @@ import 'package:taiyin_ziwei/taiyin_ziwei.dart';
 
 // Requires TAIYIN_BUILD_ZIWEI_EXTENSION.
 final ziwei = context.ziwei;
-final chart = ziwei.calculateLocal(
+final chartResult = ziwei.calculateLocal(
   AstroDateTime(2003, 3, 13, 14, 15),
   gender: ZiweiGender.male,
 );
+final chart = chartResult.value;
 print(chart.anchors.bureau);
 print(chart.summary.bureauId);
 ```
@@ -1035,9 +1071,9 @@ dart analyze
 dart test
 ```
 
-Native integration tests use the pinned ABI-8 full-module copy
+Native integration tests use the pinned ABI-9 full-module copy
 `lib/native/libtaiyin.dylib` by default (the extension packages reference it as
-`../../lib/native/libtaiyin.dylib`), and an extension-free ABI-8 baseline
+`../../lib/native/libtaiyin.dylib`), and an extension-free ABI-9 baseline
 library for optional-module gating tests. Override them when necessary:
 
 ```sh

@@ -3,7 +3,7 @@ import 'package:test/test.dart';
 
 void main() {
   group('native compatibility', () {
-    test('accepts ABI 8 with split-time and Chinese-calendar support', () {
+    test('accepts ABI 9 with split-time and Chinese-calendar support', () {
       expect(
         () => validateTaiyinNativeCompatibility(
           abiVersion: taiyinSupportedAbiVersion,
@@ -15,7 +15,7 @@ void main() {
     });
 
     test(
-      'rejects an ABI-8 library without the Chinese-calendar capability',
+      'rejects an ABI-9 library without the Chinese-calendar capability',
       () {
         expect(
           () => validateTaiyinNativeCompatibility(
@@ -33,7 +33,7 @@ void main() {
       },
     );
 
-    test('rejects an ABI-8 library without split-time support', () {
+    test('rejects an ABI-9 library without split-time support', () {
       expect(
         () => validateTaiyinNativeCompatibility(
           abiVersion: taiyinSupportedAbiVersion,
@@ -66,10 +66,10 @@ void main() {
       );
     });
 
-    test('accepts a library that exposes every required ABI-8 symbol', () {
+    test('accepts a library that exposes every required ABI-9 symbol', () {
       expect(
         () => validateTaiyinRequiredSymbols(
-          providesSymbol: taiyinRequiredAbi8Symbols.contains,
+          providesSymbol: taiyinRequiredAbi9Symbols.contains,
         ),
         returnsNormally,
       );
@@ -162,7 +162,7 @@ void main() {
       },
     );
 
-    test('reports missing ABI-8 symbols before lazy lookup', () {
+    test('reports missing ABI-9 symbols before lazy lookup', () {
       expect(
         () => validateTaiyinRequiredSymbols(
           providesSymbol: (symbol) => symbol != 'taiyin_get_library_codename',

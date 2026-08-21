@@ -1,7 +1,7 @@
 part of '../taiyin.dart';
 
 typedef _HeliacalStatusChecker =
-    void Function(int status, EphemerisDiagnostic? diagnostic);
+    ResultFlags Function(int status, EphemerisDiagnostic? diagnostic);
 typedef _HeliacalVisibilityCalculation =
     int Function(
       Arena arena,
@@ -40,7 +40,7 @@ final class HeliacalApi {
   /// The Sun, Moon, Earth, and solar-system barycenter are not valid
   /// point-source heliacal targets. Other native body and custom-target IDs
   /// are passed through to the configured context.
-  HeliacalVisibilityResult bodyAtUt1(
+  OperationResult<HeliacalVisibilityResult> bodyAtUt1(
     Target target,
     JulianDate<Ut1Scale> ut1, {
     Set<PositionFlag> positionFlags = const {},
@@ -71,7 +71,7 @@ final class HeliacalApi {
   }
 
   /// Evaluates heliacal visibility of a catalogued star at [ut1].
-  HeliacalVisibilityResult starAtUt1(
+  OperationResult<HeliacalVisibilityResult> starAtUt1(
     String starKey,
     JulianDate<Ut1Scale> ut1, {
     Set<PositionFlag> positionFlags = const {},
@@ -103,7 +103,7 @@ final class HeliacalApi {
   }
 
   /// Finds the next heliacal [event] of a solar-system [target].
-  HeliacalVisibilitySearchResult nextBodyEventAtUt1(
+  OperationResult<HeliacalVisibilitySearchResult> nextBodyEventAtUt1(
     Target target,
     JulianDate<Ut1Scale> start, {
     required HeliacalEventKind event,
@@ -135,7 +135,7 @@ final class HeliacalApi {
   }
 
   /// Finds the next heliacal [event] of a catalogued star.
-  HeliacalVisibilitySearchResult nextStarEventAtUt1(
+  OperationResult<HeliacalVisibilitySearchResult> nextStarEventAtUt1(
     String starKey,
     JulianDate<Ut1Scale> start, {
     required HeliacalEventKind event,
@@ -167,7 +167,7 @@ final class HeliacalApi {
     });
   }
 
-  HeliacalVisibilityResult _calculate(
+  OperationResult<HeliacalVisibilityResult> _calculate(
     HeliacalVisibilityConditions conditions,
     _HeliacalVisibilityCalculation calculate,
   ) {
@@ -180,12 +180,12 @@ final class HeliacalApi {
         ..taiyin_ephemeris_diagnostic_init(diagnostic);
       final status = calculate(arena, nativeConditions, output, diagnostic);
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
-      _checkStatus(status, mappedDiagnostic);
-      return _readVisibilityResult(output.ref);
+      final resultFlags = _checkStatus(status, mappedDiagnostic);
+      return operationResult(_readVisibilityResult(output.ref), resultFlags);
     });
   }
 
-  HeliacalVisibilitySearchResult _search(
+  OperationResult<HeliacalVisibilitySearchResult> _search(
     HeliacalVisibilityConditions conditions,
     _HeliacalSearchCalculation calculate,
   ) {
@@ -198,17 +198,20 @@ final class HeliacalApi {
         ..taiyin_ephemeris_diagnostic_init(diagnostic);
       final status = calculate(arena, nativeConditions, output, diagnostic);
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
-      _checkStatus(status, mappedDiagnostic);
+      final resultFlags = _checkStatus(status, mappedDiagnostic);
       final value = output.ref;
-      return HeliacalVisibilitySearchResult(
-        event: HeliacalEventKind.fromId(value.event_kind),
-        coordinate: readJulianDate<Ut1Scale>(value.jd_ut),
-        windowStart: readJulianDate<Ut1Scale>(value.window_start_jd_ut),
-        windowEnd: readJulianDate<Ut1Scale>(value.window_end_jd_ut),
-        scannedDayCount: value.scanned_day_count,
-        sampledWindowCount: value.sampled_window_count,
-        visibilityEvaluationCount: value.visibility_evaluation_count,
-        visibility: _readVisibilityResult(value.visibility),
+      return operationResult(
+        HeliacalVisibilitySearchResult(
+          event: HeliacalEventKind.fromId(value.event_kind),
+          coordinate: readJulianDate<Ut1Scale>(value.jd_ut),
+          windowStart: readJulianDate<Ut1Scale>(value.window_start_jd_ut),
+          windowEnd: readJulianDate<Ut1Scale>(value.window_end_jd_ut),
+          scannedDayCount: value.scanned_day_count,
+          sampledWindowCount: value.sampled_window_count,
+          visibilityEvaluationCount: value.visibility_evaluation_count,
+          visibility: _readVisibilityResult(value.visibility),
+        ),
+        resultFlags,
       );
     });
   }

@@ -49,27 +49,37 @@ void main() {
 
       test('searches scalar solar and lunar longitude routes', () {
         const equinoxEstimate = 2460380.5;
-        final solarUt1 = context.events.solarLongitudeAtUt1(
-          0,
-          JulianDate<Ut1Scale>.fromDouble(equinoxEstimate),
-        );
-        final reverseSolar = context.events.solarLongitudeAtUt1(
-          0,
-          JulianDate<Ut1Scale>.fromDouble(2460395),
-          options: {EventSearchOption.reverse},
-        );
-        final solarTt = context.events.solarLongitudeAtTt(
-          0,
-          JulianDate<TtScale>.fromDouble(equinoxEstimate),
-        );
-        final moonUt1 = context.events.moonLongitudeAtUt1(
-          math.pi / 2,
-          JulianDate<Ut1Scale>.fromDouble(equinoxEstimate),
-        );
-        final moonTt = context.events.moonLongitudeAtTt(
-          math.pi / 2,
-          JulianDate<TtScale>.fromDouble(equinoxEstimate),
-        );
+        final solarUt1 = context.events
+            .solarLongitudeAtUt1(
+              0,
+              JulianDate<Ut1Scale>.fromDouble(equinoxEstimate),
+            )
+            .value;
+        final reverseSolar = context.events
+            .solarLongitudeAtUt1(
+              0,
+              JulianDate<Ut1Scale>.fromDouble(2460395),
+              options: {EventSearchOption.reverse},
+            )
+            .value;
+        final solarTt = context.events
+            .solarLongitudeAtTt(
+              0,
+              JulianDate<TtScale>.fromDouble(equinoxEstimate),
+            )
+            .value;
+        final moonUt1 = context.events
+            .moonLongitudeAtUt1(
+              math.pi / 2,
+              JulianDate<Ut1Scale>.fromDouble(equinoxEstimate),
+            )
+            .value;
+        final moonTt = context.events
+            .moonLongitudeAtTt(
+              math.pi / 2,
+              JulianDate<TtScale>.fromDouble(equinoxEstimate),
+            )
+            .value;
 
         expect(context.lastDiagnostic?.status, 0);
         expect(solarUt1.toDouble(), closeTo(2460389.6294463626, 5e-8));
@@ -102,76 +112,91 @@ void main() {
         final ttStart = JulianDate<TtScale>.fromDouble(2460380.5);
         final ttEnd = JulianDate<TtScale>.fromDouble(2460420.5);
 
-        final longitudeUt1 = context.events.longitudeCrossingsAtUt1(
-          Body.sun,
-          0,
-          utStart,
-          JulianDate<Ut1Scale>.fromDouble(2460395),
-          maxStepDays: 2,
-        );
-        final longitudeTt = context.events.longitudeCrossingsAtTt(
-          Body.sun,
-          0,
-          ttStart,
-          JulianDate<TtScale>.fromDouble(2460395),
-          maxStepDays: 2,
-        );
-        final stationsUt1 = context.events.longitudeStationsAtUt1(
-          Body.mercury,
-          JulianDate<Ut1Scale>.fromDouble(2452878.5),
-          JulianDate<Ut1Scale>.fromDouble(2452882.5),
-          maxStepDays: 0.25,
-        );
-        final stationsTt = context.events.longitudeStationsAtTt(
-          Body.mercury,
-          JulianDate<TtScale>.fromDouble(2452878.5),
-          JulianDate<TtScale>.fromDouble(2452882.5),
-          maxStepDays: 0.25,
-        );
-        final aspectsUt1 = context.events.aspectCrossingsAtUt1(
-          Body.moon,
-          Body.sun,
-          0,
-          utStart,
-          utEnd,
-          maxStepDays: 1,
-        );
-        final aspectsTt = context.events.aspectCrossingsAtTt(
-          Body.moon,
-          Body.sun,
-          math.pi / 2,
-          ttStart,
-          JulianDate<TtScale>.fromDouble(2460395.5),
-          maxStepDays: 0.5,
-        );
-        final exactUt1 = context.events.exactAspectsAtUt1(
-          Body.moon,
-          Body.sun,
-          [math.pi / 2],
-          utStart,
-          utEnd,
-          maxStepDays: 0.5,
-        );
-        final exactTt = context.events.exactAspectsAtTt(
-          Body.moon,
-          Body.sun,
-          [math.pi / 2],
-          ttStart,
-          ttEnd,
-          maxStepDays: 0.5,
-        );
-        final phasesUt1 = context.events.lunarPhaseCrossingsAtUt1(
-          0,
-          utStart,
-          utEnd,
-          maxStepDays: 1,
-        );
-        final phasesTt = context.events.lunarPhaseCrossingsAtTt(
-          math.pi / 2,
-          ttStart,
-          JulianDate<TtScale>.fromDouble(2460395.5),
-          maxStepDays: 0.5,
-        );
+        final longitudeUt1 = context.events
+            .longitudeCrossingsAtUt1(
+              Body.sun,
+              0,
+              utStart,
+              JulianDate<Ut1Scale>.fromDouble(2460395),
+              maxStepDays: 2,
+            )
+            .value;
+        final longitudeTt = context.events
+            .longitudeCrossingsAtTt(
+              Body.sun,
+              0,
+              ttStart,
+              JulianDate<TtScale>.fromDouble(2460395),
+              maxStepDays: 2,
+            )
+            .value;
+        final stationsUt1 = context.events
+            .longitudeStationsAtUt1(
+              Body.mercury,
+              JulianDate<Ut1Scale>.fromDouble(2452878.5),
+              JulianDate<Ut1Scale>.fromDouble(2452882.5),
+              maxStepDays: 0.25,
+            )
+            .value;
+        final stationsTt = context.events
+            .longitudeStationsAtTt(
+              Body.mercury,
+              JulianDate<TtScale>.fromDouble(2452878.5),
+              JulianDate<TtScale>.fromDouble(2452882.5),
+              maxStepDays: 0.25,
+            )
+            .value;
+        final aspectsUt1 = context.events
+            .aspectCrossingsAtUt1(
+              Body.moon,
+              Body.sun,
+              0,
+              utStart,
+              utEnd,
+              maxStepDays: 1,
+            )
+            .value;
+        final aspectsTt = context.events
+            .aspectCrossingsAtTt(
+              Body.moon,
+              Body.sun,
+              math.pi / 2,
+              ttStart,
+              JulianDate<TtScale>.fromDouble(2460395.5),
+              maxStepDays: 0.5,
+            )
+            .value;
+        final exactUt1 = context.events
+            .exactAspectsAtUt1(
+              Body.moon,
+              Body.sun,
+              [math.pi / 2],
+              utStart,
+              utEnd,
+              maxStepDays: 0.5,
+            )
+            .value;
+        final exactTt = context.events
+            .exactAspectsAtTt(
+              Body.moon,
+              Body.sun,
+              [math.pi / 2],
+              ttStart,
+              ttEnd,
+              maxStepDays: 0.5,
+            )
+            .value;
+        final phasesUt1 = context.events
+            .lunarPhaseCrossingsAtUt1(0, utStart, utEnd, maxStepDays: 1)
+            .value;
+        final phasesTt = context.events
+            .lunarPhaseCrossingsAtTt(
+              math.pi / 2,
+              ttStart,
+              JulianDate<TtScale>.fromDouble(2460395.5),
+              maxStepDays: 0.5,
+            )
+            .value;
 
         expect(longitudeUt1, hasLength(1));
         expect(
@@ -205,55 +230,66 @@ void main() {
 
       test('reports insufficient bounded-search result capacity', () {
         expect(
-          () => context.events.lunarPhaseCrossingsAtUt1(
-            0,
-            JulianDate<Ut1Scale>.fromDouble(2460380.5),
-            JulianDate<Ut1Scale>.fromDouble(2460450.5),
-            maxStepDays: 1,
-            maxResults: 1,
-          ),
+          () => context.events
+              .lunarPhaseCrossingsAtUt1(
+                0,
+                JulianDate<Ut1Scale>.fromDouble(2460380.5),
+                JulianDate<Ut1Scale>.fromDouble(2460450.5),
+                maxStepDays: 1,
+                maxResults: 1,
+              )
+              .value,
           throwsA(isA<EphemerisError>()),
         );
       });
 
       test('searches extrema and global and local solar transits', () {
-        final elongation = context.events.greatestElongationAtUt1(
-          Body.mercury,
-          JulianDate<Ut1Scale>.fromDouble(2460369.5),
-          JulianDate<Ut1Scale>.fromDouble(2460414.5),
-        );
-        final minimumUt1 = context.events.minimumAngularSeparationAtUt1(
-          Body.moon,
-          Body.sun,
-          JulianDate<Ut1Scale>.fromDouble(2460408.5),
-          JulianDate<Ut1Scale>.fromDouble(2460410),
-          maxStepDays: 0.05,
-        );
-        final minimumTt = context.events.minimumAngularSeparationAtTt(
-          Body.moon,
-          Body.sun,
-          JulianDate<TtScale>.fromDouble(2460408.5),
-          JulianDate<TtScale>.fromDouble(2460410),
-          maxStepDays: 0.05,
-        );
-        final transit = context.events.nextSolarTransitAtUt1(
-          Body.mercury,
-          JulianDate<Ut1Scale>.fromDouble(2458799),
-        );
+        final elongation = context.events
+            .greatestElongationAtUt1(
+              Body.mercury,
+              JulianDate<Ut1Scale>.fromDouble(2460369.5),
+              JulianDate<Ut1Scale>.fromDouble(2460414.5),
+            )
+            .value;
+        final minimumUt1 = context.events
+            .minimumAngularSeparationAtUt1(
+              Body.moon,
+              Body.sun,
+              JulianDate<Ut1Scale>.fromDouble(2460408.5),
+              JulianDate<Ut1Scale>.fromDouble(2460410),
+              maxStepDays: 0.05,
+            )
+            .value;
+        final minimumTt = context.events
+            .minimumAngularSeparationAtTt(
+              Body.moon,
+              Body.sun,
+              JulianDate<TtScale>.fromDouble(2460408.5),
+              JulianDate<TtScale>.fromDouble(2460410),
+              maxStepDays: 0.05,
+            )
+            .value;
+        final transit = context.events
+            .nextSolarTransitAtUt1(
+              Body.mercury,
+              JulianDate<Ut1Scale>.fromDouble(2458799),
+            )
+            .value;
         const newYork = ObserverLocation(
           longitudeDegrees: -74.0060,
           latitudeDegrees: 40.7128,
           heightMeters: 10,
         );
-        final localFromGlobal = context.events.localSolarTransitAtUt1(
-          transit,
-          newYork,
-        );
-        final localSearch = context.events.nextLocalSolarTransitAtUt1(
-          Body.mercury,
-          JulianDate<Ut1Scale>.fromDouble(2458799),
-          newYork,
-        );
+        final localFromGlobal = context.events
+            .localSolarTransitAtUt1(transit, newYork)
+            .value;
+        final localSearch = context.events
+            .nextLocalSolarTransitAtUt1(
+              Body.mercury,
+              JulianDate<Ut1Scale>.fromDouble(2458799),
+              newYork,
+            )
+            .value;
 
         expect(elongation.kind, GreatestElongationKind.eastern);
         expect(
@@ -314,64 +350,77 @@ void main() {
           final end = JulianDate<Ut1Scale>.fromDouble(2460390.5);
 
           expect(
-            () => context.events.solarLongitudeAtUt1(
-              0,
-              start,
-              positionFlags: {PositionFlag.xyz},
-            ),
+            () => context.events
+                .solarLongitudeAtUt1(
+                  0,
+                  start,
+                  positionFlags: {PositionFlag.xyz},
+                )
+                .value,
             throwsArgumentError,
           );
           expect(
-            () => context.events.aspectCrossingsAtUt1(
-              Body.sun,
-              Body.sun,
-              0,
-              start,
-              end,
-              maxStepDays: 1,
-            ),
+            () => context.events
+                .aspectCrossingsAtUt1(
+                  Body.sun,
+                  Body.sun,
+                  0,
+                  start,
+                  end,
+                  maxStepDays: 1,
+                )
+                .value,
             throwsArgumentError,
           );
           expect(
-            () => context.events.exactAspectsAtUt1(
-              Body.moon,
-              Body.sun,
-              const [],
-              start,
-              end,
-              maxStepDays: 1,
-            ),
+            () => context.events
+                .exactAspectsAtUt1(
+                  Body.moon,
+                  Body.sun,
+                  const [],
+                  start,
+                  end,
+                  maxStepDays: 1,
+                )
+                .value,
             throwsArgumentError,
           );
           expect(
-            () => context.events.lunarPhaseCrossingsAtUt1(
-              0,
-              start,
-              end,
-              maxStepDays: 1,
-              maxResults: 0,
-            ),
+            () => context.events
+                .lunarPhaseCrossingsAtUt1(
+                  0,
+                  start,
+                  end,
+                  maxStepDays: 1,
+                  maxResults: 0,
+                )
+                .value,
             throwsRangeError,
           );
           expect(
-            () => context.events.nextSolarTransitAtUt1(Body.mars, start),
+            () => context.events.nextSolarTransitAtUt1(Body.mars, start).value,
             throwsArgumentError,
           );
           expect(
-            () => context.events.nextLocalSolarTransitAtUt1(
-              Body.mercury,
-              start,
-              const ObserverLocation(longitudeDegrees: 0, latitudeDegrees: 0),
-              options: {
-                EventSearchOption.refraction,
-                EventSearchOption.noRefraction,
-              },
-            ),
+            () => context.events
+                .nextLocalSolarTransitAtUt1(
+                  Body.mercury,
+                  start,
+                  const ObserverLocation(
+                    longitudeDegrees: 0,
+                    latitudeDegrees: 0,
+                  ),
+                  options: {
+                    EventSearchOption.refraction,
+                    EventSearchOption.noRefraction,
+                  },
+                )
+                .value,
             throwsArgumentError,
           );
           context.close();
           expect(
-            () => context.events.solarLongitudeAtUt1(0, start),
+            () => context.events.solarLongitudeAtUt1(0, start).value,
             throwsStateError,
           );
         },

@@ -5,7 +5,7 @@ const int _taiyinErrorInvalidArgument = -1;
 const int _taiyinErrorInternal = -3;
 
 typedef _NativeCustomDependencyPosition =
-    taiyin_status Function(
+    taiyin_call_result Function(
       Pointer<taiyin_context>,
       Int32,
       Pointer<taiyin_split_julian_date>,
@@ -89,7 +89,7 @@ final class CustomTargetRequest {
       final output = arena<Double>(6);
       final diagnostic = arena<taiyin_ephemeris_diagnostic>();
       diagnostic.ref.struct_size = sizeOf<taiyin_ephemeris_diagnostic>();
-      final status = calculate(
+      final rawResult = calculate(
         _context,
         dependency.id,
         writeJulianDate(arena, julianDateTdb),
@@ -98,8 +98,9 @@ final class CustomTargetRequest {
         output,
         diagnostic,
       );
-      if (status != _taiyinStatusOk) {
-        throw CustomEvaluatorFailure(status);
+      final decoded = decodeNativeCallResult(rawResult);
+      if (decoded.status != _taiyinStatusOk) {
+        throw CustomEvaluatorFailure(decoded.status);
       }
       return List<double>.unmodifiable([
         for (var index = 0; index < 6; index++) output[index],
