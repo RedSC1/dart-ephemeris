@@ -20,5 +20,15 @@ dart test packages/taiyin_bazi/test
 dart test packages/taiyin_ziwei/test
 ```
 
+Optional maintainer stress matrices are count-controlled and stay out of the
+ordinary test run:
+
+```sh
+TAIYIN_BAZI_STRESS_CASES=10000 \
+  dart test packages/taiyin_bazi/test/bazi_stress_test.dart
+TAIYIN_ZIWEI_STRESS_CASES=10000 \
+  dart test packages/taiyin_ziwei/test/ziwei_oracle_test.dart
+```
+
 The repository targets Dart Native platforms. Dart Web is not currently
 supported because the bindings use `dart:ffi`.

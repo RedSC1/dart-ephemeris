@@ -93,15 +93,54 @@ void main() {
         addTearDown(catalog.close);
         final firstGeneration = catalog.generation;
 
+        catalog.reload();
+        expect(catalog.generation, greaterThan(firstGeneration));
+
         final ziwei = context.createZiwei(
           catalog: catalog,
           selection: const ZiweiOptionSelection(placementDefault: 'option1'),
         );
         addTearDown(ziwei.close);
 
-        expect(ziwei.generation, firstGeneration);
+        expect(ziwei.generation, catalog.generation);
         expect(ziwei.findStar('ziwei')!.key, 'ziwei');
       });
+
+      test(
+        'selects an independent longevity table and rejects bad options',
+        () {
+          // This retained case resolves to an Earth-5 bureau, the only bureau
+          // slice on which bundled longevity option2 differs from option1.
+          final local = AstroDateTime(2100, 2, 4, 12);
+          final defaultZiwei = context.createZiwei();
+          final alternateZiwei = context.createZiwei(
+            selection: const ZiweiOptionSelection(longevity: 'option2'),
+          );
+          addTearDown(defaultZiwei.close);
+          addTearDown(alternateZiwei.close);
+
+          final defaultChart = defaultZiwei
+              .calculateLocal(local, gender: ZiweiGender.male)
+              .value;
+          final alternateChart = alternateZiwei
+              .calculateLocal(local, gender: ZiweiGender.male)
+              .value;
+          addTearDown(defaultChart.close);
+          addTearDown(alternateChart.close);
+
+          final changsheng = defaultZiwei.findStar('changsheng')!;
+          expect(
+            defaultChart.starPosition(changsheng.id),
+            isNot(alternateChart.starPosition(changsheng.id)),
+          );
+          expect(
+            () => context.createZiwei(
+              selection: const ZiweiOptionSelection(longevity: 'option99'),
+            ),
+            throwsA(isA<EphemerisError>()),
+          );
+        },
+      );
 
       test('a caller catalog owns the native-module selection', () {
         final catalog = ZiweiDataCatalog(coreLibraryPath: libraryPath);

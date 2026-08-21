@@ -60,6 +60,47 @@ void main() {
 
         final branchRel = context.bazi.calcBranchRelation(0, 1); // 子丑
         expect(branchRel.flags, contains(BaziBranchRelationFlags.combination));
+
+        final triple = context.bazi.calcBranchTripleRelation(8, 0, 4); // 申子辰
+        expect(
+          triple.flags,
+          contains(BaziBranchTripleRelationFlags.combination),
+        );
+        expect(triple.combinedElementId, BaziWuxing.water);
+      });
+
+      test('covers flow-month, direct xiao-yun, and both life-stage modes', () {
+        final jiaChen = context.ganzhi.make(stemId: 0, branchId: 4);
+        final flowMonth = context.bazi.calcLiuyue(jiaChen, 2);
+        expect(flowMonth.stemId, 2); // 甲年寅月为丙寅.
+        expect(flowMonth.branchId, 2);
+
+        expect(
+          context.bazi.getLifeStage(
+            stemId: 4,
+            branchId: 2,
+            mode: BaziEarthPalaceMode.fireEarth,
+          ),
+          0,
+        );
+        expect(
+          context.bazi.getLifeStage(
+            stemId: 4,
+            branchId: 8,
+            mode: BaziEarthPalaceMode.waterEarth,
+          ),
+          0,
+        );
+
+        final chart = chartFor2024();
+        final direct = context.bazi.calcXiaoyun(chart, -1, 7);
+        final filled = context.bazi.fillXiaoyun(
+          chart: chart,
+          direction: -1,
+          startAge: 7,
+          requestedCount: 1,
+        );
+        expect(filled.single.ganzhi, direct);
       });
 
       test('derives a chart from the four pillars', () {
@@ -121,6 +162,25 @@ void main() {
         expect(result.value.qiyun.startAgeYears, greaterThan(0));
         expect(result.flags, isA<ResultFlags>());
         expect(context.lastResultFlags, result.flags);
+
+        final instantResult = context.bazi.calculateInstant(
+          result.value.instantUtc,
+          gender: BaziGender.male,
+        );
+        expect(
+          [
+            instantResult.value.pillars.year.raw,
+            instantResult.value.pillars.month.raw,
+            instantResult.value.pillars.day.raw,
+            instantResult.value.pillars.hour.raw,
+          ],
+          [
+            result.value.pillars.year.raw,
+            result.value.pillars.month.raw,
+            result.value.pillars.day.raw,
+            result.value.pillars.hour.raw,
+          ],
+        );
       });
 
       test('fills a contiguous xiao-yun range', () {
@@ -163,6 +223,13 @@ void main() {
           isTrue,
           reason: 'shen-sha ids must stay within the 66 stable ids',
         );
+
+        final neutral = context.bazi.collectTargetShenSha(
+          chart: chart,
+          target: chart.yearPillar,
+          targetKind: BaziShenShaTargetKind.year,
+        );
+        expect(neutral.every((id) => id.id >= 0 && id.id <= 65), isTrue);
       });
 
       test('returns renyuan siling segments for a month branch', () {
@@ -172,6 +239,36 @@ void main() {
         );
         expect(segments, isNotEmpty);
         expect(segments.length, lessThanOrEqualTo(3));
+      });
+
+      test('calculates renyuan siling at a solar-term-relative instant', () {
+        final local = AstroDateTime(2026, 2, 19, 23, 28);
+        final instantUtc = local.toJulianDate<UtcScale>().addSeconds(-8 * 3600);
+        final instantUt = JulianDate<Ut1Scale>.fromParts(
+          instantUtc.dayNumber,
+          instantUtc.dayFraction,
+        );
+        final pillars = context.chineseCalendar
+            .fourPillars(instantUtc: instantUtc, virtualTime: local)
+            .value;
+        final chart = context.bazi.calcChart(pillars);
+        final previousJie = context.chineseCalendar
+            .getPrevJieUt(instantUt)
+            .value;
+        final result = context.bazi
+            .calcRenyuanSiling(
+              instantJdUt: previousJie.jdUt.addSeconds(5 * 86400),
+              chart: chart,
+              tableModel: BaziRenyuanSilingTableModel.sanMingTongHui,
+              timeModel: BaziRenyuanSilingTimeModel.elapsed24Hours,
+            )
+            .value;
+
+        expect(result.monthBranchId, 2);
+        expect(result.stemId, 2);
+        expect(result.originKind, BaziRenyuanSilingOriginKind.stem);
+        expect(result.segmentIndex, 1);
+        expect(result.segmentStartDay, 5.0);
       });
 
       test('rejects use after close', () {
