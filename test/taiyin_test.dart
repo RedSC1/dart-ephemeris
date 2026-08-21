@@ -40,6 +40,37 @@ Future<List<double>> _calculateInWorker(
   }
 }
 
+Future<double> _calculateSeriesInWorker(
+  String libraryPath,
+  int iterations,
+) async {
+  final receivePort = ReceivePort();
+  await Isolate.spawn(
+    _seriesWorkerMain,
+    (receivePort.sendPort, libraryPath, iterations),
+    onError: receivePort.sendPort,
+    onExit: receivePort.sendPort,
+  );
+  try {
+    final message = await receivePort.first;
+    if (message case ['result', final double checksum]) {
+      return checksum;
+    }
+    if (message case ['error', final Object error, final Object stackTrace]) {
+      throw StateError('Worker failed: $error\n$stackTrace');
+    }
+    if (message == null) {
+      throw StateError('Worker exited before returning a result.');
+    }
+    if (message case [final Object error, final Object stackTrace]) {
+      throw StateError('Worker isolate error: $error\n$stackTrace');
+    }
+    throw StateError('Worker returned an unexpected message: $message');
+  } finally {
+    receivePort.close();
+  }
+}
+
 Future<List<double>> _calculateCustomTargetInWorker(
   String libraryPath,
   int targetId,
@@ -91,6 +122,36 @@ void _workerMain((SendPort, String, int) message) {
         )
         .value;
     sendPort.send(['result', ...result.values]);
+  } catch (error, stackTrace) {
+    sendPort.send(['error', '$error', '$stackTrace']);
+  } finally {
+    context?.close();
+  }
+}
+
+void _seriesWorkerMain((SendPort, String, int) message) {
+  final (sendPort, libraryPath, iterations) = message;
+  EphemerisContext? context;
+  try {
+    context = EphemerisContext.attach(libraryPath: libraryPath);
+    const bodies = [Body.mercury, Body.venus, Body.moon, Body.sun];
+    var checksum = 0.0;
+    for (var index = 0; index < iterations; index++) {
+      final result = context.position.atTt(
+        bodies[index % bodies.length],
+        JulianDate<TtScale>.fromDouble(2460409.0 + index * 0.03125),
+        flags: const {
+          PositionFlag.xyz,
+          PositionFlag.speed,
+          PositionFlag.truePosition,
+        },
+      );
+      for (final value in result.value.values) {
+        checksum += value * (index + 1);
+      }
+      checksum += result.flags.mask;
+    }
+    sendPort.send(['result', checksum]);
   } catch (error, stackTrace) {
     sendPort.send(['error', '$error', '$stackTrace']);
   } finally {
@@ -697,6 +758,25 @@ void main() {
         expect(results[1], results[3]);
         expect(results[0], isNot(results[1]));
       });
+
+      test(
+        'independent isolate contexts survive concurrent position pressure',
+        () async {
+          runtime.addSourcePath(nativeDataPath);
+          const workerCount = 4;
+          const iterations = 128;
+          final results = await Future.wait([
+            for (var worker = 0; worker < workerCount; worker++)
+              _calculateSeriesInWorker(libraryPath, iterations),
+          ]).timeout(const Duration(seconds: 30));
+
+          expect(results, hasLength(workerCount));
+          expect(results.every((value) => value.isFinite), isTrue);
+          for (final value in results.skip(1)) {
+            expect(value, closeTo(results.first, 1e-12));
+          }
+        },
+      );
 
       test('worker isolate setup failures complete with an error', () async {
         await expectLater(

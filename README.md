@@ -952,6 +952,16 @@ Finish global configuration before starting concurrent calculations. Create
 separate contexts with `ephemeris.createContext()` or `context.clone()`; every
 context owns and releases its native user state independently.
 
+Dart runs synchronous FFI calls on the calling isolate. `Future.wait` inside one
+isolate does not turn those calls into parallel native work, and an
+`EphemerisContext` must not be sent to or reconstructed from its native address
+in another isolate. For CPU parallelism, use worker isolates and let each worker
+attach its own context. These contexts have independent mutable configuration
+and diagnostics while sharing the process-wide native ephemeris catalog and
+segment caches. This is also the recommended server model: one context per
+worker or logical user, with runtime mutation and shutdown kept outside active
+calculations.
+
 A worker isolate must not receive a `EphemerisContext` through a `SendPort`.
 Instead, send plain Dart inputs and let the worker attach a new context to the
 already-open process runtime:
