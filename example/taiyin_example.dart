@@ -1,5 +1,4 @@
 import 'package:taiyin/taiyin.dart';
-import 'package:taiyin_bazi/taiyin_bazi.dart';
 
 /// A small end-to-end tour of the Ephemeris Dart API.
 ///
@@ -37,41 +36,6 @@ void main(List<String> arguments) {
     print(
       'Day pillar: $dayPillar (nayin ${context.ganzhi.nayinElement(dayPillar)})',
     );
-
-    // BaZi (requires a library built with the BaZi extension): four pillars,
-    // the natal chart, and the first da-yun.
-    if (ephemeris.hasCapability(Capability.bazi)) {
-      final pillars = context.chineseCalendar
-          .fourPillars(
-            instantUtc: JulianDate<UtcScale>.fromDouble(2460351.0),
-            virtualTime: AstroDateTime(2024, 2, 10, 12),
-          )
-          .value;
-      print(
-        'Four pillars: ${pillars.year} ${pillars.month} '
-        '${pillars.day} ${pillars.hour}',
-      );
-
-      final chart = context.bazi.calcChart(pillars);
-      final qiyun = context.bazi
-          .calcQiyun(
-            birthJdUt: JulianDate<Ut1Scale>.fromDouble(2460351.0),
-            birthCivilTime: AstroDateTime(2024, 2, 10, 12),
-            chart: chart,
-            gender: BaziGender.male,
-          )
-          .value;
-      final dayun = context.bazi.fillDayun(
-        birthCivilTime: AstroDateTime(2024, 2, 10, 12),
-        chart: chart,
-        qiyun: qiyun,
-        requestedCount: 3,
-      );
-      print('Qi-yun starts at age ${qiyun.startAgeYears.toStringAsFixed(2)}');
-      print('Da-yun: ${dayun.map((entry) => entry.ganzhi).join(', ')}');
-    } else {
-      print('(library built without the BaZi extension; BaZi demo skipped)');
-    }
   } finally {
     context.close();
   }

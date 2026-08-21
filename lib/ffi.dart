@@ -2,9 +2,9 @@
 /// (`package:taiyin_bazi`, `package:taiyin_ziwei`).
 ///
 /// This library exposes the generated bindings and the interop helpers the
-/// extension packages need to share one loaded native library with
-/// `package:taiyin`. Its shape tracks the native ABI and may change without a
-/// major version bump of `package:taiyin`; application code should prefer
+/// extension packages need to share core contexts and load their own native
+/// modules. Its shape tracks the native ABI and may change without a major
+/// version bump of `package:taiyin`; application code should prefer
 /// `package:taiyin/taiyin.dart`.
 library;
 

@@ -4,7 +4,7 @@ BaZi (八字) extension bindings for the Taiyin ephemeris, part of the
 [`taiyin-dart`](../..) monorepo. Mirrors `packages/taiyin-bazi` in the Python
 binding.
 
-Depends on the core `taiyin` package. Importing this package attaches
+Depends on the core `taiyin` package. Importing this package adds
 `context.bazi` and `context.createBazi()` to `EphemerisContext`:
 
 ```dart
@@ -33,10 +33,14 @@ default calendar unless `createBazi(calendar: ...)` says otherwise) and
 resolves solar terms through it; the calendar must belong to the same
 `EphemerisContext`.
 
-Requires a native library built with `TAIYIN_BUILD_BAZI_EXTENSION=ON` (the core
-package's bundled `lib/native/` copy includes it). On a library without the
-BaZi capability every entry point throws `UnsupportedError` before any
-`taiyin_bazi_*` symbol is touched.
+This package ships and lazily loads its own `libtaiyin_bazi` native module; the
+root `taiyin` package does not contain BaZi symbols. Override the bundled module
+with `TAIYIN_BAZI_LIBRARY_PATH` or `createBazi(libraryPath: ...)`. A missing
+module raises `UnsupportedError` while the core context remains usable.
+
+For isolate parallelism, open the process runtime once, call
+`Ephemeris.attach().createContext()` in every worker, and create one BaZi
+context per worker. Do not send native-backed Dart objects between isolates.
 
 ```sh
 dart test

@@ -72,9 +72,7 @@ enum Capability {
   customHouses(1 << 13),
   splitTime(taiyinSplitTimeCapability),
   chineseCalendar(taiyinChineseCalendarCapability),
-  bazi(taiyinBaziCapability),
-  ganzhiCalendar(taiyinGanzhiCalendarCapability),
-  ziwei(taiyinZiweiCapability);
+  ganzhiCalendar(taiyinGanzhiCalendarCapability);
 
   const Capability(this.mask);
 
@@ -567,14 +565,12 @@ final class _NativeLibraryState {
     this.contextFinalizer,
     this.chineseCalendarFinalizer,
     this.capabilities,
-    this._library,
   );
 
   final TaiyinBindings bindings;
   final NativeFinalizer contextFinalizer;
   final NativeFinalizer chineseCalendarFinalizer;
   final int capabilities;
-  final DynamicLibrary _library;
   final Map<int, CustomTargetRegistration> customTargetRegistrations = {};
   final Map<int, CustomAyanamshaRegistration> customAyanamshaRegistrations = {};
   final Map<int, CustomHouseSystemRegistration> customHouseSystemRegistrations =
@@ -598,9 +594,9 @@ DynamicLibrary _openDefaultLibrary() {
   if (Platform.isIOS) return DynamicLibrary.process();
   final bundled = _bundledLibraryPath();
   if (bundled != null) return DynamicLibrary.open(bundled);
-  // Windows shared libraries are named by C ABI version; macOS and Linux build
-  // and install trees provide versionless symlinks.
-  if (Platform.isWindows) return DynamicLibrary.open('taiyin-8.dll');
+  // Modular builds expose a stable versionless file name; ABI compatibility is
+  // checked immediately after loading rather than encoded in the file name.
+  if (Platform.isWindows) return DynamicLibrary.open('taiyin.dll');
   if (Platform.isMacOS) return DynamicLibrary.open('libtaiyin.dylib');
   return DynamicLibrary.open('libtaiyin.so');
 }
@@ -609,7 +605,7 @@ DynamicLibrary _openDefaultLibrary() {
 /// platform.
 String? _bundledLibraryPath() {
   final fileName = Platform.isWindows
-      ? 'taiyin-$taiyinSupportedAbiVersion.dll'
+      ? 'taiyin.dll'
       : Platform.isMacOS
       ? 'libtaiyin.dylib'
       : 'libtaiyin.so';
@@ -642,7 +638,6 @@ _NativeLibraryState _nativeLibraryStateFor(DynamicLibrary library) {
         ),
       ),
       capabilities,
-      library,
     );
   });
 }

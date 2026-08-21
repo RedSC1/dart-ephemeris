@@ -1,0 +1,9 @@
+.dart_tool/
+docs/
+packages/
+plans/
+test/
+tmp/
+tool/
+dart_test.yaml
+ffigen.yaml

@@ -89,7 +89,7 @@ void main() {
       });
 
       test('catalog selection context reuses loaded resources', () {
-        final catalog = ZiweiDataCatalog(libraryPath: libraryPath);
+        final catalog = ZiweiDataCatalog(coreLibraryPath: libraryPath);
         addTearDown(catalog.close);
         final firstGeneration = catalog.generation;
 
@@ -101,6 +101,18 @@ void main() {
 
         expect(ziwei.generation, firstGeneration);
         expect(ziwei.findStar('ziwei')!.key, 'ziwei');
+      });
+
+      test('a caller catalog owns the native-module selection', () {
+        final catalog = ZiweiDataCatalog(coreLibraryPath: libraryPath);
+        addTearDown(catalog.close);
+        expect(
+          () => context.createZiwei(
+            catalog: catalog,
+            libraryPath: '/different/libtaiyin_ziwei.dylib',
+          ),
+          throwsArgumentError,
+        );
       });
 
       test('calculates charts from local time and from an instant', () {

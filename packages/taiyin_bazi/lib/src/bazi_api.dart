@@ -9,6 +9,16 @@ import 'bazi_models.dart';
 /// The native "invalid five-element" sentinel (`TAIYIN_BAZI_INVALID_WUXING`).
 const int _taiyinBaziInvalidWuxing = 0xff;
 
+TaiyinExtensionModule _openBaziModule([String? libraryPath]) =>
+    TaiyinExtensionModule.open(
+      packageName: 'taiyin_bazi',
+      environmentVariable: 'TAIYIN_BAZI_LIBRARY_PATH',
+      libraryBaseName: 'taiyin_bazi',
+      identitySymbol: 'taiyin_bazi_context_destroy',
+      requiredSymbols: taiyinBaziSymbols,
+      libraryPath: libraryPath,
+    );
+
 ResultFlags _checkStatus(
   TaiyinExtensionHost host,
   int rawResult, {
@@ -42,10 +52,12 @@ extension BaziExtension on EphemerisContext {
   ///
   /// [calendar] defaults to the cached default Chinese-calendar context and
   /// must have been created by this same [EphemerisContext]. Call
-  /// [BaziContext.close] when it is no longer needed.
+  /// [BaziContext.close] when it is no longer needed. [libraryPath] overrides
+  /// the bundled BaZi native module for this call.
   BaziContext createBazi({
     BaziContextConfig config = const BaziContextConfig(),
     ChineseCalendarContext? calendar,
+    String? libraryPath,
   }) {
     final host = extensionHost;
     host.ensureOpen();
@@ -58,7 +70,12 @@ extension BaziExtension on EphemerisContext {
       );
     }
     effectiveCalendar.extensionHost.ensureOpen();
-    return BaziContext._create(host, config, effectiveCalendar);
+    return BaziContext._create(
+      host,
+      _openBaziModule(libraryPath),
+      config,
+      effectiveCalendar,
+    );
   }
 }
 
@@ -69,30 +86,24 @@ extension BaziExtension on EphemerisContext {
 /// before discarding the handle; a native finalizer is attached as a safety
 /// net for contexts that are not closed explicitly.
 final class BaziContext implements Finalizable {
-  BaziContext._(this._host, this._context, this._finalizer, this._calendar) {
+  BaziContext._(
+    this._host,
+    this._module,
+    this._context,
+    this._finalizer,
+    this._calendar,
+  ) {
     _finalizer.attach(this, _context.cast(), detach: this);
   }
 
   factory BaziContext._create(
     TaiyinExtensionHost host,
+    TaiyinExtensionModule module,
     BaziContextConfig config,
     ChineseCalendarContext calendar,
   ) {
-    final finalizer = host.finalizerFor(
-      'taiyin_bazi_context_destroy',
-      capability: taiyinBaziCapability,
-    );
-    if (finalizer == null) {
-      throw UnsupportedError(
-        'The loaded Taiyin library does not include the BaZi extension '
-        '(build with TAIYIN_BUILD_BAZI_EXTENSION=ON).',
-      );
-    }
-    validateTaiyinRequiredSymbols(
-      providesSymbol: host.library.providesSymbol,
-      requiredSymbols: taiyinBaziSymbols,
-    );
-    final bindings = host.bindings;
+    final finalizer = module.finalizerFor('taiyin_bazi_context_destroy');
+    final bindings = module.bindings;
     final context = using((arena) {
       final nativeConfig = _writeBaziConfig(bindings, arena, config);
       final output = arena<Pointer<taiyin_bazi_context>>();
@@ -102,16 +113,17 @@ final class BaziContext implements Finalizable {
       );
       return output.value;
     });
-    return BaziContext._(host, context, finalizer, calendar);
+    return BaziContext._(host, module, context, finalizer, calendar);
   }
 
   final TaiyinExtensionHost _host;
+  final TaiyinExtensionModule _module;
   final Pointer<taiyin_bazi_context> _context;
   final NativeFinalizer _finalizer;
   final ChineseCalendarContext _calendar;
 
-  TaiyinBindings get _bindings => _host.bindings;
-  int get _capabilities => _host.capabilities;
+  TaiyinBindings get _bindings => _module.bindings;
+  TaiyinBindings get _coreBindings => _host.bindings;
   bool _closed = false;
 
   bool get isClosed => _closed;
@@ -133,19 +145,9 @@ final class BaziContext implements Finalizable {
     }
   }
 
-  void _requireBazi() {
-    if ((_capabilities & taiyinBaziCapability) == 0) {
-      throw UnsupportedError(
-        'The loaded Taiyin library does not include the BaZi extension '
-        '(build with TAIYIN_BUILD_BAZI_EXTENSION=ON).',
-      );
-    }
-  }
-
   /// Returns the 空亡 (kong-wang) branches for a Ganzhi value.
   ({EarthlyBranch a, EarthlyBranch b}) getKongWang(Ganzhi value) {
     _ensureOpen();
-    _requireBazi();
     return using((arena) {
       final output = arena<Uint8>(2);
       _checkStatus(
@@ -162,7 +164,6 @@ final class BaziContext implements Finalizable {
   /// Returns the 十神 (ten god) of a stem relative to the day stem.
   BaziTenGod getTenGod({required int dayStemId, required int targetStemId}) {
     _ensureOpen();
-    _requireBazi();
     return using((arena) {
       final output = arena<Uint8>();
       _checkStatus(
@@ -176,7 +177,6 @@ final class BaziContext implements Finalizable {
   /// Returns the 藏干 (hidden stems) of an earthly branch.
   ({List<int> stems, int count}) getHiddenStems(int branchId) {
     _ensureOpen();
-    _requireBazi();
     return using((arena) {
       final output = arena<Uint8>(3);
       final count = arena<Uint8>();
@@ -197,7 +197,6 @@ final class BaziContext implements Finalizable {
   /// Calculates the relation between two heavenly stems.
   BaziStemRelationResult calcStemRelation(int stemA, int stemB) {
     _ensureOpen();
-    _requireBazi();
     return using((arena) {
       final flags = arena<Uint32>();
       final combinedElement = arena<Uint8>();
@@ -217,7 +216,6 @@ final class BaziContext implements Finalizable {
   /// Calculates the relation between two earthly branches.
   BaziBranchRelationResult calcBranchRelation(int branchA, int branchB) {
     _ensureOpen();
-    _requireBazi();
     return using((arena) {
       final flags = arena<Uint32>();
       final combinedElement = arena<Uint8>();
@@ -241,7 +239,6 @@ final class BaziContext implements Finalizable {
     int branchC,
   ) {
     _ensureOpen();
-    _requireBazi();
     return using((arena) {
       final flags = arena<Uint32>();
       final combinedElement = arena<Uint8>();
@@ -266,7 +263,6 @@ final class BaziContext implements Finalizable {
     BaziEarthPalaceMode mode = BaziEarthPalaceMode.fireEarth,
   }) {
     _ensureOpen();
-    _requireBazi();
     return using((arena) {
       final output = arena<Uint8>();
       _checkStatus(
@@ -280,7 +276,6 @@ final class BaziContext implements Finalizable {
   /// Calculates the 流年 (liu-nian / flow-year) Ganzhi for an effective year.
   Ganzhi calcLiunian(int effectiveYear) {
     _ensureOpen();
-    _requireBazi();
     return using((arena) {
       final output = arena<taiyin_ganzhi>();
       _checkStatus(
@@ -296,7 +291,6 @@ final class BaziContext implements Finalizable {
   /// [monthBranch] follows the C ABI: 2 = 寅, …, 0 = 子, 1 = 丑.
   Ganzhi calcLiuyue(Ganzhi yearPillar, int monthBranch) {
     _ensureOpen();
-    _requireBazi();
     return using((arena) {
       final output = arena<taiyin_ganzhi>();
       _checkStatus(
@@ -310,9 +304,8 @@ final class BaziContext implements Finalizable {
   /// Calculates the 流日 (liu-ri / flow-day) Ganzhi for a civil date.
   Ganzhi calcLiuri(AstroDateTime civilDate) {
     _ensureOpen();
-    _requireBazi();
     return using((arena) {
-      final calendar = writeNativeCalendar(_bindings, arena, civilDate);
+      final calendar = writeNativeCalendar(_coreBindings, arena, civilDate);
       final output = arena<taiyin_ganzhi>();
       _checkStatus(_host, _bindings.taiyin_bazi_calc_liuri(calendar, output));
       return Ganzhi.fromNative(output.value);
@@ -324,7 +317,6 @@ final class BaziContext implements Finalizable {
   /// [hourIndex] follows the C ABI branch sequence: 0 = 子, …, 11 = 亥.
   Ganzhi calcLiushi(Ganzhi dayPillar, int hourIndex) {
     _ensureOpen();
-    _requireBazi();
     return using((arena) {
       final output = arena<taiyin_ganzhi>();
       _checkStatus(
@@ -338,7 +330,6 @@ final class BaziContext implements Finalizable {
   /// Calculates the 小运 (xiao-yun) Ganzhi for an age within a chart.
   Ganzhi calcXiaoyun(BaziChart chart, int direction, int age) {
     _ensureOpen();
-    _requireBazi();
     return using((arena) {
       final nativeChart = _writeBaziChart(_bindings, arena, chart);
       final output = arena<taiyin_ganzhi>();
@@ -359,7 +350,6 @@ final class BaziContext implements Finalizable {
     required int requestedCount,
   }) {
     _ensureOpen();
-    _requireBazi();
     return using((arena) {
       final nativeChart = _writeBaziChart(_bindings, arena, chart);
 
@@ -411,9 +401,8 @@ final class BaziContext implements Finalizable {
   /// the four pillars.
   BaziChart calcChart(GanzhiFourPillars pillars) {
     _ensureOpen();
-    _requireBazi();
     return using((arena) {
-      final nativePillars = _writeFourPillars(_bindings, arena, pillars);
+      final nativePillars = _writeFourPillars(_coreBindings, arena, pillars);
       final output = arena<taiyin_bazi_chart>();
       _bindings.taiyin_bazi_chart_init(output);
       _checkStatus(
@@ -512,19 +501,17 @@ final class BaziContext implements Finalizable {
     required BaziGender gender,
   }) {
     _ensureOpen();
-    _requireBazi();
     _calendar.extensionHost.ensureOpen();
     return using((arena) {
       final output = arena<taiyin_bazi_qiyun_result>();
       final diagnostic = arena<taiyin_ephemeris_diagnostic>();
-      _bindings
-        ..taiyin_bazi_qiyun_result_init(output)
-        ..taiyin_ephemeris_diagnostic_init(diagnostic);
+      _bindings.taiyin_bazi_qiyun_result_init(output);
+      _coreBindings.taiyin_ephemeris_diagnostic_init(diagnostic);
       final status = _bindings.taiyin_bazi_calc_qiyun(
         _context,
         _calendar.extensionHost.nativeHandle<taiyin_chinese_calendar_context>(),
         writeJulianDate(arena, birthJdUt),
-        writeNativeCalendar(_bindings, arena, birthCivilTime),
+        writeNativeCalendar(_coreBindings, arena, birthCivilTime),
         _writeBaziChart(_bindings, arena, chart),
         gender.id,
         output,
@@ -547,9 +534,12 @@ final class BaziContext implements Finalizable {
     required int requestedCount,
   }) {
     _ensureOpen();
-    _requireBazi();
     return using((arena) {
-      final birthCivil = writeNativeCalendar(_bindings, arena, birthCivilTime);
+      final birthCivil = writeNativeCalendar(
+        _coreBindings,
+        arena,
+        birthCivilTime,
+      );
       final nativeChart = _writeBaziChart(_bindings, arena, chart);
       final nativeQiyun = _writeQiyun(_bindings, arena, qiyun);
 
@@ -609,14 +599,12 @@ final class BaziContext implements Finalizable {
     required BaziRenyuanSilingTimeModel timeModel,
   }) {
     _ensureOpen();
-    _requireBazi();
     _calendar.extensionHost.ensureOpen();
     return using((arena) {
       final output = arena<taiyin_bazi_renyuan_siling_result>();
       final diagnostic = arena<taiyin_ephemeris_diagnostic>();
-      _bindings
-        ..taiyin_bazi_renyuan_siling_result_init(output)
-        ..taiyin_ephemeris_diagnostic_init(diagnostic);
+      _bindings.taiyin_bazi_renyuan_siling_result_init(output);
+      _coreBindings.taiyin_ephemeris_diagnostic_init(diagnostic);
       final status = _bindings.taiyin_bazi_calc_renyuan_siling(
         _calendar.extensionHost.nativeHandle<taiyin_chinese_calendar_context>(),
         writeJulianDate(arena, instantJdUt),
@@ -639,7 +627,6 @@ final class BaziContext implements Finalizable {
     BaziRenyuanSilingTableModel tableModel,
   ) {
     _ensureOpen();
-    _requireBazi();
     return using((arena) {
       final count = arena<Size>();
       final countStatus = _bindings.taiyin_bazi_get_renyuan_siling_segments(
@@ -691,7 +678,6 @@ final class BaziContext implements Finalizable {
     int relationMask = 0xffff,
   }) {
     _ensureOpen();
-    _requireBazi();
     return using((arena) {
       final nativeChart = _writeBaziChart(_bindings, arena, chart);
       final count = arena<Size>();
@@ -747,7 +733,6 @@ final class BaziContext implements Finalizable {
     BaziGender? gender,
   }) {
     _ensureOpen();
-    _requireBazi();
     return using((arena) {
       final nativeChart = _writeBaziChart(_bindings, arena, chart);
       const wordCapacity = 2;

@@ -4,7 +4,7 @@ Ziwei Doushu (紫微斗数) extension bindings for the Taiyin ephemeris, part of
 the [`taiyin-dart`](../..) monorepo. Mirrors `packages/taiyin-ziwei` in the
 Python binding.
 
-Depends on the core `taiyin` package. Importing this package attaches
+Depends on the core `taiyin` package. Importing this package adds
 `context.ziwei` and `context.createZiwei()` to `EphemerisContext`:
 
 ```dart
@@ -31,10 +31,15 @@ The default TOML rule profile ships bundled under `lib/data/ziwei/rules/` and
 loads automatically. `ZiweiDataCatalog(profilePath: ...)` loads a custom
 profile; a catalog can be shared across Ziwei contexts.
 
-Requires a native library built with `TAIYIN_BUILD_ZIWEI_EXTENSION=ON` (the
-core package's bundled `lib/native/` copy includes it). On a library without
-the Ziwei capability every entry point throws `UnsupportedError` before any
-`taiyin_ziwei_*` symbol is touched.
+This package ships and lazily loads its own `libtaiyin_ziwei` native module; the
+root `taiyin` package does not contain Ziwei symbols. Override the bundled
+module with `TAIYIN_ZIWEI_LIBRARY_PATH`, `createZiwei(libraryPath: ...)`, or
+`ZiweiDataCatalog(libraryPath: ...)`. A missing module raises
+`UnsupportedError` while the core context remains usable.
+
+For isolate parallelism, create one Ziwei context and independent charts per
+worker. Catalog snapshots are immutable, but a mutable chart must not be
+modified concurrently from more than one isolate.
 
 ```sh
 dart test

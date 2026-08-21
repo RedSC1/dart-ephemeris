@@ -10,4 +10,9 @@
 - Align worker-isolate ownership with the core architecture through
   `Ephemeris.attach().createContext()`; attaching never reinitializes the
   process-wide runtime.
-- Update the pinned full-module native library to Taiyin 1.0.0-preview.6.
+- Update the pinned modular native libraries to Taiyin 1.0.0-preview.6.
+- Split the pinned native distribution into core, BaZi, and Ziwei modules;
+  extension packages now load their own module lazily.
+- Remove BaZi/Ziwei from the core capability enum; extension availability is
+  determined by loading the corresponding package-owned native module.
+- Add concurrent multi-isolate BaZi and Ziwei integration tests.

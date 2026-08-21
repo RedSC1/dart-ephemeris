@@ -4,20 +4,21 @@ import 'package:test/test.dart';
 
 import 'support/native_library.dart';
 
-/// BaZi gating on an extension-free baseline library: the package must refuse
-/// before any `taiyin_bazi_*` symbol lookup.
+/// A missing separately packaged extension produces a clear error without
+/// affecting the already loaded core runtime.
 void main() {
   test(
-    'BaZi entry points throw UnsupportedError on a baseline library',
+    'BaZi reports a missing extension module',
     () {
-      final runtime = Ephemeris.open(libraryPath: baselineLibraryPath);
+      final runtime = Ephemeris.open(libraryPath: libraryPath);
       final context = runtime.createContext();
-      expect(() => context.bazi.calcLiunian(2024), throwsUnsupportedError);
-      expect(() => context.createBazi(), throwsUnsupportedError);
+      expect(
+        () => context.createBazi(libraryPath: '/no/such/libtaiyin_bazi.dylib'),
+        throwsUnsupportedError,
+      );
+      expect(context.position, isNotNull);
       context.close();
     },
-    skip: baselineLibraryAvailable
-        ? false
-        : 'Set TAIYIN_BASELINE_LIBRARY to a baseline ABI-9 library.',
+    skip: nativeLibraryAvailable ? false : libraryUnavailableSkip,
   );
 }

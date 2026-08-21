@@ -16,6 +16,16 @@ const int _taiyinZiweiInvalidPosition = 0xff;
 /// Package hosting the bundled default Ziwei rule profile.
 const String _ziweiRulePackage = 'taiyin_ziwei';
 
+TaiyinExtensionModule _openZiweiModule([String? libraryPath]) =>
+    TaiyinExtensionModule.open(
+      packageName: _ziweiRulePackage,
+      environmentVariable: 'TAIYIN_ZIWEI_LIBRARY_PATH',
+      libraryBaseName: 'taiyin_ziwei',
+      identitySymbol: 'taiyin_ziwei_context_destroy',
+      requiredSymbols: taiyinZiweiSymbols,
+      libraryPath: libraryPath,
+    );
+
 ResultFlags _checkStatus(
   TaiyinExtensionHost host,
   int rawResult, {
@@ -46,12 +56,20 @@ extension ZiweiExtension on EphemerisContext {
   /// [EphemerisContext]. [catalog] defaults to the bundled default rule
   /// profile; a catalog created implicitly is released by
   /// [ZiweiContext.close], while a caller-supplied catalog stays owned by the
-  /// caller.
+  /// caller. [libraryPath] overrides the bundled Ziwei native module when no
+  /// caller-supplied [catalog] selects one already.
   ZiweiContext createZiwei({
     ChineseCalendarContext? calendar,
     ZiweiDataCatalog? catalog,
     ZiweiOptionSelection selection = const ZiweiOptionSelection(),
+    String? libraryPath,
   }) {
+    if (catalog != null && libraryPath != null) {
+      throw ArgumentError(
+        'libraryPath cannot be combined with a caller-supplied catalog; '
+        'the catalog already selects its Ziwei native module.',
+      );
+    }
     extensionHost.ensureOpen();
     final effectiveCalendar = calendar ?? chineseCalendar;
     if (!identical(effectiveCalendar.owner, this)) {
@@ -64,6 +82,7 @@ extension ZiweiExtension on EphemerisContext {
     effectiveCalendar.extensionHost.ensureOpen();
     return ZiweiContext._create(
       effectiveCalendar.extensionHost,
+      catalog?._module ?? _openZiweiModule(libraryPath),
       effectiveCalendar,
       catalog: catalog,
       selection: selection,
@@ -79,6 +98,7 @@ extension ZiweiExtension on EphemerisContext {
 final class ZiweiDataCatalog implements Finalizable {
   ZiweiDataCatalog._(
     this._host,
+    this._module,
     this._catalog,
     this._finalizer,
     this.profilePath,
@@ -89,35 +109,28 @@ final class ZiweiDataCatalog implements Finalizable {
   /// Loads the TOML rule profile at [profilePath], or the bundled default
   /// profile when omitted.
   ///
-  /// Opens the default native library (or [libraryPath]) without
-  /// initializing the process-wide runtime; catalog loading is pure rule
-  /// parsing.
-  factory ZiweiDataCatalog({String? profilePath, String? libraryPath}) {
+  /// [libraryPath] selects the Ziwei module. [coreLibraryPath] optionally
+  /// selects the core module used for status metadata; catalog loading itself
+  /// does not initialize the process-wide astronomy runtime.
+  factory ZiweiDataCatalog({
+    String? profilePath,
+    String? libraryPath,
+    String? coreLibraryPath,
+  }) {
     return ZiweiDataCatalog._create(
-      TaiyinExtensionHost.open(libraryPath: libraryPath),
+      TaiyinExtensionHost.open(libraryPath: coreLibraryPath),
+      _openZiweiModule(libraryPath),
       profilePath,
     );
   }
 
   factory ZiweiDataCatalog._create(
     TaiyinExtensionHost host,
+    TaiyinExtensionModule module,
     String? profilePath,
   ) {
-    final finalizer = host.finalizerFor(
-      'taiyin_ziwei_data_catalog_destroy',
-      capability: taiyinZiweiCapability,
-    );
-    if (finalizer == null) {
-      throw UnsupportedError(
-        'The loaded Taiyin library does not include the Ziwei extension '
-        '(build with TAIYIN_BUILD_ZIWEI_EXTENSION=ON).',
-      );
-    }
-    validateTaiyinRequiredSymbols(
-      providesSymbol: host.library.providesSymbol,
-      requiredSymbols: taiyinZiweiSymbols,
-    );
-    final bindings = host.bindings;
+    final finalizer = module.finalizerFor('taiyin_ziwei_data_catalog_destroy');
+    final bindings = module.bindings;
     final resolvedPath = profilePath ?? _defaultZiweiProfilePath();
     _requireZiweiPath(resolvedPath);
     final catalog = using((arena) {
@@ -131,14 +144,15 @@ final class ZiweiDataCatalog implements Finalizable {
       );
       return output.value;
     });
-    return ZiweiDataCatalog._(host, catalog, finalizer, resolvedPath);
+    return ZiweiDataCatalog._(host, module, catalog, finalizer, resolvedPath);
   }
 
   final TaiyinExtensionHost _host;
+  final TaiyinExtensionModule _module;
   final Pointer<taiyin_ziwei_data_catalog> _catalog;
   final NativeFinalizer _finalizer;
 
-  TaiyinBindings get _bindings => _host.bindings;
+  TaiyinBindings get _bindings => _module.bindings;
 
   /// The TOML profile this catalog was loaded from.
   final String profilePath;
@@ -182,6 +196,7 @@ final class ZiweiDataCatalog implements Finalizable {
 final class ZiweiContext implements Finalizable {
   ZiweiContext._(
     this._host,
+    this._module,
     this._context,
     this._finalizer,
     this._calendar,
@@ -192,28 +207,16 @@ final class ZiweiContext implements Finalizable {
 
   factory ZiweiContext._create(
     TaiyinExtensionHost host,
+    TaiyinExtensionModule module,
     ChineseCalendarContext calendar, {
     ZiweiDataCatalog? catalog,
     ZiweiOptionSelection selection = const ZiweiOptionSelection(),
   }) {
-    final finalizer = host.finalizerFor(
-      'taiyin_ziwei_context_destroy',
-      capability: taiyinZiweiCapability,
-    );
-    if (finalizer == null) {
-      throw UnsupportedError(
-        'The loaded Taiyin library does not include the Ziwei extension '
-        '(build with TAIYIN_BUILD_ZIWEI_EXTENSION=ON).',
-      );
-    }
-    validateTaiyinRequiredSymbols(
-      providesSymbol: host.library.providesSymbol,
-      requiredSymbols: taiyinZiweiSymbols,
-    );
+    final finalizer = module.finalizerFor('taiyin_ziwei_context_destroy');
     host.ensureOpen();
-    final bindings = host.bindings;
+    final bindings = module.bindings;
     final ownedCatalog = catalog == null
-        ? ZiweiDataCatalog._create(host, null)
+        ? ZiweiDataCatalog._create(host, module, null)
         : null;
     final effectiveCatalog = catalog ?? ownedCatalog!;
     try {
@@ -235,7 +238,14 @@ final class ZiweiContext implements Finalizable {
         );
         return output.value;
       });
-      return ZiweiContext._(host, context, finalizer, calendar, ownedCatalog);
+      return ZiweiContext._(
+        host,
+        module,
+        context,
+        finalizer,
+        calendar,
+        ownedCatalog,
+      );
     } catch (_) {
       ownedCatalog?.close();
       rethrow;
@@ -243,14 +253,15 @@ final class ZiweiContext implements Finalizable {
   }
 
   final TaiyinExtensionHost _host;
+  final TaiyinExtensionModule _module;
   final Pointer<taiyin_ziwei_context> _context;
   final NativeFinalizer _finalizer;
   final ChineseCalendarContext _calendar;
   final ZiweiDataCatalog? _ownedCatalog;
   bool _closed = false;
 
-  TaiyinBindings get _bindings => _host.bindings;
-  int get _capabilities => _host.capabilities;
+  TaiyinBindings get _bindings => _module.bindings;
+  TaiyinBindings get _coreBindings => _host.bindings;
 
   /// The calendar context this Ziwei context resolves birth facts through.
   ChineseCalendarContext get chineseCalendar => _calendar;
@@ -278,15 +289,6 @@ final class ZiweiContext implements Finalizable {
   Pointer<taiyin_chinese_calendar_context> get _calendarHandle =>
       _host.nativeHandle<taiyin_chinese_calendar_context>();
 
-  void _requireZiwei() {
-    if ((_capabilities & taiyinZiweiCapability) == 0) {
-      throw UnsupportedError(
-        'The loaded Taiyin library does not include the Ziwei extension '
-        '(build with TAIYIN_BUILD_ZIWEI_EXTENSION=ON).',
-      );
-    }
-  }
-
   /// The catalog generation this context was created from.
   int get generation {
     _ensureOpen();
@@ -296,14 +298,12 @@ final class ZiweiContext implements Finalizable {
   /// The number of stars registered in the rule catalog.
   int get starCount {
     _ensureOpen();
-    _requireZiwei();
     return _bindings.taiyin_ziwei_star_count(_context);
   }
 
   /// Finds a star by catalog key, or returns null when the key is unknown.
   ZiweiStar? findStar(String key) {
     _ensureOpen();
-    _requireZiwei();
     return using((arena) {
       final output = arena<Uint16>();
       final status = _bindings.taiyin_ziwei_find_star(
@@ -322,7 +322,6 @@ final class ZiweiContext implements Finalizable {
   /// Reads the metadata of the star with native [starId].
   ZiweiStar star(int starId) {
     _ensureOpen();
-    _requireZiwei();
     return using((arena) {
       final category = arena<Int32>();
       final requiredSize = arena<Size>();
@@ -368,17 +367,16 @@ final class ZiweiContext implements Finalizable {
     ZiweiBirthOptions options = const ZiweiBirthOptions(),
   }) {
     _ensureOpen();
-    _requireZiwei();
     return using((arena) {
       final nativeOptions = _writeZiweiBirthOptions(_bindings, arena, options);
       final output = arena<Pointer<taiyin_ziwei_chart>>();
       final diagnostic = arena<taiyin_ephemeris_diagnostic>();
-      _bindings.taiyin_ephemeris_diagnostic_init(diagnostic);
+      _coreBindings.taiyin_ephemeris_diagnostic_init(diagnostic);
       final status = _bindings.taiyin_ziwei_chart_create(
         _context,
         _calendarHandle,
         writeJulianDate(arena, instantUtc),
-        writeNativeCalendar(_bindings, arena, virtualTime),
+        writeNativeCalendar(_coreBindings, arena, virtualTime),
         gender.id,
         nativeOptions,
         output,
@@ -395,12 +393,7 @@ final class ZiweiContext implements Finalizable {
   }
 
   NativeFinalizer get _chartFinalizer {
-    // Guaranteed non-null: a ZiweiContext can only exist when the Ziwei
-    // capability is present.
-    return _host.finalizerFor(
-      'taiyin_ziwei_chart_destroy',
-      capability: taiyinZiweiCapability,
-    )!;
+    return _module.finalizerFor('taiyin_ziwei_chart_destroy');
   }
 
   /// Creates a natal chart from a local wall-clock birth time.
@@ -468,7 +461,6 @@ final class ZiweiContext implements Finalizable {
     int direction = 1,
   }) {
     _ensureOpen();
-    _requireZiwei();
     _requireStepDirection(direction);
     return using((arena) {
       final outInstant = arena<taiyin_split_julian_date>();
@@ -479,7 +471,7 @@ final class ZiweiContext implements Finalizable {
         _host,
         _bindings.taiyin_ziwei_step_flow_hour_target(
           writeJulianDate(arena, instantUtc),
-          writeNativeCalendar(_bindings, arena, virtualTime),
+          writeNativeCalendar(_coreBindings, arena, virtualTime),
           ratHourMode.id,
           direction,
           outInstant,
@@ -529,7 +521,6 @@ final class ZiweiContext implements Finalizable {
     int direction = 1,
   }) {
     _ensureOpen();
-    _requireZiwei();
     _requireStepDirection(direction);
     return using((arena) {
       final outInstant = arena<taiyin_split_julian_date>();
@@ -539,7 +530,7 @@ final class ZiweiContext implements Finalizable {
         _host,
         _bindings.taiyin_ziwei_step_flow_day_target(
           writeJulianDate(arena, instantUtc),
-          writeNativeCalendar(_bindings, arena, virtualTime),
+          writeNativeCalendar(_coreBindings, arena, virtualTime),
           direction,
           outInstant,
           outVirtual,
@@ -586,7 +577,6 @@ final class ZiweiContext implements Finalizable {
     ZiweiBirthOptions options = const ZiweiBirthOptions(),
   }) {
     _ensureOpen();
-    _requireZiwei();
     query.validate();
     if (endInstantUtc.isBefore(startInstantUtc)) {
       throw ArgumentError.value(
@@ -608,7 +598,7 @@ final class ZiweiContext implements Finalizable {
       );
       final count = arena<Size>();
       final diagnostic = arena<taiyin_ephemeris_diagnostic>();
-      _bindings.taiyin_ephemeris_diagnostic_init(diagnostic);
+      _coreBindings.taiyin_ephemeris_diagnostic_init(diagnostic);
       final countStatus = _bindings.taiyin_ziwei_reverse_lookup_tier1(
         _context,
         _calendarHandle,
@@ -640,7 +630,7 @@ final class ZiweiContext implements Finalizable {
       for (var index = 0; index < requiredCount; index++) {
         _bindings.taiyin_ziwei_reverse_candidate_init(output + index);
       }
-      _bindings.taiyin_ephemeris_diagnostic_init(diagnostic);
+      _coreBindings.taiyin_ephemeris_diagnostic_init(diagnostic);
       final fillStatus = _bindings.taiyin_ziwei_reverse_lookup_tier1(
         _context,
         _calendarHandle,
@@ -687,6 +677,7 @@ final class ZiweiChart implements Finalizable {
   bool _closed = false;
 
   TaiyinBindings get _bindings => _context._bindings;
+  TaiyinBindings get _coreBindings => _context._coreBindings;
 
   bool get isClosed => _closed;
 
@@ -908,14 +899,13 @@ final class ZiweiChart implements Finalizable {
       final nativeOptions = _writeZiweiFlowOptions(_bindings, arena, options);
       final summary = arena<taiyin_ziwei_flow_summary>();
       final diagnostic = arena<taiyin_ephemeris_diagnostic>();
-      _bindings
-        ..taiyin_ziwei_flow_summary_init(summary)
-        ..taiyin_ephemeris_diagnostic_init(diagnostic);
+      _bindings.taiyin_ziwei_flow_summary_init(summary);
+      _coreBindings.taiyin_ephemeris_diagnostic_init(diagnostic);
       final status = _bindings.taiyin_ziwei_chart_set_flow(
         _context._context,
         _context._calendarHandle,
         writeJulianDate(arena, targetInstantUtc),
-        writeNativeCalendar(_bindings, arena, targetVirtualTime),
+        writeNativeCalendar(_coreBindings, arena, targetVirtualTime),
         nativeOptions,
         deepestLevel.id,
         _chart,

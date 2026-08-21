@@ -12,20 +12,20 @@ programs self-contained and reproducible: they do not depend on the sibling
 | Native commit | `534f8534` — "fix(c-api): avoid cross-enum comparison warnings" (2026-08-20) |
 | Version | 1.0.0-preview.6 |
 | C ABI | 9 |
-| Build | full modules (Chinese calendar + Ganzhi + BaZi + Ziwei), monolithic |
+| Build | modular core (astronomy + Chinese calendar + Ganzhi) |
 | Platform | macOS arm64 |
 
-This is the full-module monolithic build (`taiyin_c` with
-`TAIYIN_BUILD_CHINESE_METAPHYSICS_EXTENSIONS=ON`,
-`TAIYIN_BUILD_BAZI_EXTENSION=ON`, `TAIYIN_BUILD_ZIWEI_EXTENSION=ON`). It only
-links system libraries and carries no external data dependency.
+This is the modular `taiyin` target built with
+`TAIYIN_BUILD_MODULAR_C_API=ON`. BaZi and Ziwei are pinned separately in their
+own packages. The core only links system libraries and carries no external
+data dependency.
 
 ## Replacing the baseline
 
 When the native library updates, rebuild and replace this file in place:
 
 ```sh
-cp ../taiyin-ephemeris/build-dart-abi9/libtaiyin.9.0.0.dylib lib/native/libtaiyin.dylib
+cp -L ../taiyin-ephemeris/build-dart-modular/libtaiyin.dylib lib/native/libtaiyin.dylib
 ```
 
 Update the "Current baseline" table above with the new native commit, version,
@@ -37,5 +37,4 @@ swap the file without updating it.
 
 - `dart test` defaults to this pinned copy.
 - Set `TAIYIN_TEST_LIBRARY` to test against a freshly built library instead.
-- Set `TAIYIN_BASELINE_LIBRARY` for the bazi-off baseline library (not pinned;
-  it must be provided or the optional-module tests skip).
+- Extension suites load the pinned module from the corresponding package.

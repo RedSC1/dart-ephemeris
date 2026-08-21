@@ -2,23 +2,19 @@ import 'dart:io';
 
 /// The ABI-9 Taiyin shared library used by default in native-integration tests.
 ///
-/// Defaults to the pinned copy bundled in `lib/native/` (full-module build:
-/// Chinese calendar + Ganzhi + BaZi + Ziwei). Override with the
-/// `TAIYIN_TEST_LIBRARY` environment variable to test against a freshly built
-/// library.
+/// Defaults to the modular core copy bundled in `lib/native/`. Override with
+/// `TAIYIN_TEST_LIBRARY` to test against a freshly built library.
 String get libraryPath =>
     Platform.environment['TAIYIN_TEST_LIBRARY'] ?? 'lib/native/libtaiyin.dylib';
 
 /// Whether [libraryPath] exists on disk.
 bool get nativeLibraryAvailable => File(libraryPath).existsSync();
 
-/// ABI-9 baseline library (Chinese calendar only; no BaZi/Ziwei extension),
-/// used by optional-module tests to assert capability gating.
+/// ABI-9 modular core library used to assert that extension symbols are absent.
 ///
 /// Override with the `TAIYIN_BASELINE_LIBRARY` environment variable.
 String get baselineLibraryPath =>
-    Platform.environment['TAIYIN_BASELINE_LIBRARY'] ??
-    '../taiyin-ephemeris/build-dart-abi9-baseline/libtaiyin.dylib';
+    Platform.environment['TAIYIN_BASELINE_LIBRARY'] ?? libraryPath;
 
 /// Whether [baselineLibraryPath] exists on disk.
 bool get baselineLibraryAvailable => File(baselineLibraryPath).existsSync();

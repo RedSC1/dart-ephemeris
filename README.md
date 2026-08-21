@@ -953,13 +953,13 @@ Chinese-calendar, and Ganzhi-rule symbols. Incomplete ABI-9 builds are rejected
 during `Ephemeris.open` or `Ephemeris.attach` with a clear compatibility error
 instead of failing later during a lazy symbol lookup.
 
-The Ganzhi calendar is always built into the core package. The BaZi and Ziwei
-extensions (`TAIYIN_BUILD_BAZI_EXTENSION`, `TAIYIN_BUILD_ZIWEI_EXTENSION`) are
-**optional modules** living in their own packages (`taiyin_bazi`,
-`taiyin_ziwei`). Their APIs check the corresponding capability bit and throw
-`UnsupportedError` when the loaded library was built without them, so a smaller
-extension-free library still loads and works for the core and Chinese-calendar
-modules.
+The Ganzhi calendar is always built into the core package. BaZi and Ziwei are
+**physically separate native modules** living in their own Dart packages:
+`taiyin_bazi` loads `libtaiyin_bazi`, while `taiyin_ziwei` loads
+`libtaiyin_ziwei`. The root package ships only the core `libtaiyin`; importing
+an extension adds its Dart API, and the first extension call lazily loads that
+package's native module. A missing module raises `UnsupportedError` without
+breaking core astronomy or Chinese-calendar calls.
 
 The native engine is process-wide, so call `Ephemeris.open` once. Calling it again
 currently replaces the global catalog, cache, EOP table, and lunar-limb model.
@@ -973,9 +973,12 @@ isolate does not turn those calls into parallel native work, and an
 in another isolate. For CPU parallelism, use worker isolates and let each worker
 attach a runtime facade and create its own context. These contexts have
 independent mutable configuration and diagnostics while sharing the
-process-wide native ephemeris catalog and segment caches. This is also the
-recommended server model: one context per worker or logical user, with runtime
-mutation and shutdown kept outside active calculations.
+process-wide native ephemeris catalog and segment caches. BaZi and Ziwei follow
+the same rule: each worker creates its own extension context; native code pages
+are mapped once by the operating system. Do not mutate the same Ziwei chart
+from multiple isolates. This is also the recommended server model: one context
+per worker or logical user, with runtime mutation and shutdown kept outside
+active calculations.
 
 A worker isolate must not receive a `EphemerisContext` through a `SendPort`.
 Instead, send plain Dart inputs and let the worker attach a new context to the
@@ -1027,16 +1030,14 @@ final day = context.ganzhi.dayPillar(AstroDateTime(2024, 2, 10));
 ## BaZi (package:taiyin_bazi)
 
 The BaZi module is an **optional extension package**. Add `taiyin_bazi` and
-import it alongside the core; the import attaches `context.bazi` and
-`context.createBazi()` to every `EphemerisContext`. When the loaded library
-lacks the BaZi capability, both throw `UnsupportedError` without touching any
-`taiyin_bazi_*` symbol:
+import it alongside the core; the import adds `context.bazi` and
+`context.createBazi()` to every `EphemerisContext`. The first call loads the
+package's separate `libtaiyin_bazi` module:
 
 ```dart
 import 'package:taiyin/taiyin.dart';
 import 'package:taiyin_bazi/taiyin_bazi.dart';
 
-// Requires TAIYIN_BUILD_BAZI_EXTENSION.
 final bazi = context.bazi;
 final result = bazi.calculateLocal(
   AstroDateTime(2003, 3, 13, 14, 15),
@@ -1056,18 +1057,20 @@ A BaZi context binds one `ChineseCalendarContext` at creation — the cached
 default calendar unless you pass `calendar:` to `createBazi` — and
 `calcQiyun`/`calcRenyuanSiling` resolve solar terms through it. The bound
 calendar must belong to the same `EphemerisContext`.
+Set `TAIYIN_BAZI_LIBRARY_PATH` or pass `libraryPath:` to `createBazi` to
+override the bundled module.
 
 ## Ziwei Doushu (package:taiyin_ziwei)
 
-The Ziwei module is an **optional extension package** bundling the default
-TOML rule profile under `lib/data/ziwei/rules/`. Importing it attaches
-`context.ziwei` and `context.createZiwei()`:
+The Ziwei module is an **optional extension package** bundling its separate
+`libtaiyin_ziwei` module and the default TOML rule profile under
+`lib/data/ziwei/rules/`. Importing it adds `context.ziwei` and
+`context.createZiwei()`; the native module is loaded on first use:
 
 ```dart
 import 'package:taiyin/taiyin.dart';
 import 'package:taiyin_ziwei/taiyin_ziwei.dart';
 
-// Requires TAIYIN_BUILD_ZIWEI_EXTENSION.
 final ziwei = context.ziwei;
 final chartResult = ziwei.calculateLocal(
   AstroDateTime(2003, 3, 13, 14, 15),
@@ -1083,6 +1086,8 @@ omitted) and can be shared across Ziwei contexts; pass `profilePath` to use a
 custom rule profile. A Ziwei context borrows the cached default
 Chinese-calendar context; pass `calendar:` to `createZiwei` to bind a
 different calendar from the same `EphemerisContext`.
+Set `TAIYIN_ZIWEI_LIBRARY_PATH` or pass `libraryPath:` to `createZiwei` /
+`ZiweiDataCatalog` to override the bundled module.
 
 ## Regenerate bindings
 
@@ -1097,14 +1102,14 @@ dart analyze
 dart test
 ```
 
-Native integration tests use the pinned ABI-9 full-module copy
-`lib/native/libtaiyin.dylib` by default (the extension packages reference it as
-`../../lib/native/libtaiyin.dylib`), and an extension-free ABI-9 baseline
-library for optional-module gating tests. Override them when necessary:
+Native integration tests use three pinned modular ABI-9 libraries: core under
+`lib/native/`, BaZi under `packages/taiyin_bazi/lib/native/`, and Ziwei under
+`packages/taiyin_ziwei/lib/native/`. Override them when necessary:
 
 ```sh
 TAIYIN_TEST_LIBRARY=/path/to/libtaiyin.dylib dart test
-TAIYIN_BASELINE_LIBRARY=/path/to/baseline/libtaiyin.dylib dart test
+TAIYIN_BAZI_LIBRARY_PATH=/path/to/libtaiyin_bazi.dylib dart test
+TAIYIN_ZIWEI_LIBRARY_PATH=/path/to/libtaiyin_ziwei.dylib dart test
 ```
 
 Run each package's suite from its own directory (`dart test` at the root covers
@@ -1119,13 +1124,14 @@ oracles are reused when a corresponding C ABI operation exists.
 
 ## Native distribution
 
-For local development the bundled `lib/native/` copy is loaded automatically;
-passing an explicit shared-library path or setting `TAIYIN_LIBRARY_PATH`
-overrides it. For applications, bundle one native library per target:
+For local development each package's bundled `lib/native/` copy is loaded
+automatically. Explicit paths and `TAIYIN_LIBRARY_PATH`,
+`TAIYIN_BAZI_LIBRARY_PATH`, or `TAIYIN_ZIWEI_LIBRARY_PATH` override them. The
+three native artifacts are:
 
-- macOS: `libtaiyin.dylib`
-- Linux/Android: `libtaiyin.so`
-- Windows: `taiyin-8.dll` (named by C ABI version)
+- macOS: `libtaiyin.dylib`, `libtaiyin_bazi.dylib`, `libtaiyin_ziwei.dylib`
+- Linux/Android: `libtaiyin.so`, `libtaiyin_bazi.so`, `libtaiyin_ziwei.so`
+- Windows: `taiyin.dll`, `taiyin_bazi.dll`, `taiyin_ziwei.dll`
 - iOS: statically link Ephemeris and use `DynamicLibrary.process()`
 
 A package intended for `pub.dev` should add a Dart build hook that builds or

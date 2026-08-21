@@ -4,24 +4,26 @@ import 'package:test/test.dart';
 
 import 'support/native_library.dart';
 
-/// Ziwei gating on an extension-free baseline library: the package must refuse
-/// before any `taiyin_ziwei_*` symbol lookup.
+/// A missing separately packaged extension produces a clear error without
+/// affecting the already loaded core runtime.
 void main() {
   test(
-    'Ziwei entry points throw UnsupportedError on a baseline library',
+    'Ziwei reports a missing extension module',
     () {
-      final runtime = Ephemeris.open(libraryPath: baselineLibraryPath);
+      final runtime = Ephemeris.open(libraryPath: libraryPath);
       final context = runtime.createContext();
-      expect(() => context.ziwei, throwsUnsupportedError);
-      expect(() => context.createZiwei(), throwsUnsupportedError);
       expect(
-        () => ZiweiDataCatalog(libraryPath: baselineLibraryPath),
+        () =>
+            context.createZiwei(libraryPath: '/no/such/libtaiyin_ziwei.dylib'),
         throwsUnsupportedError,
       );
+      expect(
+        () => ZiweiDataCatalog(libraryPath: '/no/such/libtaiyin_ziwei.dylib'),
+        throwsUnsupportedError,
+      );
+      expect(context.position, isNotNull);
       context.close();
     },
-    skip: baselineLibraryAvailable
-        ? false
-        : 'Set TAIYIN_BASELINE_LIBRARY to a baseline ABI-9 library.',
+    skip: nativeLibraryAvailable ? false : libraryUnavailableSkip,
   );
 }

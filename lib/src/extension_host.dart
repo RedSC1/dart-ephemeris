@@ -3,9 +3,11 @@ part of 'taiyin.dart';
 /// FFI handle exposed by core Taiyin objects for the official extension
 /// packages (`package:taiyin_bazi`, `package:taiyin_ziwei`).
 ///
-/// This surface exists so the sibling extension packages can share one loaded
-/// native library with `package:taiyin`. Its shape tracks the native ABI and
-/// may change without a major version bump of `package:taiyin`.
+/// This surface exists so sibling extension packages can reuse the owning core
+/// context, status decoder, and diagnostic sink. Extension entry points live
+/// in their own native modules and are loaded through [TaiyinExtensionModule].
+/// Its shape tracks the native ABI and may change without a major version bump
+/// of `package:taiyin`.
 final class TaiyinExtensionHost {
   TaiyinExtensionHost._(
     this._state,
@@ -48,31 +50,12 @@ final class TaiyinExtensionHost {
   /// The generated bindings for the loaded library.
   TaiyinBindings get bindings => _state.bindings;
 
-  /// The loaded dynamic library.
-  DynamicLibrary get library => _state._library;
-
-  /// The capability mask reported by the loaded library.
-  int get capabilities => _state.capabilities;
-
   /// The raw native handle of the source object (astronomy or calendar
   /// context). It is `nullptr` for hosts created by [TaiyinExtensionHost.open].
   Pointer<T> nativeHandle<T extends NativeType>() => _nativeHandle.cast();
 
-  /// Whether the loaded library reports [capabilityMask].
-  bool supports(int capabilityMask) => (capabilities & capabilityMask) != 0;
-
   /// Throws [StateError] when the source object has been closed.
   void ensureOpen() => _onEnsureOpen();
-
-  /// A finalizer keyed by the destroy [symbol], or null when
-  /// [capabilityMask] is absent — in which case the symbol must never be
-  /// looked up because the build does not export it.
-  NativeFinalizer? finalizerFor(String symbol, {required int capability}) {
-    if (!supports(capability)) return null;
-    return NativeFinalizer(
-      library.lookup<NativeFunction<Void Function(Pointer<Void>)>>(symbol),
-    );
-  }
 
   /// Throws [EphemerisError] when [status] is not `TAIYIN_STATUS_OK`.
   ResultFlags checkStatus(
@@ -91,4 +74,97 @@ final class TaiyinExtensionHost {
   /// [TaiyinExtensionHost.open].
   void recordDiagnostic(EphemerisDiagnostic diagnostic) =>
       _onDiagnostic(diagnostic);
+}
+
+/// One separately packaged official native extension module.
+///
+/// The module is resolved lazily in the current isolate. An explicit
+/// [libraryPath] wins, followed by [environmentVariable], the package-bundled
+/// `lib/native/` asset, and finally the platform loader search path.
+final class TaiyinExtensionModule {
+  TaiyinExtensionModule._(this._state);
+
+  factory TaiyinExtensionModule.open({
+    required String packageName,
+    required String environmentVariable,
+    required String libraryBaseName,
+    required String identitySymbol,
+    required Set<String> requiredSymbols,
+    String? libraryPath,
+  }) {
+    try {
+      final library = _openExtensionLibrary(
+        packageName: packageName,
+        environmentVariable: environmentVariable,
+        libraryBaseName: libraryBaseName,
+        libraryPath: libraryPath,
+      );
+      final identity = library
+          .lookup<NativeFunction<Void Function(Pointer<Void>)>>(identitySymbol);
+      final state = _extensionModuleStates.putIfAbsent(identity.address, () {
+        validateTaiyinRequiredSymbols(
+          providesSymbol: library.providesSymbol,
+          requiredSymbols: requiredSymbols,
+        );
+        return _ExtensionModuleState(TaiyinBindings(library), library);
+      });
+      return TaiyinExtensionModule._(state);
+    } on ArgumentError catch (error) {
+      throw UnsupportedError(
+        'Unable to load the $packageName native extension '
+        '($libraryBaseName): $error',
+      );
+    }
+  }
+
+  final _ExtensionModuleState _state;
+
+  /// Generated ABI bindings backed by this extension library.
+  TaiyinBindings get bindings => _state.bindings;
+
+  /// Loaded extension dynamic library.
+  DynamicLibrary get library => _state.library;
+
+  /// Creates a finalizer from an extension-owned destroy function.
+  NativeFinalizer finalizerFor(String symbol) => NativeFinalizer(
+    library.lookup<NativeFunction<Void Function(Pointer<Void>)>>(symbol),
+  );
+}
+
+final class _ExtensionModuleState {
+  const _ExtensionModuleState(this.bindings, this.library);
+
+  final TaiyinBindings bindings;
+  final DynamicLibrary library;
+}
+
+// DynamicLibrary wrappers do not own an unload operation in Dart. Keep one
+// binding state per loaded image/identity symbol in each isolate.
+final Map<int, _ExtensionModuleState> _extensionModuleStates = {};
+
+DynamicLibrary _openExtensionLibrary({
+  required String packageName,
+  required String environmentVariable,
+  required String libraryBaseName,
+  required String? libraryPath,
+}) {
+  if (Platform.isIOS) return DynamicLibrary.process();
+  final configured = libraryPath ?? Platform.environment[environmentVariable];
+  if (configured != null) return DynamicLibrary.open(configured);
+
+  final fileName = _extensionLibraryFileName(libraryBaseName);
+  final resolved = Isolate.resolvePackageUriSync(
+    Uri.parse('package:$packageName/native/$fileName'),
+  );
+  if (resolved != null && resolved.scheme == 'file') {
+    final bundled = resolved.toFilePath();
+    if (File(bundled).existsSync()) return DynamicLibrary.open(bundled);
+  }
+  return DynamicLibrary.open(fileName);
+}
+
+String _extensionLibraryFileName(String baseName) {
+  if (Platform.isWindows) return '$baseName.dll';
+  if (Platform.isMacOS) return 'lib$baseName.dylib';
+  return 'lib$baseName.so';
 }

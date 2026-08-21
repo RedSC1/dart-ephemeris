@@ -346,9 +346,10 @@ const Set<String> taiyinZiweiSymbols = {
 /// be tested without loading a platform-specific dynamic library.
 ///
 /// The Dart package exposes its split-date time service and its Chinese
-/// calendar as required parts of every `EphemerisContext`, so it requires both
-/// the split-time and the Chinese-calendar capabilities. BaZi and the Ganzhi
-/// calendar are optional modules selected by their own capability bits.
+/// calendar and Ganzhi services as required parts of every
+/// `EphemerisContext`, so it requires split-time and Chinese-calendar support.
+/// BaZi and Ziwei validate their separately loaded native modules instead of
+/// consulting the core capability mask.
 void validateTaiyinNativeCompatibility({
   required int abiVersion,
   required int capabilities,

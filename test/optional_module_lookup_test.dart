@@ -7,13 +7,8 @@ import 'package:test/test.dart';
 
 import 'support/native_library.dart';
 
-/// Guards the optional-module contract: BaZi and Ziwei are optional
-/// extensions whose symbols do not exist in a library built without
-/// `TAIYIN_BUILD_BAZI_EXTENSION` / `TAIYIN_BUILD_ZIWEI_EXTENSION`. The core
-/// package must never look up a `taiyin_bazi_*` or `taiyin_ziwei_*` symbol;
-/// the extension packages gate their own lookups by capability (covered by
-/// their own baseline tests). This file runs against the ABI-9 baseline
-/// library (Chinese calendar only) to verify that discipline.
+/// Guards the physical module boundary: the modular core contains Chinese
+/// calendar and Ganzhi, but never exports or looks up BaZi/Ziwei symbols.
 void main() {
   group('optional-module symbol lookup discipline', () {
     test(
