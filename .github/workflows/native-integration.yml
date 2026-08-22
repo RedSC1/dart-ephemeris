@@ -204,21 +204,21 @@ jobs:
       - name: Check formatting
         run: >-
           dart format --output=none --set-exit-if-changed
-          packages/taiyin/lib packages/taiyin/example
-          packages/taiyin_bazi/lib packages/taiyin_bazi/example
-          packages/taiyin_ziwei/lib packages/taiyin_ziwei/example
+          packages/ephemeris/lib packages/ephemeris/example
+          packages/ephemeris_bazi/lib packages/ephemeris_bazi/example
+          packages/ephemeris_ziwei/lib packages/ephemeris_ziwei/example
 
       - name: Analyze
         run: dart analyze packages
 
       - name: Test core package
-        run: dart test packages/taiyin/test
+        run: dart test packages/ephemeris/test
 
       - name: Test BaZi package
-        run: dart test packages/taiyin_bazi/test
+        run: dart test packages/ephemeris_bazi/test
 
       - name: Test Ziwei package
-        run: dart test packages/taiyin_ziwei/test
+        run: dart test packages/ephemeris_ziwei/test
 
       - name: Upload native modules
         uses: actions/upload-artifact@v6
@@ -264,13 +264,13 @@ jobs:
         run: dart pub get
 
       - name: Validate core pub package
-        working-directory: ${{ runner.temp }}/taiyin-pub-workspace/packages/taiyin
+        working-directory: ${{ runner.temp }}/taiyin-pub-workspace/packages/ephemeris
         run: dart pub publish --dry-run
 
       - name: Validate BaZi pub package
-        working-directory: ${{ runner.temp }}/taiyin-pub-workspace/packages/taiyin_bazi
+        working-directory: ${{ runner.temp }}/taiyin-pub-workspace/packages/ephemeris_bazi
         run: dart pub publish --dry-run
 
       - name: Validate Ziwei pub package
-        working-directory: ${{ runner.temp }}/taiyin-pub-workspace/packages/taiyin_ziwei
+        working-directory: ${{ runner.temp }}/taiyin-pub-workspace/packages/ephemeris_ziwei
         run: dart pub publish --dry-run

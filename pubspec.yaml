@@ -1,14 +1,14 @@
-name: taiyin_workspace
-description: Workspace for the Taiyin Dart packages.
+name: dart_ephemeris_workspace
+description: Workspace for the Dart Ephemeris (Taiyin) packages.
 publish_to: none
 
 environment:
   sdk: ^3.10.0
 
 workspace:
-  - packages/taiyin
-  - packages/taiyin_bazi
-  - packages/taiyin_ziwei
+  - packages/ephemeris
+  - packages/ephemeris_bazi
+  - packages/ephemeris_ziwei
 
 dev_dependencies:
   ffigen: ^20.1.1

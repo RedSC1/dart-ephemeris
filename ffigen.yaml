@@ -1,6 +1,6 @@
 name: TaiyinBindings
 description: Generated bindings for the Taiyin C ABI.
-output: packages/taiyin/lib/src/bindings/taiyin_bindings.g.dart
+output: packages/ephemeris/lib/src/bindings/taiyin_bindings.g.dart
 headers:
   entry-points:
     - tool/taiyin_wrapper.h

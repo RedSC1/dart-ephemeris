@@ -32,18 +32,18 @@ jobs:
       - name: Check formatting
         run: >-
           dart format --output=none --set-exit-if-changed
-          packages/taiyin/lib packages/taiyin/example
-          packages/taiyin_bazi/lib packages/taiyin_bazi/example
-          packages/taiyin_ziwei/lib packages/taiyin_ziwei/example
+          packages/ephemeris/lib packages/ephemeris/example
+          packages/ephemeris_bazi/lib packages/ephemeris_bazi/example
+          packages/ephemeris_ziwei/lib packages/ephemeris_ziwei/example
 
       - name: Analyze
         run: dart analyze packages
 
       - name: Generate core API documentation
-        run: dart doc packages/taiyin
+        run: dart doc packages/ephemeris
 
       - name: Generate BaZi API documentation
-        run: dart doc packages/taiyin_bazi
+        run: dart doc packages/ephemeris_bazi
 
       - name: Generate Ziwei API documentation
-        run: dart doc packages/taiyin_ziwei
+        run: dart doc packages/ephemeris_ziwei

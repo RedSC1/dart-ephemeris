@@ -12,77 +12,77 @@ const _files = <_NativeFile>[
   _NativeFile(
     'taiyin-native-macOS-ARM64',
     'lib/libtaiyin.dylib',
-    'packages/taiyin/lib/native/libtaiyin.dylib',
+    'packages/ephemeris/lib/native/libtaiyin.dylib',
   ),
   _NativeFile(
     'taiyin-native-macOS-ARM64',
     'lib/libtaiyin_bazi.dylib',
-    'packages/taiyin_bazi/lib/native/libtaiyin_bazi.dylib',
+    'packages/ephemeris_bazi/lib/native/libtaiyin_bazi.dylib',
   ),
   _NativeFile(
     'taiyin-native-macOS-ARM64',
     'lib/libtaiyin_ziwei.dylib',
-    'packages/taiyin_ziwei/lib/native/libtaiyin_ziwei.dylib',
+    'packages/ephemeris_ziwei/lib/native/libtaiyin_ziwei.dylib',
   ),
   _NativeFile(
     'taiyin-native-macOS-ARM64',
     'share/doc/taiyin/NOTICE',
-    'packages/taiyin/NOTICE',
+    'packages/ephemeris/NOTICE',
   ),
   _NativeFile(
     'taiyin-native-macOS-ARM64',
     'share/doc/taiyin/NOTICE',
-    'packages/taiyin_bazi/NOTICE',
+    'packages/ephemeris_bazi/NOTICE',
   ),
   _NativeFile(
     'taiyin-native-macOS-ARM64',
     'share/doc/taiyin/NOTICE',
-    'packages/taiyin_ziwei/NOTICE',
+    'packages/ephemeris_ziwei/NOTICE',
   ),
   _NativeFile(
     'taiyin-native-Linux-X64',
     'lib/libtaiyin.so',
-    'packages/taiyin/lib/native/libtaiyin.so',
+    'packages/ephemeris/lib/native/libtaiyin.so',
   ),
   _NativeFile(
     'taiyin-native-Linux-X64',
     'lib/libtaiyin_bazi.so',
-    'packages/taiyin_bazi/lib/native/libtaiyin_bazi.so',
+    'packages/ephemeris_bazi/lib/native/libtaiyin_bazi.so',
   ),
   _NativeFile(
     'taiyin-native-Linux-X64',
     'lib/libtaiyin_ziwei.so',
-    'packages/taiyin_ziwei/lib/native/libtaiyin_ziwei.so',
+    'packages/ephemeris_ziwei/lib/native/libtaiyin_ziwei.so',
   ),
   _NativeFile(
     'taiyin-native-Windows-X64',
     'bin/taiyin.dll',
-    'packages/taiyin/lib/native/taiyin.dll',
+    'packages/ephemeris/lib/native/taiyin.dll',
   ),
   _NativeFile(
     'taiyin-native-Windows-X64',
     'bin/taiyin_bazi.dll',
-    'packages/taiyin_bazi/lib/native/taiyin_bazi.dll',
+    'packages/ephemeris_bazi/lib/native/taiyin_bazi.dll',
   ),
   _NativeFile(
     'taiyin-native-Windows-X64',
     'bin/taiyin_ziwei.dll',
-    'packages/taiyin_ziwei/lib/native/taiyin_ziwei.dll',
+    'packages/ephemeris_ziwei/lib/native/taiyin_ziwei.dll',
   ),
   _NativeFile(
     'taiyin-native-Windows-X64',
     'bin/libgcc_s_seh-1.dll',
-    'packages/taiyin/lib/native/libgcc_s_seh-1.dll',
+    'packages/ephemeris/lib/native/libgcc_s_seh-1.dll',
   ),
   _NativeFile(
     'taiyin-native-Windows-X64',
     'bin/libstdc++-6.dll',
-    'packages/taiyin/lib/native/libstdc++-6.dll',
+    'packages/ephemeris/lib/native/libstdc++-6.dll',
   ),
   _NativeFile(
     'taiyin-native-Windows-X64',
     'bin/libwinpthread-1.dll',
-    'packages/taiyin/lib/native/libwinpthread-1.dll',
+    'packages/ephemeris/lib/native/libwinpthread-1.dll',
   ),
 ];
 
@@ -98,9 +98,9 @@ void main(List<String> arguments) {
   final repository = Directory.current.absolute;
   if (!File.fromUri(repository.uri.resolve('pubspec.yaml')).existsSync() ||
       !Directory.fromUri(
-        repository.uri.resolve('packages/taiyin/'),
+        repository.uri.resolve('packages/ephemeris/'),
       ).existsSync()) {
-    stderr.writeln('Run this command from the taiyin-dart repository root.');
+    stderr.writeln('Run this command from the dart-ephemeris repository root.');
     exitCode = 64;
     return;
   }
