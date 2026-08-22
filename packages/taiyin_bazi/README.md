@@ -7,6 +7,13 @@ BaZi (八字) extension bindings for the Taiyin ephemeris, part of the
 [`taiyin-dart`](../..) monorepo. Mirrors `packages/taiyin-bazi` in the Python
 binding.
 
+```sh
+dart pub add taiyin
+dart pub add taiyin_bazi
+```
+
+Generated API reference: <https://pub.dev/documentation/taiyin_bazi/latest/>
+
 Depends on the core `taiyin` package. Importing this package adds
 `context.bazi` and `context.createBazi()` to `EphemerisContext`:
 

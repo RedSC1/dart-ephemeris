@@ -57,7 +57,7 @@ final class TaiyinExtensionHost {
   /// Throws [StateError] when the source object has been closed.
   void ensureOpen() => _onEnsureOpen();
 
-  /// Throws [EphemerisError] when [status] is not `TAIYIN_STATUS_OK`.
+  /// Throws [EphemerisError] when [rawResult] contains a failure status.
   ResultFlags checkStatus(
     int rawResult, {
     EphemerisDiagnostic? diagnostic,

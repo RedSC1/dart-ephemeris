@@ -1,4 +1,29 @@
-/// Idiomatic Dart bindings for the Taiyin ephemeris.
+/// Astronomy, Chinese-calendar, Ganzhi, and astrology APIs backed by Taiyin.
+///
+/// Open the process-wide native runtime once with [Ephemeris.open], then create
+/// an independent [EphemerisContext] for each calculation policy or isolate:
+///
+/// ```dart
+/// import 'package:taiyin/taiyin.dart' as taiyin;
+///
+/// final ephemeris = taiyin.Ephemeris.open();
+/// final context = ephemeris.createContext();
+/// try {
+///   final result = context.position.atTt(
+///     taiyin.Body.mars,
+///     taiyin.JulianDate<taiyin.TtScale>.fromDouble(2460409.0),
+///   );
+///   print(result.value.coordinates);
+///   print(result.flags.values);
+/// } finally {
+///   context.close();
+/// }
+/// ```
+///
+/// Native failures are surfaced as [EphemerisError] subclasses. Successful
+/// operations return an [OperationResult] record whose `flags` report facts
+/// such as an ephemeris fallback or numerical derivative. BaZi and Ziwei
+/// Doushu live in the separate `taiyin_bazi` and `taiyin_ziwei` packages.
 library;
 
 export 'src/taiyin.dart';

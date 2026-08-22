@@ -6,6 +6,14 @@
 An idiomatic Dart wrapper around the versioned C ABI in
 [`taiyin-ephemeris`](https://github.com/RedSC1/taiyin-ephemeris).
 
+Install it with:
+
+```sh
+dart pub add taiyin
+```
+
+Generated API reference: <https://pub.dev/documentation/taiyin/latest/>
+
 This repository is a pub workspace with three packages, mirroring the Python
 binding's monorepo layout:
 

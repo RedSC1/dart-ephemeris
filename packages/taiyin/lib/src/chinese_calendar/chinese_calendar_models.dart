@@ -101,7 +101,8 @@ final class ChineseCalendarConfig {
   final ChineseCalendarMode mode;
   final ChineseCalendarDayBoundaryMode dayBoundaryMode;
 
-  /// Civil-day offset from UTC in minutes, meaningful for [fixedUtcOffset].
+  /// Civil-day offset from UTC in minutes, meaningful for
+  /// [ChineseCalendarDayBoundaryMode.fixedUtcOffset].
   final int utcOffsetMinutes;
 
   /// Longitude used for the mean-solar-meridian civil boundary.

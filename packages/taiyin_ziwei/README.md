@@ -7,6 +7,13 @@ Ziwei Doushu (紫微斗数) extension bindings for the Taiyin ephemeris, part of
 the [`taiyin-dart`](../..) monorepo. Mirrors `packages/taiyin-ziwei` in the
 Python binding.
 
+```sh
+dart pub add taiyin
+dart pub add taiyin_ziwei
+```
+
+Generated API reference: <https://pub.dev/documentation/taiyin_ziwei/latest/>
+
 Depends on the core `taiyin` package. Importing this package adds
 `context.ziwei` and `context.createZiwei()` to `EphemerisContext`:
 

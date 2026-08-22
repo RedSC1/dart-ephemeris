@@ -1,11 +1,24 @@
 /// A native execution fact reported by Taiyin for one completed call.
 enum ResultFlag {
+  /// The requested route failed and a lower-priority route completed the call.
   fallbackOccurred(1 << 0),
+
+  /// At least one requested derivative was evaluated numerically.
   numericalDerivative(1 << 1),
+
+  /// A physical center was reconstructed or approximated from a barycenter.
   barycenterApproximation(1 << 2),
+
+  /// A requested time-scale conversion used its configured estimate fallback.
   timeScaleFallback(1 << 3),
+
+  /// Historical event-to-civil-day assignment rules affected the result.
   historicalEventAssignmentApplied(1 << 4),
+
+  /// Historical Chinese-calendar rules affected the result.
   historicalCalendarRulesApplied(1 << 5),
+
+  /// Historical solar-term rules affected a Ganzhi pillar calculation.
   historicalPillarTermsApplied(1 << 6);
 
   const ResultFlag(this.mask);

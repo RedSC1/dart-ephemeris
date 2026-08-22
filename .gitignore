@@ -3,5 +3,6 @@
 .packages
 build/
 coverage/
+doc/api/
 pubspec.lock
 tmp/
