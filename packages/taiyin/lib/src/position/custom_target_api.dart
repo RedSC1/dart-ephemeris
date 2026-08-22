@@ -3,6 +3,7 @@ part of '../taiyin.dart';
 const int _taiyinStatusOk = 0;
 const int _taiyinErrorInvalidArgument = -1;
 const int _taiyinErrorInternal = -3;
+const int _taiyinErrorNoEphemerisData = -1001;
 
 typedef _NativeCustomDependencyPosition =
     taiyin_call_result Function(
@@ -65,10 +66,13 @@ final class CustomTargetRequest {
 
   bool hasFlag(PositionFlag flag) => (rawFlags & flag.mask) != 0;
 
-  /// Calculates another target with the borrowed context and callback epoch.
+  /// Calculates a native built-in target with the borrowed context and callback
+  /// epoch.
   ///
   /// A native failure is rethrown as [CustomEvaluatorFailure], so it
   /// automatically becomes the custom evaluator's status unless caught.
+  /// Dart-backed [CustomTarget] dependencies are rejected because recursively
+  /// entering Dart from this synchronous native callback is not portable.
   List<double> positionOf(
     Target dependency, {
     Set<PositionFlag> flags = const {},
@@ -78,6 +82,18 @@ final class CustomTargetRequest {
         'This CustomTargetRequest is no longer valid. '
         'positionOf() may only be called synchronously while its evaluator '
         'is running.',
+      );
+    }
+    // The dependency call is bound as a leaf FFI call below so that it can be
+    // made safely from an isolate-group-bound native callback. A leaf call must
+    // never re-enter Dart, so reject Dart-backed custom targets before crossing
+    // the FFI boundary. Preserve the documented native statuses used for
+    // self-recursion and unavailable custom dependencies.
+    if (dependency is CustomTarget) {
+      throw CustomEvaluatorFailure(
+        dependency == target
+            ? _taiyinErrorInternal
+            : _taiyinErrorNoEphemerisData,
       );
     }
     final mask = flags.fold(0, (value, flag) => value | flag.mask);
@@ -212,7 +228,7 @@ CustomTargetRegistration _registerCustomTarget(
       .lookup<NativeFunction<_NativeCustomDependencyPosition>>(
         'taiyin_calc_position_tdb',
       )
-      .asFunction<_DartCustomDependencyPosition>();
+      .asFunction<_DartCustomDependencyPosition>(isLeaf: true);
   try {
     positionCallable = _createCustomPositionCallable(
       positionEvaluator,
