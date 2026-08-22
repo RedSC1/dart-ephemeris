@@ -1,7 +1,16 @@
 name: taiyin_bazi
 description: BaZi (八字) extension bindings for the Taiyin ephemeris.
 version: 1.0.0-alpha.1
+homepage: https://github.com/RedSC1/taiyin-dart
 repository: https://github.com/RedSC1/taiyin-dart
+issue_tracker: https://github.com/RedSC1/taiyin-dart/issues
+documentation: https://pub.dev/documentation/taiyin_bazi/latest/
+topics:
+  - bazi
+  - astrology
+  - chinese-calendar
+  - ephemeris
+  - astronomy
 resolution: workspace
 
 environment:
