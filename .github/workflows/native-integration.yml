@@ -84,13 +84,17 @@ jobs:
         shell: msys2 {0}
         run: |
           cd native-core
-          # MinGW defaults to a lib*.dll prefix, while the public Dart loader
-          # deliberately follows the normal Windows *.dll naming convention.
-          cmake --preset windows-mingw-gcc -DCMAKE_SHARED_LIBRARY_PREFIX=
+          cmake --preset windows-mingw-gcc
           cmake --build --preset windows-mingw-gcc --parallel 3 \
             --target taiyin taiyin_bazi taiyin_ziwei
           cmake --install build-preset-windows-mingw-gcc \
             --prefix ../native-stage
+          # A MinGW-built DLL needs its compiler runtimes even on machines that
+          # do not have GCC installed. Keep them beside the Taiyin DLLs so the
+          # Windows loader resolves the artifact without machine-wide setup.
+          cp /mingw64/bin/libgcc_s_seh-1.dll ../native-stage/bin/
+          cp /mingw64/bin/libstdc++-6.dll ../native-stage/bin/
+          cp /mingw64/bin/libwinpthread-1.dll ../native-stage/bin/
 
       - name: Configure native test paths (macOS)
         if: runner.os == 'macOS'
