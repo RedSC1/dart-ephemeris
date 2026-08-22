@@ -1,0 +1,24 @@
+name: ephemeris
+description: Idiomatic Dart bindings for the Taiyin ephemeris C API.
+version: 1.0.0-alpha.1
+homepage: https://github.com/RedSC1/dart-ephemeris
+repository: https://github.com/RedSC1/dart-ephemeris
+issue_tracker: https://github.com/RedSC1/dart-ephemeris/issues
+documentation: https://pub.dev/documentation/ephemeris/latest/
+topics:
+  - astronomy
+  - ephemeris
+  - celestial-mechanics
+  - chinese-calendar
+  - astrology
+resolution: workspace
+
+environment:
+  sdk: ^3.10.0
+
+dependencies:
+  ffi: ^2.2.0
+
+dev_dependencies:
+  lints: ^6.0.0
+  test: ^1.26.0

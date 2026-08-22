@@ -114,7 +114,7 @@ owned by `TaiyinContext.time`.
 
 ## Documentation
 
-- [x] Export the context API and models from `lib/taiyin.dart`.
+- [x] Export the context API and models from `lib/ephemeris.dart`.
 - [x] Add observer, atmosphere, and apparent-configuration examples to
       `README.md`.
 - [x] Update `test/ported/README.md` with the newly covered native suites.

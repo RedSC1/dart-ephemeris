@@ -1,0 +1,8 @@
+# Generated from the author's MIT-licensed ziwei_core 0.13.0 defaults.
+# All placement algorithms are flattened offline into final answer tables.
+format_version = 1
+
+[[masters]]
+option = "option1"
+life = ["tanlang", "jumen", "lucun", "wenqu", "lianzhen", "wuqu", "pojun", "wuqu", "lianzhen", "wenqu", "lucun", "jumen"]
+body = ["lingxing", "tianxiang", "tianliang", "tiantong", "wenchang", "tianji", "huoxing", "tianxiang", "tianliang", "tiantong", "wenchang", "tianji"]

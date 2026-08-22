@@ -1,0 +1,32 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 3d5daada..c97c54e8 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -234,7 +234,11 @@ if(TAIYIN_BUILD_MODULAR_C_API)
+         set_target_properties(${target} PROPERTIES
+             BUILD_RPATH_USE_ORIGIN ON
+         )
+-        if(APPLE)
++        if(MINGW)
++            # Match the native Windows DLL naming convention used by the C ABI
++            # loaders instead of MinGW's default lib*.dll prefix.
++            set_target_properties(${target} PROPERTIES PREFIX "")
++        elseif(APPLE)
+             set_target_properties(${target} PROPERTIES
+                 INSTALL_NAME_DIR "@rpath"
+                 INSTALL_RPATH "@loader_path"
+@@ -370,6 +374,14 @@ if(TAIYIN_BUILD_MODULAR_C_API)
+     if(WIN32)
+         set_target_properties(taiyin PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS ON)
+     endif()
++    # WINDOWS_EXPORT_ALL_SYMBOLS is implemented only for MS-compatible
++    # toolchains.  The modular BaZi and Ziwei DLLs also consume a deliberate
++    # internal C++ surface from the base runtime, so MinGW-family linkers need
++    # their equivalent export switch on the base DLL.  Keep this target-local:
++    # the optional extension DLLs must continue to expose only their C ABI.
++    if(MINGW)
++        target_link_options(taiyin PRIVATE "-Wl,--export-all-symbols")
++    endif()
+ 
+ else()
+     add_library(taiyin_c SHARED ${TAIYIN_C_API_SOURCES})

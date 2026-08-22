@@ -1,0 +1,638 @@
+# Generated from the author's MIT-licensed ziwei_core 0.13.0 defaults.
+# All placement algorithms are flattened offline into final answer tables.
+format_version = 1
+
+[[natal_stars]]
+key = "ziwei"
+category = "major"
+
+[[natal_stars]]
+key = "tianji"
+category = "major"
+
+[[natal_stars]]
+key = "taiyang"
+category = "major"
+
+[[natal_stars]]
+key = "wuqu"
+category = "major"
+
+[[natal_stars]]
+key = "tiantong"
+category = "major"
+
+[[natal_stars]]
+key = "lianzhen"
+category = "major"
+
+[[natal_stars]]
+key = "tianfu"
+category = "major"
+
+[[natal_stars]]
+key = "taiyin"
+category = "major"
+
+[[natal_stars]]
+key = "tanlang"
+category = "major"
+
+[[natal_stars]]
+key = "jumen"
+category = "major"
+
+[[natal_stars]]
+key = "tianxiang"
+category = "major"
+
+[[natal_stars]]
+key = "tianliang"
+category = "major"
+
+[[natal_stars]]
+key = "qisha"
+category = "major"
+
+[[natal_stars]]
+key = "pojun"
+category = "major"
+
+[[natal_stars]]
+key = "zuofu"
+category = "lucky"
+
+[[natal_stars]]
+key = "youbi"
+category = "lucky"
+
+[[natal_stars]]
+key = "wenchang"
+category = "lucky"
+
+[[natal_stars]]
+key = "wenqu"
+category = "lucky"
+
+[[natal_stars]]
+key = "tiankui"
+category = "lucky"
+
+[[natal_stars]]
+key = "tianyue"
+category = "lucky"
+
+[[natal_stars]]
+key = "lucun"
+category = "lucky"
+
+[[natal_stars]]
+key = "tianma"
+category = "lucky"
+
+[[natal_stars]]
+key = "qingyang"
+category = "malefic"
+
+[[natal_stars]]
+key = "tuoluo"
+category = "malefic"
+
+[[natal_stars]]
+key = "huoxing"
+category = "malefic"
+
+[[natal_stars]]
+key = "lingxing"
+category = "malefic"
+
+[[natal_stars]]
+key = "dikong"
+category = "malefic"
+
+[[natal_stars]]
+key = "dijie"
+category = "malefic"
+
+[[natal_stars]]
+key = "hongluan"
+category = "minor"
+
+[[natal_stars]]
+key = "tianxi"
+category = "minor"
+
+[[natal_stars]]
+key = "tianyao"
+category = "minor"
+
+[[natal_stars]]
+key = "tianxing"
+category = "minor"
+
+[[natal_stars]]
+key = "xianchi"
+category = "minor"
+
+[[natal_stars]]
+key = "santai"
+category = "minor"
+
+[[natal_stars]]
+key = "bazuo"
+category = "minor"
+
+[[natal_stars]]
+key = "enguang"
+category = "minor"
+
+[[natal_stars]]
+key = "tiangui"
+category = "minor"
+
+[[natal_stars]]
+key = "taifu"
+category = "minor"
+
+[[natal_stars]]
+key = "fenggao"
+category = "minor"
+
+[[natal_stars]]
+key = "tiancai"
+category = "minor"
+
+[[natal_stars]]
+key = "tianshou"
+category = "minor"
+
+[[natal_stars]]
+key = "longchi"
+category = "minor"
+
+[[natal_stars]]
+key = "fengge"
+category = "minor"
+
+[[natal_stars]]
+key = "guchen"
+category = "minor"
+
+[[natal_stars]]
+key = "guasu"
+category = "minor"
+
+[[natal_stars]]
+key = "xunkong"
+category = "minor"
+
+[[natal_stars]]
+key = "fuxun"
+category = "minor"
+
+[[natal_stars]]
+key = "jiekong"
+category = "minor"
+
+[[natal_stars]]
+key = "fujie"
+category = "minor"
+
+[[natal_stars]]
+key = "tiankong"
+category = "minor"
+
+[[natal_stars]]
+key = "tianshang"
+category = "minor"
+
+[[natal_stars]]
+key = "tianshi"
+category = "minor"
+
+[[natal_stars]]
+key = "tianku"
+category = "minor"
+
+[[natal_stars]]
+key = "tianxu"
+category = "minor"
+
+[[natal_stars]]
+key = "tianguan"
+category = "minor"
+
+[[natal_stars]]
+key = "tianfu_minor"
+category = "minor"
+
+[[natal_stars]]
+key = "yinsha"
+category = "minor"
+
+[[natal_stars]]
+key = "tianwu"
+category = "minor"
+
+[[natal_stars]]
+key = "tianyue_minor"
+category = "minor"
+
+[[natal_stars]]
+key = "posui"
+category = "minor"
+
+[[natal_stars]]
+key = "feilian"
+category = "minor"
+
+[[natal_stars]]
+key = "tianchu"
+category = "minor"
+
+[[natal_stars]]
+key = "jieshen"
+category = "minor"
+
+[[natal_stars]]
+key = "nianjie"
+category = "minor"
+
+[[natal_stars]]
+key = "tiande"
+category = "minor"
+
+[[natal_stars]]
+key = "yuede"
+category = "minor"
+
+[[natal_stars]]
+key = "dahao"
+category = "minor"
+
+[[natal_stars]]
+key = "boshi_boshi12"
+category = "cycle"
+[[natal_stars]]
+key = "lishi_boshi12"
+category = "cycle"
+
+[[natal_stars]]
+key = "qinglong_boshi12"
+category = "cycle"
+
+[[natal_stars]]
+key = "xiaohao_boshi12"
+category = "cycle"
+
+[[natal_stars]]
+key = "jiangjun_boshi12"
+category = "cycle"
+
+[[natal_stars]]
+key = "zoushu_boshi12"
+category = "cycle"
+
+[[natal_stars]]
+key = "feilian_boshi12"
+category = "cycle"
+
+[[natal_stars]]
+key = "xishen_boshi12"
+category = "cycle"
+
+[[natal_stars]]
+key = "bingfu_boshi12"
+category = "cycle"
+
+[[natal_stars]]
+key = "dahao_boshi12"
+category = "cycle"
+
+[[natal_stars]]
+key = "fubing_boshi12"
+category = "cycle"
+
+[[natal_stars]]
+key = "guanfu_boshi12"
+category = "cycle"
+
+[[natal_stars]]
+key = "jiangxing_jiangqian12"
+category = "cycle"
+
+[[natal_stars]]
+key = "panan_jiangqian12"
+category = "cycle"
+
+[[natal_stars]]
+key = "suiyi_jiangqian12"
+category = "cycle"
+
+[[natal_stars]]
+key = "xishen_jiangqian12"
+category = "cycle"
+
+[[natal_stars]]
+key = "huagai_jiangqian12"
+category = "cycle"
+
+[[natal_stars]]
+key = "jiesha_jiangqian12"
+category = "cycle"
+
+[[natal_stars]]
+key = "zaisha_jiangqian12"
+category = "cycle"
+
+[[natal_stars]]
+key = "tiansha_jiangqian12"
+category = "cycle"
+
+[[natal_stars]]
+key = "zhibei_jiangqian12"
+category = "cycle"
+
+[[natal_stars]]
+key = "xianchi_jiangqian12"
+category = "cycle"
+
+[[natal_stars]]
+key = "yuesha_jiangqian12"
+category = "cycle"
+
+[[natal_stars]]
+key = "wangshen_jiangqian12"
+category = "cycle"
+
+[[natal_stars]]
+key = "suijian_suijian12"
+category = "cycle"
+
+[[natal_stars]]
+key = "huiqi_suijian12"
+category = "cycle"
+
+[[natal_stars]]
+key = "sangmen_suijian12"
+category = "cycle"
+
+[[natal_stars]]
+key = "guansuo_suijian12"
+category = "cycle"
+
+[[natal_stars]]
+key = "guanfu_suijian12"
+category = "cycle"
+
+[[natal_stars]]
+key = "xiaohao_suijian12"
+category = "cycle"
+
+[[natal_stars]]
+key = "suipo_suijian12"
+category = "cycle"
+
+[[natal_stars]]
+key = "longde_suijian12"
+category = "cycle"
+
+[[natal_stars]]
+key = "baihu_suijian12"
+category = "cycle"
+
+[[natal_stars]]
+key = "tiande_suijian12"
+category = "cycle"
+
+[[natal_stars]]
+key = "diaoke_suijian12"
+category = "cycle"
+
+[[natal_stars]]
+key = "bingfu_suijian12"
+category = "cycle"
+
+[[natal_stars]]
+key = "changsheng"
+category = "cycle"
+
+[[natal_stars]]
+key = "muyu"
+category = "cycle"
+
+[[natal_stars]]
+key = "guandai"
+category = "cycle"
+
+[[natal_stars]]
+key = "linguan"
+category = "cycle"
+
+[[natal_stars]]
+key = "diwang"
+category = "cycle"
+
+[[natal_stars]]
+key = "shuai"
+category = "cycle"
+
+[[natal_stars]]
+key = "bing"
+category = "cycle"
+
+[[natal_stars]]
+key = "si"
+category = "cycle"
+
+[[natal_stars]]
+key = "mu"
+category = "cycle"
+
+[[natal_stars]]
+key = "jue"
+category = "cycle"
+
+[[natal_stars]]
+key = "tai"
+category = "cycle"
+
+[[natal_stars]]
+key = "yang"
+category = "cycle"
+
+[[flow_stars]]
+key = "flow_lucun"
+category = "other"
+
+[[flow_stars]]
+key = "flow_tiankui"
+category = "other"
+
+[[flow_stars]]
+key = "flow_tianyue"
+category = "other"
+
+[[flow_stars]]
+key = "flow_wenchang"
+category = "other"
+
+[[flow_stars]]
+key = "flow_wenqu"
+category = "other"
+
+[[flow_stars]]
+key = "flow_qingyang"
+category = "other"
+
+[[flow_stars]]
+key = "flow_tuoluo"
+category = "other"
+
+[[flow_stars]]
+key = "flow_tianma"
+category = "other"
+
+[[flow_stars]]
+key = "flow_jiangxing_jiangqian12"
+category = "cycle"
+
+[[flow_stars]]
+key = "flow_panan_jiangqian12"
+category = "cycle"
+
+[[flow_stars]]
+key = "flow_suiyi_jiangqian12"
+category = "cycle"
+
+[[flow_stars]]
+key = "flow_xishen_jiangqian12"
+category = "cycle"
+
+[[flow_stars]]
+key = "flow_huagai_jiangqian12"
+category = "cycle"
+
+[[flow_stars]]
+key = "flow_jiesha_jiangqian12"
+category = "cycle"
+
+[[flow_stars]]
+key = "flow_zaisha_jiangqian12"
+category = "cycle"
+
+[[flow_stars]]
+key = "flow_tiansha_jiangqian12"
+category = "cycle"
+
+[[flow_stars]]
+key = "flow_zhibei_jiangqian12"
+category = "cycle"
+
+[[flow_stars]]
+key = "flow_xianchi_jiangqian12"
+category = "cycle"
+
+[[flow_stars]]
+key = "flow_yuesha_jiangqian12"
+category = "cycle"
+
+[[flow_stars]]
+key = "flow_wangshen_jiangqian12"
+category = "cycle"
+
+[[flow_stars]]
+key = "flow_boshi_boshi12"
+category = "cycle"
+
+[[flow_stars]]
+key = "flow_lishi_boshi12"
+category = "cycle"
+
+[[flow_stars]]
+key = "flow_qinglong_boshi12"
+category = "cycle"
+
+[[flow_stars]]
+key = "flow_xiaohao_boshi12"
+category = "cycle"
+
+[[flow_stars]]
+key = "flow_jiangjun_boshi12"
+category = "cycle"
+
+[[flow_stars]]
+key = "flow_zoushu_boshi12"
+category = "cycle"
+
+[[flow_stars]]
+key = "flow_feilian_boshi12"
+category = "cycle"
+
+[[flow_stars]]
+key = "flow_xishen_boshi12"
+category = "cycle"
+
+[[flow_stars]]
+key = "flow_bingfu_boshi12"
+category = "cycle"
+
+[[flow_stars]]
+key = "flow_dahao_boshi12"
+category = "cycle"
+
+[[flow_stars]]
+key = "flow_fubing_boshi12"
+category = "cycle"
+
+[[flow_stars]]
+key = "flow_guanfu_boshi12"
+category = "cycle"
+
+[[flow_stars]]
+key = "flow_suijian_suijian12"
+category = "cycle"
+
+[[flow_stars]]
+key = "flow_huiqi_suijian12"
+category = "cycle"
+
+[[flow_stars]]
+key = "flow_sangmen_suijian12"
+category = "cycle"
+
+[[flow_stars]]
+key = "flow_guansuo_suijian12"
+category = "cycle"
+
+[[flow_stars]]
+key = "flow_guanfu_suijian12"
+category = "cycle"
+
+[[flow_stars]]
+key = "flow_xiaohao_suijian12"
+category = "cycle"
+
+[[flow_stars]]
+key = "flow_suipo_suijian12"
+category = "cycle"
+
+[[flow_stars]]
+key = "flow_longde_suijian12"
+category = "cycle"
+
+[[flow_stars]]
+key = "flow_baihu_suijian12"
+category = "cycle"
+
+[[flow_stars]]
+key = "flow_tiande_suijian12"
+category = "cycle"
+
+[[flow_stars]]
+key = "flow_diaoke_suijian12"
+category = "cycle"
+
+[[flow_stars]]
+key = "flow_bingfu_suijian12"
+category = "cycle"

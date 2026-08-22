@@ -20,5 +20,6 @@
 #include <taiyin/c/chinese_calendar.h>
 #include <taiyin/c/chinese_calendar_ganzhi.h>
 #include <taiyin/c/bazi.h>
+#include <taiyin/c/ziwei.h>
 
 #endif

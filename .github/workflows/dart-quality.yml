@@ -1,0 +1,49 @@
+name: Dart quality
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: dart-quality-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Format, analyze, and dartdoc
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out Dart bindings
+        uses: actions/checkout@v6
+
+      - name: Set up Dart
+        uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+
+      - name: Resolve Dart dependencies
+        run: dart pub get
+
+      - name: Check formatting
+        run: >-
+          dart format --output=none --set-exit-if-changed
+          packages/ephemeris/lib packages/ephemeris/example
+          packages/ephemeris_bazi/lib packages/ephemeris_bazi/example
+          packages/ephemeris_ziwei/lib packages/ephemeris_ziwei/example
+
+      - name: Analyze
+        run: dart analyze packages
+
+      - name: Generate core API documentation
+        run: dart doc packages/ephemeris
+
+      - name: Generate BaZi API documentation
+        run: dart doc packages/ephemeris_bazi
+
+      - name: Generate Ziwei API documentation
+        run: dart doc packages/ephemeris_ziwei

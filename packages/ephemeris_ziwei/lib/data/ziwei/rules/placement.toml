@@ -1,0 +1,1202 @@
+# Generated from the author's MIT-licensed ziwei_core 0.13.0 defaults.
+# All placement algorithms are flattened offline into final answer tables.
+format_version = 1
+
+[[placements]]
+star = "ziwei"
+option = "option1"
+inputs = ["anchor.ziwei"]
+shape = [12]
+positions = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+
+[[placements]]
+star = "tianji"
+option = "option1"
+inputs = ["anchor.ziwei"]
+shape = [12]
+positions = [11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+# Twelve-life-stage alternative: option2 is the fire/earth-shared convention.
+# These are flattened final maps, not an offset rule: only the earth-five
+# bureau slice differs from option1.
+[[placements]]
+star = "changsheng"
+option = "option2"
+inputs = ["anchor.bureau", "lunar.year_stem", "birth.gender"]
+shape = [5, 10, 2]
+positions = [8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
+
+[[placements]]
+star = "muyu"
+option = "option2"
+inputs = ["anchor.bureau", "lunar.year_stem", "birth.gender"]
+shape = [5, 10, 2]
+positions = [9, 7, 7, 9, 9, 7, 7, 9, 9, 7, 7, 9, 9, 7, 7, 9, 9, 7, 7, 9, 0, 10, 10, 0, 0, 10, 10, 0, 0, 10, 10, 0, 0, 10, 10, 0, 0, 10, 10, 0, 6, 4, 4, 6, 6, 4, 4, 6, 6, 4, 4, 6, 6, 4, 4, 6, 6, 4, 4, 6, 3, 1, 1, 3, 3, 1, 1, 3, 3, 1, 1, 3, 3, 1, 1, 3, 3, 1, 1, 3, 3, 1, 1, 3, 3, 1, 1, 3, 3, 1, 1, 3, 3, 1, 1, 3, 3, 1, 1, 3]
+
+[[placements]]
+star = "guandai"
+option = "option2"
+inputs = ["anchor.bureau", "lunar.year_stem", "birth.gender"]
+shape = [5, 10, 2]
+positions = [10, 6, 6, 10, 10, 6, 6, 10, 10, 6, 6, 10, 10, 6, 6, 10, 10, 6, 6, 10, 1, 9, 9, 1, 1, 9, 9, 1, 1, 9, 9, 1, 1, 9, 9, 1, 1, 9, 9, 1, 7, 3, 3, 7, 7, 3, 3, 7, 7, 3, 3, 7, 7, 3, 3, 7, 7, 3, 3, 7, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4]
+
+[[placements]]
+star = "linguan"
+option = "option2"
+inputs = ["anchor.bureau", "lunar.year_stem", "birth.gender"]
+shape = [5, 10, 2]
+positions = [11, 5, 5, 11, 11, 5, 5, 11, 11, 5, 5, 11, 11, 5, 5, 11, 11, 5, 5, 11, 2, 8, 8, 2, 2, 8, 8, 2, 2, 8, 8, 2, 2, 8, 8, 2, 2, 8, 8, 2, 8, 2, 2, 8, 8, 2, 2, 8, 8, 2, 2, 8, 8, 2, 2, 8, 8, 2, 2, 8, 5, 11, 11, 5, 5, 11, 11, 5, 5, 11, 11, 5, 5, 11, 11, 5, 5, 11, 11, 5, 5, 11, 11, 5, 5, 11, 11, 5, 5, 11, 11, 5, 5, 11, 11, 5, 5, 11, 11, 5]
+
+[[placements]]
+star = "diwang"
+option = "option2"
+inputs = ["anchor.bureau", "lunar.year_stem", "birth.gender"]
+shape = [5, 10, 2]
+positions = [0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 3, 7, 7, 3, 3, 7, 7, 3, 3, 7, 7, 3, 3, 7, 7, 3, 3, 7, 7, 3, 9, 1, 1, 9, 9, 1, 1, 9, 9, 1, 1, 9, 9, 1, 1, 9, 9, 1, 1, 9, 6, 10, 10, 6, 6, 10, 10, 6, 6, 10, 10, 6, 6, 10, 10, 6, 6, 10, 10, 6, 6, 10, 10, 6, 6, 10, 10, 6, 6, 10, 10, 6, 6, 10, 10, 6, 6, 10, 10, 6]
+
+[[placements]]
+star = "shuai"
+option = "option2"
+inputs = ["anchor.bureau", "lunar.year_stem", "birth.gender"]
+shape = [5, 10, 2]
+positions = [1, 3, 3, 1, 1, 3, 3, 1, 1, 3, 3, 1, 1, 3, 3, 1, 1, 3, 3, 1, 4, 6, 6, 4, 4, 6, 6, 4, 4, 6, 6, 4, 4, 6, 6, 4, 4, 6, 6, 4, 10, 0, 0, 10, 10, 0, 0, 10, 10, 0, 0, 10, 10, 0, 0, 10, 10, 0, 0, 10, 7, 9, 9, 7, 7, 9, 9, 7, 7, 9, 9, 7, 7, 9, 9, 7, 7, 9, 9, 7, 7, 9, 9, 7, 7, 9, 9, 7, 7, 9, 9, 7, 7, 9, 9, 7, 7, 9, 9, 7]
+
+[[placements]]
+star = "bing"
+option = "option2"
+inputs = ["anchor.bureau", "lunar.year_stem", "birth.gender"]
+shape = [5, 10, 2]
+positions = [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8]
+
+[[placements]]
+star = "si"
+option = "option2"
+inputs = ["anchor.bureau", "lunar.year_stem", "birth.gender"]
+shape = [5, 10, 2]
+positions = [3, 1, 1, 3, 3, 1, 1, 3, 3, 1, 1, 3, 3, 1, 1, 3, 3, 1, 1, 3, 6, 4, 4, 6, 6, 4, 4, 6, 6, 4, 4, 6, 6, 4, 4, 6, 6, 4, 4, 6, 0, 10, 10, 0, 0, 10, 10, 0, 0, 10, 10, 0, 0, 10, 10, 0, 0, 10, 10, 0, 9, 7, 7, 9, 9, 7, 7, 9, 9, 7, 7, 9, 9, 7, 7, 9, 9, 7, 7, 9, 9, 7, 7, 9, 9, 7, 7, 9, 9, 7, 7, 9, 9, 7, 7, 9, 9, 7, 7, 9]
+
+[[placements]]
+star = "mu"
+option = "option2"
+inputs = ["anchor.bureau", "lunar.year_stem", "birth.gender"]
+shape = [5, 10, 2]
+positions = [4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 7, 3, 3, 7, 7, 3, 3, 7, 7, 3, 3, 7, 7, 3, 3, 7, 7, 3, 3, 7, 1, 9, 9, 1, 1, 9, 9, 1, 1, 9, 9, 1, 1, 9, 9, 1, 1, 9, 9, 1, 10, 6, 6, 10, 10, 6, 6, 10, 10, 6, 6, 10, 10, 6, 6, 10, 10, 6, 6, 10, 10, 6, 6, 10, 10, 6, 6, 10, 10, 6, 6, 10, 10, 6, 6, 10, 10, 6, 6, 10]
+
+[[placements]]
+star = "jue"
+option = "option2"
+inputs = ["anchor.bureau", "lunar.year_stem", "birth.gender"]
+shape = [5, 10, 2]
+positions = [5, 11, 11, 5, 5, 11, 11, 5, 5, 11, 11, 5, 5, 11, 11, 5, 5, 11, 11, 5, 8, 2, 2, 8, 8, 2, 2, 8, 8, 2, 2, 8, 8, 2, 2, 8, 8, 2, 2, 8, 2, 8, 8, 2, 2, 8, 8, 2, 2, 8, 8, 2, 2, 8, 8, 2, 2, 8, 8, 2, 11, 5, 5, 11, 11, 5, 5, 11, 11, 5, 5, 11, 11, 5, 5, 11, 11, 5, 5, 11, 11, 5, 5, 11, 11, 5, 5, 11, 11, 5, 5, 11, 11, 5, 5, 11, 11, 5, 5, 11]
+
+[[placements]]
+star = "tai"
+option = "option2"
+inputs = ["anchor.bureau", "lunar.year_stem", "birth.gender"]
+shape = [5, 10, 2]
+positions = [6, 10, 10, 6, 6, 10, 10, 6, 6, 10, 10, 6, 6, 10, 10, 6, 6, 10, 10, 6, 9, 1, 1, 9, 9, 1, 1, 9, 9, 1, 1, 9, 9, 1, 1, 9, 9, 1, 1, 9, 3, 7, 7, 3, 3, 7, 7, 3, 3, 7, 7, 3, 3, 7, 7, 3, 3, 7, 7, 3, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0]
+
+[[placements]]
+star = "yang"
+option = "option2"
+inputs = ["anchor.bureau", "lunar.year_stem", "birth.gender"]
+shape = [5, 10, 2]
+positions = [7, 9, 9, 7, 7, 9, 9, 7, 7, 9, 9, 7, 7, 9, 9, 7, 7, 9, 9, 7, 10, 0, 0, 10, 10, 0, 0, 10, 10, 0, 0, 10, 10, 0, 0, 10, 10, 0, 0, 10, 4, 6, 6, 4, 4, 6, 6, 4, 4, 6, 6, 4, 4, 6, 6, 4, 4, 6, 6, 4, 1, 3, 3, 1, 1, 3, 3, 1, 1, 3, 3, 1, 1, 3, 3, 1, 1, 3, 3, 1, 1, 3, 3, 1, 1, 3, 3, 1, 1, 3, 3, 1, 1, 3, 3, 1, 1, 3, 3, 1]
+[[placements]]
+star = "taiyang"
+option = "option1"
+inputs = ["anchor.ziwei"]
+shape = [12]
+positions = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
+
+[[placements]]
+star = "wuqu"
+option = "option1"
+inputs = ["anchor.ziwei"]
+shape = [12]
+positions = [8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7]
+
+[[placements]]
+star = "tiantong"
+option = "option1"
+inputs = ["anchor.ziwei"]
+shape = [12]
+positions = [7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6]
+
+[[placements]]
+star = "lianzhen"
+option = "option1"
+inputs = ["anchor.ziwei"]
+shape = [12]
+positions = [4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3]
+
+[[placements]]
+star = "tianfu"
+option = "option1"
+inputs = ["anchor.tianfu"]
+shape = [12]
+positions = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+
+[[placements]]
+star = "taiyin"
+option = "option1"
+inputs = ["anchor.tianfu"]
+shape = [12]
+positions = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0]
+
+[[placements]]
+star = "tanlang"
+option = "option1"
+inputs = ["anchor.tianfu"]
+shape = [12]
+positions = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1]
+
+[[placements]]
+star = "jumen"
+option = "option1"
+inputs = ["anchor.tianfu"]
+shape = [12]
+positions = [3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2]
+
+[[placements]]
+star = "tianxiang"
+option = "option1"
+inputs = ["anchor.tianfu"]
+shape = [12]
+positions = [4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3]
+
+[[placements]]
+star = "tianliang"
+option = "option1"
+inputs = ["anchor.tianfu"]
+shape = [12]
+positions = [5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4]
+
+[[placements]]
+star = "qisha"
+option = "option1"
+inputs = ["anchor.tianfu"]
+shape = [12]
+positions = [6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5]
+
+[[placements]]
+star = "pojun"
+option = "option1"
+inputs = ["anchor.tianfu"]
+shape = [12]
+positions = [10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+[[placements]]
+star = "zuofu"
+option = "option1"
+inputs = ["lunar.month_index"]
+shape = [12]
+positions = [4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3]
+
+[[placements]]
+star = "youbi"
+option = "option1"
+inputs = ["lunar.month_index"]
+shape = [12]
+positions = [10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 11]
+
+[[placements]]
+star = "wenchang"
+option = "option1"
+inputs = ["lunar.hour_branch"]
+shape = [12]
+positions = [10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 11]
+
+[[placements]]
+star = "wenqu"
+option = "option1"
+inputs = ["lunar.hour_branch"]
+shape = [12]
+positions = [4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3]
+
+[[placements]]
+star = "tiankui"
+option = "option1"
+inputs = ["lunar.year_stem"]
+shape = [10]
+positions = [1, 0, 11, 11, 1, 0, 1, 2, 3, 3]
+
+[[placements]]
+star = "tianyue"
+option = "option1"
+inputs = ["lunar.year_stem"]
+shape = [10]
+positions = [7, 8, 9, 9, 7, 8, 7, 6, 5, 5]
+
+[[placements]]
+star = "lucun"
+option = "option1"
+inputs = ["lunar.year_stem"]
+shape = [10]
+positions = [2, 3, 5, 6, 5, 6, 8, 9, 11, 0]
+
+[[placements]]
+star = "tianma"
+option = "option1"
+inputs = ["lunar.year_branch"]
+shape = [12]
+positions = [2, 11, 8, 5, 2, 11, 8, 5, 2, 11, 8, 5]
+
+[[placements]]
+star = "qingyang"
+option = "option1"
+inputs = ["lunar.year_stem"]
+shape = [10]
+positions = [3, 4, 6, 7, 6, 7, 9, 10, 0, 1]
+
+[[placements]]
+star = "tuoluo"
+option = "option1"
+inputs = ["lunar.year_stem"]
+shape = [10]
+positions = [1, 2, 4, 5, 4, 5, 7, 8, 10, 11]
+
+[[placements]]
+star = "huoxing"
+option = "option1"
+inputs = ["lunar.year_branch", "lunar.hour_branch"]
+shape = [12, 12]
+positions = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
+
+[[placements]]
+star = "lingxing"
+option = "option1"
+inputs = ["lunar.year_branch", "lunar.hour_branch"]
+shape = [12, 12]
+positions = [10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+[[placements]]
+star = "dikong"
+option = "option1"
+inputs = ["lunar.hour_branch"]
+shape = [12]
+positions = [11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0]
+
+[[placements]]
+star = "dijie"
+option = "option1"
+inputs = ["lunar.hour_branch"]
+shape = [12]
+positions = [11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+[[placements]]
+star = "hongluan"
+option = "option1"
+inputs = ["lunar.year_branch"]
+shape = [12]
+positions = [3, 2, 1, 0, 11, 10, 9, 8, 7, 6, 5, 4]
+
+[[placements]]
+star = "tianxi"
+option = "option1"
+inputs = ["lunar.year_branch"]
+shape = [12]
+positions = [9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 11, 10]
+
+[[placements]]
+star = "tianyao"
+option = "option1"
+inputs = ["lunar.month_branch"]
+shape = [12]
+positions = [11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+[[placements]]
+star = "tianxing"
+option = "option1"
+inputs = ["lunar.month_index"]
+shape = [12]
+positions = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
+
+[[placements]]
+star = "xianchi"
+option = "option1"
+inputs = ["lunar.year_branch"]
+shape = [12]
+positions = [9, 6, 3, 0, 9, 6, 3, 0, 9, 6, 3, 0]
+
+[[placements]]
+star = "santai"
+option = "option1"
+inputs = ["lunar.month_index", "lunar.day_index"]
+shape = [12, 30]
+positions = [4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
+
+[[placements]]
+star = "bazuo"
+option = "option1"
+inputs = ["lunar.month_index", "lunar.day_index"]
+shape = [12, 30]
+positions = [10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 11, 10, 9, 8, 7, 6, 5, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 11, 10, 9, 8, 7, 6, 5, 4, 8, 7, 6, 5, 4, 3, 2, 1, 0, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 11, 10, 9, 8, 7, 6, 5, 4, 3, 7, 6, 5, 4, 3, 2, 1, 0, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 6, 5, 4, 3, 2, 1, 0, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 5, 4, 3, 2, 1, 0, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 4, 3, 2, 1, 0, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 11, 3, 2, 1, 0, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 11, 10, 2, 1, 0, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 11, 10, 9, 1, 0, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 11, 10, 9, 8, 0, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 11, 10, 9, 8, 7, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 11, 10, 9, 8, 7, 6]
+
+[[placements]]
+star = "enguang"
+option = "option1"
+inputs = ["lunar.hour_branch", "lunar.day_index"]
+shape = [12, 30]
+positions = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3]
+
+[[placements]]
+star = "tiangui"
+option = "option1"
+inputs = ["lunar.hour_branch", "lunar.day_index"]
+shape = [12, 30]
+positions = [3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7]
+
+[[placements]]
+star = "taifu"
+option = "option1"
+inputs = ["lunar.hour_branch"]
+shape = [12]
+positions = [6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5]
+
+[[placements]]
+star = "fenggao"
+option = "option1"
+inputs = ["lunar.hour_branch"]
+shape = [12]
+positions = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1]
+
+[[placements]]
+star = "tiancai"
+option = "option1"
+inputs = ["anchor.life", "lunar.year_branch"]
+shape = [12, 12]
+positions = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+[[placements]]
+star = "tianshou"
+option = "option1"
+inputs = ["anchor.body", "lunar.year_branch"]
+shape = [12, 12]
+positions = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+[[placements]]
+star = "longchi"
+option = "option1"
+inputs = ["lunar.year_branch"]
+shape = [12]
+positions = [4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3]
+
+[[placements]]
+star = "fengge"
+option = "option1"
+inputs = ["lunar.year_branch"]
+shape = [12]
+positions = [10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 11]
+
+[[placements]]
+star = "guchen"
+option = "option1"
+inputs = ["lunar.year_branch"]
+shape = [12]
+positions = [2, 2, 5, 5, 5, 8, 8, 8, 11, 11, 11, 2]
+
+[[placements]]
+star = "guasu"
+option = "option1"
+inputs = ["lunar.year_branch"]
+shape = [12]
+positions = [10, 10, 1, 1, 1, 4, 4, 4, 7, 7, 7, 10]
+
+[[placements]]
+star = "xunkong"
+option = "option1"
+inputs = ["lunar.zheng_kong"]
+shape = [12]
+positions = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+
+[[placements]]
+star = "fuxun"
+option = "option1"
+inputs = ["lunar.fu_kong"]
+shape = [12]
+positions = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+
+[[placements]]
+star = "jiekong"
+option = "option1"
+inputs = ["lunar.year_stem"]
+shape = [10]
+positions = [8, 7, 4, 3, 0, 9, 6, 5, 2, 1]
+
+[[placements]]
+star = "fujie"
+option = "option1"
+inputs = ["lunar.year_stem"]
+shape = [10]
+positions = [9, 6, 5, 2, 1, 8, 7, 4, 3, 0]
+
+[[placements]]
+star = "tiankong"
+option = "option1"
+inputs = ["lunar.year_branch"]
+shape = [12]
+positions = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0]
+
+[[placements]]
+star = "tianshang"
+option = "option1"
+inputs = ["anchor.life"]
+shape = [12]
+positions = [5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4]
+
+[[placements]]
+star = "tianshi"
+option = "option1"
+inputs = ["anchor.life"]
+shape = [12]
+positions = [7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6]
+
+[[placements]]
+star = "tianku"
+option = "option1"
+inputs = ["lunar.year_branch"]
+shape = [12]
+positions = [6, 5, 4, 3, 2, 1, 0, 11, 10, 9, 8, 7]
+
+[[placements]]
+star = "tianxu"
+option = "option1"
+inputs = ["lunar.year_branch"]
+shape = [12]
+positions = [6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5]
+
+[[placements]]
+star = "tianguan"
+option = "option1"
+inputs = ["lunar.year_stem"]
+shape = [10]
+positions = [7, 4, 5, 2, 3, 9, 11, 9, 10, 6]
+
+[[placements]]
+star = "tianfu_minor"
+option = "option1"
+inputs = ["lunar.year_stem"]
+shape = [10]
+positions = [9, 8, 0, 11, 3, 2, 6, 5, 6, 5]
+
+[[placements]]
+star = "yinsha"
+option = "option1"
+inputs = ["lunar.month_index"]
+shape = [12]
+positions = [2, 0, 10, 8, 6, 4, 2, 0, 10, 8, 6, 4]
+
+[[placements]]
+star = "tianwu"
+option = "option1"
+inputs = ["lunar.month_index"]
+shape = [12]
+positions = [5, 8, 2, 11, 5, 8, 2, 11, 5, 8, 2, 11]
+
+[[placements]]
+star = "tianyue_minor"
+option = "option1"
+inputs = ["lunar.month_index"]
+shape = [12]
+positions = [10, 5, 4, 2, 7, 3, 11, 7, 2, 6, 10, 2]
+
+[[placements]]
+star = "posui"
+option = "option1"
+inputs = ["lunar.year_branch"]
+shape = [12]
+positions = [5, 1, 9, 5, 1, 9, 5, 1, 9, 5, 1, 9]
+
+[[placements]]
+star = "feilian"
+option = "option1"
+inputs = ["lunar.year_branch"]
+shape = [12]
+positions = [8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7]
+
+[[placements]]
+star = "tianchu"
+option = "option1"
+inputs = ["lunar.year_stem"]
+shape = [10]
+positions = [5, 6, 0, 5, 6, 8, 2, 6, 9, 11]
+
+[[placements]]
+star = "jieshen"
+option = "option1"
+inputs = ["lunar.month_index"]
+shape = [12]
+positions = [8, 8, 10, 10, 0, 0, 2, 2, 4, 4, 6, 6]
+
+[[placements]]
+star = "nianjie"
+option = "option1"
+inputs = ["lunar.year_branch"]
+shape = [12]
+positions = [10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 11]
+
+[[placements]]
+star = "tiande"
+option = "option1"
+inputs = ["lunar.year_branch"]
+shape = [12]
+positions = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
+
+[[placements]]
+star = "yuede"
+option = "option1"
+inputs = ["lunar.year_branch"]
+shape = [12]
+positions = [5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4]
+
+[[placements]]
+star = "dahao"
+option = "option1"
+inputs = ["lunar.year_branch"]
+shape = [12]
+positions = [7, 6, 9, 8, 11, 10, 1, 0, 3, 2, 5, 4]
+
+[[placements]]
+star = "boshi_boshi12"
+option = "option1"
+inputs = ["lunar.year_stem", "birth.gender"]
+shape = [10, 2]
+positions = [2, 2, 3, 3, 5, 5, 6, 6, 5, 5, 6, 6, 8, 8, 9, 9, 11, 11, 0, 0]
+
+[[placements]]
+star = "lishi_boshi12"
+option = "option1"
+inputs = ["lunar.year_stem", "birth.gender"]
+shape = [10, 2]
+positions = [3, 1, 2, 4, 6, 4, 5, 7, 6, 4, 5, 7, 9, 7, 8, 10, 0, 10, 11, 1]
+
+[[placements]]
+star = "qinglong_boshi12"
+option = "option1"
+inputs = ["lunar.year_stem", "birth.gender"]
+shape = [10, 2]
+positions = [4, 0, 1, 5, 7, 3, 4, 8, 7, 3, 4, 8, 10, 6, 7, 11, 1, 9, 10, 2]
+
+[[placements]]
+star = "xiaohao_boshi12"
+option = "option1"
+inputs = ["lunar.year_stem", "birth.gender"]
+shape = [10, 2]
+positions = [5, 11, 0, 6, 8, 2, 3, 9, 8, 2, 3, 9, 11, 5, 6, 0, 2, 8, 9, 3]
+
+[[placements]]
+star = "jiangjun_boshi12"
+option = "option1"
+inputs = ["lunar.year_stem", "birth.gender"]
+shape = [10, 2]
+positions = [6, 10, 11, 7, 9, 1, 2, 10, 9, 1, 2, 10, 0, 4, 5, 1, 3, 7, 8, 4]
+
+[[placements]]
+star = "zoushu_boshi12"
+option = "option1"
+inputs = ["lunar.year_stem", "birth.gender"]
+shape = [10, 2]
+positions = [7, 9, 10, 8, 10, 0, 1, 11, 10, 0, 1, 11, 1, 3, 4, 2, 4, 6, 7, 5]
+
+[[placements]]
+star = "feilian_boshi12"
+option = "option1"
+inputs = ["lunar.year_stem", "birth.gender"]
+shape = [10, 2]
+positions = [8, 8, 9, 9, 11, 11, 0, 0, 11, 11, 0, 0, 2, 2, 3, 3, 5, 5, 6, 6]
+
+[[placements]]
+star = "xishen_boshi12"
+option = "option1"
+inputs = ["lunar.year_stem", "birth.gender"]
+shape = [10, 2]
+positions = [9, 7, 8, 10, 0, 10, 11, 1, 0, 10, 11, 1, 3, 1, 2, 4, 6, 4, 5, 7]
+
+[[placements]]
+star = "bingfu_boshi12"
+option = "option1"
+inputs = ["lunar.year_stem", "birth.gender"]
+shape = [10, 2]
+positions = [10, 6, 7, 11, 1, 9, 10, 2, 1, 9, 10, 2, 4, 0, 1, 5, 7, 3, 4, 8]
+
+[[placements]]
+star = "dahao_boshi12"
+option = "option1"
+inputs = ["lunar.year_stem", "birth.gender"]
+shape = [10, 2]
+positions = [11, 5, 6, 0, 2, 8, 9, 3, 2, 8, 9, 3, 5, 11, 0, 6, 8, 2, 3, 9]
+
+[[placements]]
+star = "fubing_boshi12"
+option = "option1"
+inputs = ["lunar.year_stem", "birth.gender"]
+shape = [10, 2]
+positions = [0, 4, 5, 1, 3, 7, 8, 4, 3, 7, 8, 4, 6, 10, 11, 7, 9, 1, 2, 10]
+
+[[placements]]
+star = "guanfu_boshi12"
+option = "option1"
+inputs = ["lunar.year_stem", "birth.gender"]
+shape = [10, 2]
+positions = [1, 3, 4, 2, 4, 6, 7, 5, 4, 6, 7, 5, 7, 9, 10, 8, 10, 0, 1, 11]
+
+[[placements]]
+star = "jiangxing_jiangqian12"
+option = "option1"
+inputs = ["lunar.year_branch"]
+shape = [12]
+positions = [0, 9, 6, 3, 0, 9, 6, 3, 0, 9, 6, 3]
+
+[[placements]]
+star = "panan_jiangqian12"
+option = "option1"
+inputs = ["lunar.year_branch"]
+shape = [12]
+positions = [1, 10, 7, 4, 1, 10, 7, 4, 1, 10, 7, 4]
+
+[[placements]]
+star = "suiyi_jiangqian12"
+option = "option1"
+inputs = ["lunar.year_branch"]
+shape = [12]
+positions = [2, 11, 8, 5, 2, 11, 8, 5, 2, 11, 8, 5]
+
+[[placements]]
+star = "xishen_jiangqian12"
+option = "option1"
+inputs = ["lunar.year_branch"]
+shape = [12]
+positions = [3, 0, 9, 6, 3, 0, 9, 6, 3, 0, 9, 6]
+
+[[placements]]
+star = "huagai_jiangqian12"
+option = "option1"
+inputs = ["lunar.year_branch"]
+shape = [12]
+positions = [4, 1, 10, 7, 4, 1, 10, 7, 4, 1, 2, 7]
+
+[[placements]]
+star = "jiesha_jiangqian12"
+option = "option1"
+inputs = ["lunar.year_branch"]
+shape = [12]
+positions = [5, 2, 11, 8, 5, 2, 11, 8, 5, 2, 11, 8]
+
+[[placements]]
+star = "zaisha_jiangqian12"
+option = "option1"
+inputs = ["lunar.year_branch"]
+shape = [12]
+positions = [6, 3, 0, 9, 6, 3, 0, 9, 6, 3, 0, 9]
+
+[[placements]]
+star = "tiansha_jiangqian12"
+option = "option1"
+inputs = ["lunar.year_branch"]
+shape = [12]
+positions = [7, 4, 1, 10, 7, 4, 1, 10, 7, 4, 1, 10]
+
+[[placements]]
+star = "zhibei_jiangqian12"
+option = "option1"
+inputs = ["lunar.year_branch"]
+shape = [12]
+positions = [8, 5, 2, 11, 8, 5, 2, 11, 8, 5, 2, 11]
+
+[[placements]]
+star = "xianchi_jiangqian12"
+option = "option1"
+inputs = ["lunar.year_branch"]
+shape = [12]
+positions = [9, 6, 3, 0, 9, 6, 3, 0, 9, 6, 3, 0]
+
+[[placements]]
+star = "yuesha_jiangqian12"
+option = "option1"
+inputs = ["lunar.year_branch"]
+shape = [12]
+positions = [10, 7, 4, 1, 10, 7, 4, 1, 10, 7, 4, 1]
+
+[[placements]]
+star = "wangshen_jiangqian12"
+option = "option1"
+inputs = ["lunar.year_branch"]
+shape = [12]
+positions = [11, 8, 5, 2, 11, 8, 5, 2, 11, 8, 5, 2]
+
+[[placements]]
+star = "suijian_suijian12"
+option = "option1"
+inputs = ["lunar.year_branch"]
+shape = [12]
+positions = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+
+[[placements]]
+star = "huiqi_suijian12"
+option = "option1"
+inputs = ["lunar.year_branch"]
+shape = [12]
+positions = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0]
+
+[[placements]]
+star = "sangmen_suijian12"
+option = "option1"
+inputs = ["lunar.year_branch"]
+shape = [12]
+positions = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1]
+
+[[placements]]
+star = "guansuo_suijian12"
+option = "option1"
+inputs = ["lunar.year_branch"]
+shape = [12]
+positions = [3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2]
+
+[[placements]]
+star = "guanfu_suijian12"
+option = "option1"
+inputs = ["lunar.year_branch"]
+shape = [12]
+positions = [4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3]
+
+[[placements]]
+star = "xiaohao_suijian12"
+option = "option1"
+inputs = ["lunar.year_branch"]
+shape = [12]
+positions = [5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4]
+
+[[placements]]
+star = "suipo_suijian12"
+option = "option1"
+inputs = ["lunar.year_branch"]
+shape = [12]
+positions = [6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5]
+
+[[placements]]
+star = "longde_suijian12"
+option = "option1"
+inputs = ["lunar.year_branch"]
+shape = [12]
+positions = [7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6]
+
+[[placements]]
+star = "baihu_suijian12"
+option = "option1"
+inputs = ["lunar.year_branch"]
+shape = [12]
+positions = [8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7]
+
+[[placements]]
+star = "tiande_suijian12"
+option = "option1"
+inputs = ["lunar.year_branch"]
+shape = [12]
+positions = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
+
+[[placements]]
+star = "diaoke_suijian12"
+option = "option1"
+inputs = ["lunar.year_branch"]
+shape = [12]
+positions = [10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+[[placements]]
+star = "bingfu_suijian12"
+option = "option1"
+inputs = ["lunar.year_branch"]
+shape = [12]
+positions = [11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+[[placements]]
+star = "changsheng"
+option = "option1"
+inputs = ["anchor.bureau", "lunar.year_stem", "birth.gender"]
+shape = [5, 10, 2]
+positions = [8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
+
+[[placements]]
+star = "muyu"
+option = "option1"
+inputs = ["anchor.bureau", "lunar.year_stem", "birth.gender"]
+shape = [5, 10, 2]
+positions = [9, 7, 7, 9, 9, 7, 7, 9, 9, 7, 7, 9, 9, 7, 7, 9, 9, 7, 7, 9, 0, 10, 10, 0, 0, 10, 10, 0, 0, 10, 10, 0, 0, 10, 10, 0, 0, 10, 10, 0, 6, 4, 4, 6, 6, 4, 4, 6, 6, 4, 4, 6, 6, 4, 4, 6, 6, 4, 4, 6, 9, 7, 7, 9, 9, 7, 7, 9, 9, 7, 7, 9, 9, 7, 7, 9, 9, 7, 7, 9, 3, 1, 1, 3, 3, 1, 1, 3, 3, 1, 1, 3, 3, 1, 1, 3, 3, 1, 1, 3]
+
+[[placements]]
+star = "guandai"
+option = "option1"
+inputs = ["anchor.bureau", "lunar.year_stem", "birth.gender"]
+shape = [5, 10, 2]
+positions = [10, 6, 6, 10, 10, 6, 6, 10, 10, 6, 6, 10, 10, 6, 6, 10, 10, 6, 6, 10, 1, 9, 9, 1, 1, 9, 9, 1, 1, 9, 9, 1, 1, 9, 9, 1, 1, 9, 9, 1, 7, 3, 3, 7, 7, 3, 3, 7, 7, 3, 3, 7, 7, 3, 3, 7, 7, 3, 3, 7, 10, 6, 6, 10, 10, 6, 6, 10, 10, 6, 6, 10, 10, 6, 6, 10, 10, 6, 6, 10, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4]
+
+[[placements]]
+star = "linguan"
+option = "option1"
+inputs = ["anchor.bureau", "lunar.year_stem", "birth.gender"]
+shape = [5, 10, 2]
+positions = [11, 5, 5, 11, 11, 5, 5, 11, 11, 5, 5, 11, 11, 5, 5, 11, 11, 5, 5, 11, 2, 8, 8, 2, 2, 8, 8, 2, 2, 8, 8, 2, 2, 8, 8, 2, 2, 8, 8, 2, 8, 2, 2, 8, 8, 2, 2, 8, 8, 2, 2, 8, 8, 2, 2, 8, 8, 2, 2, 8, 11, 5, 5, 11, 11, 5, 5, 11, 11, 5, 5, 11, 11, 5, 5, 11, 11, 5, 5, 11, 5, 11, 11, 5, 5, 11, 11, 5, 5, 11, 11, 5, 5, 11, 11, 5, 5, 11, 11, 5]
+
+[[placements]]
+star = "diwang"
+option = "option1"
+inputs = ["anchor.bureau", "lunar.year_stem", "birth.gender"]
+shape = [5, 10, 2]
+positions = [0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 3, 7, 7, 3, 3, 7, 7, 3, 3, 7, 7, 3, 3, 7, 7, 3, 3, 7, 7, 3, 9, 1, 1, 9, 9, 1, 1, 9, 9, 1, 1, 9, 9, 1, 1, 9, 9, 1, 1, 9, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 6, 10, 10, 6, 6, 10, 10, 6, 6, 10, 10, 6, 6, 10, 10, 6, 6, 10, 10, 6]
+
+[[placements]]
+star = "shuai"
+option = "option1"
+inputs = ["anchor.bureau", "lunar.year_stem", "birth.gender"]
+shape = [5, 10, 2]
+positions = [1, 3, 3, 1, 1, 3, 3, 1, 1, 3, 3, 1, 1, 3, 3, 1, 1, 3, 3, 1, 4, 6, 6, 4, 4, 6, 6, 4, 4, 6, 6, 4, 4, 6, 6, 4, 4, 6, 6, 4, 10, 0, 0, 10, 10, 0, 0, 10, 10, 0, 0, 10, 10, 0, 0, 10, 10, 0, 0, 10, 1, 3, 3, 1, 1, 3, 3, 1, 1, 3, 3, 1, 1, 3, 3, 1, 1, 3, 3, 1, 7, 9, 9, 7, 7, 9, 9, 7, 7, 9, 9, 7, 7, 9, 9, 7, 7, 9, 9, 7]
+
+[[placements]]
+star = "bing"
+option = "option1"
+inputs = ["anchor.bureau", "lunar.year_stem", "birth.gender"]
+shape = [5, 10, 2]
+positions = [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8]
+
+[[placements]]
+star = "si"
+option = "option1"
+inputs = ["anchor.bureau", "lunar.year_stem", "birth.gender"]
+shape = [5, 10, 2]
+positions = [3, 1, 1, 3, 3, 1, 1, 3, 3, 1, 1, 3, 3, 1, 1, 3, 3, 1, 1, 3, 6, 4, 4, 6, 6, 4, 4, 6, 6, 4, 4, 6, 6, 4, 4, 6, 6, 4, 4, 6, 0, 10, 10, 0, 0, 10, 10, 0, 0, 10, 10, 0, 0, 10, 10, 0, 0, 10, 10, 0, 3, 1, 1, 3, 3, 1, 1, 3, 3, 1, 1, 3, 3, 1, 1, 3, 3, 1, 1, 3, 9, 7, 7, 9, 9, 7, 7, 9, 9, 7, 7, 9, 9, 7, 7, 9, 9, 7, 7, 9]
+
+[[placements]]
+star = "mu"
+option = "option1"
+inputs = ["anchor.bureau", "lunar.year_stem", "birth.gender"]
+shape = [5, 10, 2]
+positions = [4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 7, 3, 3, 7, 7, 3, 3, 7, 7, 3, 3, 7, 7, 3, 3, 7, 7, 3, 3, 7, 1, 9, 9, 1, 1, 9, 9, 1, 1, 9, 9, 1, 1, 9, 9, 1, 1, 9, 9, 1, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 10, 6, 6, 10, 10, 6, 6, 10, 10, 6, 6, 10, 10, 6, 6, 10, 10, 6, 6, 10]
+
+[[placements]]
+star = "jue"
+option = "option1"
+inputs = ["anchor.bureau", "lunar.year_stem", "birth.gender"]
+shape = [5, 10, 2]
+positions = [5, 11, 11, 5, 5, 11, 11, 5, 5, 11, 11, 5, 5, 11, 11, 5, 5, 11, 11, 5, 8, 2, 2, 8, 8, 2, 2, 8, 8, 2, 2, 8, 8, 2, 2, 8, 8, 2, 2, 8, 2, 8, 8, 2, 2, 8, 8, 2, 2, 8, 8, 2, 2, 8, 8, 2, 2, 8, 8, 2, 5, 11, 11, 5, 5, 11, 11, 5, 5, 11, 11, 5, 5, 11, 11, 5, 5, 11, 11, 5, 11, 5, 5, 11, 11, 5, 5, 11, 11, 5, 5, 11, 11, 5, 5, 11, 11, 5, 5, 11]
+
+[[placements]]
+star = "tai"
+option = "option1"
+inputs = ["anchor.bureau", "lunar.year_stem", "birth.gender"]
+shape = [5, 10, 2]
+positions = [6, 10, 10, 6, 6, 10, 10, 6, 6, 10, 10, 6, 6, 10, 10, 6, 6, 10, 10, 6, 9, 1, 1, 9, 9, 1, 1, 9, 9, 1, 1, 9, 9, 1, 1, 9, 9, 1, 1, 9, 3, 7, 7, 3, 3, 7, 7, 3, 3, 7, 7, 3, 3, 7, 7, 3, 3, 7, 7, 3, 6, 10, 10, 6, 6, 10, 10, 6, 6, 10, 10, 6, 6, 10, 10, 6, 6, 10, 10, 6, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0, 0, 4, 4, 0]
+
+[[placements]]
+star = "yang"
+option = "option1"
+inputs = ["anchor.bureau", "lunar.year_stem", "birth.gender"]
+shape = [5, 10, 2]
+positions = [7, 9, 9, 7, 7, 9, 9, 7, 7, 9, 9, 7, 7, 9, 9, 7, 7, 9, 9, 7, 10, 0, 0, 10, 10, 0, 0, 10, 10, 0, 0, 10, 10, 0, 0, 10, 10, 0, 0, 10, 4, 6, 6, 4, 4, 6, 6, 4, 4, 6, 6, 4, 4, 6, 6, 4, 4, 6, 6, 4, 7, 9, 9, 7, 7, 9, 9, 7, 7, 9, 9, 7, 7, 9, 9, 7, 7, 9, 9, 7, 1, 3, 3, 1, 1, 3, 3, 1, 1, 3, 3, 1, 1, 3, 3, 1, 1, 3, 3, 1]
+
+[[placements]]
+star = "flow_lucun"
+option = "option1"
+inputs = ["lunar.year_stem"]
+shape = [10]
+positions = [2, 3, 5, 6, 5, 6, 8, 9, 11, 0]
+
+[[placements]]
+star = "flow_tiankui"
+option = "option1"
+inputs = ["lunar.year_stem"]
+shape = [10]
+positions = [1, 0, 11, 11, 1, 0, 1, 6, 3, 3]
+
+[[placements]]
+star = "flow_tianyue"
+option = "option1"
+inputs = ["lunar.year_stem"]
+shape = [10]
+positions = [7, 8, 9, 9, 7, 8, 7, 2, 5, 5]
+
+[[placements]]
+star = "flow_wenchang"
+option = "option1"
+inputs = ["lunar.year_stem"]
+shape = [10]
+positions = [5, 6, 8, 9, 8, 9, 11, 0, 2, 3]
+
+[[placements]]
+star = "flow_wenqu"
+option = "option1"
+inputs = ["lunar.year_stem"]
+shape = [10]
+positions = [9, 8, 6, 5, 6, 5, 3, 2, 0, 11]
+
+[[placements]]
+star = "flow_qingyang"
+option = "option1"
+inputs = ["lunar.year_stem"]
+shape = [10]
+positions = [3, 4, 6, 7, 6, 7, 9, 10, 0, 1]
+
+[[placements]]
+star = "flow_tuoluo"
+option = "option1"
+inputs = ["lunar.year_stem"]
+shape = [10]
+positions = [1, 2, 4, 5, 4, 5, 7, 8, 10, 11]
+
+[[placements]]
+star = "flow_tianma"
+option = "option1"
+inputs = ["lunar.year_branch"]
+shape = [12]
+positions = [2, 11, 8, 5, 2, 11, 8, 5, 2, 11, 8, 5]
+
+[[placements]]
+star = "flow_jiangxing_jiangqian12"
+option = "option1"
+inputs = ["lunar.year_branch"]
+shape = [12]
+positions = [0, 9, 6, 3, 0, 9, 6, 3, 0, 9, 6, 3]
+
+[[placements]]
+star = "flow_panan_jiangqian12"
+option = "option1"
+inputs = ["lunar.year_branch"]
+shape = [12]
+positions = [1, 10, 7, 4, 1, 10, 7, 4, 1, 10, 7, 4]
+
+[[placements]]
+star = "flow_suiyi_jiangqian12"
+option = "option1"
+inputs = ["lunar.year_branch"]
+shape = [12]
+positions = [2, 11, 8, 5, 2, 11, 8, 5, 2, 11, 8, 5]
+
+[[placements]]
+star = "flow_xishen_jiangqian12"
+option = "option1"
+inputs = ["lunar.year_branch"]
+shape = [12]
+positions = [3, 0, 9, 6, 3, 0, 9, 6, 3, 0, 9, 6]
+
+[[placements]]
+star = "flow_huagai_jiangqian12"
+option = "option1"
+inputs = ["lunar.year_branch"]
+shape = [12]
+positions = [4, 1, 10, 7, 4, 1, 10, 7, 4, 1, 10, 7]
+
+[[placements]]
+star = "flow_jiesha_jiangqian12"
+option = "option1"
+inputs = ["lunar.year_branch"]
+shape = [12]
+positions = [5, 2, 11, 8, 5, 2, 11, 8, 5, 2, 11, 8]
+
+[[placements]]
+star = "flow_zaisha_jiangqian12"
+option = "option1"
+inputs = ["lunar.year_branch"]
+shape = [12]
+positions = [6, 3, 0, 9, 6, 3, 0, 9, 6, 3, 0, 9]
+
+[[placements]]
+star = "flow_tiansha_jiangqian12"
+option = "option1"
+inputs = ["lunar.year_branch"]
+shape = [12]
+positions = [7, 4, 1, 10, 7, 4, 1, 10, 7, 4, 1, 10]
+
+[[placements]]
+star = "flow_zhibei_jiangqian12"
+option = "option1"
+inputs = ["lunar.year_branch"]
+shape = [12]
+positions = [8, 5, 2, 11, 8, 5, 2, 11, 8, 5, 2, 11]
+
+[[placements]]
+star = "flow_xianchi_jiangqian12"
+option = "option1"
+inputs = ["lunar.year_branch"]
+shape = [12]
+positions = [9, 6, 3, 0, 9, 6, 3, 0, 9, 6, 3, 0]
+
+[[placements]]
+star = "flow_yuesha_jiangqian12"
+option = "option1"
+inputs = ["lunar.year_branch"]
+shape = [12]
+positions = [10, 7, 4, 1, 10, 7, 4, 1, 10, 7, 4, 1]
+
+[[placements]]
+star = "flow_wangshen_jiangqian12"
+option = "option1"
+inputs = ["lunar.year_branch"]
+shape = [12]
+positions = [11, 8, 5, 2, 11, 8, 5, 2, 11, 8, 5, 2]
+
+[[placements]]
+star = "flow_boshi_boshi12"
+option = "option1"
+inputs = ["lunar.year_stem", "birth.gender"]
+shape = [10, 2]
+positions = [2, 2, 3, 3, 5, 5, 6, 6, 5, 5, 6, 6, 8, 8, 9, 9, 11, 11, 0, 0]
+
+[[placements]]
+star = "flow_lishi_boshi12"
+option = "option1"
+inputs = ["lunar.year_stem", "birth.gender"]
+shape = [10, 2]
+positions = [3, 1, 2, 4, 6, 4, 5, 7, 6, 4, 5, 7, 9, 7, 8, 10, 0, 10, 11, 1]
+
+[[placements]]
+star = "flow_qinglong_boshi12"
+option = "option1"
+inputs = ["lunar.year_stem", "birth.gender"]
+shape = [10, 2]
+positions = [4, 0, 1, 5, 7, 3, 4, 8, 7, 3, 4, 8, 10, 6, 7, 11, 1, 9, 10, 2]
+
+[[placements]]
+star = "flow_xiaohao_boshi12"
+option = "option1"
+inputs = ["lunar.year_stem", "birth.gender"]
+shape = [10, 2]
+positions = [5, 11, 0, 6, 8, 2, 3, 9, 8, 2, 3, 9, 11, 5, 6, 0, 2, 8, 9, 3]
+
+[[placements]]
+star = "flow_jiangjun_boshi12"
+option = "option1"
+inputs = ["lunar.year_stem", "birth.gender"]
+shape = [10, 2]
+positions = [6, 10, 11, 7, 9, 1, 2, 10, 9, 1, 2, 10, 0, 4, 5, 1, 3, 7, 8, 4]
+
+[[placements]]
+star = "flow_zoushu_boshi12"
+option = "option1"
+inputs = ["lunar.year_stem", "birth.gender"]
+shape = [10, 2]
+positions = [7, 9, 10, 8, 10, 0, 1, 11, 10, 0, 1, 11, 1, 3, 4, 2, 4, 6, 7, 5]
+
+[[placements]]
+star = "flow_feilian_boshi12"
+option = "option1"
+inputs = ["lunar.year_stem", "birth.gender"]
+shape = [10, 2]
+positions = [8, 8, 9, 9, 11, 11, 0, 0, 11, 11, 0, 0, 2, 2, 3, 3, 5, 5, 6, 6]
+
+[[placements]]
+star = "flow_xishen_boshi12"
+option = "option1"
+inputs = ["lunar.year_stem", "birth.gender"]
+shape = [10, 2]
+positions = [9, 7, 8, 10, 0, 10, 11, 1, 0, 10, 11, 1, 3, 1, 2, 4, 6, 4, 5, 7]
+
+[[placements]]
+star = "flow_bingfu_boshi12"
+option = "option1"
+inputs = ["lunar.year_stem", "birth.gender"]
+shape = [10, 2]
+positions = [10, 6, 7, 11, 1, 9, 10, 2, 1, 9, 10, 2, 4, 0, 1, 5, 7, 3, 4, 8]
+
+[[placements]]
+star = "flow_dahao_boshi12"
+option = "option1"
+inputs = ["lunar.year_stem", "birth.gender"]
+shape = [10, 2]
+positions = [11, 5, 6, 0, 2, 8, 9, 3, 2, 8, 9, 3, 5, 11, 0, 6, 8, 2, 3, 9]
+
+[[placements]]
+star = "flow_fubing_boshi12"
+option = "option1"
+inputs = ["lunar.year_stem", "birth.gender"]
+shape = [10, 2]
+positions = [0, 4, 5, 1, 3, 7, 8, 4, 3, 7, 8, 4, 6, 10, 11, 7, 9, 1, 2, 10]
+
+[[placements]]
+star = "flow_guanfu_boshi12"
+option = "option1"
+inputs = ["lunar.year_stem", "birth.gender"]
+shape = [10, 2]
+positions = [1, 3, 4, 2, 4, 6, 7, 5, 4, 6, 7, 5, 7, 9, 10, 8, 10, 0, 1, 11]
+
+[[placements]]
+star = "flow_suijian_suijian12"
+option = "option1"
+inputs = ["lunar.year_branch"]
+shape = [12]
+positions = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+
+[[placements]]
+star = "flow_huiqi_suijian12"
+option = "option1"
+inputs = ["lunar.year_branch"]
+shape = [12]
+positions = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0]
+
+[[placements]]
+star = "flow_sangmen_suijian12"
+option = "option1"
+inputs = ["lunar.year_branch"]
+shape = [12]
+positions = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1]
+
+[[placements]]
+star = "flow_guansuo_suijian12"
+option = "option1"
+inputs = ["lunar.year_branch"]
+shape = [12]
+positions = [3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2]
+
+[[placements]]
+star = "flow_guanfu_suijian12"
+option = "option1"
+inputs = ["lunar.year_branch"]
+shape = [12]
+positions = [4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3]
+
+[[placements]]
+star = "flow_xiaohao_suijian12"
+option = "option1"
+inputs = ["lunar.year_branch"]
+shape = [12]
+positions = [5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4]
+
+[[placements]]
+star = "flow_suipo_suijian12"
+option = "option1"
+inputs = ["lunar.year_branch"]
+shape = [12]
+positions = [6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5]
+
+[[placements]]
+star = "flow_longde_suijian12"
+option = "option1"
+inputs = ["lunar.year_branch"]
+shape = [12]
+positions = [7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6]
+
+[[placements]]
+star = "flow_baihu_suijian12"
+option = "option1"
+inputs = ["lunar.year_branch"]
+shape = [12]
+positions = [8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7]
+
+[[placements]]
+star = "flow_tiande_suijian12"
+option = "option1"
+inputs = ["lunar.year_branch"]
+shape = [12]
+positions = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
+
+[[placements]]
+star = "flow_diaoke_suijian12"
+option = "option1"
+inputs = ["lunar.year_branch"]
+shape = [12]
+positions = [10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+[[placements]]
+star = "flow_bingfu_suijian12"
+option = "option1"
+inputs = ["lunar.year_branch"]
+shape = [12]
+positions = [11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]

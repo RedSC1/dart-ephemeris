@@ -1,0 +1,276 @@
+name: Native integration
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: native-integration-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: macOS ARM64 / AppleClang
+            os: macos-15
+          - name: Linux x64 / GCC
+            os: ubuntu-24.04
+          - name: Windows x64 / MinGW-w64 GCC
+            os: windows-2022
+
+    steps:
+      - name: Check out Dart bindings
+        uses: actions/checkout@v6
+
+      - name: Check out pinned Taiyin native core
+        uses: actions/checkout@v6
+        with:
+          repository: RedSC1/taiyin-ephemeris
+          ref: v1.0.0-beta.1
+          path: native-core
+
+      - name: Set up Dart
+        uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+
+      - name: Set up MinGW-w64 GCC
+        if: runner.os == 'Windows'
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          update: true
+          install: >-
+            mingw-w64-x86_64-cmake
+            mingw-w64-x86_64-gcc
+            mingw-w64-x86_64-ninja
+
+      - name: Apply pending MinGW modular export fix
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          # beta.1 relies on CMake's WINDOWS_EXPORT_ALL_SYMBOLS for the base
+          # runtime, but CMake implements that property only for MS-compatible
+          # tools. Apply the matching target-local MinGW linker option while
+          # the native fix is validated independently upstream.
+          git -C native-core apply `
+            ../.github/patches/taiyin-mingw-modular-core-exports.patch
+
+      - name: Build and install native modules (macOS)
+        if: runner.os == 'macOS'
+        shell: bash
+        run: |
+          cmake -S native-core -B native-build \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DTAIYIN_BUILD_CHINESE_METAPHYSICS_EXTENSIONS=ON \
+            -DTAIYIN_BUILD_BAZI_EXTENSION=ON \
+            -DTAIYIN_BUILD_ZIWEI_EXTENSION=ON \
+            -DTAIYIN_BUILD_MODULAR_C_API=ON
+          cmake --build native-build --parallel 3 \
+            --target taiyin taiyin_bazi taiyin_ziwei
+          cmake --install native-build --prefix native-stage
+          strip -S -x \
+            native-stage/lib/libtaiyin.9.0.0.dylib \
+            native-stage/lib/libtaiyin_bazi.1.0.0.dylib \
+            native-stage/lib/libtaiyin_ziwei.1.0.0.dylib
+
+      - name: Build and install native modules (manylinux2014)
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          docker run --rm \
+            -v "$GITHUB_WORKSPACE:/workspace" \
+            -w /workspace \
+            quay.io/pypa/manylinux2014_x86_64 \
+            bash -euxo pipefail -c '
+              cmake -S native-core -B native-build \
+                -DCMAKE_BUILD_TYPE=Release \
+                -DTAIYIN_BUILD_CHINESE_METAPHYSICS_EXTENSIONS=ON \
+                -DTAIYIN_BUILD_BAZI_EXTENSION=ON \
+                -DTAIYIN_BUILD_ZIWEI_EXTENSION=ON \
+                -DTAIYIN_BUILD_MODULAR_C_API=ON
+              cmake --build native-build --parallel 3 \
+                --target taiyin taiyin_bazi taiyin_ziwei
+              cmake --install native-build --prefix native-stage
+              library="$(find native-stage -type f \
+                -name libtaiyin.so.9.0.0 -print -quit)"
+              test -n "$library"
+              stage_lib="$(dirname "$library")"
+              strip --strip-unneeded \
+                "$stage_lib/libtaiyin.so.9.0.0" \
+                "$stage_lib/libtaiyin_bazi.so.1.0.0" \
+                "$stage_lib/libtaiyin_ziwei.so.1.0.0"
+
+              max_glibc="$(
+                objdump -T "$stage_lib/libtaiyin.so.9.0.0" |
+                  sed -n "s/.*GLIBC_\\([0-9.]*\\).*/\\1/p" |
+                  sort -V |
+                  tail -1
+              )"
+              max_glibcxx="$(
+                objdump -T "$stage_lib/libtaiyin.so.9.0.0" |
+                  sed -n "s/.*GLIBCXX_\\([0-9.]*\\).*/\\1/p" |
+                  sort -V |
+                  tail -1
+              )"
+              echo "maximum GLIBC requirement: $max_glibc"
+              echo "maximum GLIBCXX requirement: $max_glibcxx"
+              test "$(printf "%s\\n" "$max_glibc" 2.17 |
+                sort -V | tail -1)" = 2.17
+              test "$(printf "%s\\n" "$max_glibcxx" 3.4.19 |
+                sort -V | tail -1)" = 3.4.19
+            '
+          sudo chown -R "$(id -u):$(id -g)" native-build native-stage
+
+      - name: Build and install native modules (Windows)
+        if: runner.os == 'Windows'
+        shell: msys2 {0}
+        run: |
+          cd native-core
+          cmake --preset windows-mingw-gcc
+          cmake --build --preset windows-mingw-gcc --parallel 3 \
+            --target taiyin taiyin_bazi taiyin_ziwei
+          cmake --install build-preset-windows-mingw-gcc \
+            --prefix ../native-stage
+          /mingw64/bin/strip --strip-unneeded \
+            ../native-stage/bin/taiyin.dll \
+            ../native-stage/bin/taiyin_bazi.dll \
+            ../native-stage/bin/taiyin_ziwei.dll
+          # A MinGW-built DLL needs its compiler runtimes even on machines that
+          # do not have GCC installed. Keep them beside the Taiyin DLLs so the
+          # Windows loader resolves the artifact without machine-wide setup.
+          cp /mingw64/bin/libgcc_s_seh-1.dll ../native-stage/bin/
+          cp /mingw64/bin/libstdc++-6.dll ../native-stage/bin/
+          cp /mingw64/bin/libwinpthread-1.dll ../native-stage/bin/
+
+      - name: Configure native test paths (macOS)
+        if: runner.os == 'macOS'
+        shell: bash
+        run: |
+          stage="$GITHUB_WORKSPACE/native-stage/lib"
+          echo "TAIYIN_TEST_LIBRARY=$stage/libtaiyin.dylib" >> "$GITHUB_ENV"
+          echo "TAIYIN_BASELINE_LIBRARY=$stage/libtaiyin.dylib" >> "$GITHUB_ENV"
+          echo "TAIYIN_BAZI_LIBRARY_PATH=$stage/libtaiyin_bazi.dylib" >> "$GITHUB_ENV"
+          echo "TAIYIN_ZIWEI_LIBRARY_PATH=$stage/libtaiyin_ziwei.dylib" >> "$GITHUB_ENV"
+          echo "TAIYIN_OPM2_DATA_DIR=$GITHUB_WORKSPACE/native-core/data/ephemerides/opm2/major-bodies/600y" >> "$GITHUB_ENV"
+          echo "DYLD_LIBRARY_PATH=$stage" >> "$GITHUB_ENV"
+          ln -s "$GITHUB_WORKSPACE/native-core" "$GITHUB_WORKSPACE/../taiyin-ephemeris"
+
+      - name: Configure native test paths (Linux)
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          library="$(find "$GITHUB_WORKSPACE/native-stage" -type f \
+            -name libtaiyin.so.9.0.0 -print -quit)"
+          test -n "$library"
+          stage="$(dirname "$library")"
+          echo "TAIYIN_TEST_LIBRARY=$stage/libtaiyin.so" >> "$GITHUB_ENV"
+          echo "TAIYIN_BASELINE_LIBRARY=$stage/libtaiyin.so" >> "$GITHUB_ENV"
+          echo "TAIYIN_BAZI_LIBRARY_PATH=$stage/libtaiyin_bazi.so" >> "$GITHUB_ENV"
+          echo "TAIYIN_ZIWEI_LIBRARY_PATH=$stage/libtaiyin_ziwei.so" >> "$GITHUB_ENV"
+          echo "TAIYIN_OPM2_DATA_DIR=$GITHUB_WORKSPACE/native-core/data/ephemerides/opm2/major-bodies/600y" >> "$GITHUB_ENV"
+          echo "LD_LIBRARY_PATH=$stage" >> "$GITHUB_ENV"
+          ln -s "$GITHUB_WORKSPACE/native-core" "$GITHUB_WORKSPACE/../taiyin-ephemeris"
+
+      - name: Configure native test paths (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $stage = (Resolve-Path 'native-stage/bin').Path
+          "TAIYIN_TEST_LIBRARY=$stage\taiyin.dll" | Out-File -FilePath $env:GITHUB_ENV -Append
+          "TAIYIN_BASELINE_LIBRARY=$stage\taiyin.dll" | Out-File -FilePath $env:GITHUB_ENV -Append
+          "TAIYIN_BAZI_LIBRARY_PATH=$stage\taiyin_bazi.dll" | Out-File -FilePath $env:GITHUB_ENV -Append
+          "TAIYIN_ZIWEI_LIBRARY_PATH=$stage\taiyin_ziwei.dll" | Out-File -FilePath $env:GITHUB_ENV -Append
+          "TAIYIN_OPM2_DATA_DIR=$env:GITHUB_WORKSPACE\native-core\data\ephemerides\opm2\major-bodies\600y" | Out-File -FilePath $env:GITHUB_ENV -Append
+          "PATH=$stage;$env:PATH" | Out-File -FilePath $env:GITHUB_ENV -Append
+          New-Item -ItemType Junction `
+            -Path (Join-Path $env:GITHUB_WORKSPACE '..\taiyin-ephemeris') `
+            -Target (Join-Path $env:GITHUB_WORKSPACE 'native-core')
+
+      - name: Resolve Dart dependencies
+        run: dart pub get
+
+      - name: Check formatting
+        run: >-
+          dart format --output=none --set-exit-if-changed
+          packages/ephemeris/lib packages/ephemeris/example
+          packages/ephemeris_bazi/lib packages/ephemeris_bazi/example
+          packages/ephemeris_ziwei/lib packages/ephemeris_ziwei/example
+
+      - name: Analyze
+        run: dart analyze packages
+
+      - name: Test core package
+        run: dart test packages/ephemeris/test
+
+      - name: Test BaZi package
+        run: dart test packages/ephemeris_bazi/test
+
+      - name: Test Ziwei package
+        run: dart test packages/ephemeris_ziwei/test
+
+      - name: Upload native modules
+        uses: actions/upload-artifact@v6
+        with:
+          name: taiyin-native-${{ runner.os }}-${{ runner.arch }}
+          path: native-stage
+          if-no-files-found: error
+          retention-days: 14
+
+  package-dry-run:
+    name: Assemble pub packages / dry run
+    needs: test
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+
+    steps:
+      - name: Check out Dart bindings
+        uses: actions/checkout@v6
+
+      - name: Set up Dart
+        uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+
+      - name: Download native modules
+        uses: actions/download-artifact@v8
+        with:
+          pattern: taiyin-native-*
+          path: native-artifacts
+
+      - name: Prepare clean pub workspace
+        shell: bash
+        run: |
+          pub_workspace="$RUNNER_TEMP/taiyin-pub-workspace"
+          mkdir -p "$pub_workspace"
+          git archive HEAD | tar -x -C "$pub_workspace"
+          cd "$pub_workspace"
+          dart run tool/stage_native_artifacts.dart \
+            "$GITHUB_WORKSPACE/native-artifacts"
+
+      - name: Resolve Dart dependencies
+        working-directory: ${{ runner.temp }}/taiyin-pub-workspace
+        run: dart pub get
+
+      - name: Validate core pub package
+        working-directory: ${{ runner.temp }}/taiyin-pub-workspace/packages/ephemeris
+        run: dart pub publish --dry-run
+
+      - name: Validate BaZi pub package
+        working-directory: ${{ runner.temp }}/taiyin-pub-workspace/packages/ephemeris_bazi
+        run: dart pub publish --dry-run
+
+      - name: Validate Ziwei pub package
+        working-directory: ${{ runner.temp }}/taiyin-pub-workspace/packages/ephemeris_ziwei
+        run: dart pub publish --dry-run

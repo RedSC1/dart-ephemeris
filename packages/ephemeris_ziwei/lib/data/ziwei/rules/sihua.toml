@@ -1,0 +1,83 @@
+# Generated from the author's MIT-licensed ziwei_core 0.13.0 defaults.
+# All placement algorithms are flattened offline into final answer tables.
+format_version = 1
+
+[[sihua]]
+stem = "jia"
+option = "option1"
+lu = "lianzhen"
+quan = "pojun"
+ke = "wuqu"
+ji = "taiyang"
+
+[[sihua]]
+stem = "yi"
+option = "option1"
+lu = "tianji"
+quan = "tianliang"
+ke = "ziwei"
+ji = "taiyin"
+
+[[sihua]]
+stem = "bing"
+option = "option1"
+lu = "tiantong"
+quan = "tianji"
+ke = "wenchang"
+ji = "lianzhen"
+
+[[sihua]]
+stem = "ding"
+option = "option1"
+lu = "taiyin"
+quan = "tiantong"
+ke = "tianji"
+ji = "jumen"
+
+[[sihua]]
+stem = "wu"
+option = "option1"
+lu = "tanlang"
+quan = "taiyin"
+ke = "youbi"
+ji = "tianji"
+
+[[sihua]]
+stem = "ji"
+option = "option1"
+lu = "wuqu"
+quan = "tanlang"
+ke = "tianliang"
+ji = "wenqu"
+
+[[sihua]]
+stem = "geng"
+option = "option1"
+lu = "taiyang"
+quan = "wuqu"
+ke = "taiyin"
+ji = "tiantong"
+
+[[sihua]]
+stem = "xin"
+option = "option1"
+lu = "jumen"
+quan = "taiyang"
+ke = "wenqu"
+ji = "wenchang"
+
+[[sihua]]
+stem = "ren"
+option = "option1"
+lu = "tianliang"
+quan = "ziwei"
+ke = "zuofu"
+ji = "wuqu"
+
+[[sihua]]
+stem = "gui"
+option = "option1"
+lu = "pojun"
+quan = "jumen"
+ke = "taiyin"
+ji = "tanlang"
