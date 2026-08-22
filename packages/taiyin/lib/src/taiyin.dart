@@ -604,6 +604,10 @@ DynamicLibrary _openDefaultLibrary() {
 /// The shared library bundled inside the package, when it ships one for this
 /// platform.
 String? _bundledLibraryPath() {
+  // The repository currently ships only a macOS arm64 native baseline. An
+  // Intel VM (including Dart running under Rosetta) must fall through to the
+  // normal loader path instead of trying to open an incompatible image.
+  if (Platform.isMacOS && Abi.current() != Abi.macosArm64) return null;
   final fileName = Platform.isWindows
       ? 'taiyin.dll'
       : Platform.isMacOS

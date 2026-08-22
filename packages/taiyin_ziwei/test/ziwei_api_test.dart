@@ -144,6 +144,33 @@ void main() {
         },
       );
 
+      test('rejects embedded NULs in option selections', () {
+        expect(
+          () => context.createZiwei(
+            selection: const ZiweiOptionSelection(
+              placementDefault: 'option1\u0000invalid',
+            ),
+          ),
+          throwsArgumentError,
+        );
+        expect(
+          () => context.createZiwei(
+            selection: const ZiweiOptionSelection(
+              placement: {'ziwei\u0000suffix': 'option1'},
+            ),
+          ),
+          throwsArgumentError,
+        );
+        expect(
+          () => context.createZiwei(
+            selection: const ZiweiOptionSelection(
+              placement: {'ziwei': 'option1\u0000invalid'},
+            ),
+          ),
+          throwsArgumentError,
+        );
+      });
+
       test('a caller catalog owns the native-module selection', () {
         final catalog = ZiweiDataCatalog(coreLibraryPath: libraryPath);
         addTearDown(catalog.close);
@@ -154,6 +181,9 @@ void main() {
           ),
           throwsArgumentError,
         );
+
+        catalog.close();
+        expect(() => context.createZiwei(catalog: catalog), throwsStateError);
       });
 
       test('calculates charts from local time and from an instant', () {
@@ -336,6 +366,21 @@ void main() {
 
         final replacement = context.ziwei;
         expect(replacement.isClosed, isFalse);
+      });
+
+      test('cached Ziwei context is replaced after its calendar closes', () {
+        final first = context.ziwei;
+        final firstCalendar = first.chineseCalendar;
+
+        firstCalendar.close();
+        final replacement = context.ziwei;
+
+        expect(identical(replacement, first), isFalse);
+        expect(replacement.isClosed, isFalse);
+        expect(replacement.chineseCalendar.isClosed, isFalse);
+        expect(identical(replacement.chineseCalendar, firstCalendar), isFalse);
+        expect(() => first.starCount, throwsStateError);
+        first.close();
       });
 
       test('rejects a calendar owned by a different ephemeris context', () {

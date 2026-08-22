@@ -43,7 +43,11 @@ extension ZiweiExtension on EphemerisContext {
   /// closed by the caller is replaced on the next access.
   ZiweiContext get ziwei {
     final cached = _ziweiCache[this];
-    if (cached != null && !cached.isClosed) return cached;
+    if (cached != null &&
+        !cached.isClosed &&
+        !cached.chineseCalendar.isClosed) {
+      return cached;
+    }
     final created = createZiwei();
     _ziweiCache[this] = created;
     return created;
@@ -212,14 +216,16 @@ final class ZiweiContext implements Finalizable {
     ZiweiDataCatalog? catalog,
     ZiweiOptionSelection selection = const ZiweiOptionSelection(),
   }) {
-    final finalizer = module.finalizerFor('taiyin_ziwei_context_destroy');
     host.ensureOpen();
+    _validateZiweiOptionSelection(selection);
+    final finalizer = module.finalizerFor('taiyin_ziwei_context_destroy');
     final bindings = module.bindings;
     final ownedCatalog = catalog == null
         ? ZiweiDataCatalog._create(host, module, null)
         : null;
     final effectiveCatalog = catalog ?? ownedCatalog!;
     try {
+      effectiveCatalog._ensureOpen();
       final context = using((arena) {
         final overrides = _writeZiweiOptionOverrides(
           bindings,
@@ -1013,6 +1019,32 @@ final class ZiweiChart implements Finalizable {
       );
       return List.unmodifiable([for (final id in ids) _context.star(id)]);
     });
+  }
+}
+
+void _validateZiweiOptionSelection(ZiweiOptionSelection selection) {
+  _requireZiweiOptionText(selection.placementDefault, 'placementDefault');
+  _requireZiweiOptionText(selection.brightnessDefault, 'brightnessDefault');
+  _requireZiweiOptionText(selection.sihuaDefault, 'sihuaDefault');
+  _requireZiweiOptionText(selection.masters, 'masters');
+  _requireZiweiOptionText(selection.longevity, 'longevity');
+  for (final entry in selection.placement.entries) {
+    _requireZiweiOptionText(entry.key, 'placement key');
+    _requireZiweiOptionText(entry.value, 'placement option');
+  }
+  for (final entry in selection.brightness.entries) {
+    _requireZiweiOptionText(entry.key, 'brightness key');
+    _requireZiweiOptionText(entry.value, 'brightness option');
+  }
+  for (final entry in selection.sihua.entries) {
+    _requireZiweiOptionText(entry.key, 'sihua key');
+    _requireZiweiOptionText(entry.value, 'sihua option');
+  }
+}
+
+void _requireZiweiOptionText(String value, String name) {
+  if (value.contains('\u0000')) {
+    throw ArgumentError.value(value, name, 'must not contain a NUL character');
   }
 }
 

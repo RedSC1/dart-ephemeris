@@ -153,12 +153,17 @@ DynamicLibrary _openExtensionLibrary({
   if (configured != null) return DynamicLibrary.open(configured);
 
   final fileName = _extensionLibraryFileName(libraryBaseName);
-  final resolved = Isolate.resolvePackageUriSync(
-    Uri.parse('package:$packageName/native/$fileName'),
-  );
-  if (resolved != null && resolved.scheme == 'file') {
-    final bundled = resolved.toFilePath();
-    if (File(bundled).existsSync()) return DynamicLibrary.open(bundled);
+  // The checked-in extension modules are macOS arm64 builds. On Intel macOS
+  // and under Rosetta, skip them and let the platform loader find a compatible
+  // module supplied by the application.
+  if (!Platform.isMacOS || Abi.current() == Abi.macosArm64) {
+    final resolved = Isolate.resolvePackageUriSync(
+      Uri.parse('package:$packageName/native/$fileName'),
+    );
+    if (resolved != null && resolved.scheme == 'file') {
+      final bundled = resolved.toFilePath();
+      if (File(bundled).existsSync()) return DynamicLibrary.open(bundled);
+    }
   }
   return DynamicLibrary.open(fileName);
 }
