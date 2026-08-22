@@ -39,7 +39,9 @@ void main() {
       throwsUnsupportedError,
     );
     expect(
-      () => ZiweiDataCatalog(libraryPath: '/no/such/libtaiyin_ziwei.dylib'),
+      () => ZiweiDataCatalog(
+        libraryPath: '/no/such/definitely_missing_taiyin_ziwei.dylib',
+      ),
       throwsUnsupportedError,
     );
     expect(context.position, isNotNull);
