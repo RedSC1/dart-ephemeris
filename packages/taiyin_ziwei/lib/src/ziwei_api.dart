@@ -334,6 +334,7 @@ final class ZiweiContext implements Finalizable {
   /// Reads the metadata of the star with native [starId].
   ZiweiStar star(int starId) {
     _ensureOpen();
+    _requireStarId(starId);
     return using((arena) {
       final category = arena<Int32>();
       final requiredSize = arena<Size>();
@@ -366,6 +367,17 @@ final class ZiweiContext implements Finalizable {
         category: ZiweiStarCategory.fromId(category.value),
       );
     });
+  }
+
+  void _requireStarId(int starId) {
+    final count = _bindings.taiyin_ziwei_star_count(_context);
+    if (starId < 0 || starId >= count) {
+      throw ArgumentError.value(
+        starId,
+        'starId',
+        'must identify a registered star in the range 0 through ${count - 1}',
+      );
+    }
   }
 
   /// Creates a natal chart for a UTC birth instant and its local wall clock.
@@ -794,6 +806,7 @@ final class ZiweiChart implements Finalizable {
   /// when the star is absent from the natal chart.
   int? starPosition(int starId) {
     _ensureOpen();
+    _context._requireStarId(starId);
     return using((arena) {
       final output = arena<Uint8>();
       _checkStatus(
@@ -808,6 +821,7 @@ final class ZiweiChart implements Finalizable {
   /// or absent stars.
   int? starPalace(int starId) {
     _ensureOpen();
+    _context._requireStarId(starId);
     return using((arena) {
       final output = arena<Uint8>();
       _checkStatus(
@@ -821,6 +835,7 @@ final class ZiweiChart implements Finalizable {
   /// The brightness of a star at its natal position.
   ZiweiBrightness brightness(int starId) {
     _ensureOpen();
+    _context._requireStarId(starId);
     return using((arena) {
       final output = arena<Int32>();
       _checkStatus(
@@ -839,6 +854,7 @@ final class ZiweiChart implements Finalizable {
   /// The stars residing in the palace at physical [branchId].
   List<ZiweiStar> palaceStars(int branchId) {
     _ensureOpen();
+    _requireZiweiBranch(branchId, 'branchId');
     return using((arena) {
       final ids = _readZiweiStarIds(
         _context._host,
@@ -861,6 +877,7 @@ final class ZiweiChart implements Finalizable {
   /// [ZiweiTransformMark.mask].
   int transformMask(int starId) {
     _ensureOpen();
+    _context._requireStarId(starId);
     return using((arena) {
       final output = arena<Uint16>();
       _checkStatus(
@@ -878,6 +895,7 @@ final class ZiweiChart implements Finalizable {
   /// Whether a natal star carries the transformation overlay [mark].
   bool hasTransform(int starId, ZiweiTransformMark mark) {
     _ensureOpen();
+    _context._requireStarId(starId);
     return using((arena) {
       final output = arena<Uint8>();
       _checkStatus(
@@ -984,6 +1002,7 @@ final class ZiweiChart implements Finalizable {
   /// star is absent from that layer.
   int? flowStarPosition(ZiweiFlowLevel level, int starId) {
     _ensureOpen();
+    _context._requireStarId(starId);
     return using((arena) {
       final output = arena<Uint8>();
       _checkStatus(
@@ -1002,6 +1021,7 @@ final class ZiweiChart implements Finalizable {
   /// The stars residing in the palace at physical [branchId] of flow [level].
   List<ZiweiStar> flowPalaceStars(ZiweiFlowLevel level, int branchId) {
     _ensureOpen();
+    _requireZiweiBranch(branchId, 'branchId');
     return using((arena) {
       final ids = _readZiweiStarIds(
         _context._host,
@@ -1045,6 +1065,12 @@ void _validateZiweiOptionSelection(ZiweiOptionSelection selection) {
 void _requireZiweiOptionText(String value, String name) {
   if (value.contains('\u0000')) {
     throw ArgumentError.value(value, name, 'must not contain a NUL character');
+  }
+}
+
+void _requireZiweiBranch(int branchId, String name) {
+  if (branchId < 0 || branchId >= 12) {
+    throw ArgumentError.value(branchId, name, 'must be in the range 0..11');
   }
 }
 

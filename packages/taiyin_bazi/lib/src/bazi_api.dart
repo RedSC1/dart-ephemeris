@@ -164,6 +164,8 @@ final class BaziContext implements Finalizable {
   /// Returns the 十神 (ten god) of a stem relative to the day stem.
   BaziTenGod getTenGod({required int dayStemId, required int targetStemId}) {
     _ensureOpen();
+    _requireStemId(dayStemId, 'dayStemId');
+    _requireStemId(targetStemId, 'targetStemId');
     return using((arena) {
       final output = arena<Uint8>();
       _checkStatus(
@@ -177,6 +179,7 @@ final class BaziContext implements Finalizable {
   /// Returns the 藏干 (hidden stems) of an earthly branch.
   ({List<int> stems, int count}) getHiddenStems(int branchId) {
     _ensureOpen();
+    _requireBranchId(branchId, 'branchId');
     return using((arena) {
       final output = arena<Uint8>(3);
       final count = arena<Uint8>();
@@ -197,6 +200,8 @@ final class BaziContext implements Finalizable {
   /// Calculates the relation between two heavenly stems.
   BaziStemRelationResult calcStemRelation(int stemA, int stemB) {
     _ensureOpen();
+    _requireStemId(stemA, 'stemA');
+    _requireStemId(stemB, 'stemB');
     return using((arena) {
       final flags = arena<Uint32>();
       final combinedElement = arena<Uint8>();
@@ -216,6 +221,8 @@ final class BaziContext implements Finalizable {
   /// Calculates the relation between two earthly branches.
   BaziBranchRelationResult calcBranchRelation(int branchA, int branchB) {
     _ensureOpen();
+    _requireBranchId(branchA, 'branchA');
+    _requireBranchId(branchB, 'branchB');
     return using((arena) {
       final flags = arena<Uint32>();
       final combinedElement = arena<Uint8>();
@@ -239,6 +246,9 @@ final class BaziContext implements Finalizable {
     int branchC,
   ) {
     _ensureOpen();
+    _requireBranchId(branchA, 'branchA');
+    _requireBranchId(branchB, 'branchB');
+    _requireBranchId(branchC, 'branchC');
     return using((arena) {
       final flags = arena<Uint32>();
       final combinedElement = arena<Uint8>();
@@ -263,6 +273,8 @@ final class BaziContext implements Finalizable {
     BaziEarthPalaceMode mode = BaziEarthPalaceMode.fireEarth,
   }) {
     _ensureOpen();
+    _requireStemId(stemId, 'stemId');
+    _requireBranchId(branchId, 'branchId');
     return using((arena) {
       final output = arena<Uint8>();
       _checkStatus(
@@ -291,6 +303,7 @@ final class BaziContext implements Finalizable {
   /// [monthBranch] follows the C ABI: 2 = 寅, …, 0 = 子, 1 = 丑.
   Ganzhi calcLiuyue(Ganzhi yearPillar, int monthBranch) {
     _ensureOpen();
+    _requireBranchId(monthBranch, 'monthBranch');
     return using((arena) {
       final output = arena<taiyin_ganzhi>();
       _checkStatus(
@@ -317,6 +330,7 @@ final class BaziContext implements Finalizable {
   /// [hourIndex] follows the C ABI branch sequence: 0 = 子, …, 11 = 亥.
   Ganzhi calcLiushi(Ganzhi dayPillar, int hourIndex) {
     _ensureOpen();
+    _requireBranchId(hourIndex, 'hourIndex');
     return using((arena) {
       final output = arena<taiyin_ganzhi>();
       _checkStatus(
@@ -631,6 +645,7 @@ final class BaziContext implements Finalizable {
     BaziRenyuanSilingTableModel tableModel,
   ) {
     _ensureOpen();
+    _requireBranchId(monthBranchId, 'monthBranchId');
     return using((arena) {
       final count = arena<Size>();
       final countStatus = _bindings.taiyin_bazi_get_renyuan_siling_segments(
@@ -781,6 +796,18 @@ final class BaziContext implements Finalizable {
       }
       return result;
     });
+  }
+
+  void _requireStemId(int value, String name) {
+    if (value < 0 || value >= 10) {
+      throw ArgumentError.value(value, name, 'must be in the range 0..9');
+    }
+  }
+
+  void _requireBranchId(int value, String name) {
+    if (value < 0 || value >= 12) {
+      throw ArgumentError.value(value, name, 'must be in the range 0..11');
+    }
   }
 }
 

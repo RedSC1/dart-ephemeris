@@ -449,14 +449,18 @@ final class EphemerisContext implements Finalizable {
     Iterable<EphemerisDiagnostic> diagnostics = const [],
   }) {
     if (diagnostic != null) _recordDiagnostic(diagnostic);
-    final flags = _checkStatus(
-      _bindings,
-      rawResult,
-      diagnostic: diagnostic,
-      diagnostics: diagnostics,
-    );
-    _lastResultFlags = flags;
-    return flags;
+    final decoded = decodeNativeCallResult(rawResult);
+    _lastResultFlags = decoded.flags;
+    if (decoded.status != 0) {
+      _throwStatus(
+        _bindings,
+        decoded.status,
+        resultFlags: decoded.flags,
+        diagnostic: diagnostic,
+        diagnostics: diagnostics,
+      );
+    }
+    return decoded.flags;
   }
 
   /// Every calendar context created from this context, tracked so closing the
@@ -471,7 +475,7 @@ final class EphemerisContext implements Finalizable {
     _ensureOpen();
     final context = using((arena) {
       final output = arena<Pointer<taiyin_context>>();
-      _checkStatus(_bindings, _bindings.taiyin_context_clone(_context, output));
+      _completeOperation(_bindings.taiyin_context_clone(_context, output));
       return output.value;
     });
     return EphemerisContext._(

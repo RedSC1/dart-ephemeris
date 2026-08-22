@@ -26,6 +26,8 @@ final class GanzhiApi {
   /// Rejects invalid yin/yang stem-branch combinations.
   Ganzhi make({required int stemId, required int branchId}) {
     _requireGanzhi();
+    _requireStemId(stemId, 'stemId');
+    _requireBranchId(branchId, 'branchId');
     return using((arena) {
       final output = arena<taiyin_ganzhi>();
       _checkStatus(
@@ -39,6 +41,7 @@ final class GanzhiApi {
   /// Advances a Ganzhi by [delta] places along the sexagenary cycle.
   Ganzhi advance(Ganzhi value, int delta) {
     _requireGanzhi();
+    _requireInt32(delta, 'delta');
     return using((arena) {
       final output = arena<taiyin_ganzhi>();
       _checkStatus(
@@ -54,6 +57,8 @@ final class GanzhiApi {
   /// [monthIndex] follows the C ABI: 0 = 寅, …, 10 = 子, 11 = 丑.
   Ganzhi monthPillar({required int yearStemId, required int monthIndex}) {
     _requireGanzhi();
+    _requireStemId(yearStemId, 'yearStemId');
+    _requireBranchId(monthIndex, 'monthIndex');
     return using((arena) {
       final output = arena<taiyin_ganzhi>();
       _checkStatus(
@@ -69,6 +74,8 @@ final class GanzhiApi {
   /// [hourIndex] follows the C ABI: 0 = 子, …, 11 = 亥.
   Ganzhi hourPillar({required int dayStemId, required int hourIndex}) {
     _requireGanzhi();
+    _requireStemId(dayStemId, 'dayStemId');
+    _requireBranchId(hourIndex, 'hourIndex');
     return using((arena) {
       final output = arena<taiyin_ganzhi>();
       _checkStatus(
@@ -118,5 +125,23 @@ final class GanzhiApi {
       );
       return output.value;
     });
+  }
+
+  void _requireStemId(int value, String name) {
+    if (value < 0 || value >= 10) {
+      throw ArgumentError.value(value, name, 'must be in the range 0..9');
+    }
+  }
+
+  void _requireBranchId(int value, String name) {
+    if (value < 0 || value >= 12) {
+      throw ArgumentError.value(value, name, 'must be in the range 0..11');
+    }
+  }
+
+  void _requireInt32(int value, String name) {
+    if (value < -0x80000000 || value > 0x7fffffff) {
+      throw ArgumentError.value(value, name, 'must fit a signed 32-bit value');
+    }
   }
 }

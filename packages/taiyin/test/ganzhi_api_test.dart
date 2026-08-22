@@ -70,6 +70,37 @@ void main() {
           () => context.ganzhi.make(stemId: 0, branchId: 1),
           throwsA(isA<EphemerisError>()),
         );
+        for (final invalidStem in [-1, 10, 256]) {
+          expect(
+            () => context.ganzhi.make(stemId: invalidStem, branchId: 0),
+            throwsArgumentError,
+          );
+          expect(
+            () => context.ganzhi.monthPillar(
+              yearStemId: invalidStem,
+              monthIndex: 0,
+            ),
+            throwsArgumentError,
+          );
+        }
+        for (final invalidBranch in [-1, 12, 256]) {
+          expect(
+            () => context.ganzhi.make(stemId: 0, branchId: invalidBranch),
+            throwsArgumentError,
+          );
+          expect(
+            () => context.ganzhi.hourPillar(
+              dayStemId: 0,
+              hourIndex: invalidBranch,
+            ),
+            throwsArgumentError,
+          );
+        }
+        final jiaZi = context.ganzhi.make(stemId: 0, branchId: 0);
+        expect(
+          () => context.ganzhi.advance(jiaZi, 0x80000000),
+          throwsArgumentError,
+        );
       });
     },
     skip: nativeLibraryAvailable

@@ -122,6 +122,56 @@ void main() {
         expect(context.bazi.calcLiushi(jiaChen, 0).raw, 0);
       });
 
+      test('rejects stem and branch ids before native integer narrowing', () {
+        final bazi = context.bazi;
+        final jiaZi = context.ganzhi.make(stemId: 0, branchId: 0);
+
+        for (final invalidStem in [-1, 10, 256]) {
+          expect(
+            () => bazi.getTenGod(dayStemId: invalidStem, targetStemId: 0),
+            throwsArgumentError,
+          );
+          expect(
+            () => bazi.calcStemRelation(invalidStem, 0),
+            throwsArgumentError,
+          );
+          expect(
+            () => bazi.getLifeStage(stemId: invalidStem, branchId: 0),
+            throwsArgumentError,
+          );
+        }
+        for (final invalidBranch in [-1, 12, 256]) {
+          expect(() => bazi.getHiddenStems(invalidBranch), throwsArgumentError);
+          expect(
+            () => bazi.calcBranchRelation(invalidBranch, 0),
+            throwsArgumentError,
+          );
+          expect(
+            () => bazi.calcBranchTripleRelation(invalidBranch, 0, 4),
+            throwsArgumentError,
+          );
+          expect(
+            () => bazi.getLifeStage(stemId: 0, branchId: invalidBranch),
+            throwsArgumentError,
+          );
+          expect(
+            () => bazi.calcLiuyue(jiaZi, invalidBranch),
+            throwsArgumentError,
+          );
+          expect(
+            () => bazi.calcLiushi(jiaZi, invalidBranch),
+            throwsArgumentError,
+          );
+          expect(
+            () => bazi.getRenyuanSilingSegments(
+              invalidBranch,
+              BaziRenyuanSilingTableModel.common,
+            ),
+            throwsArgumentError,
+          );
+        }
+      });
+
       test('calculates qi-yun and fills da-yun', () {
         final chart = chartFor2024();
         final qiyun = context.bazi

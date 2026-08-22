@@ -547,20 +547,23 @@ void _initializeRuntime(
       ..strict_discovery = options.strictDiscovery ? 1 : 0;
 
     if (options.dataRoot case final value?) {
+      _requireRuntimeOptionPath(value, 'dataRoot');
       config.ref.data_root = value.toNativeUtf8(allocator: arena).cast();
     }
     if (options.eopPath case final value?) {
+      _requireRuntimeOptionPath(value, 'eopPath');
       config.ref.eop_path = value.toNativeUtf8(allocator: arena).cast();
     }
     if (options.lunarLimbPath case final value?) {
+      _requireRuntimeOptionPath(value, 'lunarLimbPath');
       config.ref.lunar_limb_path = value.toNativeUtf8(allocator: arena).cast();
     }
     if (options.sourcePaths.isNotEmpty) {
       final paths = arena<Pointer<Char>>(options.sourcePaths.length);
       for (var index = 0; index < options.sourcePaths.length; index++) {
-        paths[index] = options.sourcePaths[index]
-            .toNativeUtf8(allocator: arena)
-            .cast();
+        final path = options.sourcePaths[index];
+        _requireRuntimeOptionPath(path, 'sourcePaths[$index]');
+        paths[index] = path.toNativeUtf8(allocator: arena).cast();
       }
       config.ref
         ..source_paths = paths
@@ -573,4 +576,13 @@ void _initializeRuntime(
     afterNativeInitializationAttempt?.call();
     _checkStatus(bindings, status);
   });
+}
+
+void _requireRuntimeOptionPath(String path, String name) {
+  if (path.isEmpty) {
+    throw ArgumentError.value(path, name, 'must not be empty');
+  }
+  if (path.contains('\u0000')) {
+    throw ArgumentError.value(path, name, 'must not contain a NUL character');
+  }
 }

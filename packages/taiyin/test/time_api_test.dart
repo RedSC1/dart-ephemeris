@@ -171,6 +171,21 @@ void main() {
         expect(result.value.tai.toDouble(), 0);
         expect(operation.flags.contains(ResultFlag.timeScaleFallback), isTrue);
         expect(taiyin.lastResultFlags, operation.flags);
+
+        EphemerisError? failure;
+        try {
+          taiyin.position
+              .atTt(
+                CustomTarget(-210099),
+                JulianDate<TtScale>.fromDouble(2460409.0),
+              )
+              .value;
+        } on EphemerisError catch (error) {
+          failure = error;
+        }
+        expect(failure, isNotNull);
+        expect(taiyin.lastResultFlags, failure!.resultFlags);
+        expect(taiyin.lastResultFlags, isNot(operation.flags));
         expect(
           result.value.tt.coordinateSecondsDifference(result.value.ut1),
           closeTo(result.value.deltaTSeconds, 1e-11),

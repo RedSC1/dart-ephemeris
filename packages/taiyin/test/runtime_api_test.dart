@@ -204,6 +204,20 @@ void main() {
           () => runtime.loadLunarLimbModel('limb\u0000ignored'),
           throwsArgumentError,
         );
+        expect(
+          () => Ephemeris.open(
+            libraryPath: libraryPath,
+            options: const RuntimeOptions(dataRoot: 'data\u0000ignored'),
+          ),
+          throwsArgumentError,
+        );
+        expect(
+          () => Ephemeris.open(
+            libraryPath: libraryPath,
+            options: const RuntimeOptions(sourcePaths: ['']),
+          ),
+          throwsArgumentError,
+        );
       });
 
       test('runtime lifetime is independent from user contexts', () {

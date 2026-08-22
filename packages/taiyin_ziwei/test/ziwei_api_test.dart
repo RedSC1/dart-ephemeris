@@ -90,6 +90,37 @@ void main() {
         );
       });
 
+      test('rejects star and palace ids before native integer narrowing', () {
+        final ziwei = context.ziwei;
+        final chart = createReferenceChart(ziwei);
+
+        for (final invalidStar in [-1, ziwei.starCount, 65536]) {
+          expect(() => ziwei.star(invalidStar), throwsArgumentError);
+          expect(() => chart.starPosition(invalidStar), throwsArgumentError);
+          expect(() => chart.starPalace(invalidStar), throwsArgumentError);
+          expect(() => chart.brightness(invalidStar), throwsArgumentError);
+          expect(() => chart.transformMask(invalidStar), throwsArgumentError);
+          expect(
+            () => chart.hasTransform(
+              invalidStar,
+              ZiweiTransformMark.values.first,
+            ),
+            throwsArgumentError,
+          );
+          expect(
+            () => chart.flowStarPosition(ZiweiFlowLevel.year, invalidStar),
+            throwsArgumentError,
+          );
+        }
+        for (final invalidBranch in [-1, 12, 256]) {
+          expect(() => chart.palaceStars(invalidBranch), throwsArgumentError);
+          expect(
+            () => chart.flowPalaceStars(ZiweiFlowLevel.year, invalidBranch),
+            throwsArgumentError,
+          );
+        }
+      });
+
       test('catalog selection context reuses loaded resources', () {
         final catalog = ZiweiDataCatalog(coreLibraryPath: libraryPath);
         addTearDown(catalog.close);
