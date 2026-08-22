@@ -29,23 +29,18 @@ void main() {
     expect(missing, isEmpty);
   });
 
-  test(
-    'Ziwei reports a missing extension module',
-    () {
-      final runtime = Ephemeris.open(libraryPath: libraryPath);
-      final context = runtime.createContext();
-      expect(
-        () =>
-            context.createZiwei(libraryPath: '/no/such/libtaiyin_ziwei.dylib'),
-        throwsUnsupportedError,
-      );
-      expect(
-        () => ZiweiDataCatalog(libraryPath: '/no/such/libtaiyin_ziwei.dylib'),
-        throwsUnsupportedError,
-      );
-      expect(context.position, isNotNull);
-      context.close();
-    },
-    skip: nativeLibraryAvailable ? false : libraryUnavailableSkip,
-  );
+  test('Ziwei reports a missing extension module', () {
+    final runtime = Ephemeris.open(libraryPath: libraryPath);
+    final context = runtime.createContext();
+    expect(
+      () => context.createZiwei(libraryPath: '/no/such/libtaiyin_ziwei.dylib'),
+      throwsUnsupportedError,
+    );
+    expect(
+      () => ZiweiDataCatalog(libraryPath: '/no/such/libtaiyin_ziwei.dylib'),
+      throwsUnsupportedError,
+    );
+    expect(context.position, isNotNull);
+    context.close();
+  }, skip: nativeLibraryAvailable ? false : libraryUnavailableSkip);
 }
