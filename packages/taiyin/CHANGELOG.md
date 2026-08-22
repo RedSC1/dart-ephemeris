@@ -16,3 +16,5 @@
 - Remove BaZi/Ziwei from the core capability enum; extension availability is
   determined by loading the corresponding package-owned native module.
 - Add concurrent multi-isolate BaZi and Ziwei integration tests.
+- Cover positions, event search, eclipses, and Chinese-calendar conversion in
+  one concurrent worker-isolate regression, and document the ownership matrix.

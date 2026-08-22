@@ -983,6 +983,17 @@ from multiple isolates. This is also the recommended server model: one context
 per worker or logical user, with runtime mutation and shutdown kept outside
 active calculations.
 
+| API family | Parallel execution | Required ownership |
+|---|---|---|
+| Positions, events, visibility, orbits, occultations, eclipses, calendar | Worker isolates | Each worker calls `Ephemeris.attach().createContext()`. |
+| BaZi | Worker isolates | Each worker obtains its own `context.bazi` or `createBazi()`. |
+| Ziwei | Worker isolates | Each worker obtains its own Ziwei context and chart; never send or share a chart pointer. |
+| Custom native callbacks | Worker isolates supported | Register before workers start; callback lifetime remains process-wide. |
+| Runtime/catalog/configuration mutation and shutdown | Serialized | Perform outside active calculations. |
+
+The isolate regression suite exercises core positions, event search, eclipses,
+Chinese-calendar conversion, BaZi, Ziwei, and custom targets concurrently.
+
 A worker isolate must not receive a `EphemerisContext` through a `SendPort`.
 Instead, send plain Dart inputs and let the worker attach a new context to the
 already-open process runtime:
