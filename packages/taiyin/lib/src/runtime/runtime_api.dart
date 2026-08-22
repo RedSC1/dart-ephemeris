@@ -151,7 +151,6 @@ final class Ephemeris {
       );
     }
     return _registerCustomTarget(
-      _library,
       _nativeLibraryStateFor(_library),
       targetId,
       positionEvaluator,

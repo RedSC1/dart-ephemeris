@@ -355,7 +355,7 @@ void main() {
         expect(taiyin.lastDiagnostic?.targetId, targetId);
       });
 
-      test('custom evaluator can calculate a dependency', () {
+      test('custom evaluator rejects nested dependency evaluation safely', () {
         const targetId = -210008;
         final registration = runtime.registerCustomTarget(
           targetId,
@@ -371,23 +371,23 @@ void main() {
           PositionFlag.truePosition,
         };
 
-        final custom = taiyin.position
-            .atTdb(target, tdb, tt, flags: flags)
-            .value;
-        final sun = taiyin.position
-            .atTdb(Body.sun, tdb, tt, flags: flags)
-            .value;
-
-        for (var index = 0; index < 6; index++) {
-          expect(custom.values[index], closeTo(sun.values[index], 0));
-        }
+        expect(
+          () => taiyin.position.atTdb(target, tdb, tt, flags: flags).value,
+          throwsA(
+            isA<UnsupportedOperationError>().having(
+              (error) => error.status,
+              'status',
+              -4,
+            ),
+          ),
+        );
       });
 
       test('custom target callbacks work from a worker isolate', () async {
         const targetId = -210003;
         final registration = runtime.registerCustomTarget(
           targetId,
-          positionEvaluator: _customSunProxyEvaluator,
+          positionEvaluator: _customPositionEvaluator,
         );
         addTearDown(registration.close);
 
@@ -395,20 +395,10 @@ void main() {
           libraryPath,
           targetId,
         );
-        final sun = taiyin.position
-            .atTt(
-              Body.sun,
-              JulianDate<TtScale>.fromDouble(2460409.0),
-              flags: const {
-                PositionFlag.xyz,
-                PositionFlag.speed,
-                PositionFlag.truePosition,
-              },
-            )
-            .value;
-        for (var index = 0; index < 6; index++) {
-          expect(values[index], closeTo(sun.values[index], 1e-15));
-        }
+        expect(values[0], targetId.toDouble());
+        expect(values[1], isA<double>());
+        expect(values[2], closeTo(2460409.0, 1e-12));
+        expect(values.sublist(3), [1.0, 1.0, 0.0]);
       });
 
       test('rejects mutable callback captures and duplicate IDs', () {
@@ -825,7 +815,7 @@ void main() {
         );
       });
 
-      test('propagates recursive and missing custom dependencies', () {
+      test('rejects recursive and missing custom dependencies portably', () {
         final recursive = runtime.registerCustomTarget(
           -210015,
           positionEvaluator: _selfRecursiveCustomEvaluator,
@@ -841,20 +831,20 @@ void main() {
         expect(
           () => taiyin.position.atTt(recursive.target, tt).value,
           throwsA(
-            isA<InternalCalculationError>().having(
+            isA<UnsupportedOperationError>().having(
               (error) => error.status,
               'recursive status',
-              -3,
+              -4,
             ),
           ),
         );
         expect(
           () => taiyin.position.atTt(missing.target, tt).value,
           throwsA(
-            isA<EphemerisError>().having(
+            isA<UnsupportedOperationError>().having(
               (error) => error.status,
               'missing dependency status',
-              -1001,
+              -4,
             ),
           ),
         );

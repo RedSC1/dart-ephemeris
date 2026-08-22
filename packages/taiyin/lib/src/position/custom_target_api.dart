@@ -3,28 +3,7 @@ part of '../taiyin.dart';
 const int _taiyinStatusOk = 0;
 const int _taiyinErrorInvalidArgument = -1;
 const int _taiyinErrorInternal = -3;
-const int _taiyinErrorNoEphemerisData = -1001;
-
-typedef _NativeCustomDependencyPosition =
-    taiyin_call_result Function(
-      Pointer<taiyin_context>,
-      Int32,
-      Pointer<taiyin_split_julian_date>,
-      Pointer<taiyin_split_julian_date>,
-      Uint32,
-      Pointer<Double>,
-      Pointer<taiyin_ephemeris_diagnostic>,
-    );
-typedef _DartCustomDependencyPosition =
-    int Function(
-      Pointer<taiyin_context>,
-      int,
-      Pointer<taiyin_split_julian_date>,
-      Pointer<taiyin_split_julian_date>,
-      int,
-      Pointer<Double>,
-      Pointer<taiyin_ephemeris_diagnostic>,
-    );
+const int _taiyinErrorUnsupported = -4;
 
 final class _CustomTargetRequestScope {
   bool isActive = true;
@@ -44,19 +23,13 @@ final class CustomTargetRequest {
     required this.julianDateTdb,
     required this.julianDateTt,
     required this.rawFlags,
-    required Pointer<taiyin_context> context,
-    required _DartCustomDependencyPosition dependencyPosition,
     required _CustomTargetRequestScope scope,
-  }) : _context = context,
-       _dependencyPosition = dependencyPosition,
-       _scope = scope;
+  }) : _scope = scope;
 
   final CustomTarget target;
   final JulianDate<TdbScale> julianDateTdb;
   final JulianDate<TtScale> julianDateTt;
   final int rawFlags;
-  final Pointer<taiyin_context> _context;
-  final _DartCustomDependencyPosition _dependencyPosition;
   final _CustomTargetRequestScope _scope;
 
   Set<PositionFlag> get flags => Set.unmodifiable({
@@ -66,13 +39,12 @@ final class CustomTargetRequest {
 
   bool hasFlag(PositionFlag flag) => (rawFlags & flag.mask) != 0;
 
-  /// Calculates a native built-in target with the borrowed context and callback
-  /// epoch.
+  /// Requests another target at the callback epoch.
   ///
-  /// A native failure is rethrown as [CustomEvaluatorFailure], so it
-  /// automatically becomes the custom evaluator's status unless caught.
-  /// Dart-backed [CustomTarget] dependencies are rejected because recursively
-  /// entering Dart from this synchronous native callback is not portable.
+  /// Nested dependency evaluation is currently unsupported by the portable
+  /// Dart FFI backend. Calling this method throws [CustomEvaluatorFailure] with
+  /// the native unsupported-operation status instead of attempting the unsafe
+  /// native-to-Dart-to-native re-entry.
   List<double> positionOf(
     Target dependency, {
     Set<PositionFlag> flags = const {},
@@ -84,40 +56,7 @@ final class CustomTargetRequest {
         'is running.',
       );
     }
-    // The dependency call is bound as a leaf FFI call below so that it can be
-    // made safely from an isolate-group-bound native callback. A leaf call must
-    // never re-enter Dart, so reject Dart-backed custom targets before crossing
-    // the FFI boundary. Preserve the documented native statuses used for
-    // self-recursion and unavailable custom dependencies.
-    if (dependency is CustomTarget) {
-      throw CustomEvaluatorFailure(
-        dependency == target
-            ? _taiyinErrorInternal
-            : _taiyinErrorNoEphemerisData,
-      );
-    }
-    final mask = flags.fold(0, (value, flag) => value | flag.mask);
-    return using((arena) {
-      final output = arena<Double>(6);
-      final diagnostic = arena<taiyin_ephemeris_diagnostic>();
-      diagnostic.ref.struct_size = sizeOf<taiyin_ephemeris_diagnostic>();
-      final rawResult = _dependencyPosition(
-        _context,
-        dependency.id,
-        writeJulianDate(arena, julianDateTdb),
-        writeJulianDate(arena, julianDateTt),
-        mask,
-        output,
-        diagnostic,
-      );
-      final decoded = decodeNativeCallResult(rawResult);
-      if (decoded.status != _taiyinStatusOk) {
-        throw CustomEvaluatorFailure(decoded.status);
-      }
-      return List<double>.unmodifiable([
-        for (var index = 0; index < 6; index++) output[index],
-      ]);
-    });
+    throw CustomEvaluatorFailure(_taiyinErrorUnsupported);
   }
 }
 
@@ -207,7 +146,6 @@ final class CustomTargetRegistration {
 }
 
 CustomTargetRegistration _registerCustomTarget(
-  DynamicLibrary library,
   _NativeLibraryState nativeState,
   int targetId,
   CustomPositionEvaluator positionEvaluator,
@@ -224,21 +162,10 @@ CustomTargetRegistration _registerCustomTarget(
 
   NativeCallable<taiyin_native_position_evaluator_fnFunction>? positionCallable;
   NativeCallable<taiyin_native_state_evaluator_fnFunction>? stateCallable;
-  final dependencyPosition = library
-      .lookup<NativeFunction<_NativeCustomDependencyPosition>>(
-        'taiyin_calc_position_tdb',
-      )
-      .asFunction<_DartCustomDependencyPosition>(isLeaf: true);
   try {
-    positionCallable = _createCustomPositionCallable(
-      positionEvaluator,
-      dependencyPosition,
-    );
+    positionCallable = _createCustomPositionCallable(positionEvaluator);
     if (stateEvaluator != null) {
-      stateCallable = _createCustomStateCallable(
-        stateEvaluator,
-        dependencyPosition,
-      );
+      stateCallable = _createCustomStateCallable(stateEvaluator);
     }
   } catch (_) {
     stateCallable?.close();
@@ -281,12 +208,8 @@ void _closeCustomTargetRegistrationsAfterNativeClear(
 }
 
 NativeCallable<taiyin_native_position_evaluator_fnFunction>
-_createCustomPositionCallable(
-  CustomPositionEvaluator evaluator,
-  _DartCustomDependencyPosition dependencyPosition,
-) {
+_createCustomPositionCallable(CustomPositionEvaluator evaluator) {
   final frozenEvaluator = evaluator;
-  final frozenDependencyPosition = dependencyPosition;
   final callable =
       NativeCallable<
         taiyin_native_position_evaluator_fnFunction
@@ -312,8 +235,6 @@ _createCustomPositionCallable(
               julianDateTdb: readJulianDate<TdbScale>(jdTdb.ref),
               julianDateTt: readJulianDate<TtScale>(jdTt.ref),
               rawFlags: flags,
-              context: context,
-              dependencyPosition: frozenDependencyPosition,
               scope: requestScope,
             ),
           );
@@ -361,12 +282,8 @@ _createCustomPositionCallable(
 }
 
 NativeCallable<taiyin_native_state_evaluator_fnFunction>
-_createCustomStateCallable(
-  CustomStateEvaluator evaluator,
-  _DartCustomDependencyPosition dependencyPosition,
-) {
+_createCustomStateCallable(CustomStateEvaluator evaluator) {
   final frozenEvaluator = evaluator;
-  final frozenDependencyPosition = dependencyPosition;
   final callable =
       NativeCallable<
         taiyin_native_state_evaluator_fnFunction
@@ -389,8 +306,6 @@ _createCustomStateCallable(
               julianDateTdb: readJulianDate<TdbScale>(jdTdb.ref),
               julianDateTt: readJulianDate<TtScale>(jdTt.ref),
               rawFlags: flags,
-              context: context,
-              dependencyPosition: frozenDependencyPosition,
               scope: requestScope,
             ),
           );
