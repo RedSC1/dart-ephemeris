@@ -265,8 +265,32 @@ final class DataFileError extends EphemerisError {
 }
 
 /// A time-scale conversion lacked required data or received an invalid value.
-final class TimeScaleError extends EphemerisError {
+class TimeScaleError extends EphemerisError {
   TimeScaleError(
+    super.status,
+    super.name,
+    super.message, {
+    super.resultFlags,
+    super.diagnostic,
+    super.diagnostics,
+  });
+}
+
+/// Earth-orientation data is missing or does not cover the requested UTC.
+final class EarthOrientationDataError extends TimeScaleError {
+  EarthOrientationDataError(
+    super.status,
+    super.name,
+    super.message, {
+    super.resultFlags,
+    super.diagnostic,
+    super.diagnostics,
+  });
+}
+
+/// Leap-second data is unavailable for the requested UTC.
+final class LeapSecondDataError extends TimeScaleError {
+  LeapSecondDataError(
     super.status,
     super.name,
     super.message, {
@@ -804,6 +828,26 @@ Never _throwStatus(
   }
   if (status == -4) {
     throw UnsupportedOperationError(
+      arguments.status,
+      arguments.name,
+      arguments.message,
+      resultFlags: arguments.resultFlags,
+      diagnostic: arguments.diagnostic,
+      diagnostics: arguments.diagnostics,
+    );
+  }
+  if (status == taiyin_status_code.TAIYIN_TIME_ERROR_EOP_OUT_OF_RANGE) {
+    throw EarthOrientationDataError(
+      arguments.status,
+      arguments.name,
+      arguments.message,
+      resultFlags: arguments.resultFlags,
+      diagnostic: arguments.diagnostic,
+      diagnostics: arguments.diagnostics,
+    );
+  }
+  if (status == taiyin_status_code.TAIYIN_TIME_ERROR_LEAP_SECOND_UNAVAILABLE) {
+    throw LeapSecondDataError(
       arguments.status,
       arguments.name,
       arguments.message,

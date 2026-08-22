@@ -1,3 +1,9 @@
+## Unreleased
+
+- Add readable Julian-date aliases and local-calendar time conversion helpers.
+- Report missing/out-of-range EOP and unavailable leap-second data with
+  `EarthOrientationDataError` and `LeapSecondDataError`.
+
 ## 1.0.0-alpha.1
 
 - Require Taiyin C ABI 9 and regenerate the native FFI bindings.

@@ -252,6 +252,13 @@ final class AstroDateTime implements Comparable<AstroDateTime> {
     return value.addSeconds(-utcOffsetHours * 3600);
   }
 
+  /// Interprets this calendar value as UTC and returns a split Julian date.
+  ///
+  /// This is the readable equivalent of `toJulianDate<UtcScale>()`.
+  JulianDate<UtcScale> toUtcJulianDate({double utcOffsetHours = 0}) {
+    return toJulianDate<UtcScale>(utcOffsetHours: utcOffsetHours);
+  }
+
   /// Converts this civil value to a standard Julian day.
   ///
   /// [utcOffsetHours] is the civil timezone in which this value is

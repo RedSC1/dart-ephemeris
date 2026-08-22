@@ -11,7 +11,7 @@
 /// try {
 ///   final result = context.position.atTt(
 ///     taiyin.Body.mars,
-///     taiyin.JulianDate<taiyin.TtScale>.fromDouble(2460409.0),
+///     taiyin.TtJulianDate.fromDouble(2460409.0),
 ///   );
 ///   print(result.value.coordinates);
 ///   print(result.flags.values);

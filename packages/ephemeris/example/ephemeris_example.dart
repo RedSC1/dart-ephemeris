@@ -17,7 +17,7 @@ void main(List<String> arguments) {
     // context.lastDiagnostic.
     final (value: moon, flags: moonFlags) = context.positionTt(
       Body.moon,
-      JulianDate<TtScale>.fromDouble(2460409.0),
+      TtJulianDate.fromDouble(2460409.0),
       flags: {PositionFlag.xyz, PositionFlag.speed},
     );
     print('Taiyin ${ephemeris.libraryVersion}, ABI ${ephemeris.abiVersion}');

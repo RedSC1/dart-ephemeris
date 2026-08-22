@@ -135,10 +135,30 @@ final class JulianDate<S extends TimeScale>
   }
 }
 
+/// A UTC-tagged split Julian date.
+///
+/// This alias shortens type annotations; it does not convert another scale to
+/// UTC. Use [Time] for physical time-scale conversion.
 typedef UtcJulianDate = JulianDate<UtcScale>;
+
+/// A TAI-tagged split Julian date. This alias performs no conversion.
 typedef TaiJulianDate = JulianDate<TaiScale>;
+
+/// A TT-tagged split Julian date. This alias performs no conversion.
 typedef TtJulianDate = JulianDate<TtScale>;
+
+/// A UT1-tagged split Julian date. This alias performs no conversion.
 typedef Ut1JulianDate = JulianDate<Ut1Scale>;
+
+/// A TDB-tagged split Julian date. This alias performs no conversion.
 typedef TdbJulianDate = JulianDate<TdbScale>;
+
+/// A local-mean-solar-time-tagged split Julian date.
+///
+/// This alias performs no conversion and does not store a longitude.
 typedef LocalMeanSolarJulianDate = JulianDate<LocalMeanSolarTimeScale>;
+
+/// A local-apparent-solar-time-tagged split Julian date.
+///
+/// This alias performs no conversion and does not store a longitude.
 typedef LocalApparentSolarJulianDate = JulianDate<LocalApparentSolarTimeScale>;

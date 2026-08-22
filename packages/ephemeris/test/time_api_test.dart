@@ -146,6 +146,49 @@ void main() {
         expect(result.value.tt.toDouble().isFinite, isTrue);
       });
 
+      test('strict UTC conversion reports missing EOP data explicitly', () {
+        taiyin.close();
+        taiyin = Ephemeris.open(
+          libraryPath: libraryPath,
+          options: const RuntimeOptions(loadBuiltinEop: false),
+        ).createContext();
+
+        expect(
+          () => taiyin.time.scalesFromUtc(utcCalendar),
+          throwsA(
+            isA<EarthOrientationDataError>()
+                .having((error) => error.status, 'status', -3001)
+                .having(
+                  (error) => error.name,
+                  'name',
+                  'TAIYIN_TIME_ERROR_EOP_OUT_OF_RANGE',
+                ),
+          ),
+        );
+      });
+
+      test('strict UTC conversion reports EOP coverage gaps explicitly', () {
+        expect(
+          () => taiyin.time.scalesFromUtc(AstroDateTime(2200, 1, 1)),
+          throwsA(isA<EarthOrientationDataError>()),
+        );
+      });
+
+      test('reports unavailable leap-second data explicitly', () {
+        expect(
+          () => taiyin.time.taiMinusUtc(AstroDateTime(1900, 1, 1)),
+          throwsA(
+            isA<LeapSecondDataError>()
+                .having((error) => error.status, 'status', -3002)
+                .having(
+                  (error) => error.name,
+                  'name',
+                  'TAIYIN_TIME_ERROR_LEAP_SECOND_UNAVAILABLE',
+                ),
+          ),
+        );
+      });
+
       test('falls back to the estimated Delta-T route when allowed', () {
         taiyin.close();
         taiyin = Ephemeris.open(

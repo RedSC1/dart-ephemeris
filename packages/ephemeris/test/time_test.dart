@@ -131,6 +131,31 @@ void main() {
       expect(utc, AstroDateTime(2024, 2, 10, 4, 34, 56, 123456789));
     });
 
+    test('UTC Julian-date convenience matches the generic interpretation', () {
+      final value = AstroDateTime(2024, 2, 10, 12, 34, 56, 123456789);
+
+      expect(
+        value.toUtcJulianDate(utcOffsetHours: 8),
+        value.toJulianDate<UtcScale>(utcOffsetHours: 8),
+      );
+    });
+
+    test('seven Julian-date aliases expose constructors', () {
+      expect(UtcJulianDate.fromDouble(1), isA<UtcJulianDate>());
+      expect(TaiJulianDate.fromDouble(2), isA<TaiJulianDate>());
+      expect(TtJulianDate.fromDouble(3), isA<TtJulianDate>());
+      expect(Ut1JulianDate.fromDouble(4), isA<Ut1JulianDate>());
+      expect(TdbJulianDate.fromDouble(5), isA<TdbJulianDate>());
+      expect(
+        LocalMeanSolarJulianDate.fromDouble(6),
+        isA<LocalMeanSolarJulianDate>(),
+      );
+      expect(
+        LocalApparentSolarJulianDate.fromDouble(7),
+        isA<LocalApparentSolarJulianDate>(),
+      );
+    });
+
     test('toJulianDate offset agrees with the scalar toJulianDay', () {
       final birth = AstroDateTime(2024, 2, 10, 12);
       // The split path shifts then merges; the scalar path merges then

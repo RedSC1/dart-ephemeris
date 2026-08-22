@@ -75,7 +75,7 @@ void main() {
   try {
     final moonResult = context.position.atTt(
       taiyin.Body.moon,
-      taiyin.JulianDate<taiyin.TtScale>.fromDouble(2460409.0),
+      taiyin.TtJulianDate.fromDouble(2460409.0),
       flags: {
         taiyin.PositionFlag.xyz,
         taiyin.PositionFlag.speed,
@@ -113,7 +113,7 @@ final ephemeris = taiyin.Ephemeris.open();
 final context = ephemeris.createContext();
 final moon = context.position.atTt(
   taiyin.Body.moon,
-  taiyin.JulianDate<taiyin.TtScale>.fromDouble(2460409.0),
+  taiyin.TtJulianDate.fromDouble(2460409.0),
 ).value;
 context.close();
 ```
@@ -176,19 +176,36 @@ process-wide runtime data.
 Calendar values preserve astronomical year numbering and integer nanoseconds:
 
 ```dart
-final calendar = AstroDateTime(
+final utcCalendar = AstroDateTime(
   2026, 7, 19, 12, 34, 56, 123456789,
 );
-final tt = calendar.toJulianDate<TtScale>();
+final utc = utcCalendar.toUtcJulianDate();
+final scales = context.time.scalesFromUtc(utcCalendar);
+final tt = scales.value.value.tt;
+final ut1 = scales.value.value.ut1;
+final tdb = scales.value.value.tdb;
 ```
 
 `JulianDate<S>` stores an integer day and a normalized fractional day. Its time
-scale is part of the Dart type, so a `JulianDate<Ut1Scale>` cannot be passed to
-`positionTt`. `toJulianDate<S>()` interprets the calendar fields in that scale;
-it does not perform UTC/TAI/TT conversion. The split representation crosses
+scale is part of the Dart type, so a `Ut1JulianDate` cannot be passed to
+`positionTt`. The seven public aliases (`UtcJulianDate`, `TaiJulianDate`,
+`TtJulianDate`, `Ut1JulianDate`, `TdbJulianDate`,
+`LocalMeanSolarJulianDate`, and `LocalApparentSolarJulianDate`) shorten type
+annotations and constructors; aliases do not convert between scales.
+`toJulianDate<S>()` only interprets calendar fields in that scale. For physical
+UTC/TAI/TT/UT1/TDB conversion, use `context.time.scalesFromUtc()` or the
+explicit conversion methods on `context.time`; those paths apply leap-second,
+EOP, Delta-T, and TDB-model data as required. The split representation crosses
 the FFI boundary end to end: the ABI-9 native entry points use
 `taiyin_split_julian_date` for every calculation time, so the Dart value is
 never merged to a scalar `double` mid-calculation.
+
+Strict UTC conversion throws `EarthOrientationDataError` when no EOP table is
+loaded or the requested instant is outside its coverage, and
+`LeapSecondDataError` when leap-second data is unavailable. Both extend
+`TimeScaleError`. Call `context.time.setAllowUtcOutOfRangeEstimate(true)` only
+when an explicit UT1 + Delta-T fallback is acceptable; successful fallback is
+reported through `ResultFlag.timeScaleFallback` rather than hidden.
 
 ### Julian-day convention
 
@@ -204,7 +221,7 @@ argument:
 final birthBeijing = AstroDateTime(2024, 2, 10, 12);       // 12:00 UTC+8 wall clock
 final instantJd = birthBeijing.toJulianDay(utcOffsetHours: 8); // → standard JD of the true instant
 final j2000 = birthBeijing.toJ2000(utcOffsetHours: 8);         // → days from J2000.0
-final instantSplit = birthBeijing.toJulianDate<UtcScale>(       // split, full precision
+final instantSplit = birthBeijing.toUtcJulianDate(               // split, full precision
   utcOffsetHours: 8,
 );
 
@@ -264,7 +281,7 @@ execution route matters:
 ```dart
 final (value: mars, flags: resultFlags) = context.position.atUt1(
   Body.mars,
-  JulianDate<Ut1Scale>.fromDouble(2460310.5),
+  Ut1JulianDate.fromDouble(2460310.5),
 );
 
 print(mars.coordinates);
@@ -301,7 +318,7 @@ For example:
 ```dart
 final state = context.position.stateAtTt(
   Body.moon,
-  JulianDate<TtScale>.fromDouble(2460409.0),
+  TtJulianDate.fromDouble(2460409.0),
 ).value;
 print(state.positionAu);
 print(context.lastDiagnostic?.frame);
@@ -358,20 +375,20 @@ context.configuration.setObserverLocation(
 
 final siderealMoon = context.astrology.siderealPositionAtTt(
   Body.moon,
-  JulianDate<TtScale>.fromDouble(2460409.0),
+  TtJulianDate.fromDouble(2460409.0),
   ayanamsha: Ayanamsha.lahiri,
 ).value;
 final fixedJ2000SiderealMoon = context.astrology.siderealCoordinatesAtTt(
   Body.moon,
-  JulianDate<TtScale>.fromDouble(2460409.0),
+  TtJulianDate.fromDouble(2460409.0),
   referencePlane: SiderealReferencePlane.meanEclipticAtEpoch,
   referenceEpoch: SiderealReferenceEpoch.tt(
-    JulianDate<TtScale>.fromDouble(2451545.0),
+    TtJulianDate.fromDouble(2451545.0),
   ),
 ).value;
 final siderealMoonRa = context.astrology.siderealCoordinatesAtTt(
   Body.moon,
-  JulianDate<TtScale>.fromDouble(2460409.0),
+  TtJulianDate.fromDouble(2460409.0),
   ayanamsha: Ayanamsha.lahiri,
   flags: {
     PositionFlag.equatorial,
@@ -379,7 +396,7 @@ final siderealMoonRa = context.astrology.siderealCoordinatesAtTt(
   },
 ).value;
 final houses = context.astrology.housesAtUt1(
-  JulianDate<Ut1Scale>.fromDouble(2460311.0),
+  Ut1JulianDate.fromDouble(2460311.0),
   system: HouseSystem.placidus,
 ).value;
 final moonHouse = context.astrology.housePositionOf(
@@ -421,11 +438,11 @@ final houses = ephemeris.registerCustomHouseSystemModel(
 );
 try {
   final value = context.astrology.ayanamshaAtTt(
-    JulianDate<TtScale>.fromDouble(2460409.0),
+    TtJulianDate.fromDouble(2460409.0),
     ayanamsha: ayanamsha.model,
   ).value;
   final chartHouses = context.astrology.housesAtUt1(
-    JulianDate<Ut1Scale>.fromDouble(2460311.0),
+    Ut1JulianDate.fromDouble(2460311.0),
     system: houses.model,
   ).value;
 } finally {
@@ -458,7 +475,7 @@ final registration = ephemeris.registerCustomTarget(
 );
 final result = context.position.atTt(
   registration.target,
-  JulianDate<TtScale>.fromDouble(2460409.0),
+  TtJulianDate.fromDouble(2460409.0),
   flags: {PositionFlag.xyz},
 ).value;
 registration.close();
@@ -578,7 +595,7 @@ context.configuration
   )
   ..setStandardAtmosphere();
 
-final start = JulianDate<Ut1Scale>.fromDouble(2460409.0);
+final start = Ut1JulianDate.fromDouble(2460409.0);
 final sunrise = context.visibility.solarRiseSetAtUt1(
   start,
   start.add(const Duration(days: 1)),
@@ -646,7 +663,7 @@ context.configuration
 
 final event = context.heliacal.nextBodyEventAtUt1(
   Body.venus,
-  JulianDate<Ut1Scale>.fromDouble(2460758.7),
+  Ut1JulianDate.fromDouble(2460758.7),
   event: HeliacalEventKind.morningFirst,
   maxSearchDays: 5,
   conditions: const HeliacalVisibilityConditions(
@@ -677,7 +694,7 @@ also require the star key to be present in the process-wide catalog.
 ```dart
 final event = context.occultation.nextLocalStarAtUt1(
   'antares',
-  JulianDate<Ut1Scale>.fromDouble(2460310.5),
+  Ut1JulianDate.fromDouble(2460310.5),
 ).value;
 final visibility = context.occultation.localStarVisibilityAtUt1(
   'antares',
@@ -712,7 +729,7 @@ typed `JulianDate` coordinates.
 
 ```dart
 final eclipse = context.eclipses.nextLunarAtUt1(
-  JulianDate<Ut1Scale>.fromDouble(2460926.0),
+  Ut1JulianDate.fromDouble(2460926.0),
   kinds: {EclipseKind.total},
   options: {LunarEclipseSearchOption.includeContacts},
 ).value;
@@ -748,12 +765,12 @@ the eclipse circumstances at that location.
 
 ```dart
 final global = context.eclipses.nextSolarAtUt1(
-  JulianDate<Ut1Scale>.fromDouble(2460400.0),
+  Ut1JulianDate.fromDouble(2460400.0),
   kinds: {EclipseKind.total},
   options: {SolarEclipseSearchOption.includeContacts},
 ).value;
 final local = context.eclipses.nextLocalSolarAtUt1(
-  JulianDate<Ut1Scale>.fromDouble(2460400.0),
+  Ut1JulianDate.fromDouble(2460400.0),
   kinds: {EclipseKind.total},
 ).value;
 final geometry = context.eclipses.localSolarCircumstancesAtUt1(
@@ -780,7 +797,7 @@ standard-atmosphere fallback:
 
 ```dart
 final refracted = context.eclipses.solveLocalSolarAtUt1(
-  JulianDate<Ut1Scale>.fromDouble(2460409.262231433),
+  Ut1JulianDate.fromDouble(2460409.262231433),
   visibilityOptions: {
     LocalSolarEclipseVisibilityOption.refraction,
     LocalSolarEclipseVisibilityOption.strictMeteorology,
@@ -802,7 +819,7 @@ positive maximum step and an explicit result capacity; `maxResults` defaults to
 truncating results.
 
 ```dart
-final start = JulianDate<Ut1Scale>.fromDouble(2460380.5);
+final start = Ut1JulianDate.fromDouble(2460380.5);
 final phases = context.events.lunarPhaseCrossingsAtUt1(
   0, // new moon
   start,
@@ -813,7 +830,7 @@ final phases = context.events.lunarPhaseCrossingsAtUt1(
 
 final transit = context.events.nextSolarTransitAtUt1(
   Body.mercury,
-  JulianDate<Ut1Scale>.fromDouble(2458799.0),
+  Ut1JulianDate.fromDouble(2458799.0),
 ).value;
 print(phases.map((date) => date.toDouble()));
 print(transit.greatest);
@@ -841,7 +858,7 @@ and its longitude, so conversions cannot use the wrong coordinate kind or a
 mismatched meridian:
 
 ```dart
-final ut1 = JulianDate<Ut1Scale>.fromDouble(2460311.0);
+final ut1 = Ut1JulianDate.fromDouble(2460311.0);
 final equation = context.solarTime.equationOfTimeAtUt1(ut1).value;
 
 final longitudeRadians = 116.3833 * 3.141592653589793 / 180;
@@ -870,7 +887,7 @@ parallax:
 ```dart
 final moonPhenomena = context.phenomena.atUt1(
   Body.moon,
-  JulianDate<Ut1Scale>.fromDouble(2460416.2916666665),
+  Ut1JulianDate.fromDouble(2460416.2916666665),
 ).value;
 print(moonPhenomena.illuminatedFraction);
 print(moonPhenomena.apparentMagnitude);
@@ -892,7 +909,7 @@ the body's fixed physical primary: the Moon is Earth-centered, while Earth,
 EMB, and major planets or planet barycenters are Sun-centered.
 
 ```dart
-final start = JulianDate<Ut1Scale>.fromDouble(2460409.0);
+final start = Ut1JulianDate.fromDouble(2460409.0);
 final orbit = context.orbits.osculatingAtUt1(
   Body.moon,
   start,
@@ -944,7 +961,7 @@ Star calculations use the user-owned context:
 ```dart
 final spica = context.stars.atTt(
   'spica',
-  JulianDate<TtScale>.fromDouble(2460409.0),
+  TtJulianDate.fromDouble(2460409.0),
   flags: {
     PositionFlag.xyz,
     PositionFlag.speed,
@@ -953,7 +970,7 @@ final spica = context.stars.atTt(
 
 final observedSpica = context.stars.observedAtUt1(
   'spica',
-  JulianDate<Ut1Scale>.fromDouble(2460409.0),
+  Ut1JulianDate.fromDouble(2460409.0),
   flags: {
     ObservedFlag.topocentric,
     ObservedFlag.horizontal,
@@ -1042,15 +1059,15 @@ final lunar = context.chineseCalendar
 print(lunar); // 2024-01-01 (甲辰正月初一)
 
 final year = context.chineseCalendar
-    .calcYearUt(JulianDate<Ut1Scale>.fromDouble(2460348.0))
+    .calcYearUt(Ut1JulianDate.fromDouble(2460348.0))
     .value;
 print(year.solarTermCount); // 25
 
-final pillarsResult = context.chineseCalendar.fourPillars(
-  instantUtc: JulianDate<UtcScale>.fromDouble(2460351.0),
-  virtualTime: AstroDateTime(2024, 2, 10, 12),
-);
+final localTime = AstroDateTime(2024, 2, 10, 12);
+final lunarResult = context.chineseCalendar.fromLocal(localTime);
+final pillarsResult = context.chineseCalendar.fourPillarsLocal(localTime);
 final pillars = pillarsResult.value;
+print(lunarResult.value); // 正月初一
 print(pillars.year); // 甲辰
 ```
 

@@ -148,6 +148,40 @@ void main() {
         expect(result.month.branchId, 2);
       });
 
+      test('resolves a local clock without manual timezone arithmetic', () {
+        final localTime = AstroDateTime(2003, 3, 13, 14, 15);
+        final calendar = context.chineseCalendar;
+        final instantUtc = calendar.instantFromLocal(localTime);
+
+        expect(
+          AstroDateTime.fromJulianDate(instantUtc),
+          AstroDateTime(2003, 3, 13, 6, 15),
+        );
+        expect(calendar.localTimeFromInstant(instantUtc).value, localTime);
+        expect(
+          calendar.fromLocal(localTime).value.year,
+          calendar
+              .fromSolar(SolarDate(year: 2003, month: 3, day: 13))
+              .value
+              .year,
+        );
+
+        final concise = calendar.fourPillarsLocal(localTime).value;
+        final explicit = calendar
+            .fourPillars(instantUtc: instantUtc, virtualTime: localTime)
+            .value;
+        expect(concise.year, explicit.year);
+        expect(concise.month, explicit.month);
+        expect(concise.day, explicit.day);
+        expect(concise.hour, explicit.hour);
+
+        final fromInstant = calendar.fourPillarsInstant(instantUtc).value;
+        expect(fromInstant.year, explicit.year);
+        expect(fromInstant.month, explicit.month);
+        expect(fromInstant.day, explicit.day);
+        expect(fromInstant.hour, explicit.hour);
+      });
+
       test('searches previous and next solar terms', () {
         final jd = JulianDate<Ut1Scale>.fromDouble(2460348.0);
         final prev = context.chineseCalendar.getPrevJieQiUt(jd).value;

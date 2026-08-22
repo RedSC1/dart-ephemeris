@@ -43,7 +43,7 @@ void main(List<String> arguments) {
   );
 
   try {
-    final jd = JulianDate<TtScale>.fromDouble(2460409.0);
+    final jd = TtJulianDate.fromDouble(2460409.0);
 
     // 1. Custom target: a synthetic comet in a circular inclined orbit.
     final cometState = context.position
