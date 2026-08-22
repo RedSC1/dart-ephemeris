@@ -25,10 +25,11 @@ final class _ZiweiOracleCase {
 }
 
 // The same 23 physical clocks retained by the C++ core's legacy-oracle suite.
-// Cases at Li-Chun/late-Zi and ancient reform boundaries lock the current
-// calendar-backed public C ABI semantics rather than the core unit test's
-// injected CalendarFacts. The compact fingerprint covers all 115 natal star
-// positions; the first 115 stable StarIds are the natal registry.
+// Late-Zi cases retain the legacy no-split logical-day convention. Ancient
+// reform boundaries lock the current calendar-backed public C ABI semantics
+// rather than the core unit test's injected CalendarFacts. The compact
+// fingerprint covers all 115 natal star positions; the first 115 stable
+// StarIds are the natal registry.
 final _oracleCases = <_ZiweiOracleCase>[
   _ZiweiOracleCase(
     AstroDateTime(181, 8, 20, 8),
@@ -76,7 +77,7 @@ final _oracleCases = <_ZiweiOracleCase>[
     2,
     2,
     4,
-    1962935819,
+    1449979539,
   ),
   _ZiweiOracleCase(
     AstroDateTime(1984, 2, 4, 23, 30),
@@ -84,7 +85,7 @@ final _oracleCases = <_ZiweiOracleCase>[
     2,
     2,
     4,
-    1780431691,
+    1089783635,
   ),
   _ZiweiOracleCase(
     AstroDateTime(2000, 1, 1, 0, 30),
@@ -100,15 +101,15 @@ final _oracleCases = <_ZiweiOracleCase>[
     0,
     0,
     0,
-    1599707279,
+    1437700507,
   ),
   _ZiweiOracleCase(
     AstroDateTime(2023, 4, 5, 23, 30),
     ZiweiGender.female,
+    4,
+    4,
     3,
-    3,
-    0,
-    263562351,
+    2094248536,
   ),
   _ZiweiOracleCase(
     AstroDateTime(2033, 12, 22, 12),
