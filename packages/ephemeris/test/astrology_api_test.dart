@@ -1096,6 +1096,30 @@ void main() {
         expect(wrapped.houseNumber, 12);
         expect(wrapped.fraction, closeTo(0.5, 1e-12));
         expect(wrapped.continuousHousePosition, closeTo(12.5, 1e-12));
+
+        final aliasedHouses = Houses(
+          requestedSystemId: houses.requestedSystemId,
+          resolvedSystemId: houses.resolvedSystemId,
+          rawFlags: houses.rawFlags + 0x100000000,
+          flags: houses.flags,
+          armcRadians: houses.armcRadians,
+          ascendantRadians: houses.ascendantRadians,
+          midheavenRadians: houses.midheavenRadians,
+          vertexRadians: houses.vertexRadians,
+          eastPointRadians: houses.eastPointRadians,
+          armcRateRadiansPerDay: houses.armcRateRadiansPerDay,
+          ascendantRateRadiansPerDay: houses.ascendantRateRadiansPerDay,
+          midheavenRateRadiansPerDay: houses.midheavenRateRadiansPerDay,
+          vertexRateRadiansPerDay: houses.vertexRateRadiansPerDay,
+          eastPointRateRadiansPerDay: houses.eastPointRateRadiansPerDay,
+          cuspLongitudesRadians: houses.cuspLongitudesRadians,
+          cuspLongitudeRatesRadiansPerDay:
+              houses.cuspLongitudeRatesRadiansPerDay,
+        );
+        expect(
+          () => context.astrology.housePositionOf(aliasedHouses, 0),
+          throwsRangeError,
+        );
       });
 
       test(

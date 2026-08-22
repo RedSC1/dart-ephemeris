@@ -839,6 +839,7 @@ final class EclipseApi {
   }
 
   void _requireCapacity(int capacity, {String name = 'maxResults'}) {
+    validateNativeSize(capacity, name);
     if (capacity <= 0) {
       throw RangeError.range(capacity, 1, null, name);
     }

@@ -603,6 +603,9 @@ final class OccultationApi {
     Arena arena,
     LunarOccultationResult value,
   ) {
+    _requireNonnegativeNativeInt32(value.candidateCount, 'candidateCount');
+    _requireNonnegativeNativeInt32(value.iterationCount, 'iterationCount');
+    _requireNonnegativeNativeInt32(value.evaluationCount, 'evaluationCount');
     final output = arena<taiyin_lunar_occultation_result>();
     _bindings.taiyin_lunar_occultation_result_init(output);
     output.ref
@@ -732,6 +735,12 @@ final class OccultationApi {
         name,
         'must be finite and greater than or equal to zero',
       );
+    }
+  }
+
+  void _requireNonnegativeNativeInt32(int value, String name) {
+    if (value < 0 || value > 0x7fffffff) {
+      throw RangeError.range(value, 0, 0x7fffffff, name);
     }
   }
 

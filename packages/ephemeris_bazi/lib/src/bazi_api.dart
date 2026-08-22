@@ -564,6 +564,7 @@ final class BaziContext implements Finalizable {
   }) {
     _ensureOpen();
     _requireUnsigned32(requestedCount, 'requestedCount');
+    _validateQiyunResult(qiyun);
     return using((arena) {
       final birthCivil = writeNativeCalendar(
         _coreBindings,
@@ -831,9 +832,7 @@ final class BaziContext implements Finalizable {
   }
 
   void _requireSignedInt32(int value, String name) {
-    if (value < -0x80000000 || value > 0x7fffffff) {
-      throw RangeError.range(value, -0x80000000, 0x7fffffff, name);
-    }
+    validateNativeInt32(value, name);
   }
 
   void _requirePositiveInt32(int value, String name) {
@@ -849,9 +848,31 @@ final class BaziContext implements Finalizable {
   }
 
   void _requireUnsigned32(int value, String name) {
-    if (value < 0 || value > 0xffffffff) {
-      throw RangeError.range(value, 0, 0xffffffff, name);
+    validateNativeUint32(value, name);
+  }
+
+  void _validateQiyunResult(BaziQiyunResult value) {
+    _requireDirection(value.direction);
+    validateNativeUint8(value.referenceJieIndex, 'referenceJieIndex');
+    for (final field in [
+      (value: value.offsetYears, name: 'offsetYears'),
+      (value: value.offsetMonths, name: 'offsetMonths'),
+      (value: value.offsetDays, name: 'offsetDays'),
+      (value: value.offsetHours, name: 'offsetHours'),
+      (value: value.offsetMinutes, name: 'offsetMinutes'),
+    ]) {
+      _requireSignedInt32(field.value, field.name);
     }
+    for (final field in [
+      (value: value.jieIntervalDays, name: 'jieIntervalDays'),
+      (value: value.startAgeYears, name: 'startAgeYears'),
+      (value: value.offsetSeconds, name: 'offsetSeconds'),
+    ]) {
+      validateNativeFinite(field.value, field.name);
+    }
+    validateNativeJulianDate(value.referenceJieJdUt);
+    validateNativeJulianDate(value.startJdUt);
+    validateNativeCalendar(value.startCivilTime);
   }
 }
 
@@ -890,6 +911,7 @@ Pointer<taiyin_bazi_chart> _writeBaziChart(
   Arena arena,
   BaziChart value,
 ) {
+  _validateBaziChart(value);
   final native = arena<taiyin_bazi_chart>();
   bindings.taiyin_bazi_chart_init(native);
   native.ref
@@ -913,6 +935,44 @@ Pointer<taiyin_bazi_chart> _writeBaziChart(
     }
   }
   return native;
+}
+
+void _validateBaziChart(BaziChart value) {
+  void requireFour(List<int> values, String name) {
+    if (values.length != 4) {
+      throw ArgumentError.value(values, name, 'must contain four values');
+    }
+    for (var index = 0; index < values.length; index++) {
+      validateNativeUint8(values[index], '$name[$index]');
+    }
+  }
+
+  requireFour(value.hiddenStemCount, 'hiddenStemCount');
+  requireFour(value.visibleTenGods, 'visibleTenGods');
+  requireFour(value.lifeStages, 'lifeStages');
+  requireFour(value.nayinIds, 'nayinIds');
+
+  void requireFourByThree(List<List<int>> values, String name) {
+    if (values.length != 4) {
+      throw ArgumentError.value(values, name, 'must contain four rows');
+    }
+    for (var pillar = 0; pillar < values.length; pillar++) {
+      final row = values[pillar];
+      if (row.length != 3) {
+        throw ArgumentError.value(
+          row,
+          '$name[$pillar]',
+          'must contain three values',
+        );
+      }
+      for (var slot = 0; slot < row.length; slot++) {
+        validateNativeUint8(row[slot], '$name[$pillar][$slot]');
+      }
+    }
+  }
+
+  requireFourByThree(value.hiddenStems, 'hiddenStems');
+  requireFourByThree(value.hiddenTenGods, 'hiddenTenGods');
 }
 
 Pointer<taiyin_bazi_qiyun_result> _writeQiyun(

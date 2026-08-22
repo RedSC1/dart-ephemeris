@@ -123,6 +123,11 @@ final class ChineseCalendarContext implements Finalizable {
     required int termIndexFromVernalEquinox,
   }) {
     _ensureOpen();
+    validateNativeInt32(civilYear, 'civilYear');
+    validateNativeUint8(
+      termIndexFromVernalEquinox,
+      'termIndexFromVernalEquinox',
+    );
     return using((arena) {
       final output = arena<taiyin_chinese_solar_term_event>();
       final diagnostic = arena<taiyin_ephemeris_diagnostic>();
@@ -319,6 +324,8 @@ final class ChineseCalendarContext implements Finalizable {
     required bool isLeap,
   }) {
     _ensureOpen();
+    validateNativeInt32(lunarYear, 'lunarYear');
+    validateNativeUint8(month, 'month');
     return using((arena) {
       final output = arena<Uint8>();
       final diagnostic = arena<taiyin_ephemeris_diagnostic>();
@@ -432,15 +439,7 @@ Pointer<taiyin_chinese_calendar_config> _writeChineseCalendarConfig(
   Arena arena,
   ChineseCalendarConfig config,
 ) {
-  if (config.utcOffsetMinutes < -0x80000000 ||
-      config.utcOffsetMinutes > 0x7fffffff) {
-    throw RangeError.range(
-      config.utcOffsetMinutes,
-      -0x80000000,
-      0x7fffffff,
-      'utcOffsetMinutes',
-    );
-  }
+  validateNativeInt32(config.utcOffsetMinutes, 'utcOffsetMinutes');
   final native = arena<taiyin_chinese_calendar_config>();
   bindings.taiyin_chinese_calendar_config_init(native);
   native.ref
@@ -456,6 +455,9 @@ Pointer<taiyin_solar_date> _writeSolarDate(
   Arena arena,
   SolarDate value,
 ) {
+  validateNativeInt32(value.year, 'year');
+  validateNativeUint8(value.month, 'month');
+  validateNativeUint8(value.day, 'day');
   final native = arena<taiyin_solar_date>();
   bindings.taiyin_solar_date_init(native);
   native.ref
@@ -470,6 +472,10 @@ Pointer<taiyin_lunar_date> _writeLunarDate(
   Arena arena,
   LunarDate value,
 ) {
+  validateNativeInt32(value.year, 'year');
+  validateNativeUint8(value.month, 'month');
+  validateNativeUint8(value.day, 'day');
+  validateNativeUint8(value.monthDays, 'monthDays');
   final native = arena<taiyin_lunar_date>();
   bindings.taiyin_lunar_date_init(native);
   native.ref

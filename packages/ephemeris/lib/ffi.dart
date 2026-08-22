@@ -13,4 +13,5 @@ export 'src/interop/calendar.dart';
 export 'src/interop/call_result.dart';
 export 'src/interop/julian_date.dart';
 export 'src/interop/native_arrays.dart';
+export 'src/interop/native_validation.dart';
 export 'src/native_compatibility.dart';

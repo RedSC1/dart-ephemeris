@@ -17,20 +17,26 @@ Pointer<taiyin_split_julian_date> writeJulianDate<S extends TimeScale>(
   Arena arena,
   JulianDate<S> value,
 ) {
-  if (value.dayNumber < -0x8000000000000000 ||
-      value.dayNumber > 0x7fffffffffffffff) {
-    throw RangeError.range(
-      value.dayNumber,
-      -0x8000000000000000,
-      0x7fffffffffffffff,
-      'dayNumber',
-    );
-  }
+  validateNativeJulianDate(value);
   final native = arena<taiyin_split_julian_date>();
   native.ref
     ..day_number = value.dayNumber
     ..day_fraction = value.dayFraction;
   return native;
+}
+
+/// Validates fields that can narrow at the native split-JD ABI boundary.
+void validateNativeJulianDate<S extends TimeScale>(JulianDate<S> value) {
+  // The native Dart VM already represents `int` as a signed 64-bit value,
+  // matching the C ABI field. Keep this hook so extension packages can
+  // validate a complete split-JD before manually embedding it in a struct.
+  if (!value.dayFraction.isFinite) {
+    throw ArgumentError.value(
+      value.dayFraction,
+      'dayFraction',
+      'must be finite',
+    );
+  }
 }
 
 /// Reads a split Julian date returned by the C ABI into a [JulianDate].

@@ -30,6 +30,33 @@ void main() {
         return context.bazi.calcChart(pillars);
       }
 
+      BaziQiyunResult copyQiyun(
+        BaziQiyunResult value, {
+        int? direction,
+        int? referenceJieIndex,
+        double? jieIntervalDays,
+        int? offsetYears,
+        JulianDate<Ut1Scale>? referenceJieJdUt,
+        AstroDateTime? startCivilTime,
+      }) {
+        return BaziQiyunResult(
+          direction: direction ?? value.direction,
+          timeModel: value.timeModel,
+          referenceJieIndex: referenceJieIndex ?? value.referenceJieIndex,
+          jieIntervalDays: jieIntervalDays ?? value.jieIntervalDays,
+          startAgeYears: value.startAgeYears,
+          offsetYears: offsetYears ?? value.offsetYears,
+          offsetMonths: value.offsetMonths,
+          offsetDays: value.offsetDays,
+          offsetHours: value.offsetHours,
+          offsetMinutes: value.offsetMinutes,
+          offsetSeconds: value.offsetSeconds,
+          referenceJieJdUt: referenceJieJdUt ?? value.referenceJieJdUt,
+          startJdUt: value.startJdUt,
+          startCivilTime: startCivilTime ?? value.startCivilTime,
+        );
+      }
+
       test('computes kong-wang (空亡) of a sexagenary item', () {
         final jiaZi = context.ganzhi.make(stemId: 0, branchId: 0);
         final kongWang = context.bazi.getKongWang(jiaZi);
@@ -236,6 +263,50 @@ void main() {
             throwsRangeError,
           );
         }
+
+        BaziChart copyChart({
+          List<int>? hiddenStemCount,
+          List<int>? visibleTenGods,
+        }) {
+          return BaziChart(
+            yearPillar: chart.yearPillar,
+            monthPillar: chart.monthPillar,
+            dayPillar: chart.dayPillar,
+            hourPillar: chart.hourPillar,
+            mingGong: chart.mingGong,
+            shenGong: chart.shenGong,
+            taiYuan: chart.taiYuan,
+            taiXi: chart.taiXi,
+            hiddenStemCount: hiddenStemCount ?? chart.hiddenStemCount,
+            hiddenStems: chart.hiddenStems,
+            visibleTenGods: visibleTenGods ?? chart.visibleTenGods,
+            hiddenTenGods: chart.hiddenTenGods,
+            lifeStages: chart.lifeStages,
+            nayinIds: chart.nayinIds,
+          );
+        }
+
+        expect(
+          () => bazi.calcXiaoyun(
+            copyChart(hiddenStemCount: const [1, 2, 3]),
+            1,
+            1,
+          ),
+          throwsArgumentError,
+        );
+        expect(
+          () => bazi.calcXiaoyun(
+            copyChart(
+              visibleTenGods: [
+                0x100 + chart.visibleTenGods[0],
+                ...chart.visibleTenGods.skip(1),
+              ],
+            ),
+            1,
+            1,
+          ),
+          throwsRangeError,
+        );
       });
 
       test('calculates qi-yun and fills da-yun', () {
@@ -276,6 +347,37 @@ void main() {
               requestedCount: count,
             ),
             throwsRangeError,
+          );
+        }
+
+        final invalidQiyunCases = <(BaziQiyunResult, Matcher)>[
+          (copyQiyun(qiyun, direction: 0x100000001), throwsArgumentError),
+          (
+            copyQiyun(
+              qiyun,
+              referenceJieIndex: qiyun.referenceJieIndex + 0x100,
+            ),
+            throwsRangeError,
+          ),
+          (copyQiyun(qiyun, offsetYears: 0x100000000), throwsRangeError),
+          (copyQiyun(qiyun, jieIntervalDays: double.nan), throwsArgumentError),
+          (
+            copyQiyun(
+              qiyun,
+              startCivilTime: AstroDateTime(0x1000007e8, 2, 10),
+            ),
+            throwsRangeError,
+          ),
+        ];
+        for (final invalid in invalidQiyunCases) {
+          expect(
+            () => context.bazi.fillDayun(
+              birthCivilTime: AstroDateTime(2024, 2, 10, 12),
+              chart: chart,
+              qiyun: invalid.$1,
+              requestedCount: 1,
+            ),
+            invalid.$2,
           );
         }
       });

@@ -18,6 +18,7 @@ import 'heliacal/heliacal_models.dart';
 import 'interop/calendar.dart';
 import 'interop/call_result.dart';
 import 'interop/julian_date.dart';
+import 'interop/native_validation.dart';
 import 'native_compatibility.dart';
 import 'observed/observed_models.dart';
 import 'occultation/occultation_models.dart';
@@ -859,6 +860,25 @@ void _writeEphemerisDiagnostic(
   Pointer<taiyin_ephemeris_diagnostic> output,
   EphemerisDiagnostic value,
 ) {
+  for (final field in [
+    (value: value.status, name: 'status'),
+    (value: value.targetId, name: 'targetId'),
+    (value: value.centerId, name: 'centerId'),
+    (value: value.rawFrameId, name: 'rawFrameId'),
+    (value: value.candidateCount, name: 'candidateCount'),
+    (value: value.attemptedMethodId, name: 'attemptedMethodId'),
+    (value: value.componentTargetId, name: 'componentTargetId'),
+    (value: value.componentCenterId, name: 'componentCenterId'),
+    (value: value.componentMethodId, name: 'componentMethodId'),
+  ]) {
+    validateNativeInt32(field.value, field.name);
+  }
+  validateNativeUint8(value.rawTimeScaleRouteId, 'rawTimeScaleRouteId');
+  validateNativeUint8(
+    value.rawTimeScaleFallbackReasonId,
+    'rawTimeScaleFallbackReasonId',
+  );
+  validateNativeJulianDate(value.julianDateTdb);
   output.ref
     ..struct_size = sizeOf<taiyin_ephemeris_diagnostic>()
     ..status = value.status

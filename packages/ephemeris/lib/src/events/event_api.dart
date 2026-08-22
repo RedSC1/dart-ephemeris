@@ -1077,6 +1077,9 @@ final class EventsApi {
     taiyin_solar_transit_result output,
     SolarTransitEvent value,
   ) {
+    validateNativeInt32(value.bodyId, 'bodyId');
+    _requireNonnegativeNativeInt32(value.iterationCount, 'iterationCount');
+    _requireNonnegativeNativeInt32(value.evaluationCount, 'evaluationCount');
     output
       ..struct_size = sizeOf<taiyin_solar_transit_result>()
       ..body_id = value.bodyId
@@ -1202,8 +1205,15 @@ final class EventsApi {
   }
 
   void _requireCapacity(int maxResults) {
+    validateNativeSize(maxResults, 'maxResults');
     if (maxResults <= 0) {
       throw RangeError.range(maxResults, 1, null, 'maxResults');
+    }
+  }
+
+  void _requireNonnegativeNativeInt32(int value, String name) {
+    if (value < 0 || value > 0x7fffffff) {
+      throw RangeError.range(value, 0, 0x7fffffff, name);
     }
   }
 

@@ -341,6 +341,27 @@ void main() {
           localSearch.contactSunAzimuthDegrees.every((value) => value.isFinite),
           isTrue,
         );
+        final aliasedTransit = SolarTransitEvent(
+          bodyId: transit.bodyId,
+          kinds: transit.kinds,
+          greatest: transit.greatest,
+          minimumSeparationRadians: transit.minimumSeparationRadians,
+          sunRadiusRadians: transit.sunRadiusRadians,
+          bodyRadiusRadians: transit.bodyRadiusRadians,
+          t1: transit.t1,
+          t2: transit.t2,
+          t3: transit.t3,
+          t4: transit.t4,
+          iterationCount: transit.iterationCount + 0x100000000,
+          evaluationCount: transit.evaluationCount,
+        );
+        expect(
+          () => context.events.localSolarTransitAtUt1(
+            aliasedTransit,
+            newYork,
+          ),
+          throwsRangeError,
+        );
       });
 
       test(

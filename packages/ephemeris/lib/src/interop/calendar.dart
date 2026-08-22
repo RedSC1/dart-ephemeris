@@ -4,6 +4,7 @@ import 'package:ffi/ffi.dart';
 
 import '../bindings/taiyin_bindings.g.dart';
 import '../time/astro_date_time.dart';
+import 'native_validation.dart';
 
 /// Marshals an astronomical calendar value into an arena-owned C ABI struct.
 Pointer<taiyin_calendar_datetime> writeNativeCalendar(
@@ -26,9 +27,7 @@ Pointer<taiyin_calendar_datetime> writeNativeCalendar(
 
 /// Validates fields that can narrow at the native calendar ABI boundary.
 void validateNativeCalendar(AstroDateTime value) {
-  if (value.year < -2147483648 || value.year > 2147483647) {
-    throw RangeError.range(value.year, -2147483648, 2147483647, 'year');
-  }
+  validateNativeInt32(value.year, 'year');
 }
 
 /// Converts a native calendar struct into an [AstroDateTime] using the same

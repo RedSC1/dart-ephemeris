@@ -95,6 +95,35 @@ void main() {
               )
               .value;
 
+          final aliasedOccultation = LunarOccultationResult(
+            kind: geocentric.kind,
+            types: geocentric.types,
+            coordinate: geocentric.coordinate,
+            begin: geocentric.begin,
+            end: geocentric.end,
+            firstContact: geocentric.firstContact,
+            secondContact: geocentric.secondContact,
+            thirdContact: geocentric.thirdContact,
+            fourthContact: geocentric.fourthContact,
+            separationRadians: geocentric.separationRadians,
+            moonRadiusRadians: geocentric.moonRadiusRadians,
+            targetRadiusRadians: geocentric.targetRadiusRadians,
+            marginRadians: geocentric.marginRadians,
+            phenomena: geocentric.phenomena,
+            candidate: geocentric.candidate,
+            nextSearch: geocentric.nextSearch,
+            candidateCount: geocentric.candidateCount + 0x100000000,
+            iterationCount: geocentric.iterationCount,
+            evaluationCount: geocentric.evaluationCount,
+          );
+          expect(
+            () => context.occultation.starWhereAtUt1(
+              'antares',
+              aliasedOccultation,
+            ),
+            throwsRangeError,
+          );
+
           expect(geocentric.kind, LunarOccultationKind.lunarStar);
           expect(geocentric.begin, isNotNull);
           expect(geocentric.end, isNotNull);

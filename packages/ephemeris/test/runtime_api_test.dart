@@ -54,6 +54,35 @@ void main() {
         expect(formatted, contains('status=TAIYIN_STATUS_OK(0)'));
         expect(formatted, contains('target=${Body.moon.id}'));
         expect(formatted, contains('jd_tdb='));
+
+        final aliasedDiagnostic = EphemerisDiagnostic(
+          status: diagnostic.status,
+          targetId: diagnostic.targetId + 0x100000000,
+          centerId: diagnostic.centerId,
+          frame: diagnostic.frame,
+          rawFrameId: diagnostic.rawFrameId,
+          julianDateTdb: diagnostic.julianDateTdb,
+          candidateCount: diagnostic.candidateCount,
+          attemptedMethodId: diagnostic.attemptedMethodId,
+          nearestCoverageStart: diagnostic.nearestCoverageStart,
+          nearestCoverageEnd: diagnostic.nearestCoverageEnd,
+          componentTargetId: diagnostic.componentTargetId,
+          componentCenterId: diagnostic.componentCenterId,
+          componentMethodId: diagnostic.componentMethodId,
+          timeScaleRoute: diagnostic.timeScaleRoute,
+          rawTimeScaleRouteId: diagnostic.rawTimeScaleRouteId,
+          timeScaleFallbackReason: diagnostic.timeScaleFallbackReason,
+          rawTimeScaleFallbackReasonId:
+              diagnostic.rawTimeScaleFallbackReasonId,
+          timeScaleFlags: diagnostic.timeScaleFlags,
+          taiMinusUtcSeconds: diagnostic.taiMinusUtcSeconds,
+          dut1Seconds: diagnostic.dut1Seconds,
+          deltaTSeconds: diagnostic.deltaTSeconds,
+        );
+        expect(
+          () => runtime.formatEphemerisDiagnostic(aliasedDiagnostic),
+          throwsRangeError,
+        );
       });
 
       test('rejects status codes before native int32 narrowing', () {

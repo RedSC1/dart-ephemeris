@@ -531,9 +531,9 @@ void _requireSignedInt32(int value, String name) {
 }
 
 void _requirePositiveNativeSize(int value, String name) {
-  final maxValue = sizeOf<Size>() == 4 ? 0xffffffff : 0x7fffffffffffffff;
-  if (value < 1 || value > maxValue) {
-    throw RangeError.range(value, 1, maxValue, name);
+  validateNativeSize(value, name);
+  if (value < 1) {
+    throw RangeError.range(value, 1, null, name);
   }
 }
 

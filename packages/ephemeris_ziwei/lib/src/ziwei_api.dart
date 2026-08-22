@@ -376,6 +376,7 @@ final class ZiweiContext implements Finalizable {
   }
 
   void _requireStarId(int starId) {
+    validateNativeUint16(starId, 'starId');
     final count = _bindings.taiyin_ziwei_star_count(_context);
     if (starId < 0 || starId >= count) {
       throw ArgumentError.value(
@@ -1228,6 +1229,8 @@ Pointer<taiyin_ziwei_reverse_request> _writeZiweiReverseRequest(
   required ZiweiBirthOptions options,
   required ZiweiTier1ReverseQuery query,
 }) {
+  validateNativeJulianDate(startInstantUtc);
+  validateNativeJulianDate(endInstantUtc);
   validateNativeCalendar(startVirtualTime);
   final native = arena<taiyin_ziwei_reverse_request>();
   bindings.taiyin_ziwei_reverse_request_init(native);

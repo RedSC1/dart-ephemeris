@@ -791,6 +791,9 @@ final class AstrologyApi {
   }
 
   Pointer<taiyin_house_result> _writeHouses(Arena arena, Houses houses) {
+    validateNativeInt32(houses.requestedSystemId, 'requestedSystemId');
+    validateNativeInt32(houses.resolvedSystemId, 'resolvedSystemId');
+    validateNativeUint32(houses.rawFlags, 'rawFlags');
     final output = arena<taiyin_house_result>();
     _bindings.taiyin_house_result_init(output);
     output.ref

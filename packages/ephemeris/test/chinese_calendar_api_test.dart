@@ -51,6 +51,86 @@ void main() {
         expect(result.isLeap, isFalse);
       });
 
+      test('rejects date fields before native integer narrowing', () {
+        for (final solar in [
+          SolarDate(year: 0x1000007e8, month: 2, day: 10),
+          SolarDate(year: 2024, month: 258, day: 10),
+          SolarDate(year: 2024, month: 2, day: 266),
+        ]) {
+          expect(
+            () => context.chineseCalendar.fromSolar(solar),
+            throwsRangeError,
+          );
+        }
+
+        for (final lunar in [
+          LunarDate(
+            year: 0x1000007e8,
+            month: 1,
+            day: 1,
+            isLeap: false,
+            monthDays: 29,
+          ),
+          LunarDate(
+            year: 2024,
+            month: 257,
+            day: 1,
+            isLeap: false,
+            monthDays: 29,
+          ),
+          LunarDate(
+            year: 2024,
+            month: 1,
+            day: 257,
+            isLeap: false,
+            monthDays: 29,
+          ),
+          LunarDate(
+            year: 2024,
+            month: 1,
+            day: 1,
+            isLeap: false,
+            monthDays: 285,
+          ),
+        ]) {
+          expect(
+            () => context.chineseCalendar.fromLunar(lunar),
+            throwsRangeError,
+          );
+        }
+
+        expect(
+          () => context.chineseCalendar.getMonthDays(
+            lunarYear: 0x1000007e8,
+            month: 1,
+            isLeap: false,
+          ),
+          throwsRangeError,
+        );
+        expect(
+          () => context.chineseCalendar.getMonthDays(
+            lunarYear: 2024,
+            month: 257,
+            isLeap: false,
+          ),
+          throwsRangeError,
+        );
+        expect(
+          () => context.chineseCalendar.getSpecificJieQiUt(
+            civilYear: 0x1000007e8,
+            termIndexFromVernalEquinox: 0,
+          ),
+          throwsRangeError,
+        );
+        expect(
+          () => context.chineseCalendar.getSpecificJieQiUt(
+            civilYear: 2024,
+            termIndexFromVernalEquinox: 0x100,
+          ),
+          throwsRangeError,
+        );
+      });
+
       test('computes the four pillars for a birth moment', () {
         final result = context.chineseCalendar
             .fourPillars(
