@@ -262,16 +262,19 @@ final class Ephemeris {
 
   /// Stable symbolic name for a native status code.
   String statusName(int status) {
+    _requireSignedInt32(status, 'status');
     return _readNativeString(_bindings.taiyin_status_name(status));
   }
 
   /// Human-readable description for a native status code.
   String statusMessage(int status) {
+    _requireSignedInt32(status, 'status');
     return _readNativeString(_bindings.taiyin_status_message(status));
   }
 
   /// Broad category for a native status code.
   StatusCategory statusCategory(int status) {
+    _requireSignedInt32(status, 'status');
     return StatusCategory.fromId(_bindings.taiyin_status_category_of(status));
   }
 
@@ -478,6 +481,7 @@ final class Ephemeris {
   /// change. This is a setup-time operation.
   void setEphemerisSourcePriority(String pathOrBasename, int priority) {
     _requirePath(pathOrBasename, 'pathOrBasename');
+    _requireSignedInt32(priority, 'priority');
     using((arena) {
       final nativePath = pathOrBasename
           .toNativeUtf8(allocator: arena)
@@ -521,6 +525,19 @@ final class Ephemeris {
   }
 }
 
+void _requireSignedInt32(int value, String name) {
+  if (value < -0x80000000 || value > 0x7fffffff) {
+    throw RangeError.range(value, -0x80000000, 0x7fffffff, name);
+  }
+}
+
+void _requirePositiveNativeSize(int value, String name) {
+  final maxValue = sizeOf<Size>() == 4 ? 0xffffffff : 0x7fffffffffffffff;
+  if (value < 1 || value > maxValue) {
+    throw RangeError.range(value, 1, maxValue, name);
+  }
+}
+
 void _initializeRuntime(
   TaiyinBindings bindings,
   RuntimeOptions options, {
@@ -531,13 +548,7 @@ void _initializeRuntime(
     bindings.taiyin_runtime_config_init(config);
 
     if (options.segmentCacheMaxEntries case final value?) {
-      if (value <= 0) {
-        throw ArgumentError.value(
-          value,
-          'segmentCacheMaxEntries',
-          'must be positive',
-        );
-      }
+      _requirePositiveNativeSize(value, 'segmentCacheMaxEntries');
       config.ref.segment_cache_max_entries = value;
     }
 

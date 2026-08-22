@@ -288,6 +288,7 @@ final class BaziContext implements Finalizable {
   /// Calculates the 流年 (liu-nian / flow-year) Ganzhi for an effective year.
   Ganzhi calcLiunian(int effectiveYear) {
     _ensureOpen();
+    _requireSignedInt32(effectiveYear, 'effectiveYear');
     return using((arena) {
       final output = arena<taiyin_ganzhi>();
       _checkStatus(
@@ -344,6 +345,8 @@ final class BaziContext implements Finalizable {
   /// Calculates the 小运 (xiao-yun) Ganzhi for an age within a chart.
   Ganzhi calcXiaoyun(BaziChart chart, int direction, int age) {
     _ensureOpen();
+    _requireDirection(direction);
+    _requirePositiveInt32(age, 'age');
     return using((arena) {
       final nativeChart = _writeBaziChart(_bindings, arena, chart);
       final output = arena<taiyin_ganzhi>();
@@ -364,6 +367,14 @@ final class BaziContext implements Finalizable {
     required int requestedCount,
   }) {
     _ensureOpen();
+    _requireDirection(direction);
+    _requirePositiveInt32(startAge, 'startAge');
+    _requireNonnegativeInt32(requestedCount, 'requestedCount');
+    if (requestedCount != 0 && startAge > 0x7fffffff - requestedCount + 1) {
+      throw RangeError(
+        'startAge + requestedCount - 1 must fit a signed 32-bit value',
+      );
+    }
     return using((arena) {
       final nativeChart = _writeBaziChart(_bindings, arena, chart);
 
@@ -552,6 +563,7 @@ final class BaziContext implements Finalizable {
     required int requestedCount,
   }) {
     _ensureOpen();
+    _requireUnsigned32(requestedCount, 'requestedCount');
     return using((arena) {
       final birthCivil = writeNativeCalendar(
         _coreBindings,
@@ -697,6 +709,8 @@ final class BaziContext implements Finalizable {
     int relationMask = 0xffff,
   }) {
     _ensureOpen();
+    _requireUnsigned32(pillarMask, 'pillarMask');
+    _requireUnsigned32(relationMask, 'relationMask');
     return using((arena) {
       final nativeChart = _writeBaziChart(_bindings, arena, chart);
       final count = arena<Size>();
@@ -807,6 +821,36 @@ final class BaziContext implements Finalizable {
   void _requireBranchId(int value, String name) {
     if (value < 0 || value >= 12) {
       throw ArgumentError.value(value, name, 'must be in the range 0..11');
+    }
+  }
+
+  void _requireDirection(int value) {
+    if (value != -1 && value != 1) {
+      throw ArgumentError.value(value, 'direction', 'must be -1 or 1');
+    }
+  }
+
+  void _requireSignedInt32(int value, String name) {
+    if (value < -0x80000000 || value > 0x7fffffff) {
+      throw RangeError.range(value, -0x80000000, 0x7fffffff, name);
+    }
+  }
+
+  void _requirePositiveInt32(int value, String name) {
+    if (value < 1 || value > 0x7fffffff) {
+      throw RangeError.range(value, 1, 0x7fffffff, name);
+    }
+  }
+
+  void _requireNonnegativeInt32(int value, String name) {
+    if (value < 0 || value > 0x7fffffff) {
+      throw RangeError.range(value, 0, 0x7fffffff, name);
+    }
+  }
+
+  void _requireUnsigned32(int value, String name) {
+    if (value < 0 || value > 0xffffffff) {
+      throw RangeError.range(value, 0, 0xffffffff, name);
     }
   }
 }

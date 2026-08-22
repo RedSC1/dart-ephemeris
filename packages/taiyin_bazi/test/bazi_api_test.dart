@@ -172,6 +172,72 @@ void main() {
         }
       });
 
+      test('rejects scalar and count values before native narrowing', () {
+        final bazi = context.bazi;
+        final chart = chartFor2024();
+
+        for (final year in [-0x80000001, 0x80000000]) {
+          expect(() => bazi.calcLiunian(year), throwsRangeError);
+        }
+        for (final direction in [-2, 0, 2]) {
+          expect(
+            () => bazi.calcXiaoyun(chart, direction, 1),
+            throwsArgumentError,
+          );
+          expect(
+            () => bazi.fillXiaoyun(
+              chart: chart,
+              direction: direction,
+              startAge: 1,
+              requestedCount: 1,
+            ),
+            throwsArgumentError,
+          );
+        }
+        for (final age in [0, 0x80000000]) {
+          expect(() => bazi.calcXiaoyun(chart, 1, age), throwsRangeError);
+          expect(
+            () => bazi.fillXiaoyun(
+              chart: chart,
+              direction: 1,
+              startAge: age,
+              requestedCount: 1,
+            ),
+            throwsRangeError,
+          );
+        }
+        for (final count in [-1, 0x80000000]) {
+          expect(
+            () => bazi.fillXiaoyun(
+              chart: chart,
+              direction: 1,
+              startAge: 1,
+              requestedCount: count,
+            ),
+            throwsRangeError,
+          );
+        }
+        expect(
+          () => bazi.fillXiaoyun(
+            chart: chart,
+            direction: 1,
+            startAge: 0x7fffffff,
+            requestedCount: 2,
+          ),
+          throwsRangeError,
+        );
+        for (final mask in [-1, 0x100000000]) {
+          expect(
+            () => bazi.collectChartRelations(chart: chart, pillarMask: mask),
+            throwsRangeError,
+          );
+          expect(
+            () => bazi.collectChartRelations(chart: chart, relationMask: mask),
+            throwsRangeError,
+          );
+        }
+      });
+
       test('calculates qi-yun and fills da-yun', () {
         final chart = chartFor2024();
         final qiyun = context.bazi
@@ -200,6 +266,18 @@ void main() {
         // Each step advances one stem and one branch.
         expect(dayun[1].ganzhi.stemId, 4);
         expect(dayun[1].ganzhi.branchId, 4);
+
+        for (final count in [-1, 0x100000000]) {
+          expect(
+            () => context.bazi.fillDayun(
+              birthCivilTime: AstroDateTime(2024, 2, 10, 12),
+              chart: chart,
+              qiyun: qiyun,
+              requestedCount: count,
+            ),
+            throwsRangeError,
+          );
+        }
       });
 
       test('calculates a complete result with call-scoped flags', () {

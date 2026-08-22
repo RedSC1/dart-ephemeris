@@ -56,6 +56,14 @@ void main() {
         expect(formatted, contains('jd_tdb='));
       });
 
+      test('rejects status codes before native int32 narrowing', () {
+        for (final status in [-0x80000001, 0x80000000]) {
+          expect(() => runtime.statusName(status), throwsRangeError);
+          expect(() => runtime.statusMessage(status), throwsRangeError);
+          expect(() => runtime.statusCategory(status), throwsRangeError);
+        }
+      });
+
       test(
         'registers built-in astrology targets for position calculations',
         () {
@@ -109,6 +117,12 @@ void main() {
           () => runtime.setEphemerisSourcePriority('', 1),
           throwsArgumentError,
         );
+        for (final priority in [-0x80000001, 0x80000000]) {
+          expect(
+            () => runtime.setEphemerisSourcePriority('jup365.bsp', priority),
+            throwsRangeError,
+          );
+        }
       });
 
       test('manages the built-in EOP table lifecycle', () {

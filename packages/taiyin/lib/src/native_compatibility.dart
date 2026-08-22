@@ -29,6 +29,8 @@ const Set<String> taiyinRequiredAbi9Symbols = {
   'taiyin_runtime_config_init',
   'taiyin_runtime_initialize',
   'taiyin_ephemeris_diagnostic_init',
+  'taiyin_observed_position_init',
+  'taiyin_time_scale_diagnostic_init',
   'taiyin_format_ephemeris_diagnostic',
   'taiyin_register_native_position_evaluator',
   'taiyin_unregister_native_position_evaluator',

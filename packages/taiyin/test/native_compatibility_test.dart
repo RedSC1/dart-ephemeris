@@ -23,7 +23,7 @@ Directory _taiyinPackageRoot() {
 
 Set<String> _directlyReferencedNativeSymbols() {
   final sourceRoot = Directory('${_taiyinPackageRoot().path}/lib/src');
-  final invocation = RegExp(r'\b[A-Za-z_]\w*\.(taiyin_[a-z0-9_]+)\b');
+  final invocation = RegExp(r'(?:\b[A-Za-z_]\w*\.|\.\.)(taiyin_[a-z0-9_]+)\b');
   final symbols = <String>{};
 
   for (final entity in sourceRoot.listSync(recursive: true)) {
