@@ -1,0 +1,149 @@
+name: Native integration
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: native-integration-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: macOS ARM64 / AppleClang
+            os: macos-15
+          - name: Linux x64 / GCC
+            os: ubuntu-24.04
+          - name: Windows x64 / MinGW-w64 GCC
+            os: windows-2022
+
+    steps:
+      - name: Check out Dart bindings
+        uses: actions/checkout@v6
+
+      - name: Check out pinned Taiyin native core
+        uses: actions/checkout@v6
+        with:
+          repository: RedSC1/taiyin-ephemeris
+          ref: v1.0.0-beta.1
+          path: native-core
+
+      - name: Set up Dart
+        uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+
+      - name: Set up MinGW-w64 GCC
+        if: runner.os == 'Windows'
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          update: true
+          install: >-
+            mingw-w64-x86_64-cmake
+            mingw-w64-x86_64-gcc
+            mingw-w64-x86_64-ninja
+
+      - name: Build and install native modules (Unix)
+        if: runner.os != 'Windows'
+        shell: bash
+        run: |
+          cmake -S native-core -B native-build \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DTAIYIN_BUILD_CHINESE_METAPHYSICS_EXTENSIONS=ON \
+            -DTAIYIN_BUILD_BAZI_EXTENSION=ON \
+            -DTAIYIN_BUILD_ZIWEI_EXTENSION=ON \
+            -DTAIYIN_BUILD_MODULAR_C_API=ON
+          cmake --build native-build --parallel 3 \
+            --target taiyin taiyin_bazi taiyin_ziwei
+          cmake --install native-build --prefix native-stage
+
+      - name: Build and install native modules (Windows)
+        if: runner.os == 'Windows'
+        shell: msys2 {0}
+        run: |
+          cd native-core
+          # MinGW defaults to a lib*.dll prefix, while the public Dart loader
+          # deliberately follows the normal Windows *.dll naming convention.
+          cmake --preset windows-mingw-gcc -DCMAKE_SHARED_LIBRARY_PREFIX=
+          cmake --build --preset windows-mingw-gcc --parallel 3 \
+            --target taiyin taiyin_bazi taiyin_ziwei
+          cmake --install build-preset-windows-mingw-gcc \
+            --prefix ../native-stage
+
+      - name: Configure native test paths (macOS)
+        if: runner.os == 'macOS'
+        shell: bash
+        run: |
+          stage="$GITHUB_WORKSPACE/native-stage/lib"
+          echo "TAIYIN_TEST_LIBRARY=$stage/libtaiyin.dylib" >> "$GITHUB_ENV"
+          echo "TAIYIN_BASELINE_LIBRARY=$stage/libtaiyin.dylib" >> "$GITHUB_ENV"
+          echo "TAIYIN_BAZI_LIBRARY_PATH=$stage/libtaiyin_bazi.dylib" >> "$GITHUB_ENV"
+          echo "TAIYIN_ZIWEI_LIBRARY_PATH=$stage/libtaiyin_ziwei.dylib" >> "$GITHUB_ENV"
+          echo "TAIYIN_OPM2_DATA_DIR=$GITHUB_WORKSPACE/native-core/data/ephemerides/opm2/major-bodies/600y" >> "$GITHUB_ENV"
+          echo "DYLD_LIBRARY_PATH=$stage" >> "$GITHUB_ENV"
+          ln -s "$GITHUB_WORKSPACE/native-core" "$GITHUB_WORKSPACE/../taiyin-ephemeris"
+
+      - name: Configure native test paths (Linux)
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          stage="$GITHUB_WORKSPACE/native-stage/lib"
+          echo "TAIYIN_TEST_LIBRARY=$stage/libtaiyin.so" >> "$GITHUB_ENV"
+          echo "TAIYIN_BASELINE_LIBRARY=$stage/libtaiyin.so" >> "$GITHUB_ENV"
+          echo "TAIYIN_BAZI_LIBRARY_PATH=$stage/libtaiyin_bazi.so" >> "$GITHUB_ENV"
+          echo "TAIYIN_ZIWEI_LIBRARY_PATH=$stage/libtaiyin_ziwei.so" >> "$GITHUB_ENV"
+          echo "TAIYIN_OPM2_DATA_DIR=$GITHUB_WORKSPACE/native-core/data/ephemerides/opm2/major-bodies/600y" >> "$GITHUB_ENV"
+          echo "LD_LIBRARY_PATH=$stage" >> "$GITHUB_ENV"
+          ln -s "$GITHUB_WORKSPACE/native-core" "$GITHUB_WORKSPACE/../taiyin-ephemeris"
+
+      - name: Configure native test paths (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $stage = (Resolve-Path 'native-stage/bin').Path
+          "TAIYIN_TEST_LIBRARY=$stage\taiyin.dll" | Out-File -FilePath $env:GITHUB_ENV -Append
+          "TAIYIN_BASELINE_LIBRARY=$stage\taiyin.dll" | Out-File -FilePath $env:GITHUB_ENV -Append
+          "TAIYIN_BAZI_LIBRARY_PATH=$stage\taiyin_bazi.dll" | Out-File -FilePath $env:GITHUB_ENV -Append
+          "TAIYIN_ZIWEI_LIBRARY_PATH=$stage\taiyin_ziwei.dll" | Out-File -FilePath $env:GITHUB_ENV -Append
+          "TAIYIN_OPM2_DATA_DIR=$env:GITHUB_WORKSPACE\native-core\data\ephemerides\opm2\major-bodies\600y" | Out-File -FilePath $env:GITHUB_ENV -Append
+          "PATH=$stage;$env:PATH" | Out-File -FilePath $env:GITHUB_ENV -Append
+          New-Item -ItemType Junction `
+            -Path (Join-Path $env:GITHUB_WORKSPACE '..\taiyin-ephemeris') `
+            -Target (Join-Path $env:GITHUB_WORKSPACE 'native-core')
+
+      - name: Resolve Dart dependencies
+        run: dart pub get
+
+      - name: Check formatting
+        run: dart format --output=none --set-exit-if-changed packages
+
+      - name: Analyze
+        run: dart analyze
+
+      - name: Test core package
+        run: dart test packages/taiyin/test
+
+      - name: Test BaZi package
+        run: dart test packages/taiyin_bazi/test
+
+      - name: Test Ziwei package
+        run: dart test packages/taiyin_ziwei/test
+
+      - name: Upload native modules
+        uses: actions/upload-artifact@v6
+        with:
+          name: taiyin-native-${{ runner.os }}-${{ runner.arch }}
+          path: native-stage
+          if-no-files-found: error
+          retention-days: 14
