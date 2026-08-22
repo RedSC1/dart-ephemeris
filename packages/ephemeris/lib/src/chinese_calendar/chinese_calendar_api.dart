@@ -432,6 +432,15 @@ Pointer<taiyin_chinese_calendar_config> _writeChineseCalendarConfig(
   Arena arena,
   ChineseCalendarConfig config,
 ) {
+  if (config.utcOffsetMinutes < -0x80000000 ||
+      config.utcOffsetMinutes > 0x7fffffff) {
+    throw RangeError.range(
+      config.utcOffsetMinutes,
+      -0x80000000,
+      0x7fffffff,
+      'utcOffsetMinutes',
+    );
+  }
   final native = arena<taiyin_chinese_calendar_config>();
   bindings.taiyin_chinese_calendar_config_init(native);
   native.ref

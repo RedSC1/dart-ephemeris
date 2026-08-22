@@ -97,6 +97,17 @@ void main() {
         );
       });
 
+      test('rejects calendar UTC offsets outside the native int32 range', () {
+        expect(
+          () => context.createChineseCalendar(
+            config: const ChineseCalendarConfig.localAstronomicalUtcOffset(
+              0x1000001e0,
+            ),
+          ),
+          throwsRangeError,
+        );
+      });
+
       test('rejects use after closing the owning context', () {
         final cal = context.chineseCalendar;
         context.close();

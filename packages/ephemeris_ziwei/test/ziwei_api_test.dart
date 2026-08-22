@@ -368,10 +368,22 @@ void main() {
                 endInstantUtc: startInstant,
                 startVirtualTime: dayStart,
                 gender: ZiweiGender.male,
-                query: const ZiweiTier1ReverseQuery(),
+                query: ZiweiTier1ReverseQuery(ziweiBranch: branch),
               )
               .value,
           throwsArgumentError,
+        );
+        expect(
+          () => ziwei
+              .reverseLookupTier1(
+                startInstantUtc: startInstant,
+                endInstantUtc: startInstant.addSeconds(86400),
+                startVirtualTime: AstroDateTime(0x1000007d3, 3, 13),
+                gender: ZiweiGender.male,
+                query: ZiweiTier1ReverseQuery(ziweiBranch: branch),
+              )
+              .value,
+          throwsRangeError,
         );
         expect(
           () => ziwei

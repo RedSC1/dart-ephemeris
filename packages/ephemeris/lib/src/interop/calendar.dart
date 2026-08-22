@@ -11,9 +11,7 @@ Pointer<taiyin_calendar_datetime> writeNativeCalendar(
   Arena arena,
   AstroDateTime value,
 ) {
-  if (value.year < -2147483648 || value.year > 2147483647) {
-    throw RangeError.range(value.year, -2147483648, 2147483647, 'year');
-  }
+  validateNativeCalendar(value);
   final native = arena<taiyin_calendar_datetime>();
   bindings.taiyin_calendar_datetime_init(native);
   native.ref
@@ -24,6 +22,13 @@ Pointer<taiyin_calendar_datetime> writeNativeCalendar(
     ..minute = value.minute
     ..second = value.fractionalSecond;
   return native;
+}
+
+/// Validates fields that can narrow at the native calendar ABI boundary.
+void validateNativeCalendar(AstroDateTime value) {
+  if (value.year < -2147483648 || value.year > 2147483647) {
+    throw RangeError.range(value.year, -2147483648, 2147483647, 'year');
+  }
 }
 
 /// Converts a native calendar struct into an [AstroDateTime] using the same

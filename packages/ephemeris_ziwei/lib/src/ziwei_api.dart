@@ -608,11 +608,11 @@ final class ZiweiContext implements Finalizable {
   }) {
     _ensureOpen();
     query.validate();
-    if (endInstantUtc.isBefore(startInstantUtc)) {
+    if (endInstantUtc.compareTo(startInstantUtc) <= 0) {
       throw ArgumentError.value(
         endInstantUtc,
         'endInstantUtc',
-        'must not be before startInstantUtc',
+        'must be after startInstantUtc',
       );
     }
     return using((arena) {
@@ -1228,6 +1228,7 @@ Pointer<taiyin_ziwei_reverse_request> _writeZiweiReverseRequest(
   required ZiweiBirthOptions options,
   required ZiweiTier1ReverseQuery query,
 }) {
+  validateNativeCalendar(startVirtualTime);
   final native = arena<taiyin_ziwei_reverse_request>();
   bindings.taiyin_ziwei_reverse_request_init(native);
   native.ref
