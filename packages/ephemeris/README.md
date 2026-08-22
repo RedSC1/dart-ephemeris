@@ -184,6 +184,12 @@ final scales = context.time.scalesFromUtc(utcCalendar);
 final tt = scales.value.value.tt;
 final ut1 = scales.value.value.ut1;
 final tdb = scales.value.value.tdb;
+
+// Event searches usually return UT1. Convert to UTC before displaying a
+// modern civil timestamp, or format the coordinate explicitly as UT1.
+final utcAgain = context.time.ut1ToUtc(ut1);
+final utcClock = context.time.utcCalendarFromUt1(ut1);
+final ut1Clock = context.time.calendarFromUt1(ut1);
 ```
 
 `JulianDate<S>` stores an integer day and a normalized fractional day. Its time
@@ -207,11 +213,19 @@ loaded or the requested instant is outside its coverage, and
 when an explicit UT1 + Delta-T fallback is acceptable; successful fallback is
 reported through `ResultFlag.timeScaleFallback` rather than hidden.
 
+Automatic reverse conversion is available through `taiToUtc()`, `ttToUtc()`,
+`ut1ToUtc()`, and `tdbToUtc()`. The corresponding automatic UT1 routes are
+`utcToUt1()`, `taiToUt1()`, `ttToUt1()`, and `tdbToUt1()`. Passing
+`dut1Seconds` to `utcToUt1()` or `deltaTSeconds` to `ttToUt1()` keeps the
+explicit-offset route. `ut1ToUtc()` is strict by default and follows the same
+explicit estimate policy above when EOP coverage is unavailable.
+
 ### Julian-day convention
 
-Every Julian day produced or consumed by `AstroDateTime` is a **standard Julian
-day**: the true instant on a UTC timeline, never tied to a local civil
-timezone. There is no "Beijing-time Julian day" or other zone-labelled variant.
+Every Julian day produced or consumed by `AstroDateTime` follows the standard
+Julian-day coordinate convention. A split value's Dart type identifies its
+time scale; scalar Julian days are untyped. Formatting or applying a civil
+offset does not physically convert UTC, TAI, TT, UT1, or TDB.
 
 A civil value alone does not identify an instant; its relationship to a
 standard Julian day is decided by the caller-supplied `utcOffsetHours`
@@ -776,9 +790,11 @@ final local = context.eclipses.nextLocalSolarAtUt1(
 final geometry = context.eclipses.localSolarCircumstancesAtUt1(
   local.maximum!,
 ).value;
+final maximumUtc = context.time.utcCalendarFromUt1(global.maximum!).value;
 
 print(global.contacts[SolarEclipseContact.greatest]);
 print(local.contacts[LocalSolarEclipseContact.greatest]);
+print(maximumUtc);
 print(geometry.obscuration);
 ```
 

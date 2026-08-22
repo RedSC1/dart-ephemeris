@@ -96,12 +96,13 @@ final class Time {
     });
   }
 
-  /// Allows UTC entry points to fall back to an approximate UT1 plus
-  /// Delta-T estimate when UTC/EOP data is missing or out of range.
+  /// Allows conversions involving UTC and UT1 to fall back to an approximate
+  /// UT1 plus Delta-T route when UTC/EOP data is missing or out of range.
   ///
-  /// UTC entry points are strict by default. This never changes the
-  /// semantics of UT1 entry points. Context configuration must finish before
-  /// concurrent calculations begin.
+  /// UTC conversion is strict by default. This policy also applies to reverse
+  /// helpers such as [ut1ToUtc], but does not alter pure UT1 calculations or
+  /// event searches. Context configuration must finish before concurrent
+  /// calculations begin.
   void setAllowUtcOutOfRangeEstimate(bool allow) {
     _ensureOpen();
     _checkStatus(
@@ -250,9 +251,13 @@ final class Time {
 
   OperationResult<JulianDate<Ut1Scale>> utcToUt1(
     JulianDate<UtcScale> utc, {
-    required double dut1Seconds,
+    double? dut1Seconds,
   }) {
     _ensureOpen();
+    if (dut1Seconds == null) {
+      final scales = _scalesFromUtcJulianDate(utc);
+      return operationResult(scales.value.value.ut1, scales.flags);
+    }
     _requireFinite(dut1Seconds, 'dut1Seconds');
     return _convertWithOffset<Ut1Scale, UtcScale>(
       utc,
@@ -279,9 +284,14 @@ final class Time {
 
   OperationResult<JulianDate<Ut1Scale>> ttToUt1(
     JulianDate<TtScale> tt, {
-    required double deltaTSeconds,
+    double? deltaTSeconds,
   }) {
     _ensureOpen();
+    if (deltaTSeconds == null) {
+      final utc = ttToUtc(tt);
+      final ut1 = utcToUt1(utc.value);
+      return operationResult(ut1.value, utc.flags | ut1.flags);
+    }
     _requireFinite(deltaTSeconds, 'deltaTSeconds');
     return _convertWithOffset<Ut1Scale, TtScale>(
       tt,
@@ -359,6 +369,98 @@ final class Time {
         flags,
       );
     });
+  }
+
+  /// Converts a TAI instant to UTC using the runtime leap-second table.
+  ///
+  /// UTC is discontinuous at an inserted leap second. Values that land on
+  /// that boundary use the calendar representation selected by the native
+  /// leap-second lookup. Missing coverage throws `LeapSecondDataError`.
+  OperationResult<JulianDate<UtcScale>> taiToUtc(JulianDate<TaiScale> tai) {
+    _ensureOpen();
+    var candidate = JulianDate<UtcScale>.fromParts(
+      tai.dayNumber,
+      tai.dayFraction,
+    );
+    var flags = ResultFlags.none;
+    for (var iteration = 0; iteration < _inverseScaleIterations; iteration++) {
+      final offset = taiMinusUtc(AstroDateTime.fromJulianDate(candidate));
+      flags = flags | offset.flags;
+      final evaluated = JulianDate<TaiScale>.fromParts(
+        candidate.dayNumber,
+        candidate.dayFraction,
+      ).addSeconds(offset.value);
+      final correction = tai.coordinateSecondsDifference(evaluated);
+      candidate = candidate.addSeconds(correction);
+      if (correction.abs() <= _inverseScaleToleranceSeconds) break;
+    }
+    return operationResult(candidate, flags);
+  }
+
+  /// Converts a TT instant to UTC using the runtime leap-second table.
+  OperationResult<JulianDate<UtcScale>> ttToUtc(JulianDate<TtScale> tt) {
+    _ensureOpen();
+    final tai = JulianDate<TaiScale>.fromParts(
+      tt.dayNumber,
+      tt.dayFraction,
+    ).addSeconds(-32.184);
+    return taiToUtc(tai);
+  }
+
+  /// Converts a UT1 instant to UTC according to this context's time policy.
+  ///
+  /// Strict contexts require EOP coverage and throw
+  /// `EarthOrientationDataError` when it is unavailable. A context configured
+  /// with [setAllowUtcOutOfRangeEstimate] may return an estimated result; the
+  /// returned flags then contain [ResultFlag.timeScaleFallback].
+  OperationResult<JulianDate<UtcScale>> ut1ToUtc(JulianDate<Ut1Scale> ut1) {
+    _ensureOpen();
+    return _invertUtcScale<Ut1Scale>(ut1, (scales) => scales.ut1);
+  }
+
+  /// Converts a TDB instant to UTC using [model] and the leap-second table.
+  OperationResult<JulianDate<UtcScale>> tdbToUtc(
+    JulianDate<TdbScale> tdb, {
+    TdbModel model = TdbModel.fastPeriodic,
+  }) {
+    _ensureOpen();
+    final tt = tdbToTt(tdb, model: model);
+    final utc = ttToUtc(tt.value);
+    return operationResult(utc.value, tt.flags | utc.flags);
+  }
+
+  /// Converts a TAI instant to UT1 using leap-second and EOP data.
+  OperationResult<JulianDate<Ut1Scale>> taiToUt1(JulianDate<TaiScale> tai) {
+    _ensureOpen();
+    final utc = taiToUtc(tai);
+    final ut1 = utcToUt1(utc.value);
+    return operationResult(ut1.value, utc.flags | ut1.flags);
+  }
+
+  /// Converts a TDB instant to UT1 using [model], leap seconds, and EOP data.
+  OperationResult<JulianDate<Ut1Scale>> tdbToUt1(
+    JulianDate<TdbScale> tdb, {
+    TdbModel model = TdbModel.fastPeriodic,
+  }) {
+    _ensureOpen();
+    final utc = tdbToUtc(tdb, model: model);
+    final ut1 = utcToUt1(utc.value);
+    return operationResult(ut1.value, utc.flags | ut1.flags);
+  }
+
+  /// Formats a UT1 Julian date as an [AstroDateTime] in the UT1 scale.
+  ///
+  /// This performs no time-scale conversion and never requires EOP data.
+  OperationResult<AstroDateTime> calendarFromUt1(JulianDate<Ut1Scale> ut1) =>
+      reverseJulianDay(ut1);
+
+  /// Converts UT1 to UTC and formats the result as a UTC [AstroDateTime].
+  ///
+  /// The same strict/fallback policy as [ut1ToUtc] applies.
+  OperationResult<AstroDateTime> utcCalendarFromUt1(JulianDate<Ut1Scale> ut1) {
+    final utc = ut1ToUtc(ut1);
+    final calendar = reverseJulianDay(utc.value);
+    return operationResult(calendar.value, utc.flags | calendar.flags);
   }
 
   /// Builds UT1, TT, and TDB from a calendar value interpreted as UT1.
@@ -488,4 +590,33 @@ final class Time {
       return operationResult(readJulianDate<Output>(output.ref), flags);
     });
   }
+
+  OperationResult<TimeScaleResult<PreciseTimeScales>> _scalesFromUtcJulianDate(
+    JulianDate<UtcScale> utc,
+  ) {
+    return scalesFromUtc(AstroDateTime.fromJulianDate(utc));
+  }
+
+  OperationResult<JulianDate<UtcScale>> _invertUtcScale<S extends TimeScale>(
+    JulianDate<S> target,
+    JulianDate<S> Function(PreciseTimeScales scales) select,
+  ) {
+    var candidate = JulianDate<UtcScale>.fromParts(
+      target.dayNumber,
+      target.dayFraction,
+    );
+    var flags = ResultFlags.none;
+    for (var iteration = 0; iteration < _inverseScaleIterations; iteration++) {
+      final scales = _scalesFromUtcJulianDate(candidate);
+      flags = flags | scales.flags;
+      final evaluated = select(scales.value.value);
+      final correction = target.coordinateSecondsDifference(evaluated);
+      candidate = candidate.addSeconds(correction);
+      if (correction.abs() <= _inverseScaleToleranceSeconds) break;
+    }
+    return operationResult(candidate, flags);
+  }
 }
+
+const int _inverseScaleIterations = 6;
+const double _inverseScaleToleranceSeconds = 0.5e-9;

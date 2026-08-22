@@ -3,6 +3,8 @@
 - Add readable Julian-date aliases and local-calendar time conversion helpers.
 - Report missing/out-of-range EOP and unavailable leap-second data with
   `EarthOrientationDataError` and `LeapSecondDataError`.
+- Add automatic TAI/TT/UT1/TDB-to-UTC and UTC/TAI/TT/TDB-to-UT1 conversion
+  helpers, plus UT1 and UTC calendar-formatting helpers for event results.
 
 ## 1.0.0-alpha.1
 

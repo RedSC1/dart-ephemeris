@@ -68,6 +68,10 @@ final lunar = context.eclipses.nextLunarAtUt1(searchStart);
 
 print('Next solar eclipse: ${solar.value.kinds}');
 print('Next lunar eclipse: ${lunar.value.kinds}');
+final solarMaximum = solar.value.maximum;
+if (solarMaximum != null) {
+  print('Maximum UTC: ${context.time.utcCalendarFromUt1(solarMaximum).value}');
+}
 print('Execution flags: ${(solar.flags | lunar.flags).values}');
 ```
 

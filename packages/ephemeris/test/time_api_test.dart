@@ -146,6 +146,57 @@ void main() {
         expect(result.value.tt.toDouble().isFinite, isTrue);
       });
 
+      test('converts every physical scale back to UTC and UT1', () {
+        final baseline = taiyin.time.scalesFromUtc(utcCalendar).value.value;
+
+        final utcFromTai = taiyin.time.taiToUtc(baseline.tai);
+        final utcFromTt = taiyin.time.ttToUtc(baseline.tt);
+        final utcFromUt1 = taiyin.time.ut1ToUtc(baseline.ut1);
+        final utcFromTdb = taiyin.time.tdbToUtc(baseline.tdb);
+
+        for (final converted in [
+          utcFromTai,
+          utcFromTt,
+          utcFromUt1,
+          utcFromTdb,
+        ]) {
+          expect(
+            converted.value.secondsDifference(baseline.utc),
+            closeTo(0, 5e-7),
+          );
+        }
+
+        final ut1FromUtc = taiyin.time.utcToUt1(baseline.utc);
+        final ut1FromTai = taiyin.time.taiToUt1(baseline.tai);
+        final ut1FromTt = taiyin.time.ttToUt1(baseline.tt);
+        final ut1FromTdb = taiyin.time.tdbToUt1(baseline.tdb);
+
+        for (final converted in [
+          ut1FromUtc,
+          ut1FromTai,
+          ut1FromTt,
+          ut1FromTdb,
+        ]) {
+          expect(
+            converted.value.secondsDifference(baseline.ut1),
+            closeTo(0, 5e-7),
+          );
+        }
+
+        expect(
+          taiyin.time.calendarFromUt1(baseline.ut1).value,
+          AstroDateTime.fromJulianDate(baseline.ut1),
+        );
+        final utcCalendarRoundTrip = taiyin.time
+            .utcCalendarFromUt1(baseline.ut1)
+            .value
+            .toUtcJulianDate();
+        expect(
+          utcCalendarRoundTrip.secondsDifference(baseline.utc),
+          closeTo(0, 5e-7),
+        );
+      });
+
       test('strict UTC conversion reports missing EOP data explicitly', () {
         taiyin.close();
         taiyin = Ephemeris.open(
@@ -164,6 +215,12 @@ void main() {
                   'TAIYIN_TIME_ERROR_EOP_OUT_OF_RANGE',
                 ),
           ),
+        );
+        expect(
+          () => taiyin.time.ut1ToUtc(
+            Ut1JulianDate.fromParts(utc.dayNumber, utc.dayFraction),
+          ),
+          throwsA(isA<EarthOrientationDataError>()),
         );
       });
 
@@ -186,6 +243,12 @@ void main() {
                   'TAIYIN_TIME_ERROR_LEAP_SECOND_UNAVAILABLE',
                 ),
           ),
+        );
+        expect(
+          () => taiyin.time.ttToUtc(
+            AstroDateTime(1900, 1, 1).toJulianDate<TtScale>(),
+          ),
+          throwsA(isA<LeapSecondDataError>()),
         );
       });
 
@@ -213,6 +276,12 @@ void main() {
         expect(result.value.deltaTSeconds.isFinite, isTrue);
         expect(result.value.tai.toDouble(), 0);
         expect(operation.flags.contains(ResultFlag.timeScaleFallback), isTrue);
+        final inverse = taiyin.time.ut1ToUtc(
+          Ut1JulianDate.fromParts(utc.dayNumber, utc.dayFraction),
+        );
+        expect(inverse.flags.contains(ResultFlag.timeScaleFallback), isTrue);
+        final ttToUt1 = taiyin.time.ttToUt1(result.value.tt);
+        expect(ttToUt1.flags.contains(ResultFlag.timeScaleFallback), isTrue);
         expect(taiyin.lastResultFlags, operation.flags);
 
         EphemerisError? failure;
