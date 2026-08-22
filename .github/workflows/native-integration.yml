@@ -129,7 +129,7 @@ jobs:
         run: dart format --output=none --set-exit-if-changed packages
 
       - name: Analyze
-        run: dart analyze
+        run: dart analyze packages
 
       - name: Test core package
         run: dart test packages/taiyin/test
