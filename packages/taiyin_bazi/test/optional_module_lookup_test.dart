@@ -32,7 +32,9 @@ void main() {
     final runtime = Ephemeris.open(libraryPath: libraryPath);
     final context = runtime.createContext();
     expect(
-      () => context.createBazi(libraryPath: '/no/such/libtaiyin_bazi.dylib'),
+      () => context.createBazi(
+        libraryPath: '/no/such/definitely_missing_taiyin_bazi.dylib',
+      ),
       throwsUnsupportedError,
     );
     expect(context.position, isNotNull);

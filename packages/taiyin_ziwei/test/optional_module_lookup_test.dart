@@ -33,7 +33,9 @@ void main() {
     final runtime = Ephemeris.open(libraryPath: libraryPath);
     final context = runtime.createContext();
     expect(
-      () => context.createZiwei(libraryPath: '/no/such/libtaiyin_ziwei.dylib'),
+      () => context.createZiwei(
+        libraryPath: '/no/such/definitely_missing_taiyin_ziwei.dylib',
+      ),
       throwsUnsupportedError,
     );
     expect(
