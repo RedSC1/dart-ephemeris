@@ -65,8 +65,8 @@ jobs:
           git -C native-core apply `
             ../.github/patches/taiyin-mingw-modular-core-exports.patch
 
-      - name: Build and install native modules (Unix)
-        if: runner.os != 'Windows'
+      - name: Build and install native modules (macOS)
+        if: runner.os == 'macOS'
         shell: bash
         run: |
           cmake -S native-core -B native-build \
@@ -78,6 +78,54 @@ jobs:
           cmake --build native-build --parallel 3 \
             --target taiyin taiyin_bazi taiyin_ziwei
           cmake --install native-build --prefix native-stage
+          strip -S -x \
+            native-stage/lib/libtaiyin.9.0.0.dylib \
+            native-stage/lib/libtaiyin_bazi.1.0.0.dylib \
+            native-stage/lib/libtaiyin_ziwei.1.0.0.dylib
+
+      - name: Build and install native modules (manylinux2014)
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          docker run --rm \
+            -v "$GITHUB_WORKSPACE:/workspace" \
+            -w /workspace \
+            quay.io/pypa/manylinux2014_x86_64 \
+            bash -euxo pipefail -c '
+              cmake -S native-core -B native-build \
+                -DCMAKE_BUILD_TYPE=Release \
+                -DTAIYIN_BUILD_CHINESE_METAPHYSICS_EXTENSIONS=ON \
+                -DTAIYIN_BUILD_BAZI_EXTENSION=ON \
+                -DTAIYIN_BUILD_ZIWEI_EXTENSION=ON \
+                -DTAIYIN_BUILD_MODULAR_C_API=ON
+              cmake --build native-build --parallel 3 \
+                --target taiyin taiyin_bazi taiyin_ziwei
+              cmake --install native-build --prefix native-stage
+              strip --strip-unneeded \
+                native-stage/lib/libtaiyin.so.9.0.0 \
+                native-stage/lib/libtaiyin_bazi.so.1.0.0 \
+                native-stage/lib/libtaiyin_ziwei.so.1.0.0
+
+              max_glibc="$(
+                objdump -T native-stage/lib/libtaiyin.so.9.0.0 |
+                  sed -n "s/.*GLIBC_\\([0-9.]*\\).*/\\1/p" |
+                  sort -V |
+                  tail -1
+              )"
+              max_glibcxx="$(
+                objdump -T native-stage/lib/libtaiyin.so.9.0.0 |
+                  sed -n "s/.*GLIBCXX_\\([0-9.]*\\).*/\\1/p" |
+                  sort -V |
+                  tail -1
+              )"
+              echo "maximum GLIBC requirement: $max_glibc"
+              echo "maximum GLIBCXX requirement: $max_glibcxx"
+              test "$(printf "%s\\n" "$max_glibc" 2.17 |
+                sort -V | tail -1)" = 2.17
+              test "$(printf "%s\\n" "$max_glibcxx" 3.4.19 |
+                sort -V | tail -1)" = 3.4.19
+            '
+          sudo chown -R "$(id -u):$(id -g)" native-build native-stage
 
       - name: Build and install native modules (Windows)
         if: runner.os == 'Windows'
@@ -89,6 +137,10 @@ jobs:
             --target taiyin taiyin_bazi taiyin_ziwei
           cmake --install build-preset-windows-mingw-gcc \
             --prefix ../native-stage
+          /mingw64/bin/strip --strip-unneeded \
+            ../native-stage/bin/taiyin.dll \
+            ../native-stage/bin/taiyin_bazi.dll \
+            ../native-stage/bin/taiyin_ziwei.dll
           # A MinGW-built DLL needs its compiler runtimes even on machines that
           # do not have GCC installed. Keep them beside the Taiyin DLLs so the
           # Windows loader resolves the artifact without machine-wide setup.
@@ -162,3 +214,50 @@ jobs:
           path: native-stage
           if-no-files-found: error
           retention-days: 14
+
+  package-dry-run:
+    name: Assemble pub packages / dry run
+    needs: test
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+
+    steps:
+      - name: Check out Dart bindings
+        uses: actions/checkout@v6
+
+      - name: Set up Dart
+        uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+
+      - name: Download native modules
+        uses: actions/download-artifact@v8
+        with:
+          pattern: taiyin-native-*
+          path: native-artifacts
+
+      - name: Prepare clean pub workspace
+        shell: bash
+        run: |
+          pub_workspace="$RUNNER_TEMP/taiyin-pub-workspace"
+          mkdir -p "$pub_workspace"
+          git archive HEAD | tar -x -C "$pub_workspace"
+          cd "$pub_workspace"
+          dart run tool/stage_native_artifacts.dart \
+            "$GITHUB_WORKSPACE/native-artifacts"
+
+      - name: Resolve Dart dependencies
+        working-directory: ${{ runner.temp }}/taiyin-pub-workspace
+        run: dart pub get
+
+      - name: Validate core pub package
+        working-directory: ${{ runner.temp }}/taiyin-pub-workspace/packages/taiyin
+        run: dart pub publish --dry-run
+
+      - name: Validate BaZi pub package
+        working-directory: ${{ runner.temp }}/taiyin-pub-workspace/packages/taiyin_bazi
+        run: dart pub publish --dry-run
+
+      - name: Validate Ziwei pub package
+        working-directory: ${{ runner.temp }}/taiyin-pub-workspace/packages/taiyin_ziwei
+        run: dart pub publish --dry-run

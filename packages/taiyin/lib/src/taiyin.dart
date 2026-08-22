@@ -613,10 +613,10 @@ DynamicLibrary _openDefaultLibrary() {
 /// The shared library bundled inside the package, when it ships one for this
 /// platform.
 String? _bundledLibraryPath() {
-  // The repository currently ships only a macOS arm64 native baseline. An
-  // Intel VM (including Dart running under Rosetta) must fall through to the
-  // normal loader path instead of trying to open an incompatible image.
-  if (Platform.isMacOS && Abi.current() != Abi.macosArm64) return null;
+  // The bundled release baseline currently covers macOS arm64, Linux x64,
+  // and Windows x64. Other architectures fall through to the platform loader
+  // so applications can provide a compatible native build themselves.
+  if (!_supportsBundledNativeAbi()) return null;
   final fileName = Platform.isWindows
       ? 'taiyin.dll'
       : Platform.isMacOS
@@ -627,7 +627,34 @@ String? _bundledLibraryPath() {
   );
   if (resolved == null || resolved.scheme != 'file') return null;
   final path = resolved.toFilePath();
-  return File(path).existsSync() ? path : null;
+  if (!File(path).existsSync()) return null;
+  if (Platform.isWindows) _preloadBundledWindowsRuntimes(File(path).parent);
+  return path;
+}
+
+bool _supportsBundledNativeAbi() {
+  final abi = Abi.current();
+  if (Platform.isMacOS) return abi == Abi.macosArm64;
+  if (Platform.isLinux) return abi == Abi.linuxX64;
+  if (Platform.isWindows) return abi == Abi.windowsX64;
+  return false;
+}
+
+// Loading a DLL by absolute path does not add its directory to the Windows DLL
+// search path. Keep the MinGW-w64 dependencies loaded explicitly so taiyin.dll
+// and the optional extension DLLs can resolve them on machines without GCC.
+final List<DynamicLibrary> _bundledWindowsRuntimes = [];
+
+void _preloadBundledWindowsRuntimes(Directory nativeDirectory) {
+  if (_bundledWindowsRuntimes.isNotEmpty) return;
+  for (final fileName in const [
+    'libwinpthread-1.dll',
+    'libgcc_s_seh-1.dll',
+    'libstdc++-6.dll',
+  ]) {
+    final file = File.fromUri(nativeDirectory.uri.resolve(fileName));
+    _bundledWindowsRuntimes.add(DynamicLibrary.open(file.path));
+  }
 }
 
 _NativeLibraryState _nativeLibraryStateFor(DynamicLibrary library) {

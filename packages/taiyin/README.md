@@ -30,11 +30,13 @@ The core package deliberately has two layers:
 
 ## Platform support
 
-This package currently supports **Dart Native only** through `dart:ffi`, such as
-command-line applications, servers, Flutter mobile, and Flutter desktop. Dart
+This package supports **Dart Native only** through `dart:ffi`. This prerelease
+bundles ready-to-load native modules for macOS arm64, Linux x64, and Windows
+x64. Applications on another native platform or architecture can provide a
+compatible Taiyin build through an explicit path or the platform loader. Dart
 Web and Flutter Web are **not currently supported**: browsers cannot load the
-bundled native C ABI shared library. A future Web target would require a
-separate WebAssembly/JavaScript binding and packaging path.
+native C ABI shared library. A future Web target would require a separate
+WebAssembly/JavaScript binding and packaging path.
 
 ## Build the native library
 
@@ -51,9 +53,7 @@ cmake --build build-c-api-release --target taiyin_c
 import 'package:taiyin/taiyin.dart' as taiyin;
 
 void main() {
-  final ephemeris = taiyin.Ephemeris.open(
-    libraryPath: '../taiyin-ephemeris/build-c-api-release/libtaiyin.dylib',
-  );
+  final ephemeris = taiyin.Ephemeris.open();
   final context = ephemeris.createContext();
   try {
     final moonResult = context.position.atTt(
@@ -1142,13 +1142,14 @@ oracles are reused when a corresponding C ABI operation exists.
 For local development each package's bundled `lib/native/` copy is loaded
 automatically. Explicit paths and `TAIYIN_LIBRARY_PATH`,
 `TAIYIN_BAZI_LIBRARY_PATH`, or `TAIYIN_ZIWEI_LIBRARY_PATH` override them. The
-three native artifacts are:
+packages currently bundle:
 
-- macOS: `libtaiyin.dylib`, `libtaiyin_bazi.dylib`, `libtaiyin_ziwei.dylib`
-- Linux/Android: `libtaiyin.so`, `libtaiyin_bazi.so`, `libtaiyin_ziwei.so`
-- Windows: `taiyin.dll`, `taiyin_bazi.dll`, `taiyin_ziwei.dll`
-- iOS: statically link Ephemeris and use `DynamicLibrary.process()`
+- macOS arm64: `libtaiyin.dylib`, `libtaiyin_bazi.dylib`,
+  `libtaiyin_ziwei.dylib`
+- Linux x64: `libtaiyin.so`, `libtaiyin_bazi.so`, `libtaiyin_ziwei.so`
+- Windows x64: `taiyin.dll`, `taiyin_bazi.dll`, `taiyin_ziwei.dll`,
+  together with the required MinGW-w64 runtime DLLs
 
-A package intended for `pub.dev` should add a Dart build hook that builds or
-downloads the correct native asset. Keep that packaging concern separate from
-the public Dart API above.
+Unsupported architectures fall back to an explicitly configured or
+platform-installed shared library. iOS applications statically link Taiyin and
+use `DynamicLibrary.process()`.

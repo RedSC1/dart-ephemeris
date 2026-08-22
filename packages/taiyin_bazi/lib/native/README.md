@@ -1,12 +1,11 @@
-# Pinned BaZi native module
+# Pinned BaZi native modules
 
-`libtaiyin_bazi.dylib` is the macOS arm64 modular BaZi target from Taiyin
-1.0.0-beta.1, native commit `130063b3`, C ABI 9. It depends on the modular
-core `libtaiyin` shipped by `package:taiyin`.
+This directory contains the macOS arm64, Linux x64, and Windows x64 modular
+BaZi targets from Taiyin 1.0.0-beta.1, native commit `130063b3`, C ABI 9. They
+depend on the matching modular core shipped by `package:taiyin`.
 
-Replace it from a modular CMake build with:
+Stage replacements from artifacts produced by the native integration workflow:
 
 ```sh
-cp -L ../taiyin-ephemeris/build-dart-modular/bazi_astrology/libtaiyin_bazi.dylib \
-  packages/taiyin_bazi/lib/native/libtaiyin_bazi.dylib
+dart run tool/stage_native_artifacts.dart /path/to/downloaded-artifacts
 ```

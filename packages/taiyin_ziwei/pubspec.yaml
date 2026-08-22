@@ -9,7 +9,7 @@ environment:
 
 dependencies:
   ffi: ^2.2.0
-  taiyin: 1.0.0-alpha.1
+  taiyin: ^1.0.0-alpha.1
 
 dev_dependencies:
   lints: ^6.0.0

@@ -153,10 +153,10 @@ DynamicLibrary _openExtensionLibrary({
   if (configured != null) return DynamicLibrary.open(configured);
 
   final fileName = _extensionLibraryFileName(libraryBaseName);
-  // The checked-in extension modules are macOS arm64 builds. On Intel macOS
-  // and under Rosetta, skip them and let the platform loader find a compatible
-  // module supplied by the application.
-  if (!Platform.isMacOS || Abi.current() == Abi.macosArm64) {
+  // Only resolve a package-bundled module when this release ships a matching
+  // architecture. Unsupported architectures fall through to an application-
+  // supplied module on the platform loader path.
+  if (_supportsBundledExtensionAbi()) {
     final resolved = Isolate.resolvePackageUriSync(
       Uri.parse('package:$packageName/native/$fileName'),
     );
@@ -166,6 +166,14 @@ DynamicLibrary _openExtensionLibrary({
     }
   }
   return DynamicLibrary.open(fileName);
+}
+
+bool _supportsBundledExtensionAbi() {
+  final abi = Abi.current();
+  if (Platform.isMacOS) return abi == Abi.macosArm64;
+  if (Platform.isLinux) return abi == Abi.linuxX64;
+  if (Platform.isWindows) return abi == Abi.windowsX64;
+  return false;
 }
 
 String _extensionLibraryFileName(String baseName) {

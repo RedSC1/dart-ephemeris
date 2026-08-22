@@ -9,6 +9,10 @@ This repository contains three separately published Dart packages:
 - [`taiyin_ziwei`](packages/taiyin_ziwei) — optional Ziwei Doushu extension;
   ships `libtaiyin_ziwei` and the default TOML rule profile.
 
+The prerelease packages bundle macOS arm64, Linux x64, and Windows x64 native
+modules. Other Dart Native targets can use an application-supplied Taiyin
+build. Dart Web is not currently supported.
+
 All three are currently `1.0.0-alpha.1`. See each package README and CHANGELOG
 for its public API and release notes.
 

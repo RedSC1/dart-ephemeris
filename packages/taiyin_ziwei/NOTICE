@@ -1,0 +1,165 @@
+taiyin-ephemeris
+Copyright 2026 RedSC1.
+
+Taiyin's original source code and documentation are licensed under the Mozilla
+Public License, Version 2.0. See LICENSE for the complete license text.
+
+This NOTICE gratefully records the third-party software, models, data, and
+references that helped make Taiyin possible. Their original licenses and terms
+remain in effect alongside the MPL-2.0 license for Taiyin's original work.
+
+Acknowledgments
+---------------
+
+Taiyin is built on work shared by the astronomy, scientific-computing, and
+open-source communities. We are especially grateful to the ERFA and IAU SOFA
+contributors; the miniz maintainers; Don Cross and Astronomy Engine; 许剑伟 and
+the contributors to 寿星天文历;
+Michelle Chapront-Touzé and Jean Chapront for the ELP lunar theory, P. Bidart
+for the MPP01 planetary perturbations, and Jean Chapront and Gérard Francou for
+the ELP/MPP02 revision; NASA/JPL and the teams behind DE441, SPK, Horizons, and
+SBDB; the SELENE (Kaguya) LALT team and ISAS/JAXA archive; the Gaia, Hipparcos,
+and Yale Bright Star Catalogue teams; and the Purple Mountain Observatory and
+Swiss Ephemeris maintainers whose published results support external
+validation. Their software, models, observations, catalogs, and documentation
+made this project possible.
+
+Third-party notices
+-------------------
+
+ERFA / SOFA-derived routines
+----------------------------
+
+`src/internal/erfa_cirs_subset.cpp` contains routines adapted from ERFA. The
+adapted routine headers carry copyright (C) 2013-2023, NumFOCUS Foundation.
+ERFA is distributed under the three-clause BSD license and is derived, with
+permission, from the IAU SOFA library. The complete per-routine copyright and
+redistribution terms are retained in that source file. Binary redistributions
+must reproduce those notices in their documentation or other supplied
+materials.
+
+miniz
+-----
+
+`src/third_party/miniz/` contains miniz. The split C source files retain their
+MIT license notices, and `miniz.c` additionally retains the complete upstream
+Unlicense/public-domain dedication. Redistributions must retain the notices
+present in the bundled source files.
+
+toml11
+------
+
+`ziwei_astrology/third_party/toml11/` contains the single-header toml11
+v4.4.0 TOML parser by Toru Niina. It is used while loading authored Ziwei rule
+files into validated integer-only runtime tables. toml11 is distributed under
+the MIT license; its complete license is retained beside the bundled header.
+
+Astronomy Engine
+----------------
+
+`src/third_party/astronomy_engine/jupiter_moons_l1.inc` contains an adapted
+compact Galilean-moon L1.2 coefficient subset from Astronomy Engine by Don
+Cross. Taiyin uses and adapts that upstream code-derived material, while the
+accompanying integration evaluates the coefficients with Taiyin's state and
+frame machinery. Astronomy Engine is distributed under the MIT license; the
+applicable copyright and license text are retained in
+`src/third_party/astronomy_engine/`. Upstream:
+
+    https://github.com/cosinekitty/astronomy
+
+Shouxing Astronomical Calendar
+------------------------------
+
+Taiyin gratefully acknowledges sxwnl / Shouxing Astronomical Calendar, also
+known in Chinese as "寿星天文历" or "寿星万年历". Its astronomical and calendar
+work provided an important practical reference during the development of
+Taiyin's eclipse, occultation, and Chinese-calendar modules. The upstream copy
+used for attribution is the GitHub repository:
+
+    https://github.com/sxwnl/sxwnl
+
+That repository identifies the software as "寿星天文历(万年历) 5.10", credits
+the original author as "许剑伟", and states that the original version came
+from the lunar-calendar forum:
+
+    http://bbs.nongli.net/dispbbs_2_14995.html
+
+The repository README also points to the upstream documentation and copyright
+notice pages:
+
+    https://sxwnl.github.io/src/readme.htm
+    https://sxwnl.github.io/src/sm1.htm#copyright
+
+Taiyin's project history and validation material includes:
+
+* earlier solar- and lunar-eclipse adaptations from `eph.js`, preserved under
+  `legacy/sxwnl/` as implementation history and regression references;
+* `SSQ`/`lunar.js` behavior used as an oracle while independently implementing
+  winter-solstice-year arrangement and no-principal-term leap-month rules;
+* historical UTC+08 civil-day assignments generated from `SSQ` results; and
+* eclipse and calendar results retained as regression fixtures.
+
+The preserved source keeps local provenance comments so future maintainers can
+find the corresponding upstream material. Taiyin's current eclipse and
+occultation implementation builds on its own shadow-vector,
+ellipsoid-intersection, route, and observer geometry, while continuing to
+value sxwnl as an important historical and behavioral reference.
+
+The upstream source statement includes the following attribution and cautionary
+notice, reproduced here for source acknowledgment:
+
+"本程序是开源的，你可以使用其中的任意部分代码，但不得随意修改“天文算法(eph.js)”及“农历算法(lunar.js)中古历部分的数据及算法”。一旦修改可能影响万年历的准确性，如果你对天文学不太了解而仅凭对历法的热情，请不要对此做任何修改，以免弄巧成拙。
+
+如果在你自己开发的软件中使用了本程序的核心算法及数据，你可以在你的软件中申明“数据或算法来源于寿星天文历”，也可以不申明，但不可以申明为它其它来源。如有异义，可与我共内探讨。"
+
+English summary: the upstream author describes the program as open source,
+allows use of its code, cautions against casually modifying the astronomical
+algorithms in eph.js and the ancient-calendar portions of lunar.js because
+doing so may affect calendar accuracy, and asks that software using the core
+algorithms or data not attribute them to another source. Attribution as "data
+or algorithms from Shouxing Astronomical Calendar" is permitted.
+
+This is a project-specific upstream statement rather than a standard SPDX
+license, and is retained here in full in appreciation of its author and for
+clear attribution. The preserved files under `legacy/sxwnl/` retain their
+upstream provenance comments; please keep those comments and this NOTICE when
+redistributing them. Taiyin's original contributions remain licensed under
+MPL-2.0 unless a file states otherwise.
+
+ELP/MPP02 lunar theory and JPL DE441 fit
+---------------------------------------
+
+The built-in semi-analytical lunar model retains 1,175 phase terms selected
+from the ELP/MPP02 lunar theory using its DE405 constant set. ELP/MPP02 is the
+revision by Jean Chapront and Gérard Francou of the ELP lunar theory developed
+by Michelle Chapront-Touzé and Jean Chapront, incorporating the MPP01 planetary
+perturbations by P. Bidart. The revision is described in "The lunar theory ELP
+revisited. Introduction of new planetary perturbations", Astronomy &
+Astrophysics 404 (2003), 735-742,
+doi:10.1051/0004-6361:20030529.
+
+The 35,901-term candidate pool was converted in DE405 mode from the six
+published ELP/MPP02 coefficient files `ELP_MAIN.S1` through `ELP_MAIN.S3` and
+`ELP_PERT.S1` through `ELP_PERT.S3`. The checked-in runtime artifact contains a
+compact 1,175-term selection and a Taiyin-fitted sparse residual. The complete
+upstream coefficient package is not distributed in this repository. Exact
+input identity, checksum, and transformation details are recorded in
+`tools/generated/README.md`.
+
+The residual was fitted against the NASA/JPL DE441 planetary and lunar
+ephemeris. The DE441 BSP is a regeneration/validation input and is not bundled
+with Taiyin.
+
+Packaged data provenance
+------------------------
+
+The optional packaged lunar-limb model is derived from the SELENE (Kaguya)
+Laser Altimeter global topographic grid distributed by the SELENE Data Archive
+at ISAS/JAXA. Its detailed source and requested acknowledgment are retained in
+`data/lunar-limb/README.md`.
+
+Packaged OPM2, COB, Kepler/TKC1, asteroid, and star products retain source
+provenance in their adjacent README and manifest files. Distributing those data
+products requires distributing the corresponding provenance metadata and
+complying with upstream data terms. The MPL-2.0 license for Taiyin's original
+code does not replace upstream data terms.
