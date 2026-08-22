@@ -101,19 +101,23 @@ jobs:
               cmake --build native-build --parallel 3 \
                 --target taiyin taiyin_bazi taiyin_ziwei
               cmake --install native-build --prefix native-stage
+              library="$(find native-stage -type f \
+                -name libtaiyin.so.9.0.0 -print -quit)"
+              test -n "$library"
+              stage_lib="$(dirname "$library")"
               strip --strip-unneeded \
-                native-stage/lib/libtaiyin.so.9.0.0 \
-                native-stage/lib/libtaiyin_bazi.so.1.0.0 \
-                native-stage/lib/libtaiyin_ziwei.so.1.0.0
+                "$stage_lib/libtaiyin.so.9.0.0" \
+                "$stage_lib/libtaiyin_bazi.so.1.0.0" \
+                "$stage_lib/libtaiyin_ziwei.so.1.0.0"
 
               max_glibc="$(
-                objdump -T native-stage/lib/libtaiyin.so.9.0.0 |
+                objdump -T "$stage_lib/libtaiyin.so.9.0.0" |
                   sed -n "s/.*GLIBC_\\([0-9.]*\\).*/\\1/p" |
                   sort -V |
                   tail -1
               )"
               max_glibcxx="$(
-                objdump -T native-stage/lib/libtaiyin.so.9.0.0 |
+                objdump -T "$stage_lib/libtaiyin.so.9.0.0" |
                   sed -n "s/.*GLIBCXX_\\([0-9.]*\\).*/\\1/p" |
                   sort -V |
                   tail -1
@@ -165,7 +169,10 @@ jobs:
         if: runner.os == 'Linux'
         shell: bash
         run: |
-          stage="$GITHUB_WORKSPACE/native-stage/lib"
+          library="$(find "$GITHUB_WORKSPACE/native-stage" -type f \
+            -name libtaiyin.so.9.0.0 -print -quit)"
+          test -n "$library"
+          stage="$(dirname "$library")"
           echo "TAIYIN_TEST_LIBRARY=$stage/libtaiyin.so" >> "$GITHUB_ENV"
           echo "TAIYIN_BASELINE_LIBRARY=$stage/libtaiyin.so" >> "$GITHUB_ENV"
           echo "TAIYIN_BAZI_LIBRARY_PATH=$stage/libtaiyin_bazi.so" >> "$GITHUB_ENV"
