@@ -1,5 +1,53 @@
+import 'dart:io';
+
 import 'package:taiyin/src/native_compatibility.dart';
 import 'package:test/test.dart';
+
+Directory _taiyinPackageRoot() {
+  final current = Directory.current;
+  if (File('${current.path}/lib/src/native_compatibility.dart').existsSync()) {
+    return current;
+  }
+
+  final workspacePackage = Directory('${current.path}/packages/taiyin');
+  if (File(
+    '${workspacePackage.path}/lib/src/native_compatibility.dart',
+  ).existsSync()) {
+    return workspacePackage;
+  }
+
+  throw StateError(
+    'Cannot locate the taiyin package root from ${current.path}.',
+  );
+}
+
+Set<String> _directlyReferencedNativeSymbols() {
+  final sourceRoot = Directory('${_taiyinPackageRoot().path}/lib/src');
+  final invocation = RegExp(r'\b[A-Za-z_]\w*\.(taiyin_[a-z0-9_]+)\b');
+  final symbols = <String>{};
+
+  for (final entity in sourceRoot.listSync(recursive: true)) {
+    if (entity is! File ||
+        !entity.path.endsWith('.dart') ||
+        entity.path.endsWith('taiyin_bindings.g.dart')) {
+      continue;
+    }
+    final source = entity.readAsStringSync();
+    symbols.addAll(
+      invocation.allMatches(source).map((match) => match.group(1)!),
+    );
+  }
+  // ffigen renames the C function because `taiyin_status_category` would
+  // collide with the generated enum class of the same name. Compatibility
+  // checks must use the dynamic-library symbol, not the Dart wrapper name.
+  return {
+    for (final symbol in symbols)
+      if (symbol == 'taiyin_status_category_of')
+        'taiyin_status_category'
+      else
+        symbol,
+  };
+}
 
 void main() {
   group('native compatibility', () {
@@ -72,6 +120,21 @@ void main() {
           providesSymbol: taiyinRequiredAbi9Symbols.contains,
         ),
         returnsNormally,
+      );
+    });
+
+    test('required ABI-9 set covers every directly invoked core symbol', () {
+      final missing =
+          _directlyReferencedNativeSymbols()
+              .difference(taiyinRequiredAbi9Symbols)
+              .toList()
+            ..sort();
+      expect(
+        missing,
+        isEmpty,
+        reason:
+            'Every generated-binding call must be validated when the native '
+            'library is opened, before a later lazy symbol lookup can fail.',
       );
     });
 
