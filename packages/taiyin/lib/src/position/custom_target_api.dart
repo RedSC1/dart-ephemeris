@@ -44,8 +44,7 @@ final class CustomTargetRequest {
     required this.julianDateTt,
     required this.rawFlags,
     required Pointer<taiyin_context> context,
-    required Pointer<NativeFunction<_NativeCustomDependencyPosition>>
-    dependencyPosition,
+    required _DartCustomDependencyPosition dependencyPosition,
     required _CustomTargetRequestScope scope,
   }) : _context = context,
        _dependencyPosition = dependencyPosition,
@@ -56,8 +55,7 @@ final class CustomTargetRequest {
   final JulianDate<TtScale> julianDateTt;
   final int rawFlags;
   final Pointer<taiyin_context> _context;
-  final Pointer<NativeFunction<_NativeCustomDependencyPosition>>
-  _dependencyPosition;
+  final _DartCustomDependencyPosition _dependencyPosition;
   final _CustomTargetRequestScope _scope;
 
   Set<PositionFlag> get flags => Set.unmodifiable({
@@ -83,13 +81,11 @@ final class CustomTargetRequest {
       );
     }
     final mask = flags.fold(0, (value, flag) => value | flag.mask);
-    final calculate = _dependencyPosition
-        .asFunction<_DartCustomDependencyPosition>();
     return using((arena) {
       final output = arena<Double>(6);
       final diagnostic = arena<taiyin_ephemeris_diagnostic>();
       diagnostic.ref.struct_size = sizeOf<taiyin_ephemeris_diagnostic>();
-      final rawResult = calculate(
+      final rawResult = _dependencyPosition(
         _context,
         dependency.id,
         writeJulianDate(arena, julianDateTdb),
@@ -212,20 +208,20 @@ CustomTargetRegistration _registerCustomTarget(
 
   NativeCallable<taiyin_native_position_evaluator_fnFunction>? positionCallable;
   NativeCallable<taiyin_native_state_evaluator_fnFunction>? stateCallable;
-  final dependencyPositionAddress = library
+  final dependencyPosition = library
       .lookup<NativeFunction<_NativeCustomDependencyPosition>>(
         'taiyin_calc_position_tdb',
       )
-      .address;
+      .asFunction<_DartCustomDependencyPosition>();
   try {
     positionCallable = _createCustomPositionCallable(
       positionEvaluator,
-      dependencyPositionAddress,
+      dependencyPosition,
     );
     if (stateEvaluator != null) {
       stateCallable = _createCustomStateCallable(
         stateEvaluator,
-        dependencyPositionAddress,
+        dependencyPosition,
       );
     }
   } catch (_) {
@@ -271,10 +267,10 @@ void _closeCustomTargetRegistrationsAfterNativeClear(
 NativeCallable<taiyin_native_position_evaluator_fnFunction>
 _createCustomPositionCallable(
   CustomPositionEvaluator evaluator,
-  int dependencyPositionAddress,
+  _DartCustomDependencyPosition dependencyPosition,
 ) {
   final frozenEvaluator = evaluator;
-  final frozenDependencyPositionAddress = dependencyPositionAddress;
+  final frozenDependencyPosition = dependencyPosition;
   final callable =
       NativeCallable<
         taiyin_native_position_evaluator_fnFunction
@@ -301,10 +297,7 @@ _createCustomPositionCallable(
               julianDateTt: readJulianDate<TtScale>(jdTt.ref),
               rawFlags: flags,
               context: context,
-              dependencyPosition:
-                  Pointer<
-                    NativeFunction<_NativeCustomDependencyPosition>
-                  >.fromAddress(frozenDependencyPositionAddress),
+              dependencyPosition: frozenDependencyPosition,
               scope: requestScope,
             ),
           );
@@ -354,10 +347,10 @@ _createCustomPositionCallable(
 NativeCallable<taiyin_native_state_evaluator_fnFunction>
 _createCustomStateCallable(
   CustomStateEvaluator evaluator,
-  int dependencyPositionAddress,
+  _DartCustomDependencyPosition dependencyPosition,
 ) {
   final frozenEvaluator = evaluator;
-  final frozenDependencyPositionAddress = dependencyPositionAddress;
+  final frozenDependencyPosition = dependencyPosition;
   final callable =
       NativeCallable<
         taiyin_native_state_evaluator_fnFunction
@@ -381,10 +374,7 @@ _createCustomStateCallable(
               julianDateTt: readJulianDate<TtScale>(jdTt.ref),
               rawFlags: flags,
               context: context,
-              dependencyPosition:
-                  Pointer<
-                    NativeFunction<_NativeCustomDependencyPosition>
-                  >.fromAddress(frozenDependencyPositionAddress),
+              dependencyPosition: frozenDependencyPosition,
               scope: requestScope,
             ),
           );
