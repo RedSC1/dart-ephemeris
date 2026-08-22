@@ -121,7 +121,7 @@ code that coexists with other packages, prefer the prefixed form above.
 Ephemeris exposes its semantic version and major-release codename independently:
 
 ```dart
-print(ephemeris.libraryVersion);  // 1.0.0-preview.6
+print(ephemeris.libraryVersion);  // 1.0.0-beta.1
 print(ephemeris.libraryCodename); // Singularity
 ```
 

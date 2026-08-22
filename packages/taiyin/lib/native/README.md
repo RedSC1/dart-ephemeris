@@ -9,8 +9,8 @@ programs self-contained and reproducible: they do not depend on the sibling
 
 | | |
 |---|---|
-| Native commit | `534f8534` — "fix(c-api): avoid cross-enum comparison warnings" (2026-08-20) |
-| Version | 1.0.0-preview.6 |
+| Native commit | `130063b3` — "chore(release): prepare 1.0.0-beta.1" (2026-08-22) |
+| Version | 1.0.0-beta.1 |
 | C ABI | 9 |
 | Build | modular core (astronomy + Chinese calendar + Ganzhi) |
 | Platform | macOS arm64 |
