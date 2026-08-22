@@ -197,6 +197,26 @@ void main() {
         );
       });
 
+      test('rejects an unrepresentable inserted UTC leap second', () {
+        final leap = taiyin.time
+            .scalesFromUtc(AstroDateTime(2016, 12, 31, 23, 59, 60))
+            .value
+            .value;
+
+        expect(
+          () => taiyin.time.taiToUtc(leap.tai),
+          throwsA(isA<UtcLeapSecondRepresentationError>()),
+        );
+        expect(
+          () => taiyin.time.ttToUtc(leap.tt),
+          throwsA(isA<UtcLeapSecondRepresentationError>()),
+        );
+        expect(
+          () => taiyin.time.tdbToUtc(leap.tdb),
+          throwsA(isA<UtcLeapSecondRepresentationError>()),
+        );
+      });
+
       test('strict UTC conversion reports missing EOP data explicitly', () {
         taiyin.close();
         taiyin = Ephemeris.open(
@@ -250,6 +270,12 @@ void main() {
           ),
           throwsA(isA<LeapSecondDataError>()),
         );
+        expect(
+          () => taiyin.time.ttToUt1(
+            AstroDateTime(1900, 1, 1).toJulianDate<TtScale>(),
+          ),
+          throwsA(isA<LeapSecondDataError>()),
+        );
       });
 
       test('falls back to the estimated Delta-T route when allowed', () {
@@ -282,6 +308,23 @@ void main() {
         expect(inverse.flags.contains(ResultFlag.timeScaleFallback), isTrue);
         final ttToUt1 = taiyin.time.ttToUt1(result.value.tt);
         expect(ttToUt1.flags.contains(ResultFlag.timeScaleFallback), isTrue);
+
+        final historicalTt = AstroDateTime(1900, 1, 1).toJulianDate<TtScale>();
+        final historicalUt1 = taiyin.time.ttToUt1(historicalTt);
+        final historicalTdb = taiyin.time.ttToTdb(historicalTt).value;
+        final historicalUt1FromTdb = taiyin.time.tdbToUt1(historicalTdb);
+        expect(
+          historicalUt1.flags.contains(ResultFlag.timeScaleFallback),
+          isTrue,
+        );
+        expect(
+          historicalUt1FromTdb.flags.contains(ResultFlag.timeScaleFallback),
+          isTrue,
+        );
+        expect(
+          historicalUt1FromTdb.value.secondsDifference(historicalUt1.value),
+          closeTo(0, 5e-7),
+        );
         expect(taiyin.lastResultFlags, operation.flags);
 
         EphemerisError? failure;
