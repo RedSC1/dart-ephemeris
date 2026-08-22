@@ -1,6 +1,31 @@
 import 'julian_date.dart';
 import 'time_scale.dart';
 
+/// Converts Dart's timezone-aware [DateTime] instant to Taiyin's split UTC
+/// Julian-date representation.
+///
+/// The conversion uses [DateTime.microsecondsSinceEpoch], not the displayed
+/// calendar fields. Therefore a local [DateTime] and its [DateTime.toUtc]
+/// value produce the same instant. The original timezone offset is not stored
+/// in the returned value.
+///
+/// This adapter does not consult an ephemeris or Chinese-calendar context.
+/// When the result is later used for Chinese-calendar, BaZi, or Ziwei
+/// calculation, that context remains the single source of truth for the local
+/// timezone and day-boundary policy.
+extension EphemerisDateTimeConversion on DateTime {
+  /// Converts this instant to a UTC split Julian date.
+  ///
+  /// Dart [DateTime] has microsecond resolution, so this path cannot introduce
+  /// the nanosecond precision available from [AstroDateTime].
+  UtcJulianDate toUtcJulianDate() {
+    return UtcJulianDate.fromParts(
+      2440587,
+      0.5,
+    ).add(Duration(microseconds: microsecondsSinceEpoch));
+  }
+}
+
 /// A timezone- and time-scale-neutral astronomical calendar date and time.
 ///
 /// Years use astronomical numbering: year `0` is 1 BCE, `-1` is 2 BCE, and
@@ -66,7 +91,13 @@ final class AstroDateTime implements Comparable<AstroDateTime> {
     this.nanosecond,
   );
 
-  /// Preserves Dart's millisecond and microsecond components.
+  /// Copies Dart's displayed calendar fields, preserving milliseconds and
+  /// microseconds.
+  ///
+  /// This factory deliberately does not convert the represented instant: a
+  /// local value stays a local wall-clock reading and a UTC value stays a UTC
+  /// reading. Use [EphemerisDateTimeConversion.toUtcJulianDate] when the
+  /// physical instant represented by a Dart [DateTime] is required.
   factory AstroDateTime.fromDateTime(DateTime value) {
     return AstroDateTime(
       value.year,

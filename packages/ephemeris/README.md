@@ -180,6 +180,8 @@ final utcCalendar = AstroDateTime(
   2026, 7, 19, 12, 34, 56, 123456789,
 );
 final utc = utcCalendar.toUtcJulianDate();
+final dartInstant = DateTime.parse('2003-03-13T14:15:00+08:00');
+final dartUtc = dartInstant.toUtcJulianDate();
 final scales = context.time.scalesFromUtc(utcCalendar);
 final tt = scales.value.value.tt;
 final ut1 = scales.value.value.ut1;
@@ -191,6 +193,21 @@ final utcAgain = context.time.ut1ToUtc(ut1);
 final utcClock = context.time.utcCalendarFromUt1(ut1);
 final ut1Clock = context.time.calendarFromUt1(ut1);
 ```
+
+`DateTime.toUtcJulianDate()` is the single adapter for Dart's built-in time
+type. It converts through `microsecondsSinceEpoch`, so a local `DateTime` and
+the corresponding `toUtc()` value produce the same physical instant. Prefer an
+explicit offset or `DateTime.utc(...)` in portable source code; a constructor
+such as `DateTime(2024, 2, 10, 12)` uses the host machine's local timezone.
+The adapter does not read or override a Chinese-calendar context. When
+`dartUtc` is passed to `fourPillarsInstant()`, `calculateInstant()`, or another
+calendar extension, that bound context still decides the local timezone and
+day-boundary policy. Dart `DateTime` is limited to microseconds; use
+`AstroDateTime` when nanoseconds or astronomical/BCE calendar fields matter.
+In short, use `DateTime` plus an `...Instant()` entry point when an instant is
+already known; use `AstroDateTime` plus an `...Local()` entry point when the
+context should interpret wall-clock fields under its configured calendar
+policy.
 
 `JulianDate<S>` stores an integer day and a normalized fractional day. Its time
 scale is part of the Dart type, so a `Ut1JulianDate` cannot be passed to
@@ -232,9 +249,9 @@ Julian-day coordinate convention. A split value's Dart type identifies its
 time scale; scalar Julian days are untyped. Formatting or applying a civil
 offset does not physically convert UTC, TAI, TT, UT1, or TDB.
 
-A civil value alone does not identify an instant; its relationship to a
-standard Julian day is decided by the caller-supplied `utcOffsetHours`
-argument:
+A standalone `AstroDateTime` civil value does not identify an instant; its
+relationship to a standard Julian day is decided by the caller-supplied
+`utcOffsetHours` argument:
 
 ```dart
 final birthBeijing = AstroDateTime(2024, 2, 10, 12);       // 12:00 UTC+8 wall clock

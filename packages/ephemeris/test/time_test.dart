@@ -2,6 +2,30 @@ import 'package:ephemeris/ephemeris.dart';
 import 'package:test/test.dart';
 
 void main() {
+  group('Dart DateTime conversion', () {
+    test('maps the Unix epoch to the standard UTC Julian date', () {
+      final value = DateTime.fromMicrosecondsSinceEpoch(0, isUtc: true);
+
+      expect(value.toUtcJulianDate(), UtcJulianDate.fromParts(2440587, 0.5));
+    });
+
+    test(
+      'uses the represented instant instead of displayed timezone fields',
+      () {
+        final withOffset = DateTime.parse('2003-03-13T14:15:00.123456+08:00');
+        final utc = DateTime.utc(2003, 3, 13, 6, 15, 0, 123, 456);
+
+        expect(withOffset.toUtcJulianDate(), utc.toUtcJulianDate());
+        expect(
+          AstroDateTime.fromJulianDate(
+            withOffset.toUtcJulianDate(),
+          ).toDateTimeUtc(),
+          utc,
+        );
+      },
+    );
+  });
+
   group('AstroDateTime', () {
     test('preserves DateTime microseconds', () {
       final dart = DateTime.utc(2026, 7, 19, 12, 34, 56, 123, 456);

@@ -81,9 +81,11 @@ routes and map products, and observer-specific visibility.
 ### Chinese calendar and Ganzhi
 
 ```dart
+final instantUtc =
+    DateTime.parse('2003-03-13T14:15:00+08:00').toUtcJulianDate();
 final localTime = eph.AstroDateTime(2003, 3, 13, 14, 15); // UTC+08:00
 final lunarDate = context.chineseCalendar.fromLocal(localTime);
-final pillars = context.chineseCalendar.fourPillarsLocal(localTime);
+final pillars = context.chineseCalendar.fourPillarsInstant(instantUtc);
 
 print('Lunar date: ${lunarDate.value}');
 print('Four pillars: ${pillars.value}');
@@ -92,8 +94,11 @@ print('Day NaYin: ${context.ganzhi.nayinElement(pillars.value.day)}');
 
 The Chinese calendar and Ganzhi APIs are part of the core `ephemeris` package;
 they do not require an extension package. The calendar context derives the UTC
-instant from its configured UTC offset or mean-solar meridian; callers should
-not subtract the offset a second time.
+instant from its configured UTC offset or mean-solar meridian when given a
+local wall clock. Alternatively, Dart's built-in `DateTime` can be converted
+once with `toUtcJulianDate()`; its timezone identifies the physical instant,
+while the calendar context still controls the local timezone and day boundary.
+Callers should not subtract the offset a second time.
 
 ## Astrology
 
