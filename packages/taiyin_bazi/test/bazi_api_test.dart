@@ -181,6 +181,51 @@ void main() {
             result.value.pillars.hour.raw,
           ],
         );
+
+        final utcCalendar = context.time
+            .reverseJulianDay(result.value.instantUtc)
+            .value;
+        final birthUt1 = context.time
+            .scalesFromUtc(utcCalendar)
+            .value
+            .value
+            .ut1;
+        final directQiyun = context.bazi
+            .calcQiyun(
+              birthJdUt: birthUt1,
+              birthCivilTime: result.value.localTime,
+              chart: result.value.chart,
+              gender: BaziGender.male,
+            )
+            .value;
+        expect(
+          instantResult.value.qiyun.jieIntervalDays,
+          closeTo(directQiyun.jieIntervalDays, 1e-13),
+        );
+        expect(
+          instantResult.value.qiyun.startJdUt.coordinateSecondsDifference(
+            directQiyun.startJdUt,
+          ),
+          closeTo(0, 1e-8),
+        );
+      });
+
+      test('propagates the configured UTC-to-UT1 fallback into results', () {
+        context.close();
+        runtime = Ephemeris.open(
+          libraryPath: libraryPath,
+          options: const RuntimeOptions(loadBuiltinEop: false),
+        );
+        context = runtime.createContext();
+        context.time.setAllowUtcOutOfRangeEstimate(true);
+
+        final result = context.bazi.calculateLocal(
+          AstroDateTime(2003, 3, 13, 14, 15),
+          gender: BaziGender.male,
+        );
+
+        expect(result.flags.contains(ResultFlag.timeScaleFallback), isTrue);
+        expect(result.value.qiyun.startAgeYears, greaterThan(0));
       });
 
       test('fills a contiguous xiao-yun range', () {

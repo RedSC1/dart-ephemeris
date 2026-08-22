@@ -180,6 +180,31 @@ void main() {
       );
     });
 
+    test('reports missing runtime catalog symbols before lazy lookup', () {
+      for (final missingSymbol in [
+        'taiyin_runtime_catalog_size',
+        'taiyin_runtime_registered_data_source_init',
+        'taiyin_runtime_registered_data_source_count',
+        'taiyin_runtime_get_registered_data_source',
+        'taiyin_runtime_set_ephemeris_source_priority',
+        'taiyin_runtime_clear_ephemeris_source_priority',
+        'taiyin_runtime_clear_all_ephemeris_source_priorities',
+      ]) {
+        expect(
+          () => validateTaiyinRequiredSymbols(
+            providesSymbol: (symbol) => symbol != missingSymbol,
+          ),
+          throwsA(
+            isA<StateError>().having(
+              (error) => error.message,
+              'message',
+              contains(missingSymbol),
+            ),
+          ),
+        );
+      }
+    });
+
     test('reports missing diagnostic-format and astrology-target symbols', () {
       for (final missingSymbol in [
         'taiyin_format_ephemeris_diagnostic',

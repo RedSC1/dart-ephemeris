@@ -304,6 +304,12 @@ final class ZiweiContext implements Finalizable {
   /// Finds a star by catalog key, or returns null when the key is unknown.
   ZiweiStar? findStar(String key) {
     _ensureOpen();
+    if (key.isEmpty) {
+      throw ArgumentError.value(key, 'key', 'must not be empty');
+    }
+    if (key.contains('\u0000')) {
+      throw ArgumentError.value(key, 'key', 'must not contain a NUL character');
+    }
     return using((arena) {
       final output = arena<Uint16>();
       final status = _bindings.taiyin_ziwei_find_star(

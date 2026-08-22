@@ -419,6 +419,10 @@ final class BaziContext implements Finalizable {
     required BaziGender gender,
     required GanzhiRatHourMode ratHourMode,
   }) {
+    final utcCalendarResult = _calendar.owner.time.reverseJulianDay(instantUtc);
+    final timeScalesResult = _calendar.owner.time.scalesFromUtc(
+      utcCalendarResult.value,
+    );
     final pillarsResult = _calendar.fourPillars(
       instantUtc: instantUtc,
       virtualTime: localTime,
@@ -426,10 +430,7 @@ final class BaziContext implements Finalizable {
     );
     final chart = calcChart(pillarsResult.value);
     final qiyunResult = calcQiyun(
-      birthJdUt: JulianDate<Ut1Scale>.fromParts(
-        instantUtc.dayNumber,
-        instantUtc.dayFraction,
-      ),
+      birthJdUt: timeScalesResult.value.value.ut1,
       birthCivilTime: localTime,
       chart: chart,
       gender: gender,
@@ -442,7 +443,10 @@ final class BaziContext implements Finalizable {
         chart: chart,
         qiyun: qiyunResult.value,
       ),
-      pillarsResult.flags | qiyunResult.flags,
+      utcCalendarResult.flags |
+          timeScalesResult.flags |
+          pillarsResult.flags |
+          qiyunResult.flags,
     );
   }
 

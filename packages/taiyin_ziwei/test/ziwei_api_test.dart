@@ -48,6 +48,8 @@ void main() {
         expect(chart.brightness(star.id), ZiweiBrightness.de);
 
         expect(ziwei.findStar('no-such-star'), isNull);
+        expect(() => ziwei.findStar(''), throwsArgumentError);
+        expect(() => ziwei.findStar('ziwei\u0000invalid'), throwsArgumentError);
       });
 
       test('named anchors and palaces expose the semantic chart view', () {
