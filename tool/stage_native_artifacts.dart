@@ -108,10 +108,7 @@ void main(List<String> arguments) {
   final artifactRoot = Directory(arguments.single).absolute;
   final missing = <String>[];
   for (final file in _files) {
-    final source = _relativeFile(
-      artifactRoot,
-      '${file.artifact}/${file.source}',
-    );
+    final source = _artifactFile(artifactRoot, file);
     if (!source.existsSync()) missing.add(source.path);
   }
   if (missing.isNotEmpty) {
@@ -124,15 +121,26 @@ void main(List<String> arguments) {
   }
 
   for (final file in _files) {
-    final source = _relativeFile(
-      artifactRoot,
-      '${file.artifact}/${file.source}',
-    );
+    final source = _artifactFile(artifactRoot, file);
     final destination = _relativeFile(repository, file.destination);
     destination.parent.createSync(recursive: true);
     source.copySync(destination.path);
     stdout.writeln('${source.path} -> ${destination.path}');
   }
+}
+
+File _artifactFile(Directory root, _NativeFile file) {
+  final relativePath = '${file.artifact}/${file.source}';
+  final source = _relativeFile(root, relativePath);
+  if (source.existsSync() || !file.source.startsWith('lib/')) return source;
+
+  // CMake uses lib64 on some 64-bit Linux distributions (including the
+  // manylinux2014 image) and lib elsewhere. Treat both install layouts as the
+  // same artifact instead of encoding the build host's convention here.
+  return _relativeFile(
+    root,
+    '${file.artifact}/lib64/${file.source.substring('lib/'.length)}',
+  );
 }
 
 File _relativeFile(Directory root, String relativePath) =>
