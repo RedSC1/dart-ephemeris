@@ -72,6 +72,12 @@ jobs:
         if: runner.os == 'Windows'
         shell: msys2 {0}
         run: |
+          # beta.1 relies on CMake's WINDOWS_EXPORT_ALL_SYMBOLS for the base
+          # runtime, but CMake implements that property only for MS-compatible
+          # tools. Apply the matching target-local MinGW linker option while
+          # the native fix is validated independently upstream.
+          git -C native-core apply \
+            ../.github/patches/taiyin-mingw-modular-core-exports.patch
           cd native-core
           # MinGW defaults to a lib*.dll prefix, while the public Dart loader
           # deliberately follows the normal Windows *.dll naming convention.
