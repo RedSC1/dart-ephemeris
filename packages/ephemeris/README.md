@@ -290,11 +290,11 @@ absolute `double` Julian date, so split Dart coordinates are intentionally
 quantized at this calculation boundary (about 40 microseconds near the present
 epoch).
 
-The automatic route prefers SPK, then OPM2, then Taiyin's built-in
-semi-analytical ephemeris before file-backed Kepler fallbacks. To select the
-built-in model explicitly, configure the context with
-`RouteRule.semiAnalytic`. The model covers approximately calendar years
--3000 through +3000.
+The automatic route compares the compatible provider, model, source-priority,
+frame, center, and coverage metadata in the runtime catalog; it does not apply
+a blanket “SPK always beats OPM2” rule. To select the built-in model explicitly,
+configure the context with `RouteRule.semiAnalytic`. The model covers
+approximately calendar years -3000 through +3000.
 
 For example:
 
