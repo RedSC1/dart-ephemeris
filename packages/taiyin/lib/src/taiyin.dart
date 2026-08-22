@@ -296,8 +296,13 @@ final class EphemerisContext implements Finalizable {
       position = PositionApi.internal(_bindings, _context, _ensureOpen, (
         status,
         diagnostic,
+        diagnostics,
       ) {
-        return _completeOperation(status, diagnostic: diagnostic);
+        return _completeOperation(
+          status,
+          diagnostic: diagnostic,
+          diagnostics: diagnostics,
+        );
       });
       observed = ObservedApi._(_bindings, _context, _ensureOpen, (
         status,

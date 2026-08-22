@@ -126,10 +126,20 @@ typedef CustomStateEvaluator =
 
 /// A deliberate non-success status returned by a custom target evaluator.
 final class CustomEvaluatorFailure implements Exception {
-  const CustomEvaluatorFailure(this.status)
-    : assert(status != 0, 'A failure status must be non-zero.');
+  CustomEvaluatorFailure(int status) : status = _validateStatus(status);
 
   final int status;
+
+  static int _validateStatus(int status) {
+    if (status >= 0 || status < -0x80000000) {
+      throw ArgumentError.value(
+        status,
+        'status',
+        'must be a negative native signed 32-bit status',
+      );
+    }
+    return status;
+  }
 
   @override
   String toString() => 'CustomEvaluatorFailure($status)';
@@ -161,13 +171,14 @@ final class CustomTargetRegistration {
   /// overlap calculations in any isolate.
   void close() {
     if (_closed) return;
-    final status = _nativeState.bindings
+    final rawResult = _nativeState.bindings
         .taiyin_unregister_native_position_evaluator(target.id);
+    final status = decodeNativeCallResult(rawResult).status;
     // Another process-wide runtime reset may already have removed the native
     // pointer. In that case it is safe and necessary to release this isolate's
     // remaining Dart callable.
     if (status != _taiyinStatusOk && status != _taiyinErrorInvalidArgument) {
-      _checkStatus(_nativeState.bindings, status);
+      _checkStatus(_nativeState.bindings, rawResult);
     }
     _closeAfterNativeClear();
   }
@@ -224,16 +235,17 @@ CustomTargetRegistration _registerCustomTarget(
   }
 
   final registeredPosition = positionCallable;
-  final status = nativeState.bindings.taiyin_register_native_position_evaluator(
-    targetId,
-    registeredPosition.nativeFunction,
-    stateCallable?.nativeFunction ?? nullptr,
-    nullptr,
-  );
-  if (status != _taiyinStatusOk) {
+  final rawResult = nativeState.bindings
+      .taiyin_register_native_position_evaluator(
+        targetId,
+        registeredPosition.nativeFunction,
+        stateCallable?.nativeFunction ?? nullptr,
+        nullptr,
+      );
+  if (decodeNativeCallResult(rawResult).status != _taiyinStatusOk) {
     stateCallable?.close();
     registeredPosition.close();
-    _checkStatus(nativeState.bindings, status);
+    _checkStatus(nativeState.bindings, rawResult);
   }
 
   final registration = CustomTargetRegistration._(
@@ -316,9 +328,7 @@ _createCustomPositionCallable(
           );
           return _taiyinStatusOk;
         } on CustomEvaluatorFailure catch (error) {
-          final status = error.status == 0
-              ? _taiyinErrorInvalidArgument
-              : error.status;
+          final status = error.status;
           _finishCustomDiagnostic(
             diagnostic,
             status,
@@ -396,9 +406,7 @@ _createCustomStateCallable(
           );
           return _taiyinStatusOk;
         } on CustomEvaluatorFailure catch (error) {
-          final status = error.status == 0
-              ? _taiyinErrorInvalidArgument
-              : error.status;
+          final status = error.status;
           _finishCustomDiagnostic(
             diagnostic,
             status,

@@ -93,10 +93,12 @@ with another package's, and so on.
 import 'package:taiyin/taiyin.dart' as taiyin;
 
 final ephemeris = taiyin.Ephemeris.open();
+final context = ephemeris.createContext();
 final moon = context.position.atTt(
   taiyin.Body.moon,
   taiyin.JulianDate<taiyin.TtScale>.fromDouble(2460409.0),
 ).value;
+context.close();
 ```
 
 Prefixing makes collisions impossible. Note that collisions only error on the
@@ -215,10 +217,10 @@ final utcCalendar = AstroDateTime(2000, 1, 1);
 final scalesResult = context.time.scalesFromUtc(utcCalendar);
 final scales = scalesResult.value;
 
-print(scales.value.utc);
-print(scales.value.ut1);
-print(scales.value.tt);
-print(scales.value.tdb);
+print(scales.utc);
+print(scales.ut1);
+print(scales.tt);
+print(scales.tdb);
 print(scales.diagnostic.route);
 print(scalesResult.flags.values);
 ```
@@ -283,16 +285,16 @@ For example:
 final state = context.position.stateAtTt(
   Body.moon,
   JulianDate<TtScale>.fromDouble(2460409.0),
-);
+).value;
 print(state.positionAu);
 print(context.lastDiagnostic?.frame);
 ```
 
 Single-target failures throw `EphemerisError` with its native `diagnostic`
 attached. Every call also publishes its native diagnostic snapshot to
-`context.lastDiagnostic`. Batch calls preserve one result per requested body
-when individual targets fail; the last target's diagnostic lands on
-`context.lastDiagnostic`.
+`context.lastDiagnostic`. Batch calls fail atomically if any requested body
+fails; the exception's `diagnostics` list retains every per-target diagnostic
+and `context.lastDiagnostic` identifies the primary failed target.
 
 The `context.positionTt` and `context.positionUt` conveniences remain
 available and delegate to this module.
@@ -341,7 +343,7 @@ final siderealMoon = context.astrology.siderealPositionAtTt(
   Body.moon,
   JulianDate<TtScale>.fromDouble(2460409.0),
   ayanamsha: Ayanamsha.lahiri,
-);
+).value;
 final fixedJ2000SiderealMoon = context.astrology.siderealCoordinatesAtTt(
   Body.moon,
   JulianDate<TtScale>.fromDouble(2460409.0),
@@ -349,7 +351,7 @@ final fixedJ2000SiderealMoon = context.astrology.siderealCoordinatesAtTt(
   referenceEpoch: SiderealReferenceEpoch.tt(
     JulianDate<TtScale>.fromDouble(2451545.0),
   ),
-);
+).value;
 final siderealMoonRa = context.astrology.siderealCoordinatesAtTt(
   Body.moon,
   JulianDate<TtScale>.fromDouble(2460409.0),
@@ -358,15 +360,15 @@ final siderealMoonRa = context.astrology.siderealCoordinatesAtTt(
     PositionFlag.equatorial,
     PositionFlag.speed,
   },
-);
+).value;
 final houses = context.astrology.housesAtUt1(
   JulianDate<Ut1Scale>.fromDouble(2460311.0),
   system: HouseSystem.placidus,
-);
+).value;
 final moonHouse = context.astrology.housePositionOf(
   houses,
   siderealMoon.siderealLongitudeRadians,
-);
+).value;
 ```
 
 The current native astrology calculations take a scalar absolute Julian date,
@@ -404,11 +406,11 @@ try {
   final value = context.astrology.ayanamshaAtTt(
     JulianDate<TtScale>.fromDouble(2460409.0),
     ayanamsha: ayanamsha.model,
-  );
+  ).value;
   final chartHouses = context.astrology.housesAtUt1(
     JulianDate<Ut1Scale>.fromDouble(2460311.0),
     system: houses.model,
-  );
+  ).value;
 } finally {
   houses.close();
   ayanamsha.close();
@@ -877,18 +879,18 @@ final start = JulianDate<Ut1Scale>.fromDouble(2460409.0);
 final orbit = context.orbits.osculatingAtUt1(
   Body.moon,
   start,
-);
+).value;
 final perigee = context.orbits.searchApsisFromUt1(
   Body.moon,
   ApsisKind.pericenter,
   start,
-);
+).value;
 final previousNode = context.orbits.searchPlaneNodeFromUt1(
   Body.moon,
   PlaneNodeKind.ascending,
   start,
   direction: OrbitalSearchDirection.reverse,
-);
+).value;
 
 print(orbit.semiMajorAxisAu);
 print(perigee.coordinate);
@@ -944,10 +946,10 @@ final observedSpica = context.stars.observedAtUt1(
 
 `context.stars` exposes single and batch position routes for TDB, TT, UT1, and
 explicit Delta-T; each call's diagnostic lands on `context.lastDiagnostic`.
-Observed-star batches throw if any star fails because the
-native C ABI does not return partial observed values. Failed position-batch
-entries contain NaN coordinates and rates. Batch exceptions expose every
-available native failure through `EphemerisError.diagnostics`.
+All fixed-star batches fail atomically if any requested star fails. Batch
+exceptions expose every available per-star diagnostic through
+`EphemerisError.diagnostics`; successful calls never contain placeholder NaN
+entries.
 
 This package requires an ABI-9 native library that reports the
 `Capability.splitTime` and `Capability.chineseCalendar`

@@ -1,6 +1,8 @@
+import 'dart:ffi';
 import 'dart:isolate';
 import 'dart:math' as math;
 
+import 'package:taiyin/src/bindings/taiyin_bindings.g.dart';
 import 'package:taiyin/taiyin.dart';
 import 'package:test/test.dart';
 import 'support/native_library.dart';
@@ -322,6 +324,27 @@ void main() {
           fallback.close();
           ayanamsha.close();
         }
+      });
+
+      test('stale custom model handles close after a direct native clear', () {
+        final directBindings = TaiyinBindings(DynamicLibrary.open(libraryPath));
+        final ayanamsha = runtime.registerCustomAyanamshaModel(
+          100108,
+          evaluator: _customAyanamsha,
+        );
+        final houseSystem = runtime.registerCustomHouseSystemModel(
+          100108,
+          evaluator: _customHouseCusps,
+        );
+
+        directBindings
+          ..taiyin_clear_ayanamsha_models()
+          ..taiyin_clear_house_system_models();
+
+        expect(ayanamsha.close, returnsNormally);
+        expect(houseSystem.close, returnsNormally);
+        expect(ayanamsha.isClosed, isTrue);
+        expect(houseSystem.isClosed, isTrue);
       });
 
       test('runtime reset releases custom callback handles', () {

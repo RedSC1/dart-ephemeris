@@ -165,23 +165,36 @@ star.0.magnitude=5.5
         expect(context.stars.batchAtTt(const [], tt).value, isEmpty);
       });
 
-      test(
-        'position batches preserve a successful star when another fails',
-        () {
-          final batch = context.stars
+      test('position batches throw atomically and retain every diagnostic', () {
+        expect(
+          () => context.stars
               .batchAtTt(
                 const ['spica', 'missing-star'],
                 tt,
                 flags: {PositionFlag.xyz},
               )
-              .value;
-
-          expect(batch, hasLength(2));
-          expect(batch[0].values.every((value) => value.isFinite), isTrue);
-          expect(context.lastDiagnostic?.status, isNot(0));
-          expect(batch[1].values.every((value) => value.isNaN), isTrue);
-        },
-      );
+              .value,
+          throwsA(
+            isA<EphemerisError>()
+                .having(
+                  (error) => error.diagnostics.length,
+                  'diagnostic count',
+                  2,
+                )
+                .having(
+                  (error) => error.diagnostics.first.status,
+                  'successful star status',
+                  0,
+                )
+                .having(
+                  (error) => error.diagnostics.last.status,
+                  'failed star status',
+                  isNot(0),
+                ),
+          ),
+        );
+        expect(context.lastDiagnostic?.status, isNot(0));
+      });
 
       test('calculates single and batch observed star positions', () {
         const flags = {ObservedFlag.speed, ObservedFlag.truePosition};

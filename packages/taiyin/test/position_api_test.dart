@@ -88,12 +88,34 @@ void main() {
         }
       });
 
-      test('preserves successful targets when a batch target fails', () {
+      test('throws atomically and retains every batch diagnostic', () {
         const bodies = [Body.sun, Body.saturn];
-        final batch = taiyin.position.batchAtTt(bodies, tt).value;
-
-        expect(batch, hasLength(2));
-        expect(batch[0].values.every((value) => value.isFinite), isTrue);
+        expect(
+          () => taiyin.position.batchAtTt(bodies, tt).value,
+          throwsA(
+            isA<EphemerisError>()
+                .having(
+                  (error) => error.diagnostic?.targetId,
+                  'primary diagnostic target',
+                  Body.saturn.id,
+                )
+                .having(
+                  (error) => error.diagnostics.length,
+                  'diagnostic count',
+                  bodies.length,
+                )
+                .having(
+                  (error) => error.diagnostics.first.status,
+                  'successful target status',
+                  0,
+                )
+                .having(
+                  (error) => error.diagnostics.last.targetId,
+                  'failed target id',
+                  Body.saturn.id,
+                ),
+          ),
+        );
         expect(taiyin.lastDiagnostic?.status, isNot(0));
         expect(taiyin.lastDiagnostic?.targetId, Body.saturn.id);
       });

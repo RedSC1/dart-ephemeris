@@ -13,6 +13,9 @@ const int _taiyinZiweiInvalidStarId = 0xffff;
 /// The native invalid-position sentinel (`TAIYIN_ZIWEI_INVALID_POSITION`).
 const int _taiyinZiweiInvalidPosition = 0xff;
 
+/// The core invalid-argument status used by `find_star` for a missing key.
+const int _taiyinErrorInvalidArgument = -1;
+
 /// Package hosting the bundled default Ziwei rule profile.
 const String _ziweiRulePackage = 'taiyin_ziwei';
 
@@ -324,9 +327,12 @@ final class ZiweiContext implements Finalizable {
         output,
       );
       final decoded = decodeNativeCallResult(status);
-      if (decoded.status != 0 || output.value == _taiyinZiweiInvalidStarId) {
+      if (decoded.status == _taiyinErrorInvalidArgument &&
+          output.value == _taiyinZiweiInvalidStarId) {
         return null;
       }
+      _checkStatus(_host, status);
+      if (output.value == _taiyinZiweiInvalidStarId) return null;
       return star(output.value);
     });
   }

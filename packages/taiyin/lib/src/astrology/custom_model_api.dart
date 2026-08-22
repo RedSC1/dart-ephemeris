@@ -92,16 +92,17 @@ final class CustomAyanamshaRegistration {
   /// overlap calculations in any isolate.
   void close() {
     if (_closed) return;
-    final status = _nativeState.bindings
+    final rawResult = _nativeState.bindings
         .taiyin_unregister_ayanamsha_model_with_token(
           model.id,
           _registrationToken,
         );
+    final status = decodeNativeCallResult(rawResult).status;
     // A process-wide runtime reset, C-API clear, or replacement by another
     // isolate can remove this token first. A token mismatch cannot affect the
     // newer same-ID model, so releasing this isolate's callable is safe.
     if (status != _taiyinStatusOk && status != _taiyinErrorInvalidArgument) {
-      _checkStatus(_nativeState.bindings, status);
+      _checkStatus(_nativeState.bindings, rawResult);
     }
     _closeAfterNativeClear();
   }
@@ -142,16 +143,17 @@ final class CustomHouseSystemRegistration {
   /// overlap calculations in any isolate.
   void close() {
     if (_closed) return;
-    final status = _nativeState.bindings
+    final rawResult = _nativeState.bindings
         .taiyin_unregister_house_system_model_with_token(
           model.id,
           _registrationToken,
         );
+    final status = decodeNativeCallResult(rawResult).status;
     // See the ayanamsha variant for why INVALID_ARGUMENT is safe here. An
     // UNSUPPORTED result means a live dependent still selects this model as a
     // fallback, so retain the callback and let the caller remove dependents.
     if (status != _taiyinStatusOk && status != _taiyinErrorInvalidArgument) {
-      _checkStatus(_nativeState.bindings, status);
+      _checkStatus(_nativeState.bindings, rawResult);
     }
     _closeAfterNativeClear();
   }
@@ -185,9 +187,9 @@ CustomAyanamshaRegistration _registerCustomAyanamshaModel(
   }
   final callable = _createCustomAyanamshaCallable(evaluator);
   var registrationToken = 0;
-  final int status;
+  final int rawResult;
   try {
-    status = using((arena) {
+    rawResult = using((arena) {
       final outRegistrationToken = arena<Uint64>();
       final result = nativeState.bindings
           .taiyin_register_ayanamsha_model_with_token(
@@ -204,9 +206,9 @@ CustomAyanamshaRegistration _registerCustomAyanamshaModel(
     callable.close();
     rethrow;
   }
-  if (status != _taiyinStatusOk) {
+  if (decodeNativeCallResult(rawResult).status != _taiyinStatusOk) {
     callable.close();
-    _checkStatus(nativeState.bindings, status);
+    _checkStatus(nativeState.bindings, rawResult);
   }
   if (registrationToken == 0) {
     callable.close();
@@ -245,9 +247,9 @@ CustomHouseSystemRegistration _registerCustomHouseSystemModel(
   }
   final callable = _createCustomHouseSystemCallable(evaluator);
   var registrationToken = 0;
-  final int status;
+  final int rawResult;
   try {
-    status = using((arena) {
+    rawResult = using((arena) {
       final outRegistrationToken = arena<Uint64>();
       final result = nativeState.bindings
           .taiyin_register_house_system_model_with_token(
@@ -264,9 +266,9 @@ CustomHouseSystemRegistration _registerCustomHouseSystemModel(
     callable.close();
     rethrow;
   }
-  if (status != _taiyinStatusOk) {
+  if (decodeNativeCallResult(rawResult).status != _taiyinStatusOk) {
     callable.close();
-    _checkStatus(nativeState.bindings, status);
+    _checkStatus(nativeState.bindings, rawResult);
   }
   if (registrationToken == 0) {
     callable.close();

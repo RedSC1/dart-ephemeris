@@ -200,7 +200,7 @@ List<double> _invalidCustomPositionEvaluator(CustomTargetRequest request) =>
     const [1.0];
 
 List<double> _failingCustomPositionEvaluator(CustomTargetRequest request) {
-  throw const CustomEvaluatorFailure(-1004);
+  throw CustomEvaluatorFailure(-1004);
 }
 
 List<double> _customSunProxyEvaluator(CustomTargetRequest request) {
@@ -495,6 +495,17 @@ void main() {
         );
       });
 
+      test('rejects custom evaluator statuses outside negative int32', () {
+        for (final status in [0, 1, -0x80000001]) {
+          expect(
+            () => CustomEvaluatorFailure(status),
+            throwsArgumentError,
+            reason: 'status $status must not cross the native callback ABI',
+          );
+        }
+        expect(CustomEvaluatorFailure(-1).status, -1);
+      });
+
       test('unregisters, closes, and permits re-registration', () {
         const targetId = -210009;
         final registration = runtime.registerCustomTarget(
@@ -531,6 +542,26 @@ void main() {
         );
         addTearDown(replacement.close);
         expect(replacement.target, target);
+        expect(replacement.isClosed, isFalse);
+      });
+
+      test('a stale custom target handle closes after direct native clear', () {
+        const targetId = -210020;
+        final registration = runtime.registerCustomTarget(
+          targetId,
+          positionEvaluator: _customPositionEvaluator,
+        );
+        final directBindings = TaiyinBindings(DynamicLibrary.open(libraryPath));
+
+        directBindings.taiyin_clear_native_position_evaluators();
+
+        expect(registration.close, returnsNormally);
+        expect(registration.isClosed, isTrue);
+        final replacement = runtime.registerCustomTarget(
+          targetId,
+          positionEvaluator: _customPositionEvaluator,
+        );
+        addTearDown(replacement.close);
         expect(replacement.isClosed, isFalse);
       });
 

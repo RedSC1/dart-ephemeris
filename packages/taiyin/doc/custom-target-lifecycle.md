@@ -89,7 +89,8 @@ cannot truncate to the same native ID.
 ## Evaluator and diagnostic behavior
 
 - Evaluator closures and captured values must be transitively immutable.
-- Throw `CustomEvaluatorFailure(status)` to return a deliberate native
+- Throw `CustomEvaluatorFailure(status)` with a negative signed 32-bit status
+  to return a deliberate native
   status.
 - Unexpected evaluator exceptions become `TAIYIN_ERROR_INTERNAL`; the wrapper
   does not print to stderr or impose an application logging policy.

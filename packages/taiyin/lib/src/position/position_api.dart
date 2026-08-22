@@ -38,16 +38,18 @@ typedef _StateCalculation =
       Pointer<taiyin_ephemeris_diagnostic> diagnostic,
     );
 typedef _PositionStatusChecker =
-    ResultFlags Function(int status, EphemerisDiagnostic? diagnostic);
+    ResultFlags Function(
+      int status,
+      EphemerisDiagnostic? diagnostic,
+      List<EphemerisDiagnostic> diagnostics,
+    );
 
 /// Position and Cartesian-state calculations backed by Ephemeris.
 ///
 /// Julian dates cross the native boundary as split `taiyin_split_julian_date`
 /// structs, preserving the full day-number/fraction precision. Batch methods
-/// return one result per requested body even when individual targets fail;
-/// the batch's final diagnostic is published on
-/// [EphemerisContext.lastDiagnostic]. Failures that occur before native
-/// per-target diagnostics are available still throw.
+/// fail atomically when any requested body fails. The thrown [EphemerisError]
+/// retains every per-target diagnostic reported by the native batch.
 final class PositionApi {
   /// Internal constructor used by an owning [EphemerisContext].
   PositionApi.internal(
@@ -427,7 +429,7 @@ final class PositionApi {
       _bindings.taiyin_ephemeris_diagnostic_init(diagnostic);
       final status = calculate(arena, mask, output, diagnostic);
       final mappedDiagnostic = _readDiagnostic(diagnostic.ref);
-      final resultFlags = _checkStatus(status, mappedDiagnostic);
+      final resultFlags = _checkStatus(status, mappedDiagnostic, const []);
       return operationResult(
         Position._([
           for (var index = 0; index < 6; index++) output[index],
@@ -468,15 +470,19 @@ final class PositionApi {
           _readDiagnostic(diagnostics[bodyIndex]),
       ];
       final decoded = decodeNativeCallResult(rawResult);
-      if (decoded.status != 0 &&
-          !elementDiagnostics.any((diagnostic) => diagnostic.status != 0)) {
-        _checkStatus(rawResult, null);
-      }
-      // Publish the batch's final diagnostic without converting a per-target
-      // failure into a whole-batch exception.
+      final primaryDiagnostic = decoded.status == 0
+          ? elementDiagnostics.last
+          : elementDiagnostics.firstWhere(
+              (diagnostic) => diagnostic.status == decoded.status,
+              orElse: () => elementDiagnostics.firstWhere(
+                (diagnostic) => diagnostic.status != 0,
+                orElse: () => elementDiagnostics.last,
+              ),
+            );
       final resultFlags = _checkStatus(
-        decoded.flags.mask,
-        elementDiagnostics.last,
+        rawResult,
+        primaryDiagnostic,
+        elementDiagnostics,
       );
       return operationResult(
         List<Position>.unmodifiable([
@@ -504,7 +510,7 @@ final class PositionApi {
         ..taiyin_ephemeris_diagnostic_init(diagnostic);
       final status = calculate(arena, mask, output, diagnostic);
       final mappedDiagnostic = _readDiagnostic(diagnostic.ref);
-      final resultFlags = _checkStatus(status, mappedDiagnostic);
+      final resultFlags = _checkStatus(status, mappedDiagnostic, const []);
       final state = output.ref;
       return operationResult(
         CartesianState(

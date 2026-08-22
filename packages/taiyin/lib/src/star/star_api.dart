@@ -418,7 +418,7 @@ final class StarApi {
         _checkStatus(status, first.diagnostic, diagnostics);
       }
       final resultFlags = _checkStatus(
-        decoded.flags.mask,
+        rawResult,
         results.last.diagnostic,
         const [],
       );
@@ -491,26 +491,32 @@ final class StarApi {
           ),
       ];
       final decoded = decodeNativeCallResult(rawResult);
-      if (decoded.status != 0 &&
-          !entries.any((entry) => entry.diagnostic.status == decoded.status)) {
-        _checkStatus(rawResult, null, const []);
-      }
+      final elementDiagnostics = [
+        for (final entry in entries) entry.diagnostic,
+      ];
+      final primaryDiagnostic = decoded.status == 0
+          ? elementDiagnostics.last
+          : elementDiagnostics.firstWhere(
+              (diagnostic) => diagnostic.status == decoded.status,
+              orElse: () => elementDiagnostics.firstWhere(
+                (diagnostic) => diagnostic.status != 0,
+                orElse: () => elementDiagnostics.last,
+              ),
+            );
       final resultFlags = _checkStatus(
-        decoded.flags.mask,
-        entries.last.diagnostic,
-        const [],
+        rawResult,
+        primaryDiagnostic,
+        elementDiagnostics,
       );
       return operationResult(
         List.unmodifiable([
           for (final entry in entries)
             StarPosition(
               starKey: starKeys[entry.starIndex],
-              values: entry.diagnostic.status == 0
-                  ? [
-                      for (var valueIndex = 0; valueIndex < 6; valueIndex++)
-                        output[entry.starIndex * 6 + valueIndex],
-                    ]
-                  : List.filled(6, double.nan),
+              values: [
+                for (var valueIndex = 0; valueIndex < 6; valueIndex++)
+                  output[entry.starIndex * 6 + valueIndex],
+              ],
               flags: frozenFlags,
             ),
         ]),
