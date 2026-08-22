@@ -1,7 +1,7 @@
 ## Unreleased
 
-- Add `DateTime.toUtcJulianDate()` as the central epoch-based adapter for
-  Dart's built-in timezone-aware instant type.
+- Add `DateTime.toUtcJulianDate()` and
+  `utcJulianDateFromUnixMicroseconds()` as central epoch-based adapters.
 - Add readable Julian-date aliases and local-calendar time conversion helpers.
 - Report missing/out-of-range EOP and unavailable leap-second data with
   `EarthOrientationDataError` and `LeapSecondDataError`.

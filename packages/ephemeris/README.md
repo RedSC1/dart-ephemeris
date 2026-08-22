@@ -199,6 +199,9 @@ type. It converts through `microsecondsSinceEpoch`, so a local `DateTime` and
 the corresponding `toUtc()` value produce the same physical instant. Prefer an
 explicit offset or `DateTime.utc(...)` in portable source code; a constructor
 such as `DateTime(2024, 2, 10, 12)` uses the host machine's local timezone.
+Code that already stores a Unix timestamp can call
+`utcJulianDateFromUnixMicroseconds(value)` directly; its unit is deliberately
+part of the function name.
 The adapter does not read or override a Chinese-calendar context. When
 `dartUtc` is passed to `fourPillarsInstant()`, `calculateInstant()`, or another
 calendar extension, that bound context still decides the local timezone and

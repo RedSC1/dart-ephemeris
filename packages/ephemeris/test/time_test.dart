@@ -9,6 +9,17 @@ void main() {
       expect(value.toUtcJulianDate(), UtcJulianDate.fromParts(2440587, 0.5));
     });
 
+    test('converts positive and negative Unix microsecond timestamps', () {
+      expect(
+        utcJulianDateFromUnixMicroseconds(JulianDate.microsecondsPerDay),
+        UtcJulianDate.fromParts(2440588, 0.5),
+      );
+      expect(
+        utcJulianDateFromUnixMicroseconds(-JulianDate.microsecondsPerDay),
+        UtcJulianDate.fromParts(2440586, 0.5),
+      );
+    });
+
     test(
       'uses the represented instant instead of displayed timezone fields',
       () {
@@ -16,6 +27,10 @@ void main() {
         final utc = DateTime.utc(2003, 3, 13, 6, 15, 0, 123, 456);
 
         expect(withOffset.toUtcJulianDate(), utc.toUtcJulianDate());
+        expect(
+          withOffset.toUtcJulianDate(),
+          utcJulianDateFromUnixMicroseconds(withOffset.microsecondsSinceEpoch),
+        );
         expect(
           AstroDateTime.fromJulianDate(
             withOffset.toUtcJulianDate(),

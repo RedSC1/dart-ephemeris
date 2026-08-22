@@ -19,10 +19,7 @@ extension EphemerisDateTimeConversion on DateTime {
   /// Dart [DateTime] has microsecond resolution, so this path cannot introduce
   /// the nanosecond precision available from [AstroDateTime].
   UtcJulianDate toUtcJulianDate() {
-    return UtcJulianDate.fromParts(
-      2440587,
-      0.5,
-    ).add(Duration(microseconds: microsecondsSinceEpoch));
+    return utcJulianDateFromUnixMicroseconds(microsecondsSinceEpoch);
   }
 }
 
