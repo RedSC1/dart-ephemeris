@@ -63,13 +63,18 @@ final class Time {
     this._bindings,
     this._context,
     this._ensureOpen,
-    this._checkStatus,
-  );
+    this._checkStatus, [
+    TdbModel initialTdbModel = TdbModel.fastPeriodic,
+  ]) : _tdbModel = initialTdbModel;
 
   final TaiyinBindings _bindings;
   final Pointer<taiyin_context> _context;
   final void Function() _ensureOpen;
   final ResultFlags Function(int status) _checkStatus;
+  TdbModel _tdbModel;
+
+  /// TDB model used when a conversion does not supply an explicit override.
+  TdbModel get configuredTdbModel => _tdbModel;
 
   /// Converts a calendar value to a Julian date through Taiyin's native
   /// calendar implementation.
@@ -144,6 +149,7 @@ final class Time {
   void setTdbModel(TdbModel model) {
     _ensureOpen();
     _checkStatus(_bindings.taiyin_context_set_tdb_model(_context, model.id));
+    _tdbModel = model;
   }
 
   /// Selects the estimated Delta-T model and ephemeris family.
@@ -210,24 +216,24 @@ final class Time {
 
   OperationResult<JulianDate<TdbScale>> ttToTdb(
     JulianDate<TtScale> tt, {
-    TdbModel model = TdbModel.fastPeriodic,
+    TdbModel? model,
   }) {
     _ensureOpen();
     return _convertModeled<TdbScale, TtScale>(
       tt,
-      model,
+      model ?? _tdbModel,
       _bindings.taiyin_tt_to_tdb_split,
     );
   }
 
   OperationResult<JulianDate<TtScale>> tdbToTt(
     JulianDate<TdbScale> tdb, {
-    TdbModel model = TdbModel.fastPeriodic,
+    TdbModel? model,
   }) {
     _ensureOpen();
     return _convertModeled<TtScale, TdbScale>(
       tdb,
-      model,
+      model ?? _tdbModel,
       _bindings.taiyin_tdb_to_tt_split,
     );
   }
@@ -455,7 +461,7 @@ final class Time {
   /// Converts a TDB instant to UTC using [model] and the leap-second table.
   OperationResult<JulianDate<UtcScale>> tdbToUtc(
     JulianDate<TdbScale> tdb, {
-    TdbModel model = TdbModel.fastPeriodic,
+    TdbModel? model,
   }) {
     _ensureOpen();
     final tt = tdbToTt(tdb, model: model);
@@ -478,7 +484,7 @@ final class Time {
   /// coverage.
   OperationResult<JulianDate<Ut1Scale>> tdbToUt1(
     JulianDate<TdbScale> tdb, {
-    TdbModel model = TdbModel.fastPeriodic,
+    TdbModel? model,
   }) {
     _ensureOpen();
     final tt = tdbToTt(tdb, model: model);
@@ -639,14 +645,14 @@ final class Time {
     JulianDate<S> target,
     JulianDate<S> Function(PreciseTimeScales scales) select,
   ) {
-    var candidate = JulianDate<UtcScale>.fromParts(
-      target.dayNumber,
-      target.dayFraction,
-    );
+    final initial = _initialUtcCandidate(target, const [0.0, -2.0, 2.0]);
+    var candidate = initial.candidate;
     var flags = ResultFlags.none;
     var converged = false;
     for (var iteration = 0; iteration < _inverseScaleIterations; iteration++) {
-      final scales = _scalesFromUtcJulianDate(candidate);
+      final scales = iteration == 0
+          ? initial.scales
+          : _scalesFromUtcJulianDate(candidate);
       flags = flags | scales.flags;
       final evaluated = select(scales.value.value);
       final correction = target.coordinateSecondsDifference(evaluated);
@@ -666,13 +672,13 @@ final class Time {
     JulianDate<S> target,
     JulianDate<S> Function(PreciseTimeScales scales) select,
   ) {
-    var candidate = JulianDate<UtcScale>.fromParts(
-      target.dayNumber,
-      target.dayFraction,
-    );
+    final initial = _initialUtcCandidate(target, const [0.0, -69.184, -42.184]);
+    var candidate = initial.candidate;
     var flags = ResultFlags.none;
     for (var iteration = 0; iteration < _inverseScaleIterations; iteration++) {
-      final scales = _scalesFromUtcJulianDate(candidate);
+      final scales = iteration == 0
+          ? initial.scales
+          : _scalesFromUtcJulianDate(candidate);
       flags = flags | scales.flags;
       final evaluated = select(scales.value.value);
       final correction = target.coordinateSecondsDifference(evaluated);
@@ -684,9 +690,96 @@ final class Time {
       }
       candidate = candidate.addSeconds(correction);
     }
+    final leapSecond = _insertedLeapSecondToUt1(
+      target,
+      select,
+      candidate,
+      flags,
+    );
+    if (leapSecond != null) return leapSecond;
     throw const TimeScaleConvergenceError(
       'automatic conversion to UT1 did not converge',
     );
+  }
+
+  ({
+    JulianDate<UtcScale> candidate,
+    OperationResult<TimeScaleResult<PreciseTimeScales>> scales,
+  })
+  _initialUtcCandidate<S extends TimeScale>(
+    JulianDate<S> target,
+    List<double> offsets,
+  ) {
+    Object? firstError;
+    StackTrace? firstStackTrace;
+    for (final offset in offsets) {
+      final candidate = JulianDate<UtcScale>.fromParts(
+        target.dayNumber,
+        target.dayFraction,
+      ).addSeconds(offset);
+      try {
+        return (
+          candidate: candidate,
+          scales: _scalesFromUtcJulianDate(candidate),
+        );
+      } catch (error, stackTrace) {
+        firstError ??= error;
+        firstStackTrace ??= stackTrace;
+      }
+    }
+    Error.throwWithStackTrace(firstError!, firstStackTrace!);
+  }
+
+  OperationResult<JulianDate<Ut1Scale>>?
+  _insertedLeapSecondToUt1<S extends TimeScale>(
+    JulianDate<S> target,
+    JulianDate<S> Function(PreciseTimeScales scales) select,
+    JulianDate<UtcScale> candidate,
+    ResultFlags accumulatedFlags,
+  ) {
+    final visitedDates = <String>{};
+    for (final seconds in const [-1.0, 0.0, 1.0]) {
+      final nearby = AstroDateTime.fromJulianDate(
+        candidate.addSeconds(seconds),
+      );
+      final dateKey = '${nearby.year}-${nearby.month}-${nearby.day}';
+      if (!visitedDates.add(dateKey)) continue;
+
+      final leapClock = AstroDateTime(
+        nearby.year,
+        nearby.month,
+        nearby.day,
+        23,
+        59,
+        60,
+      );
+      final offsetBefore = taiMinusUtc(leapClock);
+      final normalizedNextDay = AstroDateTime.fromJulianDate(
+        leapClock.toUtcJulianDate(),
+      );
+      final offsetAfter = taiMinusUtc(normalizedNextDay);
+      if ((offsetAfter.value - offsetBefore.value - 1.0).abs() >
+          _inverseScaleToleranceSeconds) {
+        continue;
+      }
+
+      final leapScales = scalesFromUtc(leapClock);
+      final correction = target.coordinateSecondsDifference(
+        select(leapScales.value.value),
+      );
+      if (correction < -_inverseScaleToleranceSeconds ||
+          correction >= 1.0 - _inverseScaleToleranceSeconds) {
+        continue;
+      }
+      return operationResult(
+        leapScales.value.value.ut1.addSeconds(correction),
+        accumulatedFlags |
+            offsetBefore.flags |
+            offsetAfter.flags |
+            leapScales.flags,
+      );
+    }
+    return null;
   }
 }
 

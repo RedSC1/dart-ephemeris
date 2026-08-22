@@ -278,6 +278,9 @@ final class ChineseCalendarContext implements Finalizable {
   /// IANA timezone rules are applied.
   JulianDate<UtcScale> instantFromLocal(AstroDateTime localTime) {
     _ensureOpen();
+    if (localTime.second == 60) {
+      throw const UtcLeapSecondRepresentationError();
+    }
     return localTime.toUtcJulianDate().addSeconds(-_civilOffsetSeconds);
   }
 

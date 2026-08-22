@@ -197,6 +197,65 @@ void main() {
         );
       });
 
+      test('uses the configured TDB model for automatic reverse routes', () {
+        taiyin.time.setTdbModel(TdbModel.sofaFull);
+        final baseline = taiyin.time.scalesFromUtc(utcCalendar).value.value;
+
+        expect(
+          taiyin.time
+              .tdbToUtc(baseline.tdb)
+              .value
+              .secondsDifference(baseline.utc),
+          closeTo(0, 5e-7),
+        );
+        expect(
+          taiyin.time
+              .tdbToUt1(baseline.tdb)
+              .value
+              .secondsDifference(baseline.ut1),
+          closeTo(0, 5e-7),
+        );
+
+        final cloned = taiyin.clone();
+        try {
+          final clonedBaseline = cloned.time
+              .scalesFromUtc(utcCalendar)
+              .value
+              .value;
+          expect(
+            cloned.time
+                .tdbToUtc(clonedBaseline.tdb)
+                .value
+                .secondsDifference(clonedBaseline.utc),
+            closeTo(0, 5e-7),
+          );
+        } finally {
+          cloned.close();
+        }
+      });
+
+      test('seeds inverse iteration inside the EOP coverage edge', () {
+        final boundary = taiyin.time
+            .scalesFromUtc(AstroDateTime(2026, 5, 20))
+            .value
+            .value;
+
+        expect(
+          taiyin.time
+              .ttToUt1(boundary.tt)
+              .value
+              .secondsDifference(boundary.ut1),
+          closeTo(0, 5e-7),
+        );
+        expect(
+          taiyin.time
+              .ut1ToUtc(boundary.ut1)
+              .value
+              .secondsDifference(boundary.utc),
+          closeTo(0, 5e-7),
+        );
+      });
+
       test('rejects an unrepresentable inserted UTC leap second', () {
         final leap = taiyin.time
             .scalesFromUtc(AstroDateTime(2016, 12, 31, 23, 59, 60))
@@ -215,6 +274,14 @@ void main() {
           () => taiyin.time.tdbToUtc(leap.tdb),
           throwsA(isA<UtcLeapSecondRepresentationError>()),
         );
+
+        for (final converted in [
+          taiyin.time.taiToUt1(leap.tai),
+          taiyin.time.ttToUt1(leap.tt),
+          taiyin.time.tdbToUt1(leap.tdb),
+        ]) {
+          expect(converted.value.secondsDifference(leap.ut1), closeTo(0, 5e-7));
+        }
       });
 
       test('strict UTC conversion reports missing EOP data explicitly', () {

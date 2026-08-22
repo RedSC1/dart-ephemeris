@@ -182,6 +182,22 @@ void main() {
         expect(fromInstant.hour, explicit.hour);
       });
 
+      test(
+        'rejects local leap seconds that UTC Julian dates cannot retain',
+        () {
+          final localLeapSecond = AstroDateTime(2016, 12, 31, 23, 59, 60);
+
+          expect(
+            () => context.chineseCalendar.instantFromLocal(localLeapSecond),
+            throwsA(isA<UtcLeapSecondRepresentationError>()),
+          );
+          expect(
+            () => context.chineseCalendar.fourPillarsLocal(localLeapSecond),
+            throwsA(isA<UtcLeapSecondRepresentationError>()),
+          );
+        },
+      );
+
       test('searches previous and next solar terms', () {
         final jd = JulianDate<Ut1Scale>.fromDouble(2460348.0);
         final prev = context.chineseCalendar.getPrevJieQiUt(jd).value;
