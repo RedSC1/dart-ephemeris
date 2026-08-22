@@ -69,6 +69,11 @@ dart doc packages/taiyin_ziwei
 
 ## Workspace development
 
+Pull requests run formatting, static analysis, and dartdoc generation. The
+three-platform native integration matrix is intentionally reserved for a
+manual `workflow_dispatch` run or a `v*` release tag, because it rebuilds the
+complete C++ core and all extension modules on every platform.
+
 ```sh
 dart pub get
 dart analyze
