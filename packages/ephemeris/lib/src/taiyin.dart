@@ -364,24 +364,26 @@ final class EphemerisContext implements Finalizable {
     this._context,
     this._contextFinalizer,
     this._nativeState, [
-    this._initialTdbModel = TdbModel.fastPeriodic,
-  ]) {
+    TdbModel initialTdbModel = TdbModel.fastPeriodic,
+  ]) : _configuredTdbModel = initialTdbModel {
     var finalizerAttached = false;
     try {
       _contextFinalizer.attach(this, _context.cast(), detach: this);
       finalizerAttached = true;
-      configuration = ContextConfiguration._(
-        _bindings,
-        _context,
-        _ensureOpen,
-        (status) => _completeOperation(status),
-      );
       time = Time.internal(
         _bindings,
         _context,
         _ensureOpen,
         (status) => _completeOperation(status),
-        _initialTdbModel,
+        () => _configuredTdbModel,
+        (model) => _configuredTdbModel = model,
+      );
+      configuration = ContextConfiguration._(
+        _bindings,
+        _context,
+        _ensureOpen,
+        (status) => _completeOperation(status),
+        (model) => _configuredTdbModel = model,
       );
       astrology = AstrologyApi._(_bindings, _context, _ensureOpen, (
         status,
@@ -567,7 +569,7 @@ final class EphemerisContext implements Finalizable {
   /// Every calendar context created from this context, tracked so closing the
   /// owner invalidates caller-created children that borrow its native state.
   final Set<ChineseCalendarContext> _calendarChildren = {};
-  final TdbModel _initialTdbModel;
+  TdbModel _configuredTdbModel;
   bool _closed = false;
 
   /// Creates an independent native context without reinitializing the runtime.

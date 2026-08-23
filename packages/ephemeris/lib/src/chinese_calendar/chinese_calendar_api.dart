@@ -281,6 +281,13 @@ final class ChineseCalendarContext implements Finalizable {
     if (localTime.second == 60) {
       throw const UtcLeapSecondRepresentationError();
     }
+    if (config.dayBoundaryMode ==
+        ChineseCalendarDayBoundaryMode.meanSolarMeridian) {
+      final instantUt1 = localTime.toJulianDate<Ut1Scale>().addSeconds(
+        -_civilOffsetSeconds,
+      );
+      return _owner.time.ut1ToUtc(instantUt1).value;
+    }
     return localTime.toUtcJulianDate().addSeconds(-_civilOffsetSeconds);
   }
 
@@ -290,6 +297,17 @@ final class ChineseCalendarContext implements Finalizable {
     JulianDate<UtcScale> instantUtc,
   ) {
     _ensureOpen();
+    if (config.dayBoundaryMode ==
+        ChineseCalendarDayBoundaryMode.meanSolarMeridian) {
+      final instantUt1 = _owner.time.utcToUt1(instantUtc);
+      final localClock = _owner.time.reverseJulianDay(
+        instantUt1.value.addSeconds(_civilOffsetSeconds),
+      );
+      return operationResult(
+        localClock.value,
+        instantUt1.flags | localClock.flags,
+      );
+    }
     return _owner.time.reverseJulianDay(
       instantUtc.addSeconds(_civilOffsetSeconds),
     );

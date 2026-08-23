@@ -182,6 +182,28 @@ void main() {
         expect(fromInstant.hour, explicit.hour);
       });
 
+      test('converts mean-solar clocks through UT1', () {
+        const longitudeDegrees = 120.0;
+        final calendar = context.createChineseCalendar(
+          config: const ChineseCalendarConfig.localAstronomicalMeridian(
+            longitudeDegrees,
+          ),
+        );
+        final localTime = AstroDateTime(2003, 3, 13, 14, 15);
+        try {
+          final instantUtc = calendar.instantFromLocal(localTime);
+          final instantUt1 = context.time.utcToUt1(instantUtc).value;
+          final expectedUt1 = localTime.toJulianDate<Ut1Scale>().addSeconds(
+            -longitudeDegrees * 240.0,
+          );
+
+          expect(instantUt1.secondsDifference(expectedUt1), closeTo(0, 5e-7));
+          expect(calendar.localTimeFromInstant(instantUtc).value, localTime);
+        } finally {
+          calendar.close();
+        }
+      });
+
       test(
         'rejects local leap seconds that UTC Julian dates cannot retain',
         () {

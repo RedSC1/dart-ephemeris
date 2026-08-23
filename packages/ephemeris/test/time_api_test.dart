@@ -234,6 +234,38 @@ void main() {
         }
       });
 
+      test('keeps the TDB model synchronized through configuration APIs', () {
+        taiyin.configuration.setAstroModels(
+          const AstroModelConfig(tdbModel: TdbModel.sofaFull),
+        );
+        expect(taiyin.time.configuredTdbModel, TdbModel.sofaFull);
+        final sofaScales = taiyin.time.scalesFromUtc(utcCalendar).value.value;
+        expect(
+          taiyin.time
+              .tdbToUtc(sofaScales.tdb)
+              .value
+              .secondsDifference(sofaScales.utc),
+          closeTo(0, 5e-7),
+        );
+        final clone = taiyin.clone();
+        try {
+          expect(clone.time.configuredTdbModel, TdbModel.sofaFull);
+        } finally {
+          clone.close();
+        }
+
+        taiyin.configuration.reset();
+        expect(taiyin.time.configuredTdbModel, TdbModel.fastPeriodic);
+        final fastScales = taiyin.time.scalesFromUtc(utcCalendar).value.value;
+        expect(
+          taiyin.time
+              .tdbToUtc(fastScales.tdb)
+              .value
+              .secondsDifference(fastScales.utc),
+          closeTo(0, 5e-7),
+        );
+      });
+
       test('seeds inverse iteration inside the EOP coverage edge', () {
         final boundary = taiyin.time
             .scalesFromUtc(AstroDateTime(2026, 5, 20))

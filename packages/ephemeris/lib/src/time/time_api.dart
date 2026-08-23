@@ -63,18 +63,20 @@ final class Time {
     this._bindings,
     this._context,
     this._ensureOpen,
-    this._checkStatus, [
-    TdbModel initialTdbModel = TdbModel.fastPeriodic,
-  ]) : _tdbModel = initialTdbModel;
+    this._checkStatus,
+    this._configuredTdbModel,
+    this._synchronizeTdbModel,
+  );
 
   final TaiyinBindings _bindings;
   final Pointer<taiyin_context> _context;
   final void Function() _ensureOpen;
   final ResultFlags Function(int status) _checkStatus;
-  TdbModel _tdbModel;
+  final TdbModel Function() _configuredTdbModel;
+  final void Function(TdbModel model) _synchronizeTdbModel;
 
   /// TDB model used when a conversion does not supply an explicit override.
-  TdbModel get configuredTdbModel => _tdbModel;
+  TdbModel get configuredTdbModel => _configuredTdbModel();
 
   /// Converts a calendar value to a Julian date through Taiyin's native
   /// calendar implementation.
@@ -149,7 +151,7 @@ final class Time {
   void setTdbModel(TdbModel model) {
     _ensureOpen();
     _checkStatus(_bindings.taiyin_context_set_tdb_model(_context, model.id));
-    _tdbModel = model;
+    _synchronizeTdbModel(model);
   }
 
   /// Selects the estimated Delta-T model and ephemeris family.
@@ -221,7 +223,7 @@ final class Time {
     _ensureOpen();
     return _convertModeled<TdbScale, TtScale>(
       tt,
-      model ?? _tdbModel,
+      model ?? configuredTdbModel,
       _bindings.taiyin_tt_to_tdb_split,
     );
   }
@@ -233,7 +235,7 @@ final class Time {
     _ensureOpen();
     return _convertModeled<TtScale, TdbScale>(
       tdb,
-      model ?? _tdbModel,
+      model ?? configuredTdbModel,
       _bindings.taiyin_tdb_to_tt_split,
     );
   }
