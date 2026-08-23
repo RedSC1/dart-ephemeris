@@ -482,15 +482,14 @@ final class BaziContext implements Finalizable {
     GanzhiRatHourMode ratHourMode = GanzhiRatHourMode.noSplit,
   }) {
     _ensureOpen();
-    final instantUtc = localTime.toJulianDate<UtcScale>().addSeconds(
-      -_calendarOffsetSeconds,
-    );
-    return _calculateResolved(
-      instantUtc: instantUtc,
+    final instant = _calendar.instantFromLocal(localTime);
+    final result = _calculateResolved(
+      instantUtc: instant.value,
       localTime: localTime,
       gender: gender,
       ratHourMode: ratHourMode,
     );
+    return operationResult(result.value, instant.flags | result.flags);
   }
 
   /// Calculates a complete BaZi result from one UTC instant.
@@ -500,8 +499,7 @@ final class BaziContext implements Finalizable {
     GanzhiRatHourMode ratHourMode = GanzhiRatHourMode.noSplit,
   }) {
     _ensureOpen();
-    final localJd = instantUtc.addSeconds(_calendarOffsetSeconds);
-    final localTimeResult = _calendar.owner.time.reverseJulianDay(localJd);
+    final localTimeResult = _calendar.localTimeFromInstant(instantUtc);
     final result = _calculateResolved(
       instantUtc: instantUtc,
       localTime: localTimeResult.value,
@@ -509,15 +507,6 @@ final class BaziContext implements Finalizable {
       ratHourMode: ratHourMode,
     );
     return operationResult(result.value, result.flags | localTimeResult.flags);
-  }
-
-  double get _calendarOffsetSeconds {
-    final config = _calendar.config;
-    if (config.dayBoundaryMode ==
-        ChineseCalendarDayBoundaryMode.fixedUtcOffset) {
-      return config.utcOffsetMinutes * 60.0;
-    }
-    return config.calendarMeridianDegrees * 240.0;
   }
 
   /// Computes the 起运 (qi-yun) start of the first 大运 for a birth instant.

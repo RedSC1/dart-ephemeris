@@ -269,6 +269,67 @@ final class ChineseCalendarContext implements Finalizable {
     });
   }
 
+  /// Converts a local civil clock to the UTC instant implied by this
+  /// calendar context's day-boundary configuration.
+  ///
+  /// Fixed-offset calendars use [ChineseCalendarConfig.utcOffsetMinutes].
+  /// Mean-solar-meridian calendars use
+  /// [ChineseCalendarConfig.calendarMeridianDegrees]. No daylight-saving or
+  /// IANA timezone rules are applied.
+  OperationResult<JulianDate<UtcScale>> instantFromLocal(
+    AstroDateTime localTime,
+  ) {
+    _ensureOpen();
+    if (localTime.second == 60) {
+      throw const UtcLeapSecondRepresentationError();
+    }
+    if (config.dayBoundaryMode ==
+        ChineseCalendarDayBoundaryMode.meanSolarMeridian) {
+      final instantUt1 = localTime.toJulianDate<Ut1Scale>().addSeconds(
+        -_civilOffsetSeconds,
+      );
+      return _owner.time.ut1ToUtc(instantUt1);
+    }
+    return operationResult(
+      localTime.toUtcJulianDate().addSeconds(-_civilOffsetSeconds),
+      ResultFlags.none,
+    );
+  }
+
+  /// Converts a UTC instant to the local civil clock implied by this calendar
+  /// context's day-boundary configuration.
+  OperationResult<AstroDateTime> localTimeFromInstant(
+    JulianDate<UtcScale> instantUtc,
+  ) {
+    _ensureOpen();
+    if (config.dayBoundaryMode ==
+        ChineseCalendarDayBoundaryMode.meanSolarMeridian) {
+      final instantUt1 = _owner.time.utcToUt1(instantUtc);
+      final localClock = _owner.time.reverseJulianDay(
+        instantUt1.value.addSeconds(_civilOffsetSeconds),
+      );
+      return operationResult(
+        localClock.value,
+        instantUt1.flags | localClock.flags,
+      );
+    }
+    return _owner.time.reverseJulianDay(
+      instantUtc.addSeconds(_civilOffsetSeconds),
+    );
+  }
+
+  /// Converts the Gregorian date portion of a local civil clock to a Chinese
+  /// lunar date.
+  OperationResult<LunarDate> fromLocal(AstroDateTime localTime) {
+    return fromSolar(
+      SolarDate(
+        year: localTime.year,
+        month: localTime.month,
+        day: localTime.day,
+      ),
+    );
+  }
+
   /// Resolves the Chinese lunar date containing a UT1 instant.
   OperationResult<LunarDate> fromInstantUt1(JulianDate<Ut1Scale> instant) {
     _ensureOpen();
@@ -402,6 +463,51 @@ final class ChineseCalendarContext implements Finalizable {
         flags,
       );
     });
+  }
+
+  /// Computes four pillars from one local civil clock.
+  ///
+  /// The corresponding UTC instant is derived from this calendar context, so
+  /// callers do not need to repeat or manually subtract its UTC offset.
+  OperationResult<GanzhiFourPillars> fourPillarsLocal(
+    AstroDateTime localTime, {
+    GanzhiRatHourMode ratHourMode = GanzhiRatHourMode.noSplit,
+  }) {
+    final instant = instantFromLocal(localTime);
+    final pillars = fourPillars(
+      instantUtc: instant.value,
+      virtualTime: localTime,
+      ratHourMode: ratHourMode,
+    );
+    return operationResult(pillars.value, instant.flags | pillars.flags);
+  }
+
+  /// Computes four pillars from one UTC instant.
+  ///
+  /// The civil clock used for the nominal year, day, and hour pillars is
+  /// derived from this calendar context's day-boundary configuration.
+  OperationResult<GanzhiFourPillars> fourPillarsInstant(
+    JulianDate<UtcScale> instantUtc, {
+    GanzhiRatHourMode ratHourMode = GanzhiRatHourMode.noSplit,
+  }) {
+    final localTimeResult = localTimeFromInstant(instantUtc);
+    final pillarsResult = fourPillars(
+      instantUtc: instantUtc,
+      virtualTime: localTimeResult.value,
+      ratHourMode: ratHourMode,
+    );
+    return operationResult(
+      pillarsResult.value,
+      localTimeResult.flags | pillarsResult.flags,
+    );
+  }
+
+  double get _civilOffsetSeconds {
+    if (config.dayBoundaryMode ==
+        ChineseCalendarDayBoundaryMode.fixedUtcOffset) {
+      return config.utcOffsetMinutes * 60.0;
+    }
+    return config.calendarMeridianDegrees * 240.0;
   }
 
   OperationResult<ChineseSolarTermEvent> _solarTermSearch(

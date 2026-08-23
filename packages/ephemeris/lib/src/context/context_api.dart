@@ -10,17 +10,20 @@ final class ContextConfiguration {
     this._context,
     this._ensureOpen,
     this._checkStatus,
+    this._synchronizeTdbModel,
   );
 
   final TaiyinBindings _bindings;
   final Pointer<taiyin_context> _context;
   final void Function() _ensureOpen;
   final void Function(int status) _checkStatus;
+  final void Function(TdbModel model) _synchronizeTdbModel;
 
   /// Restores the native calculation context to its defaults.
   void reset() {
     _ensureOpen();
     _checkStatus(_bindings.taiyin_context_reset(_context));
+    _synchronizeTdbModel(TdbModel.fastPeriodic);
   }
 
   /// Sets the geographic observer location.
@@ -207,6 +210,7 @@ final class ContextConfiguration {
         ..obliquity_model_id = config.obliquityModel.id
         ..frame_route_id = config.frameRoute.id;
       _checkStatus(_bindings.taiyin_context_set_astro_models(_context, native));
+      _synchronizeTdbModel(config.tdbModel);
     });
   }
 

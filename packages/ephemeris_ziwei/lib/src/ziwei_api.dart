@@ -436,15 +436,14 @@ final class ZiweiContext implements Finalizable {
     ZiweiBirthOptions options = const ZiweiBirthOptions(),
   }) {
     _ensureOpen();
-    final instantUtc = localTime.toJulianDate<UtcScale>().addSeconds(
-      -_calendarOffsetSeconds,
-    );
-    return createChart(
-      instantUtc: instantUtc,
+    final instant = _calendar.instantFromLocal(localTime);
+    final chart = createChart(
+      instantUtc: instant.value,
       virtualTime: localTime,
       gender: gender,
       options: options,
     );
+    return operationResult(chart.value, instant.flags | chart.flags);
   }
 
   /// Creates a natal chart from a UTC birth instant.
@@ -457,8 +456,7 @@ final class ZiweiContext implements Finalizable {
     ZiweiBirthOptions options = const ZiweiBirthOptions(),
   }) {
     _ensureOpen();
-    final localJd = instantUtc.addSeconds(_calendarOffsetSeconds);
-    final localTimeResult = _calendar.owner.time.reverseJulianDay(localJd);
+    final localTimeResult = _calendar.localTimeFromInstant(instantUtc);
     final chartResult = createChart(
       instantUtc: instantUtc,
       virtualTime: localTimeResult.value,
@@ -469,15 +467,6 @@ final class ZiweiContext implements Finalizable {
       chartResult.value,
       chartResult.flags | localTimeResult.flags,
     );
-  }
-
-  double get _calendarOffsetSeconds {
-    final config = _calendar.config;
-    if (config.dayBoundaryMode ==
-        ChineseCalendarDayBoundaryMode.fixedUtcOffset) {
-      return config.utcOffsetMinutes * 60.0;
-    }
-    return config.calendarMeridianDegrees * 240.0;
   }
 
   /// Moves to the canonical center of an adjacent logical flow hour.

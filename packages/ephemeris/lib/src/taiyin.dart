@@ -265,8 +265,32 @@ final class DataFileError extends EphemerisError {
 }
 
 /// A time-scale conversion lacked required data or received an invalid value.
-final class TimeScaleError extends EphemerisError {
+class TimeScaleError extends EphemerisError {
   TimeScaleError(
+    super.status,
+    super.name,
+    super.message, {
+    super.resultFlags,
+    super.diagnostic,
+    super.diagnostics,
+  });
+}
+
+/// Earth-orientation data is missing or does not cover the requested UTC.
+final class EarthOrientationDataError extends TimeScaleError {
+  EarthOrientationDataError(
+    super.status,
+    super.name,
+    super.message, {
+    super.resultFlags,
+    super.diagnostic,
+    super.diagnostics,
+  });
+}
+
+/// Leap-second data is unavailable for the requested UTC.
+final class LeapSecondDataError extends TimeScaleError {
+  LeapSecondDataError(
     super.status,
     super.name,
     super.message, {
@@ -339,23 +363,28 @@ final class EphemerisContext implements Finalizable {
     this._bindings,
     this._context,
     this._contextFinalizer,
-    this._nativeState,
-  ) {
+    this._nativeState, [
+    TdbModel initialTdbModel = TdbModel.fastPeriodic,
+  ]) : _configuredTdbModel = initialTdbModel {
     var finalizerAttached = false;
     try {
       _contextFinalizer.attach(this, _context.cast(), detach: this);
       finalizerAttached = true;
-      configuration = ContextConfiguration._(
-        _bindings,
-        _context,
-        _ensureOpen,
-        (status) => _completeOperation(status),
-      );
       time = Time.internal(
         _bindings,
         _context,
         _ensureOpen,
         (status) => _completeOperation(status),
+        (error) => error is LeapSecondDataError,
+        () => _configuredTdbModel,
+        (model) => _configuredTdbModel = model,
+      );
+      configuration = ContextConfiguration._(
+        _bindings,
+        _context,
+        _ensureOpen,
+        (status) => _completeOperation(status),
+        (model) => _configuredTdbModel = model,
       );
       astrology = AstrologyApi._(_bindings, _context, _ensureOpen, (
         status,
@@ -541,6 +570,7 @@ final class EphemerisContext implements Finalizable {
   /// Every calendar context created from this context, tracked so closing the
   /// owner invalidates caller-created children that borrow its native state.
   final Set<ChineseCalendarContext> _calendarChildren = {};
+  TdbModel _configuredTdbModel;
   bool _closed = false;
 
   /// Creates an independent native context without reinitializing the runtime.
@@ -559,6 +589,7 @@ final class EphemerisContext implements Finalizable {
       context,
       _contextFinalizer,
       _nativeState,
+      time.configuredTdbModel,
     );
   }
 
@@ -804,6 +835,26 @@ Never _throwStatus(
   }
   if (status == -4) {
     throw UnsupportedOperationError(
+      arguments.status,
+      arguments.name,
+      arguments.message,
+      resultFlags: arguments.resultFlags,
+      diagnostic: arguments.diagnostic,
+      diagnostics: arguments.diagnostics,
+    );
+  }
+  if (status == taiyin_status_code.TAIYIN_TIME_ERROR_EOP_OUT_OF_RANGE) {
+    throw EarthOrientationDataError(
+      arguments.status,
+      arguments.name,
+      arguments.message,
+      resultFlags: arguments.resultFlags,
+      diagnostic: arguments.diagnostic,
+      diagnostics: arguments.diagnostics,
+    );
+  }
+  if (status == taiyin_status_code.TAIYIN_TIME_ERROR_LEAP_SECOND_UNAVAILABLE) {
+    throw LeapSecondDataError(
       arguments.status,
       arguments.name,
       arguments.message,

@@ -2,6 +2,45 @@ import 'package:ephemeris/ephemeris.dart';
 import 'package:test/test.dart';
 
 void main() {
+  group('Dart DateTime conversion', () {
+    test('maps the Unix epoch to the standard UTC Julian date', () {
+      final value = DateTime.fromMicrosecondsSinceEpoch(0, isUtc: true);
+
+      expect(value.toUtcJulianDate(), UtcJulianDate.fromParts(2440587, 0.5));
+    });
+
+    test('converts positive and negative Unix microsecond timestamps', () {
+      expect(
+        utcJulianDateFromUnixMicroseconds(JulianDate.microsecondsPerDay),
+        UtcJulianDate.fromParts(2440588, 0.5),
+      );
+      expect(
+        utcJulianDateFromUnixMicroseconds(-JulianDate.microsecondsPerDay),
+        UtcJulianDate.fromParts(2440586, 0.5),
+      );
+    });
+
+    test(
+      'uses the represented instant instead of displayed timezone fields',
+      () {
+        final withOffset = DateTime.parse('2003-03-13T14:15:00.123456+08:00');
+        final utc = DateTime.utc(2003, 3, 13, 6, 15, 0, 123, 456);
+
+        expect(withOffset.toUtcJulianDate(), utc.toUtcJulianDate());
+        expect(
+          withOffset.toUtcJulianDate(),
+          utcJulianDateFromUnixMicroseconds(withOffset.microsecondsSinceEpoch),
+        );
+        expect(
+          AstroDateTime.fromJulianDate(
+            withOffset.toUtcJulianDate(),
+          ).toDateTimeUtc(),
+          utc,
+        );
+      },
+    );
+  });
+
   group('AstroDateTime', () {
     test('preserves DateTime microseconds', () {
       final dart = DateTime.utc(2026, 7, 19, 12, 34, 56, 123, 456);
@@ -129,6 +168,31 @@ void main() {
       // 12:34:56.123456789 UTC+8 is 04:34:56.123456789 UTC. The split path
       // keeps the nanosecond that a scalar double merge would lose.
       expect(utc, AstroDateTime(2024, 2, 10, 4, 34, 56, 123456789));
+    });
+
+    test('UTC Julian-date convenience matches the generic interpretation', () {
+      final value = AstroDateTime(2024, 2, 10, 12, 34, 56, 123456789);
+
+      expect(
+        value.toUtcJulianDate(utcOffsetHours: 8),
+        value.toJulianDate<UtcScale>(utcOffsetHours: 8),
+      );
+    });
+
+    test('seven Julian-date aliases expose constructors', () {
+      expect(UtcJulianDate.fromDouble(1), isA<UtcJulianDate>());
+      expect(TaiJulianDate.fromDouble(2), isA<TaiJulianDate>());
+      expect(TtJulianDate.fromDouble(3), isA<TtJulianDate>());
+      expect(Ut1JulianDate.fromDouble(4), isA<Ut1JulianDate>());
+      expect(TdbJulianDate.fromDouble(5), isA<TdbJulianDate>());
+      expect(
+        LocalMeanSolarJulianDate.fromDouble(6),
+        isA<LocalMeanSolarJulianDate>(),
+      );
+      expect(
+        LocalApparentSolarJulianDate.fromDouble(7),
+        isA<LocalApparentSolarJulianDate>(),
+      );
     });
 
     test('toJulianDate offset agrees with the scalar toJulianDay', () {

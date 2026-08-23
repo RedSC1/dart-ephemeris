@@ -135,10 +135,43 @@ final class JulianDate<S extends TimeScale>
   }
 }
 
+/// A UTC-tagged split Julian date.
+///
+/// This alias shortens type annotations; it does not convert another scale to
+/// UTC. Use [Time] for physical time-scale conversion.
 typedef UtcJulianDate = JulianDate<UtcScale>;
+
+/// Converts microseconds elapsed since the Unix epoch to a split UTC Julian
+/// date.
+///
+/// The Unix epoch is 1970-01-01 00:00:00 UTC, or Julian date 2440587.5.
+/// Splitting the elapsed duration into whole days and a day fraction avoids
+/// merging the absolute Julian date through a precision-reducing `double`.
+UtcJulianDate utcJulianDateFromUnixMicroseconds(int microseconds) {
+  return UtcJulianDate.fromParts(
+    2440587,
+    0.5,
+  ).add(Duration(microseconds: microseconds));
+}
+
+/// A TAI-tagged split Julian date. This alias performs no conversion.
 typedef TaiJulianDate = JulianDate<TaiScale>;
+
+/// A TT-tagged split Julian date. This alias performs no conversion.
 typedef TtJulianDate = JulianDate<TtScale>;
+
+/// A UT1-tagged split Julian date. This alias performs no conversion.
 typedef Ut1JulianDate = JulianDate<Ut1Scale>;
+
+/// A TDB-tagged split Julian date. This alias performs no conversion.
 typedef TdbJulianDate = JulianDate<TdbScale>;
+
+/// A local-mean-solar-time-tagged split Julian date.
+///
+/// This alias performs no conversion and does not store a longitude.
 typedef LocalMeanSolarJulianDate = JulianDate<LocalMeanSolarTimeScale>;
+
+/// A local-apparent-solar-time-tagged split Julian date.
+///
+/// This alias performs no conversion and does not store a longitude.
 typedef LocalApparentSolarJulianDate = JulianDate<LocalApparentSolarTimeScale>;

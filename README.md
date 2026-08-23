@@ -41,7 +41,7 @@ import 'package:ephemeris/ephemeris.dart' as eph;
 final runtime = eph.Ephemeris.open();
 final context = runtime.createContext();
 final instantUt1 =
-    eph.JulianDate<eph.Ut1Scale>.fromDouble(2460409.25);
+    eph.Ut1JulianDate.fromDouble(2460409.25);
 
 final mars = context.position.atUt1(eph.Body.mars, instantUt1);
 final state = context.position.stateAtUt1(eph.Body.mars, instantUt1);
@@ -61,13 +61,17 @@ the short examples below keep one context alive for readability.
 
 ```dart
 final searchStart =
-    eph.JulianDate<eph.Ut1Scale>.fromDouble(2460310.5);
+    eph.Ut1JulianDate.fromDouble(2460310.5);
 
 final solar = context.eclipses.nextSolarAtUt1(searchStart);
 final lunar = context.eclipses.nextLunarAtUt1(searchStart);
 
 print('Next solar eclipse: ${solar.value.kinds}');
 print('Next lunar eclipse: ${lunar.value.kinds}');
+final solarMaximum = solar.value.maximum;
+if (solarMaximum != null) {
+  print('Maximum UTC: ${context.time.utcCalendarFromUt1(solarMaximum).value}');
+}
 print('Execution flags: ${(solar.flags | lunar.flags).values}');
 ```
 
@@ -77,18 +81,11 @@ routes and map products, and observer-specific visibility.
 ### Chinese calendar and Ganzhi
 
 ```dart
+final instantUtc =
+    DateTime.parse('2003-03-13T14:15:00+08:00').toUtcJulianDate();
 final localTime = eph.AstroDateTime(2003, 3, 13, 14, 15); // UTC+08:00
-final instantUtc = localTime
-    .toJulianDate<eph.UtcScale>()
-    .addSeconds(-8 * 3600);
-
-final lunarDate = context.chineseCalendar.fromSolar(
-  const eph.SolarDate(year: 2003, month: 3, day: 13),
-);
-final pillars = context.chineseCalendar.fourPillars(
-  instantUtc: instantUtc,
-  virtualTime: localTime,
-);
+final lunarDate = context.chineseCalendar.fromLocal(localTime);
+final pillars = context.chineseCalendar.fourPillarsInstant(instantUtc);
 
 print('Lunar date: ${lunarDate.value}');
 print('Four pillars: ${pillars.value}');
@@ -96,7 +93,12 @@ print('Day NaYin: ${context.ganzhi.nayinElement(pillars.value.day)}');
 ```
 
 The Chinese calendar and Ganzhi APIs are part of the core `ephemeris` package;
-they do not require an extension package.
+they do not require an extension package. The calendar context derives the UTC
+instant from its configured UTC offset or mean-solar meridian when given a
+local wall clock. Alternatively, Dart's built-in `DateTime` can be converted
+once with `toUtcJulianDate()`; its timezone identifies the physical instant,
+while the calendar context still controls the local timezone and day boundary.
+Callers should not subtract the offset a second time.
 
 ## Astrology
 

@@ -1,6 +1,28 @@
 import 'julian_date.dart';
 import 'time_scale.dart';
 
+/// Converts Dart's timezone-aware [DateTime] instant to Taiyin's split UTC
+/// Julian-date representation.
+///
+/// The conversion uses [DateTime.microsecondsSinceEpoch], not the displayed
+/// calendar fields. Therefore a local [DateTime] and its [DateTime.toUtc]
+/// value produce the same instant. The original timezone offset is not stored
+/// in the returned value.
+///
+/// This adapter does not consult an ephemeris or Chinese-calendar context.
+/// When the result is later used for Chinese-calendar, BaZi, or Ziwei
+/// calculation, that context remains the single source of truth for the local
+/// timezone and day-boundary policy.
+extension EphemerisDateTimeConversion on DateTime {
+  /// Converts this instant to a UTC split Julian date.
+  ///
+  /// Dart [DateTime] has microsecond resolution, so this path cannot introduce
+  /// the nanosecond precision available from [AstroDateTime].
+  UtcJulianDate toUtcJulianDate() {
+    return utcJulianDateFromUnixMicroseconds(microsecondsSinceEpoch);
+  }
+}
+
 /// A timezone- and time-scale-neutral astronomical calendar date and time.
 ///
 /// Years use astronomical numbering: year `0` is 1 BCE, `-1` is 2 BCE, and
@@ -13,22 +35,21 @@ import 'time_scale.dart';
 ///
 /// ## Julian-day convention
 ///
-/// Every Julian day produced or consumed by this class is a **standard Julian
-/// day**: the true instant on a UTC timeline, never tied to a local civil
-/// timezone. This package has no "Beijing-time Julian day" or other
-/// zone-labelled Julian day variant.
+/// Every Julian day produced or consumed by this class uses the **standard
+/// Julian-day coordinate convention**. The scale of a split value is carried
+/// by its [TimeScale] type parameter; scalar Julian days are untyped. This
+/// class only converts calendar fields and numeric coordinates. It does not
+/// perform physical UTC/TAI/TT/UT1/TDB conversion.
 ///
 /// A civil value alone does not identify an instant. Its relationship to a
 /// standard Julian day is decided by the caller-supplied `utcOffsetHours`
 /// argument of [toJulianDay], [toJ2000], [toJulianDate], [fromJulianDay],
 /// and [fromJulianDate]:
 ///
-/// * [toJulianDay] / [toJ2000] / [toJulianDate] convert a civil value
-///   expressed in `utcOffsetHours` into the standard Julian day of the same
-///   instant (the offset is subtracted).
-/// * [fromJulianDay] / [fromJulianDate] convert a standard Julian day into
-///   the civil value shown by a clock at `utcOffsetHours` (the offset is
-///   added).
+/// * [toJulianDay] / [toJ2000] / [toJulianDate] subtract
+///   `utcOffsetHours` from the supplied civil fields.
+/// * [fromJulianDay] / [fromJulianDate] add `utcOffsetHours` before formatting
+///   the numeric coordinate as civil fields.
 ///
 /// [toJulianDate] and [fromJulianDate] operate on the split representation
 /// and keep full precision; the scalar [toJulianDay] / [fromJulianDay]
@@ -67,7 +88,13 @@ final class AstroDateTime implements Comparable<AstroDateTime> {
     this.nanosecond,
   );
 
-  /// Preserves Dart's millisecond and microsecond components.
+  /// Copies Dart's displayed calendar fields, preserving milliseconds and
+  /// microseconds.
+  ///
+  /// This factory deliberately does not convert the represented instant: a
+  /// local value stays a local wall-clock reading and a UTC value stays a UTC
+  /// reading. Use [EphemerisDateTimeConversion.toUtcJulianDate] when the
+  /// physical instant represented by a Dart [DateTime] is required.
   factory AstroDateTime.fromDateTime(DateTime value) {
     return AstroDateTime(
       value.year,
@@ -80,12 +107,10 @@ final class AstroDateTime implements Comparable<AstroDateTime> {
     );
   }
 
-  /// Converts a standard Julian day to a civil value.
+  /// Formats an untyped standard Julian-day coordinate as a civil value.
   ///
-  /// [value] is a standard Julian day (a true UTC instant). [utcOffsetHours]
-  /// selects the civil timezone in which the result is displayed: the clock
-  /// reads the instant plus that offset. An omitted offset shows the value as
-  /// UTC. See the Julian-day convention documented on this class.
+  /// [utcOffsetHours] is added before formatting. This method does not know
+  /// the physical time scale of [value] and performs no time-scale conversion.
   factory AstroDateTime.fromJulianDay(
     double value, {
     double utcOffsetHours = 0,
@@ -116,13 +141,11 @@ final class AstroDateTime implements Comparable<AstroDateTime> {
     );
   }
 
-  /// Converts a split Julian date to a civil value without first collapsing
-  /// it to one double.
+  /// Formats a split Julian date as civil fields without collapsing to one
+  /// double.
   ///
-  /// [value] is a standard Julian day (a true UTC instant). [utcOffsetHours]
-  /// selects the civil timezone in which the result is displayed: the clock
-  /// reads the instant plus that offset. An omitted offset shows the value as
-  /// UTC. See the Julian-day convention documented on this class.
+  /// The returned fields are in [S]. [utcOffsetHours] is added before
+  /// formatting; it does not convert [S] to UTC or any other time scale.
   static AstroDateTime fromJulianDate<S extends TimeScale>(
     JulianDate<S> value, {
     double utcOffsetHours = 0,
@@ -206,10 +229,9 @@ final class AstroDateTime implements Comparable<AstroDateTime> {
   /// Interprets this calendar value in [S] and returns a split Julian date.
   ///
   /// [utcOffsetHours] is the civil timezone in which this value is
-  /// expressed; the returned Julian date subtracts that offset, so it names
-  /// the true UTC instant at full split precision. An omitted offset leaves
-  /// the value unchanged. See the Julian-day convention documented on this
-  /// class.
+  /// expressed; the returned Julian coordinate subtracts that offset. An
+  /// omitted offset leaves the fields unchanged. The result remains tagged as
+  /// [S]; this operation does not derive one physical time scale from another.
   ///
   /// This method does not convert between time scales. A UTC calendar value
   /// must go through Taiyin's UTC/TAI/TT conversion API rather than merely
@@ -252,12 +274,18 @@ final class AstroDateTime implements Comparable<AstroDateTime> {
     return value.addSeconds(-utcOffsetHours * 3600);
   }
 
+  /// Interprets this calendar value as UTC and returns a split Julian date.
+  ///
+  /// This is the readable equivalent of `toJulianDate<UtcScale>()`.
+  JulianDate<UtcScale> toUtcJulianDate({double utcOffsetHours = 0}) {
+    return toJulianDate<UtcScale>(utcOffsetHours: utcOffsetHours);
+  }
+
   /// Converts this civil value to a standard Julian day.
   ///
   /// [utcOffsetHours] is the civil timezone in which this value is
-  /// expressed; the returned Julian day subtracts that offset, so it names
-  /// the true UTC instant. An omitted offset treats the civil fields as a
-  /// UTC reading. See the Julian-day convention documented on this class.
+  /// expressed; the returned numeric coordinate subtracts that offset. The
+  /// scalar result carries no physical time-scale type.
   ///
   /// This merge has roughly 40 microseconds of representational resolution
   /// around the present epoch. Prefer [toJulianDate] for Dart-side arithmetic.

@@ -148,6 +148,103 @@ void main() {
         expect(result.month.branchId, 2);
       });
 
+      test('resolves a local clock without manual timezone arithmetic', () {
+        final localTime = AstroDateTime(2003, 3, 13, 14, 15);
+        final calendar = context.chineseCalendar;
+        final instantUtc = calendar.instantFromLocal(localTime).value;
+
+        expect(
+          AstroDateTime.fromJulianDate(instantUtc),
+          AstroDateTime(2003, 3, 13, 6, 15),
+        );
+        expect(calendar.localTimeFromInstant(instantUtc).value, localTime);
+        expect(
+          calendar.fromLocal(localTime).value.year,
+          calendar
+              .fromSolar(SolarDate(year: 2003, month: 3, day: 13))
+              .value
+              .year,
+        );
+
+        final concise = calendar.fourPillarsLocal(localTime).value;
+        final explicit = calendar
+            .fourPillars(instantUtc: instantUtc, virtualTime: localTime)
+            .value;
+        expect(concise.year, explicit.year);
+        expect(concise.month, explicit.month);
+        expect(concise.day, explicit.day);
+        expect(concise.hour, explicit.hour);
+
+        final fromInstant = calendar.fourPillarsInstant(instantUtc).value;
+        expect(fromInstant.year, explicit.year);
+        expect(fromInstant.month, explicit.month);
+        expect(fromInstant.day, explicit.day);
+        expect(fromInstant.hour, explicit.hour);
+      });
+
+      test('converts mean-solar clocks through UT1', () {
+        const longitudeDegrees = 120.0;
+        final calendar = context.createChineseCalendar(
+          config: const ChineseCalendarConfig.localAstronomicalMeridian(
+            longitudeDegrees,
+          ),
+        );
+        final localTime = AstroDateTime(2003, 3, 13, 14, 15);
+        try {
+          final instantUtc = calendar.instantFromLocal(localTime).value;
+          final instantUt1 = context.time.utcToUt1(instantUtc).value;
+          final expectedUt1 = localTime.toJulianDate<Ut1Scale>().addSeconds(
+            -longitudeDegrees * 240.0,
+          );
+
+          expect(instantUt1.secondsDifference(expectedUt1), closeTo(0, 5e-7));
+          expect(calendar.localTimeFromInstant(instantUtc).value, localTime);
+        } finally {
+          calendar.close();
+        }
+      });
+
+      test(
+        'rejects local leap seconds that UTC Julian dates cannot retain',
+        () {
+          final localLeapSecond = AstroDateTime(2016, 12, 31, 23, 59, 60);
+
+          expect(
+            () => context.chineseCalendar.instantFromLocal(localLeapSecond),
+            throwsA(isA<UtcLeapSecondRepresentationError>()),
+          );
+          expect(
+            () => context.chineseCalendar.fourPillarsLocal(localLeapSecond),
+            throwsA(isA<UtcLeapSecondRepresentationError>()),
+          );
+        },
+      );
+
+      test('preserves fallback flags for mean-solar local clocks', () {
+        final fallbackContext = Ephemeris.open(
+          libraryPath: libraryPath,
+          options: const RuntimeOptions(loadBuiltinEop: false),
+        ).createContext();
+        final calendar = fallbackContext.createChineseCalendar(
+          config: const ChineseCalendarConfig.localAstronomicalMeridian(120),
+        );
+        try {
+          fallbackContext.time.setAllowUtcOutOfRangeEstimate(true);
+          final instant = calendar.instantFromLocal(
+            AstroDateTime(1900, 1, 1, 12),
+          );
+          final pillars = calendar.fourPillarsLocal(
+            AstroDateTime(1900, 1, 1, 12),
+          );
+
+          expect(instant.flags.contains(ResultFlag.timeScaleFallback), isTrue);
+          expect(pillars.flags.contains(ResultFlag.timeScaleFallback), isTrue);
+        } finally {
+          calendar.close();
+          fallbackContext.close();
+        }
+      });
+
       test('searches previous and next solar terms', () {
         final jd = JulianDate<Ut1Scale>.fromDouble(2460348.0);
         final prev = context.chineseCalendar.getPrevJieQiUt(jd).value;
