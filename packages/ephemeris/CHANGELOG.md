@@ -7,9 +7,10 @@
   `EarthOrientationDataError` and `LeapSecondDataError`.
 - Add automatic TAI/TT/UT1/TDB-to-UTC and UTC/TAI/TT/TDB-to-UT1 conversion
   helpers, plus UT1 and UTC calendar-formatting helpers for event results.
-- Reject inserted leap seconds that cannot be represented by `UtcJulianDate`,
-  and keep historical TT/TDB-to-UT1 fallback independent of UTC leap-second
-  coverage.
+- Reject inserted leap seconds reached from TAI, TT, or TDB when they cannot be
+  represented by `UtcJulianDate`; resolve the indistinguishable UT1 coordinate
+  to the following midnight. Keep historical TT/TDB-to-UT1 fallback
+  independent of UTC leap-second coverage.
 
 ## 1.0.0-alpha.1
 

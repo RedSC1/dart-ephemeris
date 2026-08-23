@@ -64,6 +64,7 @@ final class Time {
     this._context,
     this._ensureOpen,
     this._checkStatus,
+    this._isLeapSecondUnavailable,
     this._configuredTdbModel,
     this._synchronizeTdbModel,
   );
@@ -72,6 +73,7 @@ final class Time {
   final Pointer<taiyin_context> _context;
   final void Function() _ensureOpen;
   final ResultFlags Function(int status) _checkStatus;
+  final bool Function(Object error) _isLeapSecondUnavailable;
   final TdbModel Function() _configuredTdbModel;
   final void Function(TdbModel model) _synchronizeTdbModel;
 
@@ -416,10 +418,21 @@ final class Time {
   /// adjacent coordinate.
   OperationResult<JulianDate<UtcScale>> taiToUtc(JulianDate<TaiScale> tai) {
     _ensureOpen();
-    final tt = taiToTt(tai);
-    final ut1 = ttToUt1(tt.value);
-    final utc = ut1ToUtc(ut1.value);
-    return operationResult(utc.value, tt.flags | ut1.flags | utc.flags);
+    try {
+      return _invertAtomicToUtc(tai);
+    } on UtcLeapSecondRepresentationError {
+      rethrow;
+    } on Exception catch (directError, directStackTrace) {
+      if (!_isLeapSecondUnavailable(directError)) rethrow;
+      try {
+        final tt = taiToTt(tai);
+        final ut1 = ttToUt1(tt.value);
+        final utc = ut1ToUtc(ut1.value);
+        return operationResult(utc.value, tt.flags | ut1.flags | utc.flags);
+      } on Exception {
+        Error.throwWithStackTrace(directError, directStackTrace);
+      }
+    }
   }
 
   /// Converts a TT instant to UTC according to this context's time policy.
@@ -627,6 +640,30 @@ final class Time {
     return scalesFromUtc(AstroDateTime.fromJulianDate(utc));
   }
 
+  OperationResult<JulianDate<UtcScale>> _invertAtomicToUtc(
+    JulianDate<TaiScale> tai,
+  ) {
+    var candidate = JulianDate<UtcScale>.fromParts(
+      tai.dayNumber,
+      tai.dayFraction,
+    );
+    var flags = ResultFlags.none;
+    for (var iteration = 0; iteration < _inverseScaleIterations; iteration++) {
+      final offset = taiMinusUtc(AstroDateTime.fromJulianDate(candidate));
+      flags = flags | offset.flags;
+      final evaluated = JulianDate<TaiScale>.fromParts(
+        candidate.dayNumber,
+        candidate.dayFraction,
+      ).addSeconds(offset.value);
+      final correction = tai.coordinateSecondsDifference(evaluated);
+      candidate = candidate.addSeconds(correction);
+      if (correction.abs() <= _inverseScaleToleranceSeconds) {
+        return operationResult(candidate, flags);
+      }
+    }
+    throw const UtcLeapSecondRepresentationError();
+  }
+
   OperationResult<JulianDate<UtcScale>> _invertUtcScale<S extends TimeScale>(
     JulianDate<S> target,
     JulianDate<S> Function(PreciseTimeScales scales) select,
@@ -644,16 +681,14 @@ final class Time {
       final correction = target.coordinateSecondsDifference(evaluated);
       candidate = candidate.addSeconds(correction);
       if (correction.abs() <= _inverseScaleToleranceSeconds) {
-        if (_insertedLeapSecondToUt1(target, select, candidate, flags) !=
-            null) {
-          throw const UtcLeapSecondRepresentationError();
-        }
         converged = true;
         break;
       }
     }
     if (!converged) {
-      throw const UtcLeapSecondRepresentationError();
+      throw const TimeScaleConvergenceError(
+        'automatic conversion to UTC did not converge',
+      );
     }
     return operationResult(candidate, flags);
   }

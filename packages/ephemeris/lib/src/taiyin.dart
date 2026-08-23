@@ -375,6 +375,7 @@ final class EphemerisContext implements Finalizable {
         _context,
         _ensureOpen,
         (status) => _completeOperation(status),
+        (error) => error is LeapSecondDataError,
         () => _configuredTdbModel,
         (model) => _configuredTdbModel = model,
       );

@@ -240,10 +240,12 @@ Automatic reverse conversion is available through `taiToUtc()`, `ttToUtc()`,
 explicit-offset route. `ut1ToUtc()` is strict by default and follows the same
 explicit estimate policy above when EOP coverage is unavailable.
 Automatic TAI/TT/TDB-to-UT1 conversion goes through TT directly, so an allowed
-historical Delta-T fallback does not require a leap-second table. A reverse
-conversion whose physical instant is an inserted UTC leap second throws
+historical Delta-T fallback does not require a leap-second table. TAI/TT/TDB
+reverse conversion of an inserted UTC leap second throws
 `UtcLeapSecondRepresentationError`, because `UtcJulianDate` cannot preserve
-the `second: 60` label without changing the instant.
+the `second: 60` label without changing the instant. UT1 alone cannot
+distinguish that label from the following representable midnight in the
+bundled model, so `ut1ToUtc()` resolves the ambiguous coordinate to midnight.
 
 ### Julian-day convention
 

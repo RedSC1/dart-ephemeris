@@ -335,6 +335,15 @@ void main() {
           () => taiyin.time.tdbToUtc(leap.tdb),
           throwsA(isA<UtcLeapSecondRepresentationError>()),
         );
+        final postLeap = taiyin.time
+            .scalesFromUtc(AstroDateTime(2017, 1, 1))
+            .value
+            .value;
+        final fromAmbiguousUt1 = taiyin.time.ut1ToUtc(leap.ut1);
+        expect(
+          fromAmbiguousUt1.value.secondsDifference(postLeap.utc),
+          closeTo(0, 5e-7),
+        );
 
         for (final converted in [
           taiyin.time.taiToUt1(leap.tai),
@@ -370,6 +379,18 @@ void main() {
           ),
           throwsA(isA<EarthOrientationDataError>()),
         );
+
+        final tai = taiyin.time.utcToTai(utc, taiMinusUtcSeconds: 32).value;
+        final tt = taiyin.time.taiToTt(tai).value;
+        final tdb = taiyin.time.ttToTdb(tt).value;
+        for (final inverse in [
+          taiyin.time.taiToUtc(tai),
+          taiyin.time.ttToUtc(tt),
+          taiyin.time.tdbToUtc(tdb),
+        ]) {
+          expect(inverse.value.secondsDifference(utc), closeTo(0, 5e-7));
+          expect(inverse.flags, ResultFlags.none);
+        }
       });
 
       test('strict UTC conversion reports EOP coverage gaps explicitly', () {
