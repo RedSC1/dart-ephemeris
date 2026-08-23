@@ -482,13 +482,14 @@ final class BaziContext implements Finalizable {
     GanzhiRatHourMode ratHourMode = GanzhiRatHourMode.noSplit,
   }) {
     _ensureOpen();
-    final instantUtc = _calendar.instantFromLocal(localTime);
-    return _calculateResolved(
-      instantUtc: instantUtc,
+    final instant = _calendar.instantFromLocal(localTime);
+    final result = _calculateResolved(
+      instantUtc: instant.value,
       localTime: localTime,
       gender: gender,
       ratHourMode: ratHourMode,
     );
+    return operationResult(result.value, instant.flags | result.flags);
   }
 
   /// Calculates a complete BaZi result from one UTC instant.

@@ -436,13 +436,14 @@ final class ZiweiContext implements Finalizable {
     ZiweiBirthOptions options = const ZiweiBirthOptions(),
   }) {
     _ensureOpen();
-    final instantUtc = _calendar.instantFromLocal(localTime);
-    return createChart(
-      instantUtc: instantUtc,
+    final instant = _calendar.instantFromLocal(localTime);
+    final chart = createChart(
+      instantUtc: instant.value,
       virtualTime: localTime,
       gender: gender,
       options: options,
     );
+    return operationResult(chart.value, instant.flags | chart.flags);
   }
 
   /// Creates a natal chart from a UTC birth instant.

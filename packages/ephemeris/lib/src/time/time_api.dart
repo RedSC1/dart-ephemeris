@@ -351,11 +351,12 @@ final class Time {
     AstroDateTime utc, {
     required double taiMinusUtcSeconds,
     required double dut1Seconds,
-    TdbModel tdbModel = TdbModel.fastPeriodic,
+    TdbModel? tdbModel,
   }) {
     _ensureOpen();
     _requireFinite(taiMinusUtcSeconds, 'taiMinusUtcSeconds');
     _requireFinite(dut1Seconds, 'dut1Seconds');
+    final model = tdbModel ?? configuredTdbModel;
     return using((arena) {
       final calendar = writeNativeCalendar(_bindings, arena, utc);
       final output = arena<taiyin_split_precise_time_scales>();
@@ -365,7 +366,7 @@ final class Time {
           calendar,
           taiMinusUtcSeconds,
           dut1Seconds,
-          tdbModel.id,
+          model.id,
           output,
         ),
       );
@@ -404,42 +405,24 @@ final class Time {
     });
   }
 
-  /// Converts a TAI instant to UTC using the runtime leap-second table.
+  /// Converts a TAI instant to UTC according to this context's time policy.
   ///
-  /// Missing coverage throws [LeapSecondDataError]. UTC is discontinuous at
-  /// an inserted leap second, and [UtcJulianDate] cannot preserve its
-  /// `second: 60` label; such an instant throws
+  /// A strict context throws [LeapSecondDataError] when coverage is missing.
+  /// A context allowing out-of-range estimates converts through UT1 and the
+  /// configured Delta-T model and reports [ResultFlag.timeScaleFallback]. UTC
+  /// is discontinuous at an inserted leap second, and [UtcJulianDate] cannot
+  /// preserve its `second: 60` label; such an instant throws
   /// [UtcLeapSecondRepresentationError] instead of silently returning an
   /// adjacent coordinate.
   OperationResult<JulianDate<UtcScale>> taiToUtc(JulianDate<TaiScale> tai) {
     _ensureOpen();
-    var candidate = JulianDate<UtcScale>.fromParts(
-      tai.dayNumber,
-      tai.dayFraction,
-    );
-    var flags = ResultFlags.none;
-    var converged = false;
-    for (var iteration = 0; iteration < _inverseScaleIterations; iteration++) {
-      final offset = taiMinusUtc(AstroDateTime.fromJulianDate(candidate));
-      flags = flags | offset.flags;
-      final evaluated = JulianDate<TaiScale>.fromParts(
-        candidate.dayNumber,
-        candidate.dayFraction,
-      ).addSeconds(offset.value);
-      final correction = tai.coordinateSecondsDifference(evaluated);
-      candidate = candidate.addSeconds(correction);
-      if (correction.abs() <= _inverseScaleToleranceSeconds) {
-        converged = true;
-        break;
-      }
-    }
-    if (!converged) {
-      throw const UtcLeapSecondRepresentationError();
-    }
-    return operationResult(candidate, flags);
+    final tt = taiToTt(tai);
+    final ut1 = ttToUt1(tt.value);
+    final utc = ut1ToUtc(ut1.value);
+    return operationResult(utc.value, tt.flags | ut1.flags | utc.flags);
   }
 
-  /// Converts a TT instant to UTC using the runtime leap-second table.
+  /// Converts a TT instant to UTC according to this context's time policy.
   OperationResult<JulianDate<UtcScale>> ttToUtc(JulianDate<TtScale> tt) {
     _ensureOpen();
     final tai = JulianDate<TaiScale>.fromParts(
@@ -515,12 +498,13 @@ final class Time {
   OperationResult<EstimatedTimeScales> estimatedScalesFromUt1(
     AstroDateTime ut1, {
     double? deltaTSeconds,
-    TdbModel tdbModel = TdbModel.fastPeriodic,
+    TdbModel? tdbModel,
   }) {
     _ensureOpen();
     if (deltaTSeconds != null) {
       _requireFinite(deltaTSeconds, 'deltaTSeconds');
     }
+    final model = tdbModel ?? configuredTdbModel;
     return using((arena) {
       final calendar = writeNativeCalendar(_bindings, arena, ut1);
       final output = arena<taiyin_split_estimated_time_scales>();
@@ -528,13 +512,13 @@ final class Time {
       final status = deltaTSeconds == null
           ? _bindings.taiyin_make_split_estimated_time_scales_from_ut(
               calendar,
-              tdbModel.id,
+              model.id,
               output,
             )
           : _bindings.taiyin_make_split_time_scales_from_ut_delta_t(
               calendar,
               deltaTSeconds,
-              tdbModel.id,
+              model.id,
               output,
             );
       final flags = _checkStatus(status);
@@ -660,6 +644,10 @@ final class Time {
       final correction = target.coordinateSecondsDifference(evaluated);
       candidate = candidate.addSeconds(correction);
       if (correction.abs() <= _inverseScaleToleranceSeconds) {
+        if (_insertedLeapSecondToUt1(target, select, candidate, flags) !=
+            null) {
+          throw const UtcLeapSecondRepresentationError();
+        }
         converged = true;
         break;
       }
@@ -755,6 +743,18 @@ final class Time {
         59,
         60,
       );
+      OperationResult<TimeScaleResult<PreciseTimeScales>> leapScales;
+      try {
+        leapScales = scalesFromUtc(leapClock);
+      } on Exception {
+        // This is an optional representation probe. If its end-of-day UTC
+        // sample lies outside the configured data coverage, the already
+        // converged inverse remains the authoritative result.
+        continue;
+      }
+      if (leapScales.value.diagnostic.route != TimeScaleRoute.preciseUtcEop) {
+        continue;
+      }
       final offsetBefore = taiMinusUtc(leapClock);
       final normalizedNextDay = AstroDateTime.fromJulianDate(
         leapClock.toUtcJulianDate(),
@@ -765,7 +765,6 @@ final class Time {
         continue;
       }
 
-      final leapScales = scalesFromUtc(leapClock);
       final correction = target.coordinateSecondsDifference(
         select(leapScales.value.value),
       );

@@ -264,6 +264,35 @@ void main() {
               .secondsDifference(fastScales.utc),
           closeTo(0, 5e-7),
         );
+
+        taiyin.configuration.setAstroModels(
+          const AstroModelConfig(tdbModel: TdbModel.sofaFull),
+        );
+        final precise = taiyin.time.preciseScalesFromUtc(
+          utcCalendar,
+          taiMinusUtcSeconds: 32,
+          dut1Seconds: 0.25,
+        );
+        final estimated = taiyin.time.estimatedScalesFromUt1(
+          AstroDateTime.fromJulianDate(precise.value.ut1),
+          deltaTSeconds: precise.value.deltaTSeconds,
+        );
+        expect(
+          precise.value.tdb.secondsDifference(
+            taiyin.time
+                .ttToTdb(precise.value.tt, model: TdbModel.sofaFull)
+                .value,
+          ),
+          closeTo(0, 1e-10),
+        );
+        expect(
+          estimated.value.tdb.secondsDifference(
+            taiyin.time
+                .ttToTdb(estimated.value.tt, model: TdbModel.sofaFull)
+                .value,
+          ),
+          closeTo(0, 1e-10),
+        );
       });
 
       test('seeds inverse iteration inside the EOP coverage edge', () {
@@ -412,6 +441,17 @@ void main() {
         final historicalUt1 = taiyin.time.ttToUt1(historicalTt);
         final historicalTdb = taiyin.time.ttToTdb(historicalTt).value;
         final historicalUt1FromTdb = taiyin.time.tdbToUt1(historicalTdb);
+        final historicalScales = taiyin.time
+            .scalesFromUtc(AstroDateTime(1900, 1, 1))
+            .value
+            .value;
+        final historicalTai = JulianDate<TaiScale>.fromParts(
+          historicalScales.tt.dayNumber,
+          historicalScales.tt.dayFraction,
+        ).addSeconds(-32.184);
+        final historicalUtcFromTai = taiyin.time.taiToUtc(historicalTai);
+        final historicalUtcFromTt = taiyin.time.ttToUtc(historicalScales.tt);
+        final historicalUtcFromTdb = taiyin.time.tdbToUtc(historicalScales.tdb);
         expect(
           historicalUt1.flags.contains(ResultFlag.timeScaleFallback),
           isTrue,
@@ -424,6 +464,17 @@ void main() {
           historicalUt1FromTdb.value.secondsDifference(historicalUt1.value),
           closeTo(0, 5e-7),
         );
+        for (final inverse in [
+          historicalUtcFromTai,
+          historicalUtcFromTt,
+          historicalUtcFromTdb,
+        ]) {
+          expect(
+            inverse.value.secondsDifference(historicalScales.utc),
+            closeTo(0, 5e-7),
+          );
+          expect(inverse.flags.contains(ResultFlag.timeScaleFallback), isTrue);
+        }
         expect(taiyin.lastResultFlags, operation.flags);
 
         EphemerisError? failure;

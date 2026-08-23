@@ -151,7 +151,7 @@ void main() {
       test('resolves a local clock without manual timezone arithmetic', () {
         final localTime = AstroDateTime(2003, 3, 13, 14, 15);
         final calendar = context.chineseCalendar;
-        final instantUtc = calendar.instantFromLocal(localTime);
+        final instantUtc = calendar.instantFromLocal(localTime).value;
 
         expect(
           AstroDateTime.fromJulianDate(instantUtc),
@@ -191,7 +191,7 @@ void main() {
         );
         final localTime = AstroDateTime(2003, 3, 13, 14, 15);
         try {
-          final instantUtc = calendar.instantFromLocal(localTime);
+          final instantUtc = calendar.instantFromLocal(localTime).value;
           final instantUt1 = context.time.utcToUt1(instantUtc).value;
           final expectedUt1 = localTime.toJulianDate<Ut1Scale>().addSeconds(
             -longitudeDegrees * 240.0,
@@ -219,6 +219,31 @@ void main() {
           );
         },
       );
+
+      test('preserves fallback flags for mean-solar local clocks', () {
+        final fallbackContext = Ephemeris.open(
+          libraryPath: libraryPath,
+          options: const RuntimeOptions(loadBuiltinEop: false),
+        ).createContext();
+        final calendar = fallbackContext.createChineseCalendar(
+          config: const ChineseCalendarConfig.localAstronomicalMeridian(120),
+        );
+        try {
+          fallbackContext.time.setAllowUtcOutOfRangeEstimate(true);
+          final instant = calendar.instantFromLocal(
+            AstroDateTime(1900, 1, 1, 12),
+          );
+          final pillars = calendar.fourPillarsLocal(
+            AstroDateTime(1900, 1, 1, 12),
+          );
+
+          expect(instant.flags.contains(ResultFlag.timeScaleFallback), isTrue);
+          expect(pillars.flags.contains(ResultFlag.timeScaleFallback), isTrue);
+        } finally {
+          calendar.close();
+          fallbackContext.close();
+        }
+      });
 
       test('searches previous and next solar terms', () {
         final jd = JulianDate<Ut1Scale>.fromDouble(2460348.0);

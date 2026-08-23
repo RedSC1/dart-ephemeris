@@ -276,7 +276,9 @@ final class ChineseCalendarContext implements Finalizable {
   /// Mean-solar-meridian calendars use
   /// [ChineseCalendarConfig.calendarMeridianDegrees]. No daylight-saving or
   /// IANA timezone rules are applied.
-  JulianDate<UtcScale> instantFromLocal(AstroDateTime localTime) {
+  OperationResult<JulianDate<UtcScale>> instantFromLocal(
+    AstroDateTime localTime,
+  ) {
     _ensureOpen();
     if (localTime.second == 60) {
       throw const UtcLeapSecondRepresentationError();
@@ -286,9 +288,12 @@ final class ChineseCalendarContext implements Finalizable {
       final instantUt1 = localTime.toJulianDate<Ut1Scale>().addSeconds(
         -_civilOffsetSeconds,
       );
-      return _owner.time.ut1ToUtc(instantUt1).value;
+      return _owner.time.ut1ToUtc(instantUt1);
     }
-    return localTime.toUtcJulianDate().addSeconds(-_civilOffsetSeconds);
+    return operationResult(
+      localTime.toUtcJulianDate().addSeconds(-_civilOffsetSeconds),
+      ResultFlags.none,
+    );
   }
 
   /// Converts a UTC instant to the local civil clock implied by this calendar
@@ -468,11 +473,13 @@ final class ChineseCalendarContext implements Finalizable {
     AstroDateTime localTime, {
     GanzhiRatHourMode ratHourMode = GanzhiRatHourMode.noSplit,
   }) {
-    return fourPillars(
-      instantUtc: instantFromLocal(localTime),
+    final instant = instantFromLocal(localTime);
+    final pillars = fourPillars(
+      instantUtc: instant.value,
       virtualTime: localTime,
       ratHourMode: ratHourMode,
     );
+    return operationResult(pillars.value, instant.flags | pillars.flags);
   }
 
   /// Computes four pillars from one UTC instant.
