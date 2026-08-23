@@ -9,8 +9,8 @@ library.
 
 | | |
 |---|---|
-| Native commit | `130063b3` — "chore(release): prepare 1.0.0-beta.1" (2026-08-22) |
-| Version | 1.0.0-beta.1 |
+| Native commit | `19a2868d` — "chore(release): prepare 1.0.0-beta.2" (2026-08-22) |
+| Version | 1.0.0-beta.2 |
 | C ABI | 9 |
 | Build | modular core (astronomy + Chinese calendar + Ganzhi) |
 | Platforms | macOS arm64, Linux x64, Windows x64 |
