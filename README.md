@@ -220,11 +220,17 @@ platforms.
 
 ## Documentation
 
-- [Core Dart guide and API overview](packages/ephemeris/README.md)
+- [Documentation index](packages/ephemeris/doc/index.md)
+- [Getting started](packages/ephemeris/doc/getting-started.md)
+- [Time scales and Chinese-calendar policies](packages/ephemeris/doc/time-and-calendar.md)
+- [Ephemeris data and route selection](packages/ephemeris/doc/data-and-routing.md)
+- [Custom targets, houses, ayanamsha, and calculation models](packages/ephemeris/doc/customization.md)
+- [Contexts, isolates, and ownership](packages/ephemeris/doc/contexts-and-isolates.md)
+- [Positions, events, eclipses, and astrology](packages/ephemeris/doc/astronomy-workflows.md)
 - [Accuracy and ephemeris data](packages/ephemeris/doc/accuracy-and-data.md)
 - [Custom callback lifecycle](packages/ephemeris/doc/custom-target-lifecycle.md)
-- [BaZi package](packages/ephemeris_bazi/README.md)
-- [Ziwei Doushu package](packages/ephemeris_ziwei/README.md)
+- [BaZi guide](packages/ephemeris_bazi/doc/guide.md)
+- [Ziwei Doushu guide](packages/ephemeris_ziwei/doc/guide.md)
 
 The public `///` comments generate the package API reference on pub.dev.
 

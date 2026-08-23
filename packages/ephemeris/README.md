@@ -14,6 +14,11 @@ dart pub add ephemeris
 
 Generated API reference: <https://pub.dev/documentation/ephemeris/latest/>
 
+For a task-oriented introduction, start with the
+[documentation index](doc/index.md). This README remains the broad API
+overview; the guides explain common workflows, configuration choices, data
+routing, custom callbacks, and isolate ownership with smaller examples.
+
 For a typical major-body OPM2 product, reconstruction differs from its source
 DE441/DE442 states by roughly **0.001 arcsec**. This is a compression metric,
 not a blanket end-to-end accuracy guarantee. The Dart package can load OPM2

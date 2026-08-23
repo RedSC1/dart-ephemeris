@@ -14,6 +14,10 @@ dart pub add ephemeris_bazi
 
 Generated API reference: <https://pub.dev/documentation/ephemeris_bazi/latest/>
 
+See the [BaZi guide](doc/guide.md) for local/instant birth inputs, custom
+calendar contexts, Qi-Yun, Da-Yun/Xiao-Yun, Ten Gods, relations, Shen Sha, and
+ownership.
+
 Depends on the core `ephemeris` package. Importing this package adds
 `context.bazi` and `context.createBazi()` to `EphemerisContext`:
 

@@ -14,6 +14,10 @@ dart pub add ephemeris_ziwei
 
 Generated API reference: <https://pub.dev/documentation/ephemeris_ziwei/latest/>
 
+See the [Ziwei Doushu guide](doc/guide.md) for the bundled rule profile,
+independent option dimensions, custom TOML catalogs, natal charts, flow
+layers, Rat-hour policies, and reverse lookup.
+
 Depends on the core `ephemeris` package. Importing this package adds
 `context.ziwei` and `context.createZiwei()` to `EphemerisContext`:
 
