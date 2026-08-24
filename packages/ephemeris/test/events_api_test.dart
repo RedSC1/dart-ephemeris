@@ -356,10 +356,7 @@ void main() {
           evaluationCount: transit.evaluationCount,
         );
         expect(
-          () => context.events.localSolarTransitAtUt1(
-            aliasedTransit,
-            newYork,
-          ),
+          () => context.events.localSolarTransitAtUt1(aliasedTransit, newYork),
           throwsRangeError,
         );
       });

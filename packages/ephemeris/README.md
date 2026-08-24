@@ -1,6 +1,6 @@
 # Ephemeris for Dart ("Taiyin")
 
-> **Pre-release:** the current package line is `1.0.0-alpha.2`. Public APIs
+> **Pre-release:** the current package line is `1.0.0-beta.1`. Public APIs
 > and native packaging may still change before `1.0.0`.
 
 An idiomatic Dart wrapper around the versioned C ABI in
@@ -24,8 +24,9 @@ DE441/DE442 states by roughly **0.001 arcsec**. This is a compression metric,
 not a blanket end-to-end accuracy guarantee. The Dart package can load OPM2
 files and original NASA/JPL BSP/SPK kernels; without an external precision
 source it can use the built-in semi-analytical fallback. A separately
-downloadable full DE440-derived compressed OPM2 product is **coming soon** and
-is not bundled in this prerelease. See
+downloadable
+[full-range DE441 OPM2 product](https://github.com/RedSC1/taiyin-ephemeris/releases/tag/opm2-de441-full-v1)
+is available and is not bundled in this prerelease. See
 [accuracy and ephemeris data](doc/accuracy-and-data.md).
 
 This repository is a pub workspace with three packages, mirroring the Python
@@ -143,7 +144,7 @@ code that coexists with other packages, prefer the prefixed form above.
 Ephemeris exposes its semantic version and major-release codename independently:
 
 ```dart
-print(ephemeris.libraryVersion);  // 1.0.0-beta.2
+print(ephemeris.libraryVersion);  // 1.0.0-beta.3
 print(ephemeris.libraryCodename); // Singularity
 ```
 

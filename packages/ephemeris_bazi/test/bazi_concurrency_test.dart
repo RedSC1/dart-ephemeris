@@ -65,17 +65,21 @@ void _baziWorkerMain((SendPort, String, int) message) {
 }
 
 void main() {
-  test('independent isolates calculate BaZi concurrently', () async {
-    final owner = Ephemeris.open(libraryPath: libraryPath).createContext();
-    try {
-      final checksums = await Future.wait([
-        for (var worker = 0; worker < 4; worker++)
-          _runBaziWorker(libraryPath, 128),
-      ]).timeout(const Duration(seconds: 30));
-      expect(checksums, hasLength(4));
-      expect(checksums.toSet(), hasLength(1));
-    } finally {
-      owner.close();
-    }
-  }, skip: nativeLibraryAvailable ? false : libraryUnavailableSkip);
+  test(
+    'independent isolates calculate BaZi concurrently',
+    () async {
+      final owner = Ephemeris.open(libraryPath: libraryPath).createContext();
+      try {
+        final checksums = await Future.wait([
+          for (var worker = 0; worker < 4; worker++)
+            _runBaziWorker(libraryPath, 128),
+        ]).timeout(const Duration(seconds: 30));
+        expect(checksums, hasLength(4));
+        expect(checksums.toSet(), hasLength(1));
+      } finally {
+        owner.close();
+      }
+    },
+    skip: nativeLibraryAvailable ? false : libraryUnavailableSkip,
+  );
 }

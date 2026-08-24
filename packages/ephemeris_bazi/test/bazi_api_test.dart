@@ -362,10 +362,7 @@ void main() {
           (copyQiyun(qiyun, offsetYears: 0x100000000), throwsRangeError),
           (copyQiyun(qiyun, jieIntervalDays: double.nan), throwsArgumentError),
           (
-            copyQiyun(
-              qiyun,
-              startCivilTime: AstroDateTime(0x1000007e8, 2, 10),
-            ),
+            copyQiyun(qiyun, startCivilTime: AstroDateTime(0x1000007e8, 2, 10)),
             throwsRangeError,
           ),
         ];

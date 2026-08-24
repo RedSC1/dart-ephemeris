@@ -28,16 +28,20 @@ void main() {
     expect(missing, isEmpty);
   });
 
-  test('BaZi reports a missing extension module', () {
-    final runtime = Ephemeris.open(libraryPath: libraryPath);
-    final context = runtime.createContext();
-    expect(
-      () => context.createBazi(
-        libraryPath: '/no/such/definitely_missing_taiyin_bazi.dylib',
-      ),
-      throwsUnsupportedError,
-    );
-    expect(context.position, isNotNull);
-    context.close();
-  }, skip: nativeLibraryAvailable ? false : libraryUnavailableSkip);
+  test(
+    'BaZi reports a missing extension module',
+    () {
+      final runtime = Ephemeris.open(libraryPath: libraryPath);
+      final context = runtime.createContext();
+      expect(
+        () => context.createBazi(
+          libraryPath: '/no/such/definitely_missing_taiyin_bazi.dylib',
+        ),
+        throwsUnsupportedError,
+      );
+      expect(context.position, isNotNull);
+      context.close();
+    },
+    skip: nativeLibraryAvailable ? false : libraryUnavailableSkip,
+  );
 }

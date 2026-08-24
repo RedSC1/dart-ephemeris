@@ -227,99 +227,105 @@ int _natalStarFingerprint(ZiweiChart chart) {
 }
 
 void main() {
-  group('Ziwei oracle coverage', () {
-    late EphemerisContext owner;
-    late ZiweiContext ziwei;
+  group(
+    'Ziwei oracle coverage',
+    () {
+      late EphemerisContext owner;
+      late ZiweiContext ziwei;
 
-    setUpAll(() {
-      owner = Ephemeris.open(libraryPath: libraryPath).createContext();
-      ziwei = owner.ziwei;
-    });
+      setUpAll(() {
+        owner = Ephemeris.open(libraryPath: libraryPath).createContext();
+        ziwei = owner.ziwei;
+      });
 
-    tearDownAll(() {
-      ziwei.close();
-      owner.close();
-    });
+      tearDownAll(() {
+        ziwei.close();
+        owner.close();
+      });
 
-    test('locks the 23-case calendar-backed natal regression corpus', () {
-      for (var index = 0; index < _oracleCases.length; index++) {
-        final oracle = _oracleCases[index];
-        final chart = ziwei
-            .calculateLocal(oracle.localTime, gender: oracle.gender)
-            .value;
-        try {
-          expect(
-            chart.anchors.palacePosition(ZiweiPalace.life),
-            oracle.lifePalace,
-            reason: 'oracle $index life palace',
-          );
-          expect(
-            chart.summary.bodyPalaceBranch,
-            oracle.bodyPalace,
-            reason: 'oracle $index body palace',
-          );
-          expect(
-            chart.summary.bureauId,
-            oracle.bureauId,
-            reason: 'oracle $index bureau',
-          );
-          expect(
-            _natalStarFingerprint(chart),
-            oracle.starFingerprint,
-            reason: 'oracle $index all 115 natal star positions',
-          );
-          for (var starId = 115; starId < ziwei.starCount; starId++) {
-            expect(
-              chart.starPosition(starId),
-              isNull,
-              reason: 'oracle $index flow-only star $starId leaked',
-            );
-          }
-        } finally {
-          chart.close();
-        }
-      }
-    });
-
-    final requestedStressCases =
-        int.tryParse(Platform.environment['TAIYIN_ZIWEI_STRESS_CASES'] ?? '') ??
-        0;
-    test(
-      'optional finite wrapper stress matrix',
-      () {
-        for (var index = 0; index < requestedStressCases; index++) {
-          final local = AstroDateTime(
-            1984 + (index ~/ 72576) % 60,
-            1 + (index ~/ 6048) % 12,
-            1 + (index ~/ 216) % 28,
-            ((index ~/ 18) % 12) * 2,
-          );
+      test('locks the 23-case calendar-backed natal regression corpus', () {
+        for (var index = 0; index < _oracleCases.length; index++) {
+          final oracle = _oracleCases[index];
           final chart = ziwei
-              .calculateLocal(
-                local,
-                gender: ZiweiGender.values[index % 2],
-                options: ZiweiBirthOptions(
-                  ratHourMode: GanzhiRatHourMode.values[(index ~/ 2) % 3],
-                  chartMode: ZiweiChartMode.values[(index ~/ 6) % 3],
-                ),
-              )
+              .calculateLocal(oracle.localTime, gender: oracle.gender)
               .value;
           try {
-            expect(chart.anchors.values, hasLength(ZiweiAnchorSlot.count));
-            expect(chart.summary.bodyPalaceBranch, inInclusiveRange(0, 11));
-            expect(chart.summary.bureauId, inInclusiveRange(0, 4));
+            expect(
+              chart.anchors.palacePosition(ZiweiPalace.life),
+              oracle.lifePalace,
+              reason: 'oracle $index life palace',
+            );
+            expect(
+              chart.summary.bodyPalaceBranch,
+              oracle.bodyPalace,
+              reason: 'oracle $index body palace',
+            );
+            expect(
+              chart.summary.bureauId,
+              oracle.bureauId,
+              reason: 'oracle $index bureau',
+            );
             expect(
               _natalStarFingerprint(chart),
-              inInclusiveRange(0, 0x7fffffff),
+              oracle.starFingerprint,
+              reason: 'oracle $index all 115 natal star positions',
             );
+            for (var starId = 115; starId < ziwei.starCount; starId++) {
+              expect(
+                chart.starPosition(starId),
+                isNull,
+                reason: 'oracle $index flow-only star $starId leaked',
+              );
+            }
           } finally {
             chart.close();
           }
         }
-      },
-      skip: requestedStressCases > 0
-          ? false
-          : 'Set TAIYIN_ZIWEI_STRESS_CASES to enable the maintainer matrix.',
-    );
-  }, skip: nativeLibraryAvailable ? false : libraryUnavailableSkip);
+      });
+
+      final requestedStressCases =
+          int.tryParse(
+            Platform.environment['TAIYIN_ZIWEI_STRESS_CASES'] ?? '',
+          ) ??
+          0;
+      test(
+        'optional finite wrapper stress matrix',
+        () {
+          for (var index = 0; index < requestedStressCases; index++) {
+            final local = AstroDateTime(
+              1984 + (index ~/ 72576) % 60,
+              1 + (index ~/ 6048) % 12,
+              1 + (index ~/ 216) % 28,
+              ((index ~/ 18) % 12) * 2,
+            );
+            final chart = ziwei
+                .calculateLocal(
+                  local,
+                  gender: ZiweiGender.values[index % 2],
+                  options: ZiweiBirthOptions(
+                    ratHourMode: GanzhiRatHourMode.values[(index ~/ 2) % 3],
+                    chartMode: ZiweiChartMode.values[(index ~/ 6) % 3],
+                  ),
+                )
+                .value;
+            try {
+              expect(chart.anchors.values, hasLength(ZiweiAnchorSlot.count));
+              expect(chart.summary.bodyPalaceBranch, inInclusiveRange(0, 11));
+              expect(chart.summary.bureauId, inInclusiveRange(0, 4));
+              expect(
+                _natalStarFingerprint(chart),
+                inInclusiveRange(0, 0x7fffffff),
+              );
+            } finally {
+              chart.close();
+            }
+          }
+        },
+        skip: requestedStressCases > 0
+            ? false
+            : 'Set TAIYIN_ZIWEI_STRESS_CASES to enable the maintainer matrix.',
+      );
+    },
+    skip: nativeLibraryAvailable ? false : libraryUnavailableSkip,
+  );
 }

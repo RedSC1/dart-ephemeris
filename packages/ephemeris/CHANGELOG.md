@@ -1,3 +1,11 @@
+## 1.0.0-beta.1
+
+- Promote the package line to beta after stabilizing the split native-module,
+  isolate-concurrency, result-flag, and time-conversion APIs.
+- Update the bundled native baseline to Taiyin 1.0.0-beta.3, including the
+  smoothed early Delta-T transition.
+- Document the separately downloadable full-range DE441 OPM2 data release.
+
 ## 1.0.0-alpha.2
 
 - Add `DateTime.toUtcJulianDate()` and

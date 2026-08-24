@@ -56,12 +56,14 @@ frame, and coverage metadata. Loading multiple kernels is supported. When
 reproducibility matters, inspect the registered sources and the operation's
 diagnostic instead of assuming which file won route selection.
 
-## Full DE440 compressed data
+## Full-range DE441 compressed data
 
-**Coming soon:** a separately downloadable, full DE440-derived OPM2 compressed
-data product. It is not included in the current Dart prerelease. Until it is
-published, applications that need DE440 should load an original NASA/JPL
-DE440 BSP/SPK kernel or supply their own compatible OPM2 data.
+The separately downloadable
+[full-range DE441 OPM2 release](https://github.com/RedSC1/taiyin-ephemeris/releases/tag/opm2-de441-full-v1)
+covers approximately 13,200 BCE through 17,191 CE. It is not included in the
+Dart packages. Extract it and register its directory with
+`Ephemeris.addSourcePath()`, or load an original NASA/JPL BSP/SPK kernel or
+another compatible OPM2 product.
 
 ## Practical interpretation
 

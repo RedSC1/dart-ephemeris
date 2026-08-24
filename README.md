@@ -201,8 +201,11 @@ OPM2/SPK archive. Without external data, the runtime can use its built-in
 semi-analytical fallback over its declared interval. For precision work, load
 an appropriate OPM2 product or an original NASA/JPL BSP/SPK kernel.
 
-**Coming soon:** a separately downloadable full DE440-derived compressed OPM2
-data product. It is not included in the current prerelease.
+The separately downloadable
+[full-range DE441 OPM2 data release](https://github.com/RedSC1/taiyin-ephemeris/releases/tag/opm2-de441-full-v1)
+covers approximately 13,200 BCE through 17,191 CE. It is intentionally not
+bundled in the Dart packages; applications can register its extracted
+directory with `Ephemeris.addSourcePath()`.
 
 See the core package's [accuracy and data notes](packages/ephemeris/doc/accuracy-and-data.md)
 for scope, limitations, and route-selection guidance.

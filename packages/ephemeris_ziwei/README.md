@@ -1,6 +1,6 @@
 # ephemeris_ziwei
 
-> **Pre-release:** `1.0.0-alpha.2`, kept in lockstep with the Dart `ephemeris`
+> **Pre-release:** `1.0.0-beta.1`, kept in lockstep with the Dart `ephemeris`
 > core package.
 
 Ziwei Doushu (紫微斗数) extension bindings for the Taiyin ephemeris, part of

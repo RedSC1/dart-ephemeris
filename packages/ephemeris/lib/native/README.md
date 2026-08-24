@@ -9,8 +9,8 @@ library.
 
 | | |
 |---|---|
-| Native commit | `19a2868d` — "chore(release): prepare 1.0.0-beta.2" (2026-08-22) |
-| Version | 1.0.0-beta.2 |
+| Native commit | `4466a1f9` — "feat(data): prepare the full-range DE441 OPM2 release" (2026-08-24) |
+| Version | 1.0.0-beta.3 |
 | C ABI | 9 |
 | Build | modular core (astronomy + Chinese calendar + Ganzhi) |
 | Platforms | macOS arm64, Linux x64, Windows x64 |

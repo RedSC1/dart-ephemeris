@@ -1,3 +1,8 @@
+## 1.0.0-beta.1
+
+- Promote the extension to beta in lockstep with `ephemeris`.
+- Update the bundled Ziwei native module to Taiyin 1.0.0-beta.3.
+
 ## 1.0.0-alpha.2
 
 - Route `calculateLocal` and `calculateInstant` through the bound Chinese

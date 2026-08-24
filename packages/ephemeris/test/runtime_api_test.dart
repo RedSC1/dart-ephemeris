@@ -30,7 +30,7 @@ void main() {
 
       test('reports Singularity release metadata', () {
         expect(runtime.abiVersion, taiyinSupportedAbiVersion);
-        expect(runtime.libraryVersion, '1.0.0-beta.2');
+        expect(runtime.libraryVersion, '1.0.0-beta.3');
         expect(runtime.libraryCodename, 'Singularity');
       });
 
@@ -72,8 +72,7 @@ void main() {
           timeScaleRoute: diagnostic.timeScaleRoute,
           rawTimeScaleRouteId: diagnostic.rawTimeScaleRouteId,
           timeScaleFallbackReason: diagnostic.timeScaleFallbackReason,
-          rawTimeScaleFallbackReasonId:
-              diagnostic.rawTimeScaleFallbackReasonId,
+          rawTimeScaleFallbackReasonId: diagnostic.rawTimeScaleFallbackReasonId,
           timeScaleFlags: diagnostic.timeScaleFlags,
           taiMinusUtcSeconds: diagnostic.taiMinusUtcSeconds,
           dut1Seconds: diagnostic.dut1Seconds,
