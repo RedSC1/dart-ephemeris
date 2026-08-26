@@ -70,7 +70,7 @@ jobs:
             --target taiyin taiyin_bazi taiyin_ziwei
           cmake --install native-build --prefix native-stage
           strip -S -x \
-            native-stage/lib/libtaiyin.9.0.0.dylib \
+            native-stage/lib/libtaiyin.10.0.0.dylib \
             native-stage/lib/libtaiyin_bazi.1.0.0.dylib \
             native-stage/lib/libtaiyin_ziwei.1.0.0.dylib
 
@@ -93,11 +93,11 @@ jobs:
                 --target taiyin taiyin_bazi taiyin_ziwei
               cmake --install native-build --prefix native-stage
               library="$(find native-stage -type f \
-                -name libtaiyin.so.9.0.0 -print -quit)"
+                -name libtaiyin.so.10.0.0 -print -quit)"
               test -n "$library"
               stage_lib="$(dirname "$library")"
               strip --strip-unneeded \
-                "$stage_lib/libtaiyin.so.9.0.0" \
+                "$stage_lib/libtaiyin.so.10.0.0" \
                 "$stage_lib/libtaiyin_bazi.so.1.0.0" \
                 "$stage_lib/libtaiyin_ziwei.so.1.0.0"
 
@@ -161,7 +161,7 @@ jobs:
         shell: bash
         run: |
           library="$(find "$GITHUB_WORKSPACE/native-stage" -type f \
-            -name libtaiyin.so.9.0.0 -print -quit)"
+            -name libtaiyin.so.10.0.0 -print -quit)"
           test -n "$library"
           stage="$(dirname "$library")"
           echo "TAIYIN_TEST_LIBRARY=$stage/libtaiyin.so" >> "$GITHUB_ENV"
@@ -205,7 +205,7 @@ jobs:
         if: runner.os == 'Linux'
         shell: bash
         run: |
-          library="$(find native-stage -type f -name libtaiyin.so.9.0.0 -print -quit)"
+          library="$(find native-stage -type f -name libtaiyin.so.10.0.0 -print -quit)"
           stage="$(dirname "$library")"
           cp -L "$stage/libtaiyin.so" packages/ephemeris/lib/native/libtaiyin.so
           cp -L "$stage/libtaiyin_bazi.so" \
