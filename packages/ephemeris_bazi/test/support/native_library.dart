@@ -9,7 +9,7 @@ String _packageFile(String packageName, String path) {
   return uri.toFilePath();
 }
 
-/// The ABI-9 Taiyin shared library used by default in native-integration tests.
+/// The ABI-10 Taiyin shared library used by default in native-integration tests.
 ///
 /// Defaults to the modular core copy bundled in the root package. Override
 /// with `TAIYIN_TEST_LIBRARY` to test a freshly built core library; the BaZi

@@ -57,7 +57,7 @@ void main() {
       },
       skip: baselineLibraryAvailable
           ? false
-          : 'Set TAIYIN_BASELINE_LIBRARY to a baseline ABI-9 library.',
+          : 'Set TAIYIN_BASELINE_LIBRARY to a baseline ABI-10 library.',
     );
 
     test(
@@ -85,7 +85,7 @@ void main() {
       },
       skip: baselineLibraryAvailable
           ? false
-          : 'Set TAIYIN_BASELINE_LIBRARY to a baseline ABI-9 library.',
+          : 'Set TAIYIN_BASELINE_LIBRARY to a baseline ABI-10 library.',
     );
   });
 }

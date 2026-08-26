@@ -164,6 +164,19 @@ enum ZiweiChildhoodStrategy {
   final int id;
 }
 
+/// How a leap-month segment advances the Liu-Nian Dou-Jun month palace.
+enum ZiweiFlowMonthPalaceStrategy {
+  /// Advance once for every physical lunation.
+  physicalSequence(0),
+
+  /// Follow the leap segment's school-dependent effective month.
+  effectiveMonth(1);
+
+  const ZiweiFlowMonthPalaceStrategy(this.id);
+
+  final int id;
+}
+
 /// Which 子 (Zi) segment a logical flow-hour target belongs to.
 enum ZiweiRatHourSegment {
   none(0),
@@ -319,11 +332,14 @@ final class ZiweiFlowOptions {
     this.boundary = ZiweiPillarBoundary.lunar,
     this.ratHourMode = GanzhiRatHourMode.noSplit,
     this.childhoodStrategy = ZiweiChildhoodStrategy.skip,
+    this.flowMonthPalaceStrategy =
+        ZiweiFlowMonthPalaceStrategy.physicalSequence,
   });
 
   final ZiweiPillarBoundary boundary;
   final GanzhiRatHourMode ratHourMode;
   final ZiweiChildhoodStrategy childhoodStrategy;
+  final ZiweiFlowMonthPalaceStrategy flowMonthPalaceStrategy;
 }
 
 /// Physical-branch filters for direct birth-time reverse lookup.
@@ -584,8 +600,12 @@ final class ZiweiFlowResolution {
   const ZiweiFlowResolution({
     required this.effectiveBirthYear,
     required this.effectiveTargetYear,
+    required this.targetLunarYear,
     required this.targetMonth,
+    required this.targetEffectiveMonth,
     required this.targetMonthSequence,
+    required this.targetMonthName,
+    required this.targetPalaceMonthIndex,
     required this.targetMonthBuildingBranch,
     required this.targetDay,
     required this.targetHourIndex,
@@ -597,10 +617,22 @@ final class ZiweiFlowResolution {
 
   final int effectiveBirthYear;
   final int effectiveTargetYear;
+
+  /// Physical lunisolar year used for the flow-year stem.
+  final int targetLunarYear;
   final int targetMonth;
+
+  /// Month after applying the chart's leap-month attribution strategy.
+  final int targetEffectiveMonth;
 
   /// One-based sequence of the target month within its lunar year.
   final int targetMonthSequence;
+
+  /// Calendar month-name id, kept separate from the written month number.
+  final int targetMonthName;
+
+  /// Month index actually used to advance the flow palace.
+  final int targetPalaceMonthIndex;
 
   /// Earthly-branch id (0 = Zi … 11 = Hai) the target month is built from.
   final int targetMonthBuildingBranch;

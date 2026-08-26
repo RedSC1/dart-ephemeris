@@ -1,3 +1,11 @@
+## 1.0.0-beta.2
+
+- Update the bundled native baseline to Taiyin 1.0.0-beta.4 and C ABI 10.
+- Add the historical-China, standard-China, and locally reconstructed
+  astronomical Chinese-calendar modes.
+- Canonicalize exact integer-hour chart clocks only at Chinese-metaphysics
+  boundaries while leaving general astronomy time conversions unchanged.
+
 ## 1.0.0-beta.1
 
 - Promote the package line to beta after stabilizing the split native-module,

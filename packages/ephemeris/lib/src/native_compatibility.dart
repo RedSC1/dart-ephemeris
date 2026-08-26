@@ -1,11 +1,11 @@
-const int taiyinSupportedAbiVersion = 9;
+const int taiyinSupportedAbiVersion = 10;
 const int taiyinSplitTimeCapability = 1 << 14;
 const int taiyinChineseCalendarCapability = 1 << 15;
 const int taiyinBaziCapability = 1 << 16;
 const int taiyinGanzhiCalendarCapability = 1 << 17;
 const int taiyinZiweiCapability = 1 << 18;
 
-/// Symbols required by the ABI-9 native baseline used by this package.
+/// Symbols required by the ABI-10 native baseline used by this package.
 ///
 /// Chinese-calendar symbols and every Ganzhi entry point are always exported
 /// by `taiyin_c`. The Ganzhi functions return `TAIYIN_ERROR_UNSUPPORTED` when
@@ -474,7 +474,7 @@ void validateTaiyinNativeCompatibility({
   }
 }
 
-/// Rejects incomplete ABI-9 builds before generated bindings lazily look up a
+/// Rejects incomplete ABI-10 builds before generated bindings lazily look up a
 /// missing symbol.
 void validateTaiyinRequiredSymbols({
   required bool Function(String symbol) providesSymbol,
@@ -486,7 +486,7 @@ void validateTaiyinRequiredSymbols({
   ];
   if (missing.isNotEmpty) {
     throw StateError(
-      'The loaded Ephemeris ABI-9 library is missing symbols required by this '
+      'The loaded Ephemeris ABI-10 library is missing symbols required by this '
       'package: ${missing.join(', ')}. Rebuild or update the native library.',
     );
   }

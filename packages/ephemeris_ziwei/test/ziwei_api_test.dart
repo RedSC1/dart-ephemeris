@@ -257,6 +257,10 @@ void main() {
         final resolution = flowResult.value;
 
         expect(chart.flowLayerCount, 5);
+        expect(resolution.targetLunarYear, 2024);
+        expect(resolution.targetEffectiveMonth, inInclusiveRange(1, 12));
+        expect(resolution.targetMonthName, greaterThanOrEqualTo(0));
+        expect(resolution.targetPalaceMonthIndex, greaterThan(0));
         expect(resolution.decade.startAge, lessThan(resolution.decade.endAge));
         expect(resolution.smallLimit.virtualAge, greaterThan(0));
         expect(flowResult.flags, isA<ResultFlags>());
@@ -285,6 +289,35 @@ void main() {
         expect(chart.flowLayerCount, 2);
       });
 
+      test('keeps leap-month flow identities and palace strategy separate', () {
+        final chart = createReferenceChart(context.ziwei);
+        final local = AstroDateTime(2033, 12, 22, 12);
+        final instant = local.toJulianDate<UtcScale>().addSeconds(-8 * 3600);
+
+        final physical = chart
+            .setFlow(targetInstantUtc: instant, targetVirtualTime: local)
+            .value;
+        expect(physical.targetLunarYear, 2033);
+        expect(physical.targetMonth, 11);
+        expect(physical.targetEffectiveMonth, 11);
+        expect(physical.targetMonthSequence, 12);
+        expect(physical.targetMonthIsLeap, isTrue);
+        expect(physical.targetMonthBuildingBranch, 0);
+        expect(physical.targetPalaceMonthIndex, 12);
+
+        final effective = chart
+            .setFlow(
+              targetInstantUtc: instant,
+              targetVirtualTime: local,
+              options: const ZiweiFlowOptions(
+                flowMonthPalaceStrategy:
+                    ZiweiFlowMonthPalaceStrategy.effectiveMonth,
+              ),
+            )
+            .value;
+        expect(effective.targetPalaceMonthIndex, 11);
+      });
+
       test('steps flow hour and day targets', () {
         final ziwei = context.ziwei;
         final local = AstroDateTime(2003, 3, 13, 14, 15);
@@ -300,10 +333,9 @@ void main() {
           instantUtc: nextHour.instantUtc,
           virtualTime: nextHour.virtualTime,
         );
-        // Stepping lands on canonical slot centers, so the round trip from
-        // 14:15 returns the center of its slot (14:00), not 14:15 itself.
+        // Adjacent flow-hour navigation preserves the minute/second phase.
         expect(previousHour.virtualTime.hour, 14);
-        expect(previousHour.virtualTime.minute, 0);
+        expect(previousHour.virtualTime.minute, 15);
         expect(previousHour.instantUtc.isBefore(nextHour.instantUtc), isTrue);
 
         final nextDay = ziwei.nextFlowDayTarget(

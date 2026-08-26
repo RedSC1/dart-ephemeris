@@ -1,6 +1,6 @@
 # Ephemeris for Dart ("Taiyin")
 
-> **Pre-release:** the current package line is `1.0.0-beta.1`. Public APIs
+> **Pre-release:** the current package line is `1.0.0-beta.2`. Public APIs
 > and native packaging may still change before `1.0.0`.
 
 An idiomatic Dart wrapper around the versioned C ABI in
@@ -144,7 +144,7 @@ code that coexists with other packages, prefer the prefixed form above.
 Ephemeris exposes its semantic version and major-release codename independently:
 
 ```dart
-print(ephemeris.libraryVersion);  // 1.0.0-beta.3
+print(ephemeris.libraryVersion);  // 1.0.0-beta.4
 print(ephemeris.libraryCodename); // Singularity
 ```
 
@@ -228,7 +228,7 @@ annotations and constructors; aliases do not convert between scales.
 UTC/TAI/TT/UT1/TDB conversion, use `context.time.scalesFromUtc()` or the
 explicit conversion methods on `context.time`; those paths apply leap-second,
 EOP, Delta-T, and TDB-model data as required. The split representation crosses
-the FFI boundary end to end: the ABI-9 native entry points use
+the FFI boundary end to end: the ABI-10 native entry points use
 `taiyin_split_julian_date` for every calculation time, so the Dart value is
 never merged to a scalar `double` mid-calculation.
 
@@ -316,7 +316,7 @@ ephemeris calculation core resolves positions or events at that scale.
 
 ## Values and result flags
 
-Native ABI-9 calculations return an immutable named record:
+Native ABI-10 calculations return an immutable named record:
 
 ```dart
 typedef OperationResult<T> = ({T value, ResultFlags flags});
@@ -1034,10 +1034,10 @@ exceptions expose every available per-star diagnostic through
 `EphemerisError.diagnostics`; successful calls never contain placeholder NaN
 entries.
 
-This package requires an ABI-9 native library that reports the
+This package requires an ABI-10 native library that reports the
 `Capability.splitTime` and `Capability.chineseCalendar`
 capabilities and exposes the required runtime, star, solar-time, phenomena,
-Chinese-calendar, and Ganzhi-rule symbols. Incomplete ABI-9 builds are rejected
+Chinese-calendar, and Ganzhi-rule symbols. Incomplete ABI-10 builds are rejected
 during `Ephemeris.open` or `Ephemeris.attach` with a clear compatibility error
 instead of failing later during a lazy symbol lookup.
 
@@ -1201,7 +1201,7 @@ dart analyze
 dart test
 ```
 
-Native integration tests use three pinned modular ABI-9 libraries: core under
+Native integration tests use three pinned modular ABI-10 libraries: core under
 this package's `lib/native/`, and the extension libraries under their sibling
 packages. Override them when necessary:
 

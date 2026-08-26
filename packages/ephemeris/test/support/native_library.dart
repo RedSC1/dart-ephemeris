@@ -9,7 +9,7 @@ String _packageFile(String packageName, String path) {
   return uri.toFilePath();
 }
 
-/// The ABI-9 Taiyin shared library used by default in native-integration tests.
+/// The ABI-10 Taiyin shared library used by default in native-integration tests.
 ///
 /// Defaults to the modular core copy bundled in `lib/native/`. Override with
 /// `TAIYIN_TEST_LIBRARY` to test against a freshly built library.
@@ -20,7 +20,7 @@ String get libraryPath =>
 /// Whether [libraryPath] exists on disk.
 bool get nativeLibraryAvailable => File(libraryPath).existsSync();
 
-/// ABI-9 modular core library used to assert that extension symbols are absent.
+/// ABI-10 modular core library used to assert that extension symbols are absent.
 ///
 /// Override with the `TAIYIN_BASELINE_LIBRARY` environment variable.
 String get baselineLibraryPath =>

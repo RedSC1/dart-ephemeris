@@ -1,6 +1,6 @@
 # ephemeris_ziwei
 
-> **Pre-release:** `1.0.0-beta.1`, kept in lockstep with the Dart `ephemeris`
+> **Pre-release:** `1.0.0-beta.2`, kept in lockstep with the Dart `ephemeris`
 > core package.
 
 Ziwei Doushu (紫微斗数) extension bindings for the Taiyin ephemeris, part of
@@ -54,6 +54,12 @@ module with `TAIYIN_ZIWEI_LIBRARY_PATH`, `createZiwei(libraryPath: ...)`, or
 For isolate parallelism, create one Ziwei context and independent charts per
 worker. Catalog snapshots are immutable, but a mutable chart must not be
 modified concurrently from more than one isolate.
+
+Flow resolution keeps the physical lunar year, written month, effective
+month, physical month sequence, month-building branch, and palace month index
+separate. `ZiweiFlowMonthPalaceStrategy.physicalSequence` is the default;
+select `effectiveMonth` through `ZiweiFlowOptions` for schools that attach a
+leap segment's flow palace to its effective month.
 
 ```sh
 dart test

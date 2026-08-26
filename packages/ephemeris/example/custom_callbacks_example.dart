@@ -18,7 +18,7 @@ import 'package:ephemeris/ephemeris.dart';
 /// 3. **Custom ayanamsha** (`modelId >= 10000`): a sidereal offset computed by
 ///    Dart. Passed as the `ayanamsha:` argument to the sidereal calculations.
 ///
-/// Run with a path to a built ABI-9 Taiyin shared library:
+/// Run with a path to a built ABI-10 Taiyin shared library:
 ///
 /// ```sh
 /// dart run example/custom_callbacks_example.dart ../taiyin-ephemeris/build-bazi/libtaiyin.dylib

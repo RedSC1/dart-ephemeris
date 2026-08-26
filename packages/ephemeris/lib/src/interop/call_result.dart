@@ -3,7 +3,7 @@ import '../result_flags.dart';
 /// Decoded status and execution facts from a native ABI call.
 typedef DecodedCallResult = ({int status, ResultFlags flags});
 
-/// Decodes an ABI-9 packed call result or a retained legacy status return.
+/// Decodes an ABI-10 packed call result or a retained legacy status return.
 ///
 /// This is exported only through `package:ephemeris/ffi.dart` for the official
 /// extension packages. Application code should consume [OperationResult]

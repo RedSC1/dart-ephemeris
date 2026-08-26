@@ -16551,6 +16551,9 @@ final class taiyin_lunar_date extends ffi.Struct {
 
   @ffi.Array.multi([3])
   external ffi.Array<ffi.Uint8> reserved;
+
+  @ffi.Int32()
+  external int historical_year;
 }
 
 final class taiyin_chinese_solar_term_event extends ffi.Struct {
@@ -16614,6 +16617,12 @@ final class taiyin_chinese_calendar_month extends ffi.Struct {
   external int first_civil_day_number;
 
   external taiyin_split_julian_date astronomical_new_moon_jd_ut;
+
+  @ffi.Int32()
+  external int historical_year;
+
+  @ffi.Array.multi([4])
+  external ffi.Array<ffi.Uint8> reserved_tail;
 }
 
 final class taiyin_chinese_calendar_year extends ffi.Struct {
@@ -17144,6 +17153,11 @@ sealed class taiyin_ziwei_leap_month_strategy {
   static const TAIYIN_ZIWEI_LEAP_SPLIT_AFTER_FIFTEENTH = 2;
 }
 
+sealed class taiyin_ziwei_flow_month_palace_strategy {
+  static const TAIYIN_ZIWEI_FLOW_MONTH_PALACE_PHYSICAL_SEQUENCE = 0;
+  static const TAIYIN_ZIWEI_FLOW_MONTH_PALACE_EFFECTIVE_MONTH = 1;
+}
+
 sealed class taiyin_ziwei_flow_level {
   static const TAIYIN_ZIWEI_FLOW_DECADE = 0;
   static const TAIYIN_ZIWEI_FLOW_YEAR = 1;
@@ -17239,6 +17253,9 @@ final class taiyin_ziwei_flow_options extends ffi.Struct {
 
   @ffi.Int32()
   external int childhood_strategy;
+
+  @ffi.Int32()
+  external int flow_month_palace_strategy;
 }
 
 final class taiyin_ziwei_transform_set extends ffi.Struct {
@@ -17307,8 +17324,20 @@ final class taiyin_ziwei_flow_summary extends ffi.Struct {
   @ffi.Uint8()
   external int target_month_building_branch;
 
-  @ffi.Array.multi([1])
+  @ffi.Uint8()
+  external int target_effective_month;
+
+  @ffi.Uint8()
+  external int target_month_name;
+
+  @ffi.Uint8()
+  external int target_palace_month_index;
+
+  @ffi.Array.multi([2])
   external ffi.Array<ffi.Uint8> reserved;
+
+  @ffi.Int32()
+  external int target_lunar_year;
 }
 
 final class taiyin_ziwei_reverse_query extends ffi.Struct {

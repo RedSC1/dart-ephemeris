@@ -51,7 +51,7 @@ Set<String> _directlyReferencedNativeSymbols() {
 
 void main() {
   group('native compatibility', () {
-    test('accepts ABI 9 with split-time and Chinese-calendar support', () {
+    test('accepts ABI 10 with split-time and Chinese-calendar support', () {
       expect(
         () => validateTaiyinNativeCompatibility(
           abiVersion: taiyinSupportedAbiVersion,
@@ -63,7 +63,7 @@ void main() {
     });
 
     test(
-      'rejects an ABI-9 library without the Chinese-calendar capability',
+      'rejects an ABI-10 library without the Chinese-calendar capability',
       () {
         expect(
           () => validateTaiyinNativeCompatibility(
@@ -81,7 +81,7 @@ void main() {
       },
     );
 
-    test('rejects an ABI-9 library without split-time support', () {
+    test('rejects an ABI-10 library without split-time support', () {
       expect(
         () => validateTaiyinNativeCompatibility(
           abiVersion: taiyinSupportedAbiVersion,
@@ -114,7 +114,7 @@ void main() {
       );
     });
 
-    test('accepts a library that exposes every required ABI-9 symbol', () {
+    test('accepts a library that exposes every required ABI-10 symbol', () {
       expect(
         () => validateTaiyinRequiredSymbols(
           providesSymbol: taiyinRequiredAbi9Symbols.contains,
@@ -123,7 +123,7 @@ void main() {
       );
     });
 
-    test('required ABI-9 set covers every directly invoked core symbol', () {
+    test('required ABI-10 set covers every directly invoked core symbol', () {
       final missing =
           _directlyReferencedNativeSymbols()
               .difference(taiyinRequiredAbi9Symbols)
@@ -225,7 +225,7 @@ void main() {
       },
     );
 
-    test('reports missing ABI-9 symbols before lazy lookup', () {
+    test('reports missing ABI-10 symbols before lazy lookup', () {
       expect(
         () => validateTaiyinRequiredSymbols(
           providesSymbol: (symbol) => symbol != 'taiyin_get_library_codename',

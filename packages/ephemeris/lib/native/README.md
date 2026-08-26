@@ -9,9 +9,9 @@ library.
 
 | | |
 |---|---|
-| Native commit | `4466a1f9` — "feat(data): prepare the full-range DE441 OPM2 release" (2026-08-24) |
-| Version | 1.0.0-beta.3 |
-| C ABI | 9 |
+| Native commit | `251370c6` — "fix(ziwei): align flow calendars and virtual time boundaries" (2026-08-25) |
+| Version | 1.0.0-beta.4 |
+| C ABI | 10 |
 | Build | modular core (astronomy + Chinese calendar + Ganzhi) |
 | Platforms | macOS arm64, Linux x64, Windows x64 |
 

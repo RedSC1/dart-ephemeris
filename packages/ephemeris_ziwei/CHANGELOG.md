@@ -1,3 +1,11 @@
+## 1.0.0-beta.2
+
+- Update the bundled Ziwei module to Taiyin 1.0.0-beta.4 and C ABI 10.
+- Preserve written month, effective month, physical month sequence,
+  month-building branch, and flow-palace month index independently.
+- Add a selectable physical-sequence/effective-month flow-palace strategy for
+  leap months and retain corrected reform-year and Rat-hour flow behavior.
+
 ## 1.0.0-beta.1
 
 - Promote the extension to beta in lockstep with `ephemeris`.

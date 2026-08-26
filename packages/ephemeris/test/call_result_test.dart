@@ -3,7 +3,7 @@ import 'package:ephemeris/ephemeris.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('ABI-9 call results', () {
+  group('ABI-10 call results', () {
     test('decodes successful execution facts', () {
       final decoded = decodeNativeCallResult(
         ResultFlag.fallbackOccurred.mask | ResultFlag.numericalDerivative.mask,

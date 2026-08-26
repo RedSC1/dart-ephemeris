@@ -1,3 +1,9 @@
+## 1.0.0-beta.2
+
+- Update the bundled BaZi module to Taiyin 1.0.0-beta.4 and C ABI 10.
+- Use the core's canonicalized virtual chart clock at exact integer-hour
+  boundaries without changing the physical UTC instant.
+
 ## 1.0.0-beta.1
 
 - Promote the extension to beta in lockstep with `ephemeris`.

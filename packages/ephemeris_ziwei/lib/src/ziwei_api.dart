@@ -1188,7 +1188,8 @@ Pointer<taiyin_ziwei_flow_options> _writeZiweiFlowOptions(
   native.ref
     ..boundary = options.boundary.id
     ..rat_hour_mode = options.ratHourMode.id
-    ..childhood_strategy = options.childhoodStrategy.id;
+    ..childhood_strategy = options.childhoodStrategy.id
+    ..flow_month_palace_strategy = options.flowMonthPalaceStrategy.id;
   return native;
 }
 
@@ -1276,8 +1277,12 @@ ZiweiFlowResolution _readZiweiFlowResolution(taiyin_ziwei_flow_summary value) {
   return ZiweiFlowResolution(
     effectiveBirthYear: value.effective_birth_year,
     effectiveTargetYear: value.effective_target_year,
+    targetLunarYear: value.target_lunar_year,
     targetMonth: value.target_month,
+    targetEffectiveMonth: value.target_effective_month,
     targetMonthSequence: value.target_month_sequence,
+    targetMonthName: value.target_month_name,
+    targetPalaceMonthIndex: value.target_palace_month_index,
     targetMonthBuildingBranch: value.target_month_building_branch,
     targetDay: value.target_day,
     targetHourIndex: value.target_hour_index,

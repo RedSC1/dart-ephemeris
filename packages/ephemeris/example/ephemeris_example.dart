@@ -2,7 +2,7 @@ import 'package:ephemeris/ephemeris.dart';
 
 /// A small end-to-end tour of the Ephemeris Dart API.
 ///
-/// Run with a path to a built ABI-9 Taiyin shared library (or no argument to
+/// Run with a path to a built ABI-10 Taiyin shared library (or no argument to
 /// use the copy bundled in `lib/native/`):
 ///
 /// ```sh

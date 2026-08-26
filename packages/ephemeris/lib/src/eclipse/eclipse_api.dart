@@ -124,7 +124,7 @@ const _solarRouteMaximumSampleCount = 4096;
 ///
 /// A local method samples the observer location already configured on the
 /// owning [EphemerisContext]. Native calculation coordinates and contact times
-/// cross the ABI-9 boundary as split Julian dates.
+/// cross the ABI-10 boundary as split Julian dates.
 final class EclipseApi {
   EclipseApi._(
     this._bindings,
