@@ -102,13 +102,13 @@ jobs:
                 "$stage_lib/libtaiyin_ziwei.so.1.0.0"
 
               max_glibc="$(
-                objdump -T "$stage_lib/libtaiyin.so.9.0.0" |
+                objdump -T "$stage_lib/libtaiyin.so.10.0.0" |
                   sed -n "s/.*GLIBC_\\([0-9.]*\\).*/\\1/p" |
                   sort -V |
                   tail -1
               )"
               max_glibcxx="$(
-                objdump -T "$stage_lib/libtaiyin.so.9.0.0" |
+                objdump -T "$stage_lib/libtaiyin.so.10.0.0" |
                   sed -n "s/.*GLIBCXX_\\([0-9.]*\\).*/\\1/p" |
                   sort -V |
                   tail -1
