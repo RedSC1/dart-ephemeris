@@ -1,3 +1,10 @@
+## Unreleased
+
+- Separate the fixed civil-clock UTC offset from a mean-solar meridian used
+  to assign new moons and solar terms to calendar days.
+- Make local/instant convenience conversions independent of EOP when a local
+  astronomical calendar uses a meridian day boundary.
+
 ## 1.0.0-beta.2
 
 - Update the bundled native baseline to Taiyin 1.0.0-beta.4 and C ABI 10.

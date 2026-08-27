@@ -182,22 +182,21 @@ void main() {
         expect(fromInstant.hour, explicit.hour);
       });
 
-      test('converts mean-solar clocks through UT1', () {
-        const longitudeDegrees = 120.0;
+      test('keeps the civil clock separate from a meridian day boundary', () {
+        const longitudeDegrees = 105.8;
         final calendar = context.createChineseCalendar(
           config: const ChineseCalendarConfig.localAstronomicalMeridian(
             longitudeDegrees,
+            utcOffsetMinutes: 7 * 60,
           ),
         );
         final localTime = AstroDateTime(2003, 3, 13, 14, 15);
         try {
           final instantUtc = calendar.instantFromLocal(localTime).value;
-          final instantUt1 = context.time.utcToUt1(instantUtc).value;
-          final expectedUt1 = localTime.toJulianDate<Ut1Scale>().addSeconds(
-            -longitudeDegrees * 240.0,
-          );
+          final expectedUtc = localTime.toUtcJulianDate().addSeconds(-7 * 3600);
 
-          expect(instantUt1.secondsDifference(expectedUt1), closeTo(0, 5e-7));
+          expect(instantUtc.secondsDifference(expectedUtc), closeTo(0, 5e-7));
+          expect(longitudeDegrees * 240.0 - 7 * 3600, closeTo(192.0, 1e-12));
           expect(calendar.localTimeFromInstant(instantUtc).value, localTime);
         } finally {
           calendar.close();
@@ -220,25 +219,27 @@ void main() {
         },
       );
 
-      test('preserves fallback flags for mean-solar local clocks', () {
+      test('meridian calendars do not need EOP to convert civil clocks', () {
         final fallbackContext = Ephemeris.open(
           libraryPath: libraryPath,
           options: const RuntimeOptions(loadBuiltinEop: false),
         ).createContext();
         final calendar = fallbackContext.createChineseCalendar(
-          config: const ChineseCalendarConfig.localAstronomicalMeridian(120),
+          config: const ChineseCalendarConfig.localAstronomicalMeridian(
+            105.8,
+            utcOffsetMinutes: 7 * 60,
+          ),
         );
         try {
-          fallbackContext.time.setAllowUtcOutOfRangeEstimate(true);
           final instant = calendar.instantFromLocal(
             AstroDateTime(1900, 1, 1, 12),
           );
-          final pillars = calendar.fourPillarsLocal(
-            AstroDateTime(1900, 1, 1, 12),
-          );
 
-          expect(instant.flags.contains(ResultFlag.timeScaleFallback), isTrue);
-          expect(pillars.flags.contains(ResultFlag.timeScaleFallback), isTrue);
+          expect(instant.flags, ResultFlags.none);
+          expect(
+            AstroDateTime.fromJulianDate(instant.value),
+            AstroDateTime(1900, 1, 1, 5),
+          );
         } finally {
           calendar.close();
           fallbackContext.close();
@@ -279,6 +280,18 @@ void main() {
           () => context.createChineseCalendar(
             config: const ChineseCalendarConfig.localAstronomicalUtcOffset(
               0x1000001e0,
+            ),
+          ),
+          throwsRangeError,
+        );
+      });
+
+      test('rejects invalid legal-clock offsets in meridian mode', () {
+        expect(
+          () => context.createChineseCalendar(
+            config: const ChineseCalendarConfig.localAstronomicalMeridian(
+              105.8,
+              utcOffsetMinutes: 14 * 60 + 1,
             ),
           ),
           throwsRangeError,

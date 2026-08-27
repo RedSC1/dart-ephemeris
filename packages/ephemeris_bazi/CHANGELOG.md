@@ -1,3 +1,8 @@
+## Unreleased
+
+- Keep `calculateLocal` and `calculateInstant` on the configured fixed civil
+  clock when the attached calendar uses a separate mean-solar day boundary.
+
 ## 1.0.0-beta.2
 
 - Update the bundled BaZi module to Taiyin 1.0.0-beta.4 and C ABI 10.

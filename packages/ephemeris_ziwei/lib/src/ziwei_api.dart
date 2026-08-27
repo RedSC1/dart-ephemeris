@@ -429,7 +429,7 @@ final class ZiweiContext implements Finalizable {
 
   /// Creates a natal chart from a local wall-clock birth time.
   ///
-  /// The UTC instant is derived from the calendar context's civil-day offset.
+  /// The UTC instant is derived from the calendar context's fixed clock offset.
   OperationResult<ZiweiChart> calculateLocal(
     AstroDateTime localTime, {
     required ZiweiGender gender,
@@ -448,7 +448,7 @@ final class ZiweiContext implements Finalizable {
 
   /// Creates a natal chart from a UTC birth instant.
   ///
-  /// The local wall clock is derived from the calendar context's civil-day
+  /// The local wall clock is derived from the calendar context's fixed clock
   /// offset.
   OperationResult<ZiweiChart> calculateInstant(
     JulianDate<UtcScale> instantUtc, {

@@ -94,10 +94,11 @@ print('Day NaYin: ${context.ganzhi.nayinElement(pillars.value.day)}');
 
 The Chinese calendar and Ganzhi APIs are part of the core `ephemeris` package;
 they do not require an extension package. The calendar context derives the UTC
-instant from its configured UTC offset or mean-solar meridian when given a
-local wall clock. Alternatively, Dart's built-in `DateTime` can be converted
+instant from its configured fixed UTC offset when given a local wall clock.
+A separately selected mean-solar meridian changes only the calendar day to
+which new moons and solar terms belong. Alternatively, Dart's built-in `DateTime` can be converted
 once with `toUtcJulianDate()`; its timezone identifies the physical instant,
-while the calendar context still controls the local timezone and day boundary.
+while the calendar context still controls the fixed clock and day boundary.
 Callers should not subtract the offset a second time.
 
 ## Astrology

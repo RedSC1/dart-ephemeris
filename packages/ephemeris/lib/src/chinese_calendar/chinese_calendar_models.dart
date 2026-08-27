@@ -91,18 +91,25 @@ final class ChineseCalendarConfig {
 
   /// Local astronomical profile with a mean-solar-meridian civil boundary at
   /// [longitudeDegrees].
-  const ChineseCalendarConfig.localAstronomicalMeridian(double longitudeDegrees)
-    : this(
-        mode: ChineseCalendarMode.localAstronomical,
-        dayBoundaryMode: ChineseCalendarDayBoundaryMode.meanSolarMeridian,
-        calendarMeridianDegrees: longitudeDegrees,
-      );
+  const ChineseCalendarConfig.localAstronomicalMeridian(
+    double longitudeDegrees, {
+    int utcOffsetMinutes = 480,
+  }) : this(
+         mode: ChineseCalendarMode.localAstronomical,
+         dayBoundaryMode: ChineseCalendarDayBoundaryMode.meanSolarMeridian,
+         utcOffsetMinutes: utcOffsetMinutes,
+         calendarMeridianDegrees: longitudeDegrees,
+       );
 
   final ChineseCalendarMode mode;
   final ChineseCalendarDayBoundaryMode dayBoundaryMode;
 
-  /// Civil-day offset from UTC in minutes, meaningful for
-  /// [ChineseCalendarDayBoundaryMode.fixedUtcOffset].
+  /// Fixed civil-clock offset from UTC in minutes.
+  ///
+  /// In [ChineseCalendarDayBoundaryMode.fixedUtcOffset] this also defines the
+  /// calendar day boundary. In mean-solar-meridian mode the calendar boundary
+  /// comes from [calendarMeridianDegrees], while this value continues to
+  /// describe the caller's legal/display clock.
   final int utcOffsetMinutes;
 
   /// Longitude used for the mean-solar-meridian civil boundary.

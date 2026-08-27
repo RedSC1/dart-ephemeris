@@ -269,13 +269,11 @@ final class ChineseCalendarContext implements Finalizable {
     });
   }
 
-  /// Converts a local civil clock to the UTC instant implied by this
-  /// calendar context's day-boundary configuration.
+  /// Converts a local civil clock to UTC using its configured fixed offset.
   ///
-  /// Fixed-offset calendars use [ChineseCalendarConfig.utcOffsetMinutes].
-  /// Mean-solar-meridian calendars use
-  /// [ChineseCalendarConfig.calendarMeridianDegrees]. No daylight-saving or
-  /// IANA timezone rules are applied.
+  /// The calendar's mean-solar meridian, when selected, controls only new-moon
+  /// and solar-term day assignment. It does not replace the caller's legal
+  /// clock. No daylight-saving or IANA timezone rules are applied.
   OperationResult<JulianDate<UtcScale>> instantFromLocal(
     AstroDateTime localTime,
   ) {
@@ -283,38 +281,19 @@ final class ChineseCalendarContext implements Finalizable {
     if (localTime.second == 60) {
       throw const UtcLeapSecondRepresentationError();
     }
-    if (config.dayBoundaryMode ==
-        ChineseCalendarDayBoundaryMode.meanSolarMeridian) {
-      final instantUt1 = localTime.toJulianDate<Ut1Scale>().addSeconds(
-        -_civilOffsetSeconds,
-      );
-      return _owner.time.ut1ToUtc(instantUt1);
-    }
     return operationResult(
-      localTime.toUtcJulianDate().addSeconds(-_civilOffsetSeconds),
+      localTime.toUtcJulianDate().addSeconds(-_clockOffsetSeconds),
       ResultFlags.none,
     );
   }
 
-  /// Converts a UTC instant to the local civil clock implied by this calendar
-  /// context's day-boundary configuration.
+  /// Converts a UTC instant to the configured fixed-offset civil clock.
   OperationResult<AstroDateTime> localTimeFromInstant(
     JulianDate<UtcScale> instantUtc,
   ) {
     _ensureOpen();
-    if (config.dayBoundaryMode ==
-        ChineseCalendarDayBoundaryMode.meanSolarMeridian) {
-      final instantUt1 = _owner.time.utcToUt1(instantUtc);
-      final localClock = _owner.time.reverseJulianDay(
-        instantUt1.value.addSeconds(_civilOffsetSeconds),
-      );
-      return operationResult(
-        localClock.value,
-        instantUt1.flags | localClock.flags,
-      );
-    }
     return _owner.time.reverseJulianDay(
-      instantUtc.addSeconds(_civilOffsetSeconds),
+      instantUtc.addSeconds(_clockOffsetSeconds),
     );
   }
 
@@ -502,13 +481,7 @@ final class ChineseCalendarContext implements Finalizable {
     );
   }
 
-  double get _civilOffsetSeconds {
-    if (config.dayBoundaryMode ==
-        ChineseCalendarDayBoundaryMode.fixedUtcOffset) {
-      return config.utcOffsetMinutes * 60.0;
-    }
-    return config.calendarMeridianDegrees * 240.0;
-  }
+  double get _clockOffsetSeconds => config.utcOffsetMinutes * 60.0;
 
   OperationResult<ChineseSolarTermEvent> _solarTermSearch(
     int Function(
@@ -546,6 +519,14 @@ Pointer<taiyin_chinese_calendar_config> _writeChineseCalendarConfig(
   ChineseCalendarConfig config,
 ) {
   validateNativeInt32(config.utcOffsetMinutes, 'utcOffsetMinutes');
+  if (config.utcOffsetMinutes < -14 * 60 || config.utcOffsetMinutes > 14 * 60) {
+    throw RangeError.range(
+      config.utcOffsetMinutes,
+      -14 * 60,
+      14 * 60,
+      'utcOffsetMinutes',
+    );
+  }
   final native = arena<taiyin_chinese_calendar_config>();
   bindings.taiyin_chinese_calendar_config_init(native);
   native.ref
