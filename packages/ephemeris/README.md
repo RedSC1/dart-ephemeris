@@ -1,6 +1,6 @@
 # Ephemeris for Dart ("Taiyin")
 
-> **Pre-release:** the current package line is `1.0.0-beta.2`. Public APIs
+> **Pre-release:** the current package line is `1.0.0-beta.3`. Public APIs
 > and native packaging may still change before `1.0.0`.
 
 An idiomatic Dart wrapper around the versioned C ABI in

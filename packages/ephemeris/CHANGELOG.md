@@ -1,4 +1,4 @@
-## Unreleased
+## 1.0.0-beta.3
 
 - Separate the fixed civil-clock UTC offset from a mean-solar meridian used
   to assign new moons and solar terms to calendar days.

@@ -1,4 +1,4 @@
-## Unreleased
+## 1.0.0-beta.3
 
 - Keep `calculateLocal` and `calculateInstant` on the configured fixed civil
   clock when the attached calendar uses a separate mean-solar day boundary.
