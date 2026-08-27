@@ -47,7 +47,10 @@ maintain a second wall-clock representation for the same event.
 
 ```dart
 final calendar = context.createChineseCalendar(
-  config: const eph.ChineseCalendarConfig.localAstronomicalMeridian(118.582),
+  config: const eph.ChineseCalendarConfig.localAstronomicalMeridian(
+    105.8,
+    utcOffsetMinutes: 7 * 60,
+  ),
 );
 final customBazi = context.createBazi(
   calendar: calendar,
@@ -57,8 +60,8 @@ final customBazi = context.createBazi(
 );
 ```
 
-The calendar controls local/instant conversion, the lunar structure, civil
-day boundary, and solar-term queries used by the BaZi context. For an explicit
+The fixed UTC offset controls local/instant conversion; the independently
+selected meridian controls lunar structure and civil-day assignment. For an explicit
 apparent (“true”) solar-time wall clock, use the core solar-time API and the
 low-level `fourPillars`, `calcChart`, and `calcQiyun` methods so the original
 physical instant remains authoritative for solar-term boundaries.

@@ -42,8 +42,8 @@ final calendarUt1 = context.time.calendarFromUt1(ut1.value);
 ## Local civil time
 
 `AstroDateTime` is a wall-clock value. It deliberately has no IANA timezone or
-DST database attached. A `ChineseCalendarContext` supplies the policy that
-maps the wall clock to an instant:
+DST database attached. A `ChineseCalendarContext` uses its fixed
+`utcOffsetMinutes` to map that clock to an instant:
 
 ```dart
 final local = AstroDateTime(2003, 3, 13, 14, 15);
@@ -74,7 +74,10 @@ final localAstronomical = context.createChineseCalendar(
   config: const ChineseCalendarConfig.localAstronomicalUtcOffset(330),
 );
 final meridianCalendar = context.createChineseCalendar(
-  config: const ChineseCalendarConfig.localAstronomicalMeridian(118.582),
+  config: const ChineseCalendarConfig.localAstronomicalMeridian(
+    105.8,
+    utcOffsetMinutes: 7 * 60,
+  ),
 );
 ```
 
@@ -88,7 +91,11 @@ The three structure modes are:
   selected local day boundary.
 
 The day boundary is either a fixed UTC offset or a mean-solar meridian. These
-are calendar policies, not automatic timezone detection.
+are calendar policies, not automatic timezone detection. In meridian mode,
+`utcOffsetMinutes` still describes the legal/display clock while
+`calendarMeridianDegrees` only controls the calendar assignment. For example,
+Vietnamese UTC+07 and a `105.8` degree calendar meridian differ by 192 seconds;
+that difference must not shift the physical birth instant.
 
 ## Mean and apparent solar time
 

@@ -475,7 +475,7 @@ final class BaziContext implements Finalizable {
     );
   }
 
-  /// Calculates a complete BaZi result from a local civil clock.
+  /// Calculates a complete BaZi result from a fixed-offset local civil clock.
   OperationResult<BaziResult> calculateLocal(
     AstroDateTime localTime, {
     required BaziGender gender,
@@ -492,7 +492,8 @@ final class BaziContext implements Finalizable {
     return operationResult(result.value, instant.flags | result.flags);
   }
 
-  /// Calculates a complete BaZi result from one UTC instant.
+  /// Calculates a complete BaZi result from one UTC instant and the configured
+  /// fixed civil clock.
   OperationResult<BaziResult> calculateInstant(
     JulianDate<UtcScale> instantUtc, {
     required BaziGender gender,
