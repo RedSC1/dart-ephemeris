@@ -1,3 +1,9 @@
+## 1.0.0-beta.4
+
+- Update the bundled native baseline to Taiyin 1.0.0-beta.5.
+- Allow solar apparent calculations with Shapiro delay enabled to skip the
+  Sun's excluded self-deflector instead of failing on singular geometry.
+
 ## 1.0.0-beta.3
 
 - Separate the fixed civil-clock UTC offset from a mean-solar meridian used

@@ -1,3 +1,8 @@
+## 1.0.0-beta.4
+
+- Rebuild the bundled BaZi module against Taiyin 1.0.0-beta.5 and avoid
+  unsupported internal-visibility attributes in MinGW builds.
+
 ## 1.0.0-beta.3
 
 - Keep `calculateLocal` and `calculateInstant` on the configured fixed civil

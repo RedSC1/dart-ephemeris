@@ -1,3 +1,8 @@
+## 1.0.0-beta.4
+
+- Rebuild the bundled Ziwei module against the Taiyin 1.0.0-beta.5 native
+  baseline.
+
 ## 1.0.0-beta.3
 
 - Keep `calculateLocal` and `calculateInstant` on the configured fixed civil
