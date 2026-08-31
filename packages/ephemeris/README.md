@@ -1,6 +1,6 @@
 # Ephemeris for Dart ("Taiyin")
 
-> **Pre-release:** the current package line is `1.0.0-beta.4`. Public APIs
+> **Pre-release:** the current package line is `1.0.0-beta.5`. Public APIs
 > and native packaging may still change before `1.0.0`.
 
 An idiomatic Dart wrapper around the versioned C ABI in
@@ -34,8 +34,8 @@ binding's monorepo layout:
 
 - `ephemeris` (this package) — the core ephemeris: runtime, time, positions,
   stars, visibility, events, eclipses, Chinese calendar, and Ganzhi. It also
-  bundles the pinned native library under `lib/native/` and loads it
-  automatically.
+  bundles the pinned native library under `lib/native/` and a lite fixed-star
+  catalog under `lib/data/`; both load automatically.
 - [`ephemeris_bazi`](../ephemeris_bazi) — the optional BaZi (八字) extension.
   Importing it adds `context.bazi` / `context.createBazi()` to
   `EphemerisContext`.
@@ -144,7 +144,7 @@ code that coexists with other packages, prefer the prefixed form above.
 Ephemeris exposes its semantic version and major-release codename independently:
 
 ```dart
-print(ephemeris.libraryVersion);  // 1.0.0-beta.5
+print(ephemeris.libraryVersion);  // 1.0.0-beta.6
 print(ephemeris.libraryCodename); // Singularity
 ```
 
@@ -989,8 +989,15 @@ boundary while TT and UT1 remain distinct Dart types.
 
 ## Fixed stars
 
-Fixed-star catalogs are process-wide resources. Load TSC1 catalogs from a file
-or bytes, or load editable TSF1 catalogs during application setup:
+The package automatically loads a lite TSC1 catalog containing 2,057 stars and
+12,242 aliases. It includes every HIP star used by Stellarium's Chinese and
+western-zodiac line figures, so traditional Chinese star names such as `织女一`
+work without locating a separate data file. Pass
+`RuntimeOptions(loadPackagedData: false)` to disable packaged data.
+
+Fixed-star catalogs are process-wide resources. Additional TSC1 catalogs can
+be loaded from a file or bytes, and editable TSF1 catalogs can be loaded during
+application setup:
 
 ```dart
 ephemeris.starCatalog.addTsc1(

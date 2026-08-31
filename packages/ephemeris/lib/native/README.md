@@ -9,8 +9,8 @@ library.
 
 | | |
 |---|---|
-| Native commit | `f2efc8c3` — "chore(release): prepare 1.0.0-beta.5" (2026-08-30) |
-| Version | 1.0.0-beta.5 |
+| Native commit | `575a575` — "feat(stars): expand the lite sky-culture catalog" (2026-08-31) |
+| Version | 1.0.0-beta.6 |
 | C ABI | 10 |
 | Build | modular core (astronomy + Chinese calendar + Ganzhi) |
 | Platforms | macOS arm64, Linux x64, Windows x64 |

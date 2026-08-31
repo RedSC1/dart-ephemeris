@@ -30,13 +30,26 @@ void main() {
 
       test('reports Singularity release metadata', () {
         expect(runtime.abiVersion, taiyinSupportedAbiVersion);
-        expect(runtime.libraryVersion, '1.0.0-beta.5');
+        expect(runtime.libraryVersion, '1.0.0-beta.6');
         expect(runtime.libraryCodename, 'Singularity');
       });
 
       test('opens the bundled native library without an explicit path', () {
         final bundled = Ephemeris.open();
         expect(bundled.abiVersion, taiyinSupportedAbiVersion);
+        expect(bundled.starCatalog.count, greaterThanOrEqualTo(1));
+        expect(bundled.starCatalog.magnitudeOf('织女一').isFinite, isTrue);
+      });
+
+      test('can disable the bundled lite fixed-star catalog', () {
+        // Runtime initialization deliberately preserves explicitly registered
+        // process-wide star catalogs, so isolate the option under test first.
+        runtime.starCatalog.clear();
+        final withoutPackagedData = Ephemeris.open(
+          libraryPath: libraryPath,
+          options: const RuntimeOptions(loadPackagedData: false),
+        );
+        expect(withoutPackagedData.starCatalog.count, 0);
       });
 
       test('formats structured native diagnostics for logs', () {

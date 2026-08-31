@@ -1,3 +1,12 @@
+## 1.0.0-beta.5
+
+- Bundle and automatically load the regenerated lite TSC1 fixed-star catalog.
+  It contains 2,057 stars and 12,242 aliases, including every HIP star used by
+  Stellarium's Chinese and western-zodiac line figures.
+- Allow applications to disable all packaged runtime data, including the lite
+  catalog, with `RuntimeOptions(loadPackagedData: false)`.
+- Update the native source baseline to Taiyin 1.0.0-beta.6.
+
 ## 1.0.0-beta.4
 
 - Update the bundled native baseline to Taiyin 1.0.0-beta.5.
