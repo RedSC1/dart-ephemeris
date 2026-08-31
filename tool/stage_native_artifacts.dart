@@ -127,6 +127,24 @@ void main(List<String> arguments) {
     source.copySync(destination.path);
     stdout.writeln('${source.path} -> ${destination.path}');
   }
+
+  // The native NOTICE names the C++ source-tree path. In Dart distributions
+  // the same manifest lives in the base package and is addressable by package
+  // URI, including from the optional extension packages.
+  for (final relativePath in const [
+    'packages/ephemeris/NOTICE',
+    'packages/ephemeris_bazi/NOTICE',
+    'packages/ephemeris_ziwei/NOTICE',
+  ]) {
+    final notice = _relativeFile(repository, relativePath);
+    final contents = notice.readAsStringSync();
+    notice.writeAsStringSync(
+      contents.replaceAll(
+        '    data/stars/catalogs/lite/required_stars.json',
+        '    package:ephemeris/data/stars/catalogs/lite/required_stars.json',
+      ),
+    );
+  }
 }
 
 File _artifactFile(Directory root, _NativeFile file) {

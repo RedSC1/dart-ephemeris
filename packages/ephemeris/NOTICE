@@ -21,10 +21,9 @@ the ELP/MPP02 revision; NASA/JPL and the teams behind DE441, SPK, Horizons, and
 SBDB; the SELENE (Kaguya) LALT team and ISAS/JAXA archive; the Gaia, Hipparcos,
 and Yale Bright Star Catalogue teams; the Stellarium sky-cultures contributors,
 including Karrie Berglund, Sun Shuwei, and the Stellarium team; and the Purple
-Mountain Observatory and
-Swiss Ephemeris maintainers whose published results support external
-validation. Their software, models, observations, catalogs, and documentation
-made this project possible.
+Mountain Observatory and Swiss Ephemeris maintainers whose published results
+support external validation. Their software, models, observations, catalogs,
+and documentation made this project possible.
 
 Third-party notices
 -------------------
@@ -155,19 +154,30 @@ with Taiyin.
 Stellarium sky-cultures star selection and names
 -------------------------------------------------
 
-The bundled lite TSC1 fixed-star catalog includes the HIP stars referenced by
-the Chinese sky-culture line figures and the twelve western-zodiac line figures
-in the Stellarium sky-cultures repository. It also retains selected English and
-Simplified Chinese traditional star names derived from that source, pinned to
-revision `014fbb5e59233d133c22f9811af96b67d05a95c9`.
+The lite TSC1 fixed-star catalog includes the HIP stars referenced by the
+Chinese sky-culture line figures and the twelve western-zodiac line figures in
+the Stellarium sky-cultures repository. It also retains unambiguous English and
+Simplified Chinese traditional star names derived from that source. The source
+data are pinned to revision:
 
-The upstream Chinese sky culture credits Karrie Berglund, Sun Shuwei, and the
-Stellarium team; the western sky culture is by the Stellarium team. Their
-description files identify the relevant text and line data as CC BY-SA. The
-derived HIP selection and names are redistributed under those same CC BY-SA
-terms. Stellarium's line geometry and illustrations are not bundled. Exact
-source paths, counts, and selection policy are recorded in
-`lib/data/stars/catalogs/lite/required_stars.json`. Upstream:
+    014fbb5e59233d133c22f9811af96b67d05a95c9
+
+The Chinese sky culture was initially contributed by Karrie Berglund of
+Digitalis Education Solutions, Inc., based on Hong Kong Space Museum star maps.
+Sun Shuwei contributed more than 200 Chinese asterisms and more than 3,000 star
+names, primarily based on Yi Shitong's *Chinese and Western Contrast Star Chart
+and Catalogue 1950.0*. The Chinese text was subsequently reworked by the
+Stellarium team; the western sky culture is by the Stellarium team.
+
+The upstream Chinese sky culture labels its text and line data "CC BY-SA"; the
+western sky culture labels its text and data "CC BY-SA". Taiyin redistributes
+the derived HIP selection and names under those same CC BY-SA terms, not
+Stellarium's line geometry or illustrations. Exact source identity, selection
+counts, omitted ambiguous aliases, and attribution are retained in:
+
+    package:ephemeris/data/stars/catalogs/lite/required_stars.json
+
+Upstream:
 
     https://github.com/Stellarium/stellarium-skycultures
 
