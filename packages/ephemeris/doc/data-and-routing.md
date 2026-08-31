@@ -3,6 +3,13 @@
 Taiyin can combine OPM2 compressed ephemerides, NASA/JPL BSP/SPK kernels,
 TKC1/Kepler files, stellar catalogs, and built-in semi-analytical models.
 
+The Dart package bundles a lite TSC1 fixed-star catalog with 2,057 stars and
+12,242 aliases and loads it by default. The selection includes every HIP star
+used by Stellarium's Chinese and western-zodiac line figures. Disable all
+packaged runtime data with
+`RuntimeOptions(loadPackagedData: false)`; additional TSC1 or TSF1 catalogs
+remain loadable through `runtime.starCatalog`.
+
 ## Configure data at startup
 
 ```dart

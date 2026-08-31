@@ -28,8 +28,11 @@ the stable `1.0.0` line.
 
 The packages load their bundled Taiyin native modules automatically on macOS
 arm64, Linux x64, and Windows x64. Ordinary users do not locate DLLs or shared
-libraries manually. Other Dart Native targets can supply compatible Taiyin
-modules explicitly. Dart Web and Flutter Web are not currently supported.
+libraries manually. The core package also bundles and automatically loads a
+2,057-star lite catalog covering all HIP members of the supported Chinese and
+western-zodiac line figures. Other Dart Native targets can supply compatible
+Taiyin modules explicitly. Dart Web and Flutter Web are not currently
+supported.
 
 ## Quick start
 

@@ -733,6 +733,18 @@ String? _bundledLibraryPath() {
   return path;
 }
 
+/// The lite fixed-star catalog bundled as a package resource.
+String? _bundledLiteStarCatalogPath() {
+  final resolved = Isolate.resolvePackageUriSync(
+    Uri.parse(
+      'package:ephemeris/data/stars/catalogs/lite/stars-bright-v5.tsc1',
+    ),
+  );
+  if (resolved == null || resolved.scheme != 'file') return null;
+  final path = resolved.toFilePath();
+  return File(path).existsSync() ? path : null;
+}
+
 bool _supportsBundledNativeAbi() {
   final abi = Abi.current();
   if (Platform.isMacOS) return abi == Abi.macosArm64;

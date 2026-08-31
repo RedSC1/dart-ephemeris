@@ -18,6 +18,9 @@ final class RuntimeOptions {
   final String? eopPath;
   final String? lunarLimbPath;
   final int? segmentCacheMaxEntries;
+
+  /// Loads native packaged data and the Dart package's bundled lite star
+  /// catalog. Set this to false for a completely caller-managed data setup.
   final bool loadPackagedData;
   final bool loadBuiltinEop;
   final bool strictDiscovery;
@@ -81,7 +84,14 @@ final class Ephemeris {
         _closeCustomHouseSystemRegistrationsAfterNativeClear(state);
       },
     );
-    return Ephemeris._(library, state.bindings, state);
+    final ephemeris = Ephemeris._(library, state.bindings, state);
+    if (options.loadPackagedData) {
+      final bundledStarCatalog = _bundledLiteStarCatalogPath();
+      if (bundledStarCatalog != null) {
+        ephemeris.starCatalog.addTsc1(bundledStarCatalog);
+      }
+    }
+    return ephemeris;
   }
 
   /// Attaches to an already-loaded library without initializing its runtime.
