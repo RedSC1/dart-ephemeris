@@ -12382,6 +12382,24 @@ class TaiyinBindings {
             void Function(ffi.Pointer<taiyin_ziwei_option_override>)
           >();
 
+  void taiyin_ziwei_json_rule_module_init(
+    ffi.Pointer<taiyin_ziwei_json_rule_module> value,
+  ) {
+    return _taiyin_ziwei_json_rule_module_init(value);
+  }
+
+  late final _taiyin_ziwei_json_rule_module_initPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<taiyin_ziwei_json_rule_module>)
+        >
+      >('taiyin_ziwei_json_rule_module_init');
+  late final _taiyin_ziwei_json_rule_module_init =
+      _taiyin_ziwei_json_rule_module_initPtr
+          .asFunction<
+            void Function(ffi.Pointer<taiyin_ziwei_json_rule_module>)
+          >();
+
   void taiyin_ziwei_birth_options_init(
     ffi.Pointer<taiyin_ziwei_birth_options> value,
   ) {
@@ -12571,6 +12589,86 @@ class TaiyinBindings {
       _taiyin_ziwei_data_catalog_generationPtr
           .asFunction<int Function(ffi.Pointer<taiyin_ziwei_data_catalog>)>();
 
+  int taiyin_ziwei_ruleset_create(
+    ffi.Pointer<ffi.Pointer<taiyin_ziwei_ruleset>> out_ruleset,
+  ) {
+    return _taiyin_ziwei_ruleset_create(out_ruleset);
+  }
+
+  late final _taiyin_ziwei_ruleset_createPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_call_result Function(
+            ffi.Pointer<ffi.Pointer<taiyin_ziwei_ruleset>>,
+          )
+        >
+      >('taiyin_ziwei_ruleset_create');
+  late final _taiyin_ziwei_ruleset_create = _taiyin_ziwei_ruleset_createPtr
+      .asFunction<
+        int Function(ffi.Pointer<ffi.Pointer<taiyin_ziwei_ruleset>>)
+      >();
+
+  void taiyin_ziwei_ruleset_destroy(ffi.Pointer<taiyin_ziwei_ruleset> ruleset) {
+    return _taiyin_ziwei_ruleset_destroy(ruleset);
+  }
+
+  late final _taiyin_ziwei_ruleset_destroyPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Void Function(ffi.Pointer<taiyin_ziwei_ruleset>)>
+      >('taiyin_ziwei_ruleset_destroy');
+  late final _taiyin_ziwei_ruleset_destroy = _taiyin_ziwei_ruleset_destroyPtr
+      .asFunction<void Function(ffi.Pointer<taiyin_ziwei_ruleset>)>();
+
+  int taiyin_ziwei_ruleset_add_json_module(
+    ffi.Pointer<taiyin_ziwei_ruleset> ruleset,
+    ffi.Pointer<taiyin_ziwei_json_rule_module> module,
+  ) {
+    return _taiyin_ziwei_ruleset_add_json_module(ruleset, module);
+  }
+
+  late final _taiyin_ziwei_ruleset_add_json_modulePtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_call_result Function(
+            ffi.Pointer<taiyin_ziwei_ruleset>,
+            ffi.Pointer<taiyin_ziwei_json_rule_module>,
+          )
+        >
+      >('taiyin_ziwei_ruleset_add_json_module');
+  late final _taiyin_ziwei_ruleset_add_json_module =
+      _taiyin_ziwei_ruleset_add_json_modulePtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_ziwei_ruleset>,
+              ffi.Pointer<taiyin_ziwei_json_rule_module>,
+            )
+          >();
+
+  int taiyin_ziwei_ruleset_remove_module(
+    ffi.Pointer<taiyin_ziwei_ruleset> ruleset,
+    ffi.Pointer<ffi.Char> label,
+  ) {
+    return _taiyin_ziwei_ruleset_remove_module(ruleset, label);
+  }
+
+  late final _taiyin_ziwei_ruleset_remove_modulePtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_call_result Function(
+            ffi.Pointer<taiyin_ziwei_ruleset>,
+            ffi.Pointer<ffi.Char>,
+          )
+        >
+      >('taiyin_ziwei_ruleset_remove_module');
+  late final _taiyin_ziwei_ruleset_remove_module =
+      _taiyin_ziwei_ruleset_remove_modulePtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_ziwei_ruleset>,
+              ffi.Pointer<ffi.Char>,
+            )
+          >();
+
   int taiyin_ziwei_context_create(
     ffi.Pointer<taiyin_ziwei_data_catalog> catalog,
     ffi.Pointer<taiyin_ziwei_option_override> overrides,
@@ -12605,6 +12703,46 @@ class TaiyinBindings {
           ffi.Pointer<ffi.Pointer<taiyin_ziwei_context>>,
         )
       >();
+
+  int taiyin_ziwei_context_create_with_ruleset(
+    ffi.Pointer<taiyin_ziwei_data_catalog> catalog,
+    ffi.Pointer<taiyin_ziwei_option_override> overrides,
+    int override_count,
+    ffi.Pointer<taiyin_ziwei_ruleset> ruleset,
+    ffi.Pointer<ffi.Pointer<taiyin_ziwei_context>> out_context,
+  ) {
+    return _taiyin_ziwei_context_create_with_ruleset(
+      catalog,
+      overrides,
+      override_count,
+      ruleset,
+      out_context,
+    );
+  }
+
+  late final _taiyin_ziwei_context_create_with_rulesetPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_call_result Function(
+            ffi.Pointer<taiyin_ziwei_data_catalog>,
+            ffi.Pointer<taiyin_ziwei_option_override>,
+            ffi.Size,
+            ffi.Pointer<taiyin_ziwei_ruleset>,
+            ffi.Pointer<ffi.Pointer<taiyin_ziwei_context>>,
+          )
+        >
+      >('taiyin_ziwei_context_create_with_ruleset');
+  late final _taiyin_ziwei_context_create_with_ruleset =
+      _taiyin_ziwei_context_create_with_rulesetPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_ziwei_data_catalog>,
+              ffi.Pointer<taiyin_ziwei_option_override>,
+              int,
+              ffi.Pointer<taiyin_ziwei_ruleset>,
+              ffi.Pointer<ffi.Pointer<taiyin_ziwei_context>>,
+            )
+          >();
 
   void taiyin_ziwei_context_destroy(ffi.Pointer<taiyin_ziwei_context> context) {
     return _taiyin_ziwei_context_destroy(context);
@@ -12714,6 +12852,33 @@ class TaiyinBindings {
               ffi.Pointer<ffi.Size>,
             )
           >();
+
+  int taiyin_ziwei_star_is_natal(
+    ffi.Pointer<taiyin_ziwei_context> context,
+    int star_id,
+    ffi.Pointer<ffi.Uint8> out_is_natal,
+  ) {
+    return _taiyin_ziwei_star_is_natal(context, star_id, out_is_natal);
+  }
+
+  late final _taiyin_ziwei_star_is_natalPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_call_result Function(
+            ffi.Pointer<taiyin_ziwei_context>,
+            ffi.Uint16,
+            ffi.Pointer<ffi.Uint8>,
+          )
+        >
+      >('taiyin_ziwei_star_is_natal');
+  late final _taiyin_ziwei_star_is_natal = _taiyin_ziwei_star_is_natalPtr
+      .asFunction<
+        int Function(
+          ffi.Pointer<taiyin_ziwei_context>,
+          int,
+          ffi.Pointer<ffi.Uint8>,
+        )
+      >();
 
   int taiyin_ziwei_chart_create(
     ffi.Pointer<taiyin_ziwei_context> context,
@@ -17123,6 +17288,8 @@ final class taiyin_ziwei_context extends ffi.Opaque {}
 
 final class taiyin_ziwei_chart extends ffi.Opaque {}
 
+final class taiyin_ziwei_ruleset extends ffi.Opaque {}
+
 sealed class taiyin_ziwei_option_component {
   static const TAIYIN_ZIWEI_OPTION_PLACEMENT = 0;
   static const TAIYIN_ZIWEI_OPTION_BRIGHTNESS = 1;
@@ -17216,6 +17383,23 @@ final class taiyin_ziwei_option_override extends ffi.Struct {
   external ffi.Pointer<ffi.Char> key;
 
   external ffi.Pointer<ffi.Char> option;
+}
+
+final class taiyin_ziwei_json_rule_module extends ffi.Struct {
+  @ffi.Uint32()
+  external int struct_size;
+
+  external ffi.Pointer<ffi.Char> label;
+
+  external ffi.Pointer<ffi.Char> stars_json;
+
+  external ffi.Pointer<ffi.Char> brightness_json;
+
+  external ffi.Pointer<ffi.Char> sihua_json;
+
+  external ffi.Pointer<ffi.Char> flow_json;
+
+  external ffi.Pointer<ffi.Char> masters_json;
 }
 
 final class taiyin_ziwei_birth_options extends ffi.Struct {

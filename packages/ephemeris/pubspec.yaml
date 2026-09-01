@@ -1,6 +1,6 @@
 name: ephemeris
 description: Idiomatic Dart bindings for the Taiyin ephemeris C API.
-version: 1.0.0-beta.5
+version: 1.0.0-beta.6
 homepage: https://github.com/RedSC1/dart-ephemeris
 repository: https://github.com/RedSC1/dart-ephemeris
 issue_tracker: https://github.com/RedSC1/dart-ephemeris/issues

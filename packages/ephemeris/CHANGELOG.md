@@ -1,3 +1,9 @@
+## 1.0.0-beta.6
+
+- Update the native source baseline to Taiyin 1.0.0-beta.7.
+- Bind the Ziwei add/remove JSON option-module C ABI used by the optional
+  Ziwei package.
+
 ## 1.0.0-beta.5
 
 - Bundle and automatically load the regenerated lite TSC1 fixed-star catalog.

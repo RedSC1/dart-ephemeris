@@ -69,6 +69,7 @@ extension ZiweiExtension on EphemerisContext {
     ChineseCalendarContext? calendar,
     ZiweiDataCatalog? catalog,
     ZiweiOptionSelection selection = const ZiweiOptionSelection(),
+    ZiweiRuleset ruleset = const ZiweiRuleset(),
     String? libraryPath,
   }) {
     if (catalog != null && libraryPath != null) {
@@ -93,6 +94,7 @@ extension ZiweiExtension on EphemerisContext {
       effectiveCalendar,
       catalog: catalog,
       selection: selection,
+      ruleset: ruleset,
     );
   }
 }
@@ -218,9 +220,11 @@ final class ZiweiContext implements Finalizable {
     ChineseCalendarContext calendar, {
     ZiweiDataCatalog? catalog,
     ZiweiOptionSelection selection = const ZiweiOptionSelection(),
+    ZiweiRuleset ruleset = const ZiweiRuleset(),
   }) {
     host.ensureOpen();
     _validateZiweiOptionSelection(selection);
+    _validateZiweiRuleset(ruleset);
     final finalizer = module.finalizerFor('taiyin_ziwei_context_destroy');
     final bindings = module.bindings;
     final ownedCatalog = catalog == null
@@ -236,15 +240,45 @@ final class ZiweiContext implements Finalizable {
           selection,
         );
         final output = arena<Pointer<taiyin_ziwei_context>>();
-        _checkStatus(
-          host,
-          bindings.taiyin_ziwei_context_create(
-            effectiveCatalog._catalog,
-            overrides.pointer,
-            overrides.count,
-            output,
-          ),
-        );
+        Pointer<taiyin_ziwei_ruleset> nativeRuleset = nullptr;
+        try {
+          if (ruleset.modules.isNotEmpty) {
+            final rulesetOutput = arena<Pointer<taiyin_ziwei_ruleset>>();
+            _checkStatus(
+              host,
+              bindings.taiyin_ziwei_ruleset_create(rulesetOutput),
+            );
+            nativeRuleset = rulesetOutput.value;
+            for (final module in ruleset.modules) {
+              _checkStatus(
+                host,
+                bindings.taiyin_ziwei_ruleset_add_json_module(
+                  nativeRuleset,
+                  _writeZiweiJsonRuleModule(bindings, arena, module),
+                ),
+              );
+            }
+          }
+          final status = nativeRuleset == nullptr
+              ? bindings.taiyin_ziwei_context_create(
+                  effectiveCatalog._catalog,
+                  overrides.pointer,
+                  overrides.count,
+                  output,
+                )
+              : bindings.taiyin_ziwei_context_create_with_ruleset(
+                  effectiveCatalog._catalog,
+                  overrides.pointer,
+                  overrides.count,
+                  nativeRuleset,
+                  output,
+                );
+          _checkStatus(host, status);
+        } finally {
+          if (nativeRuleset != nullptr) {
+            bindings.taiyin_ziwei_ruleset_destroy(nativeRuleset);
+          }
+        }
         return output.value;
       });
       return ZiweiContext._(
@@ -367,10 +401,16 @@ final class ZiweiContext implements Finalizable {
           requiredSize,
         ),
       );
+      final isNatal = arena<Uint8>();
+      _checkStatus(
+        _host,
+        _bindings.taiyin_ziwei_star_is_natal(_context, starId, isNatal),
+      );
       return ZiweiStar(
         id: starId,
         key: buffer.cast<Utf8>().toDartString(),
         category: ZiweiStarCategory.fromId(category.value),
+        isNatal: isNatal.value != 0,
       );
     });
   }
@@ -1058,6 +1098,28 @@ void _validateZiweiOptionSelection(ZiweiOptionSelection selection) {
   }
 }
 
+void _validateZiweiRuleset(ZiweiRuleset ruleset) {
+  final labels = <String>{};
+  for (final module in ruleset.modules) {
+    if (module.label.isEmpty) {
+      throw ArgumentError.value(module.label, 'label', 'must not be empty');
+    }
+    if (!labels.add(module.label)) {
+      throw ArgumentError.value(
+        module.label,
+        'label',
+        'must be unique within a ruleset',
+      );
+    }
+    _requireZiweiOptionText(module.label, 'label');
+    _requireZiweiOptionText(module.starsJson, 'starsJson');
+    _requireZiweiOptionText(module.brightnessJson, 'brightnessJson');
+    _requireZiweiOptionText(module.sihuaJson, 'sihuaJson');
+    _requireZiweiOptionText(module.flowJson, 'flowJson');
+    _requireZiweiOptionText(module.mastersJson, 'mastersJson');
+  }
+}
+
 void _requireZiweiOptionText(String value, String name) {
   if (value.contains('\u0000')) {
     throw ArgumentError.value(value, name, 'must not contain a NUL character');
@@ -1159,6 +1221,26 @@ _writeZiweiOptionOverrides(
       ..option = option.toNativeUtf8(allocator: arena).cast();
   }
   return (pointer: output, count: entries.length);
+}
+
+Pointer<taiyin_ziwei_json_rule_module> _writeZiweiJsonRuleModule(
+  TaiyinBindings bindings,
+  Arena arena,
+  ZiweiJsonRuleModule module,
+) {
+  Pointer<Char> optional(String value) =>
+      value.isEmpty ? nullptr : value.toNativeUtf8(allocator: arena).cast();
+
+  final output = arena<taiyin_ziwei_json_rule_module>();
+  bindings.taiyin_ziwei_json_rule_module_init(output);
+  output.ref
+    ..label = module.label.toNativeUtf8(allocator: arena).cast()
+    ..stars_json = optional(module.starsJson)
+    ..brightness_json = optional(module.brightnessJson)
+    ..sihua_json = optional(module.sihuaJson)
+    ..flow_json = optional(module.flowJson)
+    ..masters_json = optional(module.mastersJson);
+  return output;
 }
 
 Pointer<taiyin_ziwei_birth_options> _writeZiweiBirthOptions(

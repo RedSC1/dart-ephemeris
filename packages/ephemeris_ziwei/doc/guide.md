@@ -91,6 +91,36 @@ Reload advances the catalog snapshot generation. Existing charts remain
 native snapshots; create new contexts/charts when the application needs the
 new table selection. A caller-supplied catalog remains caller-owned.
 
+## JSON option modules
+
+Small application- or school-specific named options can be layered over the
+selected TOML snapshot. Bundled TOML options remain immutable:
+
+```dart
+final ruleset = const ZiweiRuleset()
+    .addModule(const ZiweiJsonRuleModule(
+      label: 'school-a',
+      starsJson:
+          '[{"key":"ziwei","rule":{"type":"constant","value":5}}]',
+    ));
+final ziwei = context.createZiwei(
+  ruleset: ruleset,
+  selection: const ZiweiOptionSelection(
+    placement: {'ziwei': 'school-a'},
+  ),
+);
+
+final restored = ruleset.removeModule('school-a');
+```
+
+Each module may contain `starsJson`, `brightnessJson`, `sihuaJson`,
+`flowJson`, and `mastersJson`. Its label becomes an option name across all of
+those components. Labels must be unique and cannot replace bundled option
+names. `removeModule()` removes every contribution registered by that user
+module; it cannot remove a bundled TOML option. Native compilation happens
+during context creation, so the Dart ruleset owns no native handle.
+`ZiweiStar.isNatal` distinguishes natal registry entries from flow-only stars.
+
 ## Flow layers and navigation
 
 Charts can resolve Da-Xian, Xiao-Xian, year, month, day, and hour flow layers.

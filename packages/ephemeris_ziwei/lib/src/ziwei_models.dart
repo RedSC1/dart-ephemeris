@@ -307,6 +307,82 @@ final class ZiweiOptionSelection {
   final Map<String, String> sihua;
 }
 
+/// One labelled JSON option module compiled while a Ziwei context is created.
+final class ZiweiJsonRuleModule {
+  const ZiweiJsonRuleModule({
+    required this.label,
+    this.starsJson = '',
+    this.brightnessJson = '',
+    this.sihuaJson = '',
+    this.flowJson = '',
+    this.mastersJson = '',
+  });
+
+  final String label;
+  final String starsJson;
+  final String brightnessJson;
+  final String sihuaJson;
+  final String flowJson;
+  final String mastersJson;
+}
+
+/// Immutable JSON option modules layered over the bundled catalog.
+///
+/// This is a plain immutable Dart value. Native compilation happens only
+/// while [ZiweiContext] is created, so callers do not need to close it.
+final class ZiweiRuleset {
+  const ZiweiRuleset() : modules = const [];
+
+  factory ZiweiRuleset.from(Iterable<ZiweiJsonRuleModule> modules) {
+    final values = List<ZiweiJsonRuleModule>.unmodifiable(modules);
+    final labels = <String>{};
+    for (final module in values) {
+      if (!labels.add(module.label)) {
+        throw ArgumentError.value(
+          module.label,
+          'modules',
+          'duplicate Ziwei rule module label',
+        );
+      }
+    }
+    return ZiweiRuleset._(values);
+  }
+
+  ZiweiRuleset._(this.modules);
+
+  final List<ZiweiJsonRuleModule> modules;
+
+  /// Adds a new option label without replacing bundled or user options.
+  ZiweiRuleset addModule(ZiweiJsonRuleModule module) {
+    if (modules.any((existing) => existing.label == module.label)) {
+      throw ArgumentError.value(
+        module.label,
+        'module.label',
+        'duplicate Ziwei rule module label',
+      );
+    }
+    return ZiweiRuleset._(List.unmodifiable([...modules, module]));
+  }
+
+  /// Removes every contribution registered by the user module [label].
+  ///
+  /// Bundled TOML options are not represented in this ruleset and therefore
+  /// cannot be removed here.
+  ZiweiRuleset removeModule(String label) {
+    final remaining = modules
+        .where((module) => module.label != label)
+        .toList(growable: false);
+    if (remaining.length == modules.length) {
+      throw ArgumentError.value(
+        label,
+        'label',
+        'Ziwei rule module does not exist',
+      );
+    }
+    return ZiweiRuleset._(List.unmodifiable(remaining));
+  }
+}
+
 /// Options controlling how a natal chart resolves the birth instant.
 final class ZiweiBirthOptions {
   const ZiweiBirthOptions({
@@ -459,24 +535,27 @@ final class ZiweiStar {
     required this.id,
     required this.key,
     required this.category,
+    required this.isNatal,
   });
 
   final int id;
   final String key;
   final ZiweiStarCategory category;
+  final bool isNatal;
 
   @override
   bool operator ==(Object other) =>
       other is ZiweiStar &&
       other.id == id &&
       other.key == key &&
-      other.category == category;
+      other.category == category &&
+      other.isNatal == isNatal;
 
   @override
-  int get hashCode => Object.hash(id, key, category);
+  int get hashCode => Object.hash(id, key, category, isNatal);
 
   @override
-  String toString() => 'ZiweiStar($id, $key, $category)';
+  String toString() => 'ZiweiStar($id, $key, $category, isNatal: $isNatal)';
 }
 
 /// The four transformation star ids (禄/权/科/忌) of one stem.

@@ -43,6 +43,7 @@ void main() {
         expect(star, isNotNull);
         expect(star!.key, 'ziwei');
         expect(star.category, ZiweiStarCategory.major);
+        expect(star.isNatal, isTrue);
         expect(chart.starPosition(star.id), 4);
         expect(chart.starPalace(star.id), isNotNull);
         expect(chart.brightness(star.id), ZiweiBrightness.de);
@@ -50,6 +51,75 @@ void main() {
         expect(ziwei.findStar('no-such-star'), isNull);
         expect(() => ziwei.findStar(''), throwsArgumentError);
         expect(() => ziwei.findStar('ziwei\u0000invalid'), throwsArgumentError);
+      });
+
+      test('JSON option modules add, select, and remove contributions', () {
+        final ruleset = const ZiweiRuleset()
+            .addModule(
+              const ZiweiJsonRuleModule(
+                label: 'custom-base',
+                starsJson:
+                    '[{"key":"ziwei","rule":{"type":"constant","value":0}},'
+                    '{"key":"custom_star","type":"minor",'
+                    '"rule":{"type":"constant","value":2}}]',
+              ),
+            )
+            .addModule(
+              const ZiweiJsonRuleModule(
+                label: 'custom-last',
+                starsJson:
+                    '[{"key":"ziwei","rule":{"type":"constant","value":5}}]',
+              ),
+            );
+        final ziwei = context.createZiwei(
+          ruleset: ruleset,
+          selection: const ZiweiOptionSelection(
+            placementDefault: 'option1',
+            brightnessDefault: 'option1',
+            placement: {'ziwei': 'custom-last'},
+          ),
+        );
+        addTearDown(ziwei.close);
+        final chart = createReferenceChart(ziwei);
+        addTearDown(chart.close);
+
+        final ziweiStar = ziwei.findStar('ziwei')!;
+        final customStar = ziwei.findStar('custom_star')!;
+        expect(ziweiStar.isNatal, isTrue);
+        expect(customStar.isNatal, isTrue);
+        expect(chart.starPosition(ziweiStar.id), 5);
+        expect(chart.starPosition(customStar.id), 2);
+
+        final withoutLast = ruleset.removeModule('custom-last');
+        final restored = context.createZiwei(
+          ruleset: withoutLast,
+          selection: const ZiweiOptionSelection(
+            placement: {'ziwei': 'custom-base'},
+          ),
+        );
+        addTearDown(restored.close);
+        final restoredChart = createReferenceChart(restored);
+        addTearDown(restoredChart.close);
+        final restoredZiwei = restored.findStar('ziwei')!;
+        expect(restoredChart.starPosition(restoredZiwei.id), 0);
+
+        final catalogOnly = context.createZiwei(
+          ruleset: withoutLast.removeModule('custom-base'),
+        );
+        addTearDown(catalogOnly.close);
+        expect(catalogOnly.findStar('custom_star'), isNull);
+        expect(
+          () => withoutLast.removeModule('missing-school'),
+          throwsArgumentError,
+        );
+        expect(
+          () => ruleset.addModule(ruleset.modules.last),
+          throwsArgumentError,
+        );
+        expect(
+          () => ZiweiRuleset.from([ruleset.modules.last, ruleset.modules.last]),
+          throwsArgumentError,
+        );
       });
 
       test('named anchors and palaces expose the semantic chart view', () {
