@@ -1,6 +1,6 @@
 # ephemeris_ziwei
 
-> **Pre-release:** `1.0.0-beta.5`, kept in lockstep with the Dart `ephemeris`
+> **Pre-release:** `1.0.0-beta.6`, kept in lockstep with the Dart `ephemeris`
 > core package.
 
 Ziwei Doushu (紫微斗数) extension bindings for the Taiyin ephemeris, part of
@@ -44,6 +44,33 @@ void main() {
 The default TOML rule profile ships bundled under `lib/data/ziwei/rules/` and
 loads automatically. `ZiweiDataCatalog(profilePath: ...)` loads a custom
 profile; a catalog can be shared across Ziwei contexts.
+
+JSON option modules can add named alternatives without replacing the bundled
+TOML options:
+
+```dart
+final ruleset = const ZiweiRuleset().addModule(
+  const ZiweiJsonRuleModule(
+    label: 'school-a',
+    starsJson:
+        '[{"key":"ziwei","rule":{"type":"constant","value":5}}]',
+  ),
+);
+final ziwei = context.createZiwei(
+  ruleset: ruleset,
+  selection: const ZiweiOptionSelection(
+    placement: {'ziwei': 'school-a'},
+  ),
+);
+
+final restored = ruleset.removeModule('school-a');
+```
+
+Module labels must be unique and cannot replace bundled option names. Removing
+a module removes every star, brightness, Si-Hua, flow-star, and master-table
+contribution registered under that label. Modules are compiled while the
+native context is created, so `ZiweiRuleset` owns no native resource and needs
+no `close()`. `ZiweiStar.isNatal` distinguishes natal and flow-only stars.
 
 This package ships and lazily loads its own `libtaiyin_ziwei` native module; the
 root `ephemeris` package does not contain Ziwei symbols. Override the bundled

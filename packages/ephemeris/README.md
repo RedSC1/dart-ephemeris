@@ -1,6 +1,6 @@
 # Ephemeris for Dart ("Taiyin")
 
-> **Pre-release:** the current package line is `1.0.0-beta.5`. Public APIs
+> **Pre-release:** the current package line is `1.0.0-beta.6`. Public APIs
 > and native packaging may still change before `1.0.0`.
 
 An idiomatic Dart wrapper around the versioned C ABI in
@@ -144,7 +144,7 @@ code that coexists with other packages, prefer the prefixed form above.
 Ephemeris exposes its semantic version and major-release codename independently:
 
 ```dart
-print(ephemeris.libraryVersion);  // 1.0.0-beta.6
+print(ephemeris.libraryVersion);  // 1.0.0-beta.8
 print(ephemeris.libraryCodename); // Singularity
 ```
 
@@ -1192,6 +1192,10 @@ omitted) and can be shared across Ziwei contexts; pass `profilePath` to use a
 custom rule profile. A Ziwei context borrows the cached default
 Chinese-calendar context; pass `calendar:` to `createZiwei` to bind a
 different calendar from the same `EphemerisContext`.
+Application- or school-specific JSON tables are added as immutable named
+options rather than overwriting bundled TOML rules. Select the module label
+through `ZiweiOptionSelection`; `ZiweiRuleset.removeModule(label)` removes all
+user contributions registered under that label.
 Set `TAIYIN_ZIWEI_LIBRARY_PATH` or pass `libraryPath:` to `createZiwei` /
 `ZiweiDataCatalog` to override the bundled module.
 
