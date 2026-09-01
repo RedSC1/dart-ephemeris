@@ -1,7 +1,7 @@
 ## 1.0.0-beta.6
 
 - Keep the extension release in lockstep with `ephemeris` 1.0.0-beta.6 and
-  Taiyin 1.0.0-beta.7.
+  Taiyin 1.0.0-beta.8.
 - Add immutable JSON option modules for stars, brightness, Si-Hua, flow stars,
   and master tables without replacing bundled TOML options; modules can be
   removed as one complete contribution set by label.

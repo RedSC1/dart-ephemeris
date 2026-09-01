@@ -1,6 +1,6 @@
 ## 1.0.0-beta.6
 
-- Update the native source baseline to Taiyin 1.0.0-beta.7.
+- Update the native source baseline to Taiyin 1.0.0-beta.8.
 - Bind the Ziwei add/remove JSON option-module C ABI used by the optional
   Ziwei package.
 
