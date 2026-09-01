@@ -9,8 +9,8 @@ library.
 
 | | |
 |---|---|
-| Native commit | `477a668` — public Taiyin 1.0.0-beta.7 source baseline (2026-09-01) |
-| Version | 1.0.0-beta.7 |
+| Native commit | `dec7dd1` — public Taiyin 1.0.0-beta.8 source baseline (2026-09-01) |
+| Version | 1.0.0-beta.8 |
 | C ABI | 10 |
 | Build | modular core (astronomy + Chinese calendar + Ganzhi) |
 | Platforms | macOS arm64, Linux x64, Windows x64 |
