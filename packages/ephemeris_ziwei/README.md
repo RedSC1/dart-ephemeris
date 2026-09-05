@@ -1,11 +1,11 @@
 # ephemeris_ziwei
 
-Development additions: immutable natal edits and independent manual, number
+New in beta.7: immutable natal edits and independent manual, number
 and random casting charts. See the [guide](doc/guide.md#manual-placement-and-casting-charts).
-These new APIs need the updated native module; the previous release binaries
-are retained until the next native build is validated.
+These APIs require Taiyin `v1.0.0-beta.9` native modules. Release assembly uses
+the validated CI artifacts; a source checkout may still contain older binaries.
 
-> **Pre-release:** `1.0.0-beta.6`, kept in lockstep with the Dart `ephemeris`
+> **Pre-release:** `1.0.0-beta.7`, kept in lockstep with the Dart `ephemeris`
 > core package.
 
 Ziwei Doushu (紫微斗数) extension bindings for the Taiyin ephemeris, part of

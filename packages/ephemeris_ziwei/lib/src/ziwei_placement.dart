@@ -7,7 +7,7 @@ void _requirePlacement(ZiweiContext context) {
     if (!context._module.library.providesSymbol(name)) {
       throw UnsupportedError(
         'Manual placement/casting requires the updated Ziwei '
-        'native module (public core f6f6b52 or later). Missing: $name',
+        'native module (Taiyin v1.0.0-beta.9 or later). Missing: $name',
       );
     }
   }

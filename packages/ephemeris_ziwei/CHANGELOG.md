@@ -1,10 +1,10 @@
-## Unreleased
+## 1.0.0-beta.7
 
 - Add immutable natal edits, life-palace shifts and reset.
 - Add independent manual, numbered and OS-random casting charts, full star and
   transformation queries, and missing-input records.
-- Require a newly built Ziwei module for these APIs (public core `f6f6b52`).
-  Release binaries have not been replaced yet.
+- Build against Taiyin `v1.0.0-beta.9`; release packages require the matching
+  CI-built native modules. Keep all three Dart packages in lockstep.
 
 ## 1.0.0-beta.6
 

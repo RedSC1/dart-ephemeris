@@ -30,7 +30,7 @@ void main() {
 
       test('reports Singularity release metadata', () {
         expect(runtime.abiVersion, taiyinSupportedAbiVersion);
-        expect(runtime.libraryVersion, '1.0.0-beta.8');
+        expect(runtime.libraryVersion, '1.0.0-beta.9');
         expect(runtime.libraryCodename, 'Singularity');
       });
 

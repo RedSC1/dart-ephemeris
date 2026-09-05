@@ -43,9 +43,9 @@ solar time.
 
 ## Manual placement and casting charts
 
-Development API: requires the native module built from public core `f6f6b52`
-or later. The checked-in beta.8 binaries do not contain these symbols; build the
-pinned native-integration workflow before preparing the next release. During
+Available from Dart beta.7, using C++ `v1.0.0-beta.9` or later. Older beta.8
+native binaries do not contain these symbols; release assembly must use the
+validated native-integration artifacts rather than stale checkout binaries. During
 local development, select the new module with `TAIYIN_ZIWEI_LIBRARY_PATH` (and
 the matching core with `Ephemeris.open(libraryPath: ...)`). Old modules produce
 a clear `UnsupportedError` for new operations; existing APIs remain usable.

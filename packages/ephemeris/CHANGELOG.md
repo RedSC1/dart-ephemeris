@@ -1,3 +1,8 @@
+## 1.0.0-beta.7
+
+- Update the native source baseline to Taiyin `v1.0.0-beta.9`.
+- Expose the additive Ziwei placement/casting C ABI to the optional extension.
+
 ## 1.0.0-beta.6
 
 - Update the native source baseline to Taiyin 1.0.0-beta.8.

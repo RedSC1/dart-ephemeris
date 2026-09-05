@@ -1,3 +1,8 @@
+## 1.0.0-beta.7
+
+- Keep the extension in lockstep with ephemeris 1.0.0-beta.7 and native
+  Taiyin `v1.0.0-beta.9`. No BaZi API changes.
+
 ## 1.0.0-beta.6
 
 - Keep the extension release in lockstep with `ephemeris` 1.0.0-beta.6 and
