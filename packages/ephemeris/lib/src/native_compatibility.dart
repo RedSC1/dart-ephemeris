@@ -397,6 +397,32 @@ const Set<String> taiyinBaziSymbols = {
 /// capability. The symbols do not exist in a build without
 /// `TAIYIN_BUILD_ZIWEI_EXTENSION=ON`, so they must never be looked up
 /// otherwise.
+/// Optional post-beta.8 placement/casting surface, checked before first use.
+const Set<String> taiyinZiweiPlacementSymbols = {
+  'taiyin_ziwei_placement_input_init',
+  'taiyin_ziwei_placement_patch_init',
+  'taiyin_ziwei_casting_options_init',
+  'taiyin_ziwei_casting_summary_init',
+  'taiyin_ziwei_chart_modify',
+  'taiyin_ziwei_chart_shift_life_palace',
+  'taiyin_ziwei_chart_reset',
+  'taiyin_ziwei_chart_get_placement',
+  'taiyin_ziwei_chart_get_omitted_placements',
+  'taiyin_ziwei_casting_chart_create',
+  'taiyin_ziwei_casting_chart_from_index',
+  'taiyin_ziwei_casting_chart_from_number',
+  'taiyin_ziwei_casting_chart_random',
+  'taiyin_ziwei_casting_chart_destroy',
+  'taiyin_ziwei_casting_chart_modify',
+  'taiyin_ziwei_casting_chart_shift_life_palace',
+  'taiyin_ziwei_casting_chart_reset',
+  'taiyin_ziwei_casting_chart_get_summary',
+  'taiyin_ziwei_casting_chart_get_stars',
+  'taiyin_ziwei_casting_chart_get_number',
+  'taiyin_ziwei_casting_chart_get_brightness',
+  'taiyin_ziwei_casting_chart_get_omitted_placements',
+};
+
 const Set<String> taiyinZiweiSymbols = {
   'taiyin_ziwei_option_override_init',
   'taiyin_ziwei_json_rule_module_init',

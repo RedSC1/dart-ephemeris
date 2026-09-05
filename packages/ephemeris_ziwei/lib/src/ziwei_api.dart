@@ -7,6 +7,8 @@ import 'package:ephemeris/ephemeris.dart';
 
 import 'ziwei_models.dart';
 
+part 'ziwei_placement.dart';
+
 /// The native invalid-star-id sentinel (`TAIYIN_ZIWEI_INVALID_STAR_ID`).
 const int _taiyinZiweiInvalidStarId = 0xffff;
 
@@ -467,6 +469,34 @@ final class ZiweiContext implements Finalizable {
     return _module.finalizerFor('taiyin_ziwei_chart_destroy');
   }
 
+  /// Arrange a finite-input chart without inventing a birth date.
+  ZiweiCastingChart createCastingChart(
+    ZiweiPlacementInput input, {
+    required ZiweiGender gender,
+    ZiweiChartMode chartMode = ZiweiChartMode.tianPan,
+    ZiweiBureau? fixedBureau,
+  }) => _createCasting(this, 0, input, gender, chartMode, fixedBureau);
+
+  /// Reproduce an index-v1 chart (0 <= index < 259200).
+  ZiweiCastingChart castingFromIndex(
+    int index, {
+    required ZiweiGender gender,
+    ZiweiChartMode chartMode = ZiweiChartMode.tianPan,
+  }) => _createCasting(this, 1, index, gender, chartMode, null);
+
+  /// Reproducible number-v1 mapping of ASCII decimal text; collisions are allowed.
+  ZiweiCastingChart castingFromNumber(
+    String number, {
+    required ZiweiGender gender,
+    ZiweiChartMode chartMode = ZiweiChartMode.tianPan,
+  }) => _createCasting(this, 2, number, gender, chartMode, null);
+
+  /// Draw uniformly using the operating system random source.
+  ZiweiCastingChart randomCastingChart({
+    required ZiweiGender gender,
+    ZiweiChartMode chartMode = ZiweiChartMode.tianPan,
+  }) => _createCasting(this, 3, null, gender, chartMode, null);
+
   /// Creates a natal chart from a local wall-clock birth time.
   ///
   /// The UTC instant is derived from the calendar context's fixed clock offset.
@@ -740,6 +770,92 @@ final class ZiweiChart implements Finalizable {
   TaiyinBindings get _coreBindings => _context._coreBindings;
 
   bool get isClosed => _closed;
+
+  /// Return an edited natal chart, preserving original birth facts; flows clear.
+  ZiweiChart modify(ZiweiPlacementPatch patch) {
+    _ensureOpen();
+    _requirePlacement(_context);
+    return using((arena) {
+      final out = arena<Pointer<taiyin_ziwei_chart>>();
+      _checkStatus(
+        _context._host,
+        _bindings.taiyin_ziwei_chart_modify(
+          _context._context,
+          _chart,
+          _writePlacementPatch(_bindings, arena, patch),
+          out,
+        ),
+      );
+      return ZiweiChart._(_context, out.value, _finalizer);
+    });
+  }
+
+  /// Shift palace roles without moving physical stars. Source remains unchanged.
+  ZiweiChart shiftLifePalace(int steps) {
+    _ensureOpen();
+    _requirePlacement(_context);
+    _placementInt(steps, -2147483648, 2147483647, 'steps');
+    return using((arena) {
+      final out = arena<Pointer<taiyin_ziwei_chart>>();
+      _checkStatus(
+        _context._host,
+        _bindings.taiyin_ziwei_chart_shift_life_palace(_chart, steps, out),
+      );
+      return ZiweiChart._(_context, out.value, _finalizer);
+    });
+  }
+
+  /// Restore the original chart into a new handle, with an empty flow stack.
+  ZiweiChart reset() {
+    _ensureOpen();
+    _requirePlacement(_context);
+    return using((arena) {
+      final out = arena<Pointer<taiyin_ziwei_chart>>();
+      _checkStatus(
+        _context._host,
+        _bindings.taiyin_ziwei_chart_reset(_chart, out),
+      );
+      return ZiweiChart._(_context, out.value, _finalizer);
+    });
+  }
+
+  /// Current finite inputs and cumulative edits; this is not a new birth date.
+  ZiweiPlacementState get placement {
+    _ensureOpen();
+    _requirePlacement(_context);
+    return using((arena) {
+      final input = arena<taiyin_ziwei_placement_input>();
+      final patch = arena<taiyin_ziwei_placement_patch>();
+      final shift = arena<Uint8>();
+      _bindings.taiyin_ziwei_placement_input_init(input);
+      _bindings.taiyin_ziwei_placement_patch_init(patch);
+      _checkStatus(
+        _context._host,
+        _bindings.taiyin_ziwei_chart_get_placement(_chart, input, patch, shift),
+      );
+      return ZiweiPlacementState(
+        _readPlacementInput(input.ref),
+        _readPlacementPatch(patch.ref),
+        shift.value,
+      );
+    });
+  }
+
+  /// Missing-input records for stars not placed by the current rule set.
+  List<ZiweiOmittedPlacement> get omittedPlacements {
+    _ensureOpen();
+    _requirePlacement(_context);
+    return _readOmitted(
+      _context,
+      (out, capacity, count) =>
+          _bindings.taiyin_ziwei_chart_get_omitted_placements(
+            _chart,
+            out,
+            capacity,
+            count,
+          ),
+    );
+  }
 
   /// Releases the native chart. Calling this more than once is safe.
   void close() {

@@ -41,6 +41,54 @@ accepts both a physical instant and a deliberately adjusted virtual wall clock,
 which is the appropriate entry point for an application-computed apparent
 solar time.
 
+## Manual placement and casting charts
+
+Development API: requires the native module built from public core `f6f6b52`
+or later. The checked-in beta.8 binaries do not contain these symbols; build the
+pinned native-integration workflow before preparing the next release. During
+local development, select the new module with `TAIYIN_ZIWEI_LIBRARY_PATH` (and
+the matching core with `Ephemeris.open(libraryPath: ...)`). Old modules produce
+a clear `UnsupportedError` for new operations; existing APIs remain usable.
+
+```dart
+final manual = ziwei.createCastingChart(
+  const ZiweiPlacementInput(yearStem: 0, yearBranch: 0, month: 3, day: 13, hourBranch: 7),
+  gender: ZiweiGender.male,
+);
+final draw = ziwei.randomCastingChart(gender: ZiweiGender.male);
+final replay = ziwei.castingFromIndex(draw.summary.index!, gender: ZiweiGender.male);
+final number = ziwei.castingFromNumber('123456', gender: ZiweiGender.male);
+print(number.summary.index); // 209225: number-v1, shared with C++/JS/Python
+
+final edited = chart.modify(const ZiweiPlacementPatch(month: 3, updateBureau: true));
+final shifted = edited.shiftLifePalace(1);
+final original = shifted.reset();
+
+// Each result owns an independent native handle.
+original.close(); shifted.close(); edited.close();
+number.close(); replay.close(); draw.close(); manual.close();
+```
+
+`ZiweiCastingChart` is distinct from a natal `ZiweiChart`: it has no invented
+birth date or real-date flow methods. It exposes `summary`, `starPosition`,
+`starPalace`, `palaceStars`, `brightness`, `transformMask`, `hasTransform` and
+`omittedPlacements`. Missing date-derived inputs omit dependent stars; positions
+are null. Omission `missingInputs` is a bit mask of native RuleInputSource IDs.
+
+Both chart types support immutable `modify`, `shiftLifePalace`, and `reset`.
+Null patch inputs are unchanged. `updateBureau: null` inherits the choice,
+false restores the original bureau, true recomputes it. Natal edits retain the
+original birth/calendar facts and clear stale flows; resolve flows again on the
+new chart. Shifts change palace roles without moving the physical stars.
+
+Index-v1 contains 259,200 combinations, hour fastest. Random draws use the OS
+random source; gender, chart mode and rule selection remain explicit caller
+choices and must match when replaying. Number-v1 normalizes ASCII decimal text
+and is a library-defined mapping (not a traditional formula or unique ID).
+Reset restores the original draw without resampling. Pure-rule operations
+return chart objects directly and throw on failure, without an OperationResult
+wrapper or diagnostic update.
+
 ## Birth options
 
 `ZiweiBirthOptions` keeps independent choices for:
