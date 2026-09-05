@@ -37,7 +37,7 @@ jobs:
         uses: actions/checkout@v6
         with:
           repository: RedSC1/taiyin-ephemeris
-          ref: v1.0.0-beta.8
+          ref: f6f6b52b3a45a8cc67e295239cd8a81a70fe2a0b # manual placement/casting, pre-release snapshot
           path: native-core
 
       - name: Set up Dart

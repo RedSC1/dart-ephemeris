@@ -13,9 +13,11 @@ Set<String> _referencedZiweiSymbols() {
       File('${current.path}/lib/src/ziwei_api.dart').existsSync()
       ? current
       : Directory('${current.path}/packages/ephemeris_ziwei');
-  final source = File(
-    '${packageRoot.path}/lib/src/ziwei_api.dart',
-  ).readAsStringSync();
+  final source = ['ziwei_api.dart', 'ziwei_placement.dart']
+      .map(
+        (name) => File('${packageRoot.path}/lib/src/$name').readAsStringSync(),
+      )
+      .join('\n');
   return RegExp(
     r'\b(taiyin_ziwei_[a-z0-9_]+)\s*\(',
   ).allMatches(source).map((match) => match.group(1)!).toSet();
@@ -25,7 +27,10 @@ Set<String> _referencedZiweiSymbols() {
 /// affecting the already loaded core runtime.
 void main() {
   test('Ziwei symbol contract covers every native call in the facade', () {
-    final missing = _referencedZiweiSymbols().difference(taiyinZiweiSymbols);
+    final missing = _referencedZiweiSymbols().difference({
+      ...taiyinZiweiSymbols,
+      ...taiyinZiweiPlacementSymbols,
+    });
     expect(missing, isEmpty);
   });
 

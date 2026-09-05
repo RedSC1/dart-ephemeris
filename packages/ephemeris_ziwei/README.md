@@ -1,5 +1,10 @@
 # ephemeris_ziwei
 
+Development additions: immutable natal edits and independent manual, number
+and random casting charts. See the [guide](doc/guide.md#manual-placement-and-casting-charts).
+These new APIs need the updated native module; the previous release binaries
+are retained until the next native build is validated.
+
 > **Pre-release:** `1.0.0-beta.6`, kept in lockstep with the Dart `ephemeris`
 > core package.
 

@@ -12364,6 +12364,643 @@ class TaiyinBindings {
             )
           >();
 
+  void taiyin_ziwei_placement_input_init(
+    ffi.Pointer<taiyin_ziwei_placement_input> arg0,
+  ) {
+    return _taiyin_ziwei_placement_input_init(arg0);
+  }
+
+  late final _taiyin_ziwei_placement_input_initPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<taiyin_ziwei_placement_input>)
+        >
+      >('taiyin_ziwei_placement_input_init');
+  late final _taiyin_ziwei_placement_input_init =
+      _taiyin_ziwei_placement_input_initPtr
+          .asFunction<
+            void Function(ffi.Pointer<taiyin_ziwei_placement_input>)
+          >();
+
+  void taiyin_ziwei_placement_patch_init(
+    ffi.Pointer<taiyin_ziwei_placement_patch> arg0,
+  ) {
+    return _taiyin_ziwei_placement_patch_init(arg0);
+  }
+
+  late final _taiyin_ziwei_placement_patch_initPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<taiyin_ziwei_placement_patch>)
+        >
+      >('taiyin_ziwei_placement_patch_init');
+  late final _taiyin_ziwei_placement_patch_init =
+      _taiyin_ziwei_placement_patch_initPtr
+          .asFunction<
+            void Function(ffi.Pointer<taiyin_ziwei_placement_patch>)
+          >();
+
+  void taiyin_ziwei_casting_options_init(
+    ffi.Pointer<taiyin_ziwei_casting_options> arg0,
+  ) {
+    return _taiyin_ziwei_casting_options_init(arg0);
+  }
+
+  late final _taiyin_ziwei_casting_options_initPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<taiyin_ziwei_casting_options>)
+        >
+      >('taiyin_ziwei_casting_options_init');
+  late final _taiyin_ziwei_casting_options_init =
+      _taiyin_ziwei_casting_options_initPtr
+          .asFunction<
+            void Function(ffi.Pointer<taiyin_ziwei_casting_options>)
+          >();
+
+  void taiyin_ziwei_casting_summary_init(
+    ffi.Pointer<taiyin_ziwei_casting_summary> arg0,
+  ) {
+    return _taiyin_ziwei_casting_summary_init(arg0);
+  }
+
+  late final _taiyin_ziwei_casting_summary_initPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<taiyin_ziwei_casting_summary>)
+        >
+      >('taiyin_ziwei_casting_summary_init');
+  late final _taiyin_ziwei_casting_summary_init =
+      _taiyin_ziwei_casting_summary_initPtr
+          .asFunction<
+            void Function(ffi.Pointer<taiyin_ziwei_casting_summary>)
+          >();
+
+  int taiyin_ziwei_chart_modify(
+    ffi.Pointer<taiyin_ziwei_context> arg0,
+    ffi.Pointer<taiyin_ziwei_chart> arg1,
+    ffi.Pointer<taiyin_ziwei_placement_patch> arg2,
+    ffi.Pointer<ffi.Pointer<taiyin_ziwei_chart>> arg3,
+  ) {
+    return _taiyin_ziwei_chart_modify(arg0, arg1, arg2, arg3);
+  }
+
+  late final _taiyin_ziwei_chart_modifyPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_call_result Function(
+            ffi.Pointer<taiyin_ziwei_context>,
+            ffi.Pointer<taiyin_ziwei_chart>,
+            ffi.Pointer<taiyin_ziwei_placement_patch>,
+            ffi.Pointer<ffi.Pointer<taiyin_ziwei_chart>>,
+          )
+        >
+      >('taiyin_ziwei_chart_modify');
+  late final _taiyin_ziwei_chart_modify = _taiyin_ziwei_chart_modifyPtr
+      .asFunction<
+        int Function(
+          ffi.Pointer<taiyin_ziwei_context>,
+          ffi.Pointer<taiyin_ziwei_chart>,
+          ffi.Pointer<taiyin_ziwei_placement_patch>,
+          ffi.Pointer<ffi.Pointer<taiyin_ziwei_chart>>,
+        )
+      >();
+
+  int taiyin_ziwei_chart_shift_life_palace(
+    ffi.Pointer<taiyin_ziwei_chart> arg0,
+    int steps,
+    ffi.Pointer<ffi.Pointer<taiyin_ziwei_chart>> arg2,
+  ) {
+    return _taiyin_ziwei_chart_shift_life_palace(arg0, steps, arg2);
+  }
+
+  late final _taiyin_ziwei_chart_shift_life_palacePtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_call_result Function(
+            ffi.Pointer<taiyin_ziwei_chart>,
+            ffi.Int32,
+            ffi.Pointer<ffi.Pointer<taiyin_ziwei_chart>>,
+          )
+        >
+      >('taiyin_ziwei_chart_shift_life_palace');
+  late final _taiyin_ziwei_chart_shift_life_palace =
+      _taiyin_ziwei_chart_shift_life_palacePtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_ziwei_chart>,
+              int,
+              ffi.Pointer<ffi.Pointer<taiyin_ziwei_chart>>,
+            )
+          >();
+
+  int taiyin_ziwei_chart_reset(
+    ffi.Pointer<taiyin_ziwei_chart> arg0,
+    ffi.Pointer<ffi.Pointer<taiyin_ziwei_chart>> arg1,
+  ) {
+    return _taiyin_ziwei_chart_reset(arg0, arg1);
+  }
+
+  late final _taiyin_ziwei_chart_resetPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_call_result Function(
+            ffi.Pointer<taiyin_ziwei_chart>,
+            ffi.Pointer<ffi.Pointer<taiyin_ziwei_chart>>,
+          )
+        >
+      >('taiyin_ziwei_chart_reset');
+  late final _taiyin_ziwei_chart_reset = _taiyin_ziwei_chart_resetPtr
+      .asFunction<
+        int Function(
+          ffi.Pointer<taiyin_ziwei_chart>,
+          ffi.Pointer<ffi.Pointer<taiyin_ziwei_chart>>,
+        )
+      >();
+
+  int taiyin_ziwei_chart_get_placement(
+    ffi.Pointer<taiyin_ziwei_chart> arg0,
+    ffi.Pointer<taiyin_ziwei_placement_input> arg1,
+    ffi.Pointer<taiyin_ziwei_placement_patch> arg2,
+    ffi.Pointer<ffi.Uint8> out_life_palace_shift,
+  ) {
+    return _taiyin_ziwei_chart_get_placement(
+      arg0,
+      arg1,
+      arg2,
+      out_life_palace_shift,
+    );
+  }
+
+  late final _taiyin_ziwei_chart_get_placementPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_call_result Function(
+            ffi.Pointer<taiyin_ziwei_chart>,
+            ffi.Pointer<taiyin_ziwei_placement_input>,
+            ffi.Pointer<taiyin_ziwei_placement_patch>,
+            ffi.Pointer<ffi.Uint8>,
+          )
+        >
+      >('taiyin_ziwei_chart_get_placement');
+  late final _taiyin_ziwei_chart_get_placement =
+      _taiyin_ziwei_chart_get_placementPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_ziwei_chart>,
+              ffi.Pointer<taiyin_ziwei_placement_input>,
+              ffi.Pointer<taiyin_ziwei_placement_patch>,
+              ffi.Pointer<ffi.Uint8>,
+            )
+          >();
+
+  int taiyin_ziwei_chart_get_omitted_placements(
+    ffi.Pointer<taiyin_ziwei_chart> arg0,
+    ffi.Pointer<taiyin_ziwei_omitted_placement> arg1,
+    int capacity,
+    ffi.Pointer<ffi.Size> out_count,
+  ) {
+    return _taiyin_ziwei_chart_get_omitted_placements(
+      arg0,
+      arg1,
+      capacity,
+      out_count,
+    );
+  }
+
+  late final _taiyin_ziwei_chart_get_omitted_placementsPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_call_result Function(
+            ffi.Pointer<taiyin_ziwei_chart>,
+            ffi.Pointer<taiyin_ziwei_omitted_placement>,
+            ffi.Size,
+            ffi.Pointer<ffi.Size>,
+          )
+        >
+      >('taiyin_ziwei_chart_get_omitted_placements');
+  late final _taiyin_ziwei_chart_get_omitted_placements =
+      _taiyin_ziwei_chart_get_omitted_placementsPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_ziwei_chart>,
+              ffi.Pointer<taiyin_ziwei_omitted_placement>,
+              int,
+              ffi.Pointer<ffi.Size>,
+            )
+          >();
+
+  int taiyin_ziwei_casting_chart_create(
+    ffi.Pointer<taiyin_ziwei_context> arg0,
+    ffi.Pointer<taiyin_ziwei_placement_input> arg1,
+    ffi.Pointer<taiyin_ziwei_casting_options> arg2,
+    ffi.Pointer<ffi.Pointer<taiyin_ziwei_casting_chart>> arg3,
+  ) {
+    return _taiyin_ziwei_casting_chart_create(arg0, arg1, arg2, arg3);
+  }
+
+  late final _taiyin_ziwei_casting_chart_createPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_call_result Function(
+            ffi.Pointer<taiyin_ziwei_context>,
+            ffi.Pointer<taiyin_ziwei_placement_input>,
+            ffi.Pointer<taiyin_ziwei_casting_options>,
+            ffi.Pointer<ffi.Pointer<taiyin_ziwei_casting_chart>>,
+          )
+        >
+      >('taiyin_ziwei_casting_chart_create');
+  late final _taiyin_ziwei_casting_chart_create =
+      _taiyin_ziwei_casting_chart_createPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_ziwei_context>,
+              ffi.Pointer<taiyin_ziwei_placement_input>,
+              ffi.Pointer<taiyin_ziwei_casting_options>,
+              ffi.Pointer<ffi.Pointer<taiyin_ziwei_casting_chart>>,
+            )
+          >();
+
+  int taiyin_ziwei_casting_chart_from_index(
+    ffi.Pointer<taiyin_ziwei_context> arg0,
+    int index,
+    ffi.Pointer<taiyin_ziwei_casting_options> arg2,
+    ffi.Pointer<ffi.Pointer<taiyin_ziwei_casting_chart>> arg3,
+  ) {
+    return _taiyin_ziwei_casting_chart_from_index(arg0, index, arg2, arg3);
+  }
+
+  late final _taiyin_ziwei_casting_chart_from_indexPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_call_result Function(
+            ffi.Pointer<taiyin_ziwei_context>,
+            ffi.Uint32,
+            ffi.Pointer<taiyin_ziwei_casting_options>,
+            ffi.Pointer<ffi.Pointer<taiyin_ziwei_casting_chart>>,
+          )
+        >
+      >('taiyin_ziwei_casting_chart_from_index');
+  late final _taiyin_ziwei_casting_chart_from_index =
+      _taiyin_ziwei_casting_chart_from_indexPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_ziwei_context>,
+              int,
+              ffi.Pointer<taiyin_ziwei_casting_options>,
+              ffi.Pointer<ffi.Pointer<taiyin_ziwei_casting_chart>>,
+            )
+          >();
+
+  int taiyin_ziwei_casting_chart_from_number(
+    ffi.Pointer<taiyin_ziwei_context> arg0,
+    ffi.Pointer<ffi.Char> decimal_number,
+    ffi.Pointer<taiyin_ziwei_casting_options> arg2,
+    ffi.Pointer<ffi.Pointer<taiyin_ziwei_casting_chart>> arg3,
+  ) {
+    return _taiyin_ziwei_casting_chart_from_number(
+      arg0,
+      decimal_number,
+      arg2,
+      arg3,
+    );
+  }
+
+  late final _taiyin_ziwei_casting_chart_from_numberPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_call_result Function(
+            ffi.Pointer<taiyin_ziwei_context>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<taiyin_ziwei_casting_options>,
+            ffi.Pointer<ffi.Pointer<taiyin_ziwei_casting_chart>>,
+          )
+        >
+      >('taiyin_ziwei_casting_chart_from_number');
+  late final _taiyin_ziwei_casting_chart_from_number =
+      _taiyin_ziwei_casting_chart_from_numberPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_ziwei_context>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<taiyin_ziwei_casting_options>,
+              ffi.Pointer<ffi.Pointer<taiyin_ziwei_casting_chart>>,
+            )
+          >();
+
+  int taiyin_ziwei_casting_chart_random(
+    ffi.Pointer<taiyin_ziwei_context> arg0,
+    ffi.Pointer<taiyin_ziwei_casting_options> arg1,
+    taiyin_ziwei_random_uint32 arg2,
+    ffi.Pointer<ffi.Void> user_data,
+    ffi.Pointer<ffi.Pointer<taiyin_ziwei_casting_chart>> arg4,
+  ) {
+    return _taiyin_ziwei_casting_chart_random(
+      arg0,
+      arg1,
+      arg2,
+      user_data,
+      arg4,
+    );
+  }
+
+  late final _taiyin_ziwei_casting_chart_randomPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_call_result Function(
+            ffi.Pointer<taiyin_ziwei_context>,
+            ffi.Pointer<taiyin_ziwei_casting_options>,
+            taiyin_ziwei_random_uint32,
+            ffi.Pointer<ffi.Void>,
+            ffi.Pointer<ffi.Pointer<taiyin_ziwei_casting_chart>>,
+          )
+        >
+      >('taiyin_ziwei_casting_chart_random');
+  late final _taiyin_ziwei_casting_chart_random =
+      _taiyin_ziwei_casting_chart_randomPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_ziwei_context>,
+              ffi.Pointer<taiyin_ziwei_casting_options>,
+              taiyin_ziwei_random_uint32,
+              ffi.Pointer<ffi.Void>,
+              ffi.Pointer<ffi.Pointer<taiyin_ziwei_casting_chart>>,
+            )
+          >();
+
+  void taiyin_ziwei_casting_chart_destroy(
+    ffi.Pointer<taiyin_ziwei_casting_chart> arg0,
+  ) {
+    return _taiyin_ziwei_casting_chart_destroy(arg0);
+  }
+
+  late final _taiyin_ziwei_casting_chart_destroyPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<taiyin_ziwei_casting_chart>)
+        >
+      >('taiyin_ziwei_casting_chart_destroy');
+  late final _taiyin_ziwei_casting_chart_destroy =
+      _taiyin_ziwei_casting_chart_destroyPtr
+          .asFunction<void Function(ffi.Pointer<taiyin_ziwei_casting_chart>)>();
+
+  int taiyin_ziwei_casting_chart_modify(
+    ffi.Pointer<taiyin_ziwei_context> arg0,
+    ffi.Pointer<taiyin_ziwei_casting_chart> arg1,
+    ffi.Pointer<taiyin_ziwei_placement_patch> arg2,
+    ffi.Pointer<ffi.Pointer<taiyin_ziwei_casting_chart>> arg3,
+  ) {
+    return _taiyin_ziwei_casting_chart_modify(arg0, arg1, arg2, arg3);
+  }
+
+  late final _taiyin_ziwei_casting_chart_modifyPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_call_result Function(
+            ffi.Pointer<taiyin_ziwei_context>,
+            ffi.Pointer<taiyin_ziwei_casting_chart>,
+            ffi.Pointer<taiyin_ziwei_placement_patch>,
+            ffi.Pointer<ffi.Pointer<taiyin_ziwei_casting_chart>>,
+          )
+        >
+      >('taiyin_ziwei_casting_chart_modify');
+  late final _taiyin_ziwei_casting_chart_modify =
+      _taiyin_ziwei_casting_chart_modifyPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_ziwei_context>,
+              ffi.Pointer<taiyin_ziwei_casting_chart>,
+              ffi.Pointer<taiyin_ziwei_placement_patch>,
+              ffi.Pointer<ffi.Pointer<taiyin_ziwei_casting_chart>>,
+            )
+          >();
+
+  int taiyin_ziwei_casting_chart_shift_life_palace(
+    ffi.Pointer<taiyin_ziwei_casting_chart> arg0,
+    int steps,
+    ffi.Pointer<ffi.Pointer<taiyin_ziwei_casting_chart>> arg2,
+  ) {
+    return _taiyin_ziwei_casting_chart_shift_life_palace(arg0, steps, arg2);
+  }
+
+  late final _taiyin_ziwei_casting_chart_shift_life_palacePtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_call_result Function(
+            ffi.Pointer<taiyin_ziwei_casting_chart>,
+            ffi.Int32,
+            ffi.Pointer<ffi.Pointer<taiyin_ziwei_casting_chart>>,
+          )
+        >
+      >('taiyin_ziwei_casting_chart_shift_life_palace');
+  late final _taiyin_ziwei_casting_chart_shift_life_palace =
+      _taiyin_ziwei_casting_chart_shift_life_palacePtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_ziwei_casting_chart>,
+              int,
+              ffi.Pointer<ffi.Pointer<taiyin_ziwei_casting_chart>>,
+            )
+          >();
+
+  int taiyin_ziwei_casting_chart_reset(
+    ffi.Pointer<taiyin_ziwei_casting_chart> arg0,
+    ffi.Pointer<ffi.Pointer<taiyin_ziwei_casting_chart>> arg1,
+  ) {
+    return _taiyin_ziwei_casting_chart_reset(arg0, arg1);
+  }
+
+  late final _taiyin_ziwei_casting_chart_resetPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_call_result Function(
+            ffi.Pointer<taiyin_ziwei_casting_chart>,
+            ffi.Pointer<ffi.Pointer<taiyin_ziwei_casting_chart>>,
+          )
+        >
+      >('taiyin_ziwei_casting_chart_reset');
+  late final _taiyin_ziwei_casting_chart_reset =
+      _taiyin_ziwei_casting_chart_resetPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_ziwei_casting_chart>,
+              ffi.Pointer<ffi.Pointer<taiyin_ziwei_casting_chart>>,
+            )
+          >();
+
+  int taiyin_ziwei_casting_chart_get_summary(
+    ffi.Pointer<taiyin_ziwei_casting_chart> arg0,
+    ffi.Pointer<taiyin_ziwei_casting_summary> arg1,
+  ) {
+    return _taiyin_ziwei_casting_chart_get_summary(arg0, arg1);
+  }
+
+  late final _taiyin_ziwei_casting_chart_get_summaryPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_call_result Function(
+            ffi.Pointer<taiyin_ziwei_casting_chart>,
+            ffi.Pointer<taiyin_ziwei_casting_summary>,
+          )
+        >
+      >('taiyin_ziwei_casting_chart_get_summary');
+  late final _taiyin_ziwei_casting_chart_get_summary =
+      _taiyin_ziwei_casting_chart_get_summaryPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_ziwei_casting_chart>,
+              ffi.Pointer<taiyin_ziwei_casting_summary>,
+            )
+          >();
+
+  int taiyin_ziwei_casting_chart_get_stars(
+    ffi.Pointer<taiyin_ziwei_casting_chart> arg0,
+    ffi.Pointer<ffi.Uint8> positions,
+    ffi.Pointer<ffi.Uint16> masks,
+    int capacity,
+    ffi.Pointer<ffi.Size> out_count,
+  ) {
+    return _taiyin_ziwei_casting_chart_get_stars(
+      arg0,
+      positions,
+      masks,
+      capacity,
+      out_count,
+    );
+  }
+
+  late final _taiyin_ziwei_casting_chart_get_starsPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_call_result Function(
+            ffi.Pointer<taiyin_ziwei_casting_chart>,
+            ffi.Pointer<ffi.Uint8>,
+            ffi.Pointer<ffi.Uint16>,
+            ffi.Size,
+            ffi.Pointer<ffi.Size>,
+          )
+        >
+      >('taiyin_ziwei_casting_chart_get_stars');
+  late final _taiyin_ziwei_casting_chart_get_stars =
+      _taiyin_ziwei_casting_chart_get_starsPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_ziwei_casting_chart>,
+              ffi.Pointer<ffi.Uint8>,
+              ffi.Pointer<ffi.Uint16>,
+              int,
+              ffi.Pointer<ffi.Size>,
+            )
+          >();
+
+  int taiyin_ziwei_casting_chart_get_omitted_placements(
+    ffi.Pointer<taiyin_ziwei_casting_chart> arg0,
+    ffi.Pointer<taiyin_ziwei_omitted_placement> arg1,
+    int capacity,
+    ffi.Pointer<ffi.Size> out_count,
+  ) {
+    return _taiyin_ziwei_casting_chart_get_omitted_placements(
+      arg0,
+      arg1,
+      capacity,
+      out_count,
+    );
+  }
+
+  late final _taiyin_ziwei_casting_chart_get_omitted_placementsPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_call_result Function(
+            ffi.Pointer<taiyin_ziwei_casting_chart>,
+            ffi.Pointer<taiyin_ziwei_omitted_placement>,
+            ffi.Size,
+            ffi.Pointer<ffi.Size>,
+          )
+        >
+      >('taiyin_ziwei_casting_chart_get_omitted_placements');
+  late final _taiyin_ziwei_casting_chart_get_omitted_placements =
+      _taiyin_ziwei_casting_chart_get_omitted_placementsPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_ziwei_casting_chart>,
+              ffi.Pointer<taiyin_ziwei_omitted_placement>,
+              int,
+              ffi.Pointer<ffi.Size>,
+            )
+          >();
+
+  int taiyin_ziwei_casting_chart_get_brightness(
+    ffi.Pointer<taiyin_ziwei_context> arg0,
+    ffi.Pointer<taiyin_ziwei_casting_chart> arg1,
+    int star_id,
+    ffi.Pointer<ffi.Int32> out_brightness,
+  ) {
+    return _taiyin_ziwei_casting_chart_get_brightness(
+      arg0,
+      arg1,
+      star_id,
+      out_brightness,
+    );
+  }
+
+  late final _taiyin_ziwei_casting_chart_get_brightnessPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_call_result Function(
+            ffi.Pointer<taiyin_ziwei_context>,
+            ffi.Pointer<taiyin_ziwei_casting_chart>,
+            ffi.Uint16,
+            ffi.Pointer<ffi.Int32>,
+          )
+        >
+      >('taiyin_ziwei_casting_chart_get_brightness');
+  late final _taiyin_ziwei_casting_chart_get_brightness =
+      _taiyin_ziwei_casting_chart_get_brightnessPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_ziwei_context>,
+              ffi.Pointer<taiyin_ziwei_casting_chart>,
+              int,
+              ffi.Pointer<ffi.Int32>,
+            )
+          >();
+
+  int taiyin_ziwei_casting_chart_get_number(
+    ffi.Pointer<taiyin_ziwei_casting_chart> arg0,
+    ffi.Pointer<ffi.Char> out,
+    int capacity,
+    ffi.Pointer<ffi.Size> out_size,
+  ) {
+    return _taiyin_ziwei_casting_chart_get_number(
+      arg0,
+      out,
+      capacity,
+      out_size,
+    );
+  }
+
+  late final _taiyin_ziwei_casting_chart_get_numberPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_call_result Function(
+            ffi.Pointer<taiyin_ziwei_casting_chart>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Size,
+            ffi.Pointer<ffi.Size>,
+          )
+        >
+      >('taiyin_ziwei_casting_chart_get_number');
+  late final _taiyin_ziwei_casting_chart_get_number =
+      _taiyin_ziwei_casting_chart_get_numberPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_ziwei_casting_chart>,
+              ffi.Pointer<ffi.Char>,
+              int,
+              ffi.Pointer<ffi.Size>,
+            )
+          >();
+
   void taiyin_ziwei_option_override_init(
     ffi.Pointer<taiyin_ziwei_option_override> value,
   ) {
@@ -17289,6 +17926,145 @@ final class taiyin_ziwei_context extends ffi.Opaque {}
 final class taiyin_ziwei_chart extends ffi.Opaque {}
 
 final class taiyin_ziwei_ruleset extends ffi.Opaque {}
+
+final class taiyin_ziwei_casting_chart extends ffi.Opaque {}
+
+final class taiyin_ziwei_placement_input extends ffi.Struct {
+  @ffi.Uint32()
+  external int struct_size;
+
+  @ffi.Int32()
+  external int year_stem;
+
+  @ffi.Int32()
+  external int year_branch;
+
+  @ffi.Int32()
+  external int month;
+
+  @ffi.Int32()
+  external int day;
+
+  @ffi.Int32()
+  external int hour_branch;
+}
+
+final class taiyin_ziwei_placement_patch extends ffi.Struct {
+  @ffi.Uint32()
+  external int struct_size;
+
+  @ffi.Int32()
+  external int year_stem;
+
+  @ffi.Int32()
+  external int year_branch;
+
+  @ffi.Int32()
+  external int month;
+
+  @ffi.Int32()
+  external int day;
+
+  @ffi.Int32()
+  external int hour_branch;
+
+  @ffi.Int32()
+  external int update_bureau;
+}
+
+final class taiyin_ziwei_casting_options extends ffi.Struct {
+  @ffi.Uint32()
+  external int struct_size;
+
+  @ffi.Int32()
+  external int gender;
+
+  @ffi.Int32()
+  external int chart_mode;
+
+  @ffi.Int32()
+  external int fixed_bureau;
+}
+
+final class taiyin_ziwei_casting_summary extends ffi.Struct {
+  @ffi.Uint32()
+  external int struct_size;
+
+  external taiyin_ziwei_placement_input input;
+
+  external taiyin_ziwei_placement_input original_input;
+
+  external taiyin_ziwei_placement_patch overrides;
+
+  @ffi.Uint32()
+  external int index;
+
+  @ffi.Uint8()
+  external int method;
+
+  @ffi.Uint8()
+  external int gender;
+
+  @ffi.Uint8()
+  external int chart_mode;
+
+  @ffi.Uint8()
+  external int bureau;
+
+  @ffi.Uint8()
+  external int original_bureau;
+
+  @ffi.Uint8()
+  external int body_palace;
+
+  @ffi.Uint8()
+  external int update_bureau;
+
+  @ffi.Uint8()
+  external int life_palace_shift;
+
+  @ffi.Uint8()
+  external int year_transform_stem;
+
+  @ffi.Array.multi([12])
+  external ffi.Array<ffi.Uint8> palace_branches;
+
+  @ffi.Array.multi([12])
+  external ffi.Array<ffi.Uint8> palace_stems;
+
+  @ffi.Uint16()
+  external int life_master;
+
+  @ffi.Uint16()
+  external int body_master;
+
+  @ffi.Uint16()
+  external int year_lu;
+
+  @ffi.Uint16()
+  external int year_quan;
+
+  @ffi.Uint16()
+  external int year_ke;
+
+  @ffi.Uint16()
+  external int year_ji;
+}
+
+final class taiyin_ziwei_omitted_placement extends ffi.Struct {
+  @ffi.Uint16()
+  external int star_id;
+
+  @ffi.Uint32()
+  external int missing_inputs;
+}
+
+typedef taiyin_ziwei_random_uint32Function =
+    taiyin_status Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Uint32>);
+typedef Darttaiyin_ziwei_random_uint32Function =
+    Darttaiyin_status Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Uint32>);
+typedef taiyin_ziwei_random_uint32 =
+    ffi.Pointer<ffi.NativeFunction<taiyin_ziwei_random_uint32Function>>;
 
 sealed class taiyin_ziwei_option_component {
   static const TAIYIN_ZIWEI_OPTION_PLACEMENT = 0;

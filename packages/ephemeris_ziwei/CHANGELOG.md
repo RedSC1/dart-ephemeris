@@ -1,3 +1,11 @@
+## Unreleased
+
+- Add immutable natal edits, life-palace shifts and reset.
+- Add independent manual, numbered and OS-random casting charts, full star and
+  transformation queries, and missing-input records.
+- Require a newly built Ziwei module for these APIs (public core `f6f6b52`).
+  Release binaries have not been replaced yet.
+
 ## 1.0.0-beta.6
 
 - Keep the extension release in lockstep with `ephemeris` 1.0.0-beta.6 and
