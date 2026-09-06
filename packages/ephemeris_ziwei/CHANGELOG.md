@@ -1,3 +1,8 @@
+## 1.0.0-beta.8
+
+- Keep in lockstep with ephemeris beta.8 and Taiyin `v1.0.0-beta.10`.
+- No Ziwei API changes.
+
 ## 1.0.0-beta.7
 
 - Add immutable natal edits, life-palace shifts and reset.

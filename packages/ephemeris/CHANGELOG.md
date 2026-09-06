@@ -1,3 +1,9 @@
+## 1.0.0-beta.8
+
+- Build native modules from Taiyin `v1.0.0-beta.10`.
+- Reduce solar-eclipse cone-search overhead without changing the public API
+  or physical model; preserve the original near-tangent evaluation path.
+
 ## 1.0.0-beta.7
 
 - Update the native source baseline to Taiyin `v1.0.0-beta.9`.
