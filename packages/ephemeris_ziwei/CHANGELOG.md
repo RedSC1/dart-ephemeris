@@ -1,4 +1,6 @@
-## Unreleased
+## 1.0.0-beta.9
+
+- Build against Taiyin `v1.0.0-beta.11`, C ABI 11, and ephemeris beta.9.
 
 - Reverse candidates now identify actual slot starts (for example 13:00 for
   a 14:15 birth), rather than an even-hour sampling point from the search start.

@@ -1,6 +1,6 @@
 # ephemeris_bazi
 
-> **Pre-release:** `1.0.0-beta.8`, kept in lockstep with the Dart `ephemeris`
+> **Pre-release:** `1.0.0-beta.9`, kept in lockstep with the Dart `ephemeris`
 > core package.
 
 BaZi (八字) extension bindings for the Taiyin ephemeris, part of the

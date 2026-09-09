@@ -1,9 +1,8 @@
-## Unreleased
+## 1.0.0-beta.9
 
-- Pin native integration builds to Taiyin public commit
-  `39a479a6911f30984e88878a9ecb09bd8f92ec1d` pending the next core release tag.
-- Existing published native artifacts are unchanged; rebuild before testing
-  the new core fixes. Dart public signatures and the C ABI remain unchanged.
+- Build all native modules from Taiyin `v1.0.0-beta.11`, C ABI 11.
+- Require ABI 11; rebuild all native modules together, without mixing older
+  bundled libraries. Optional Ziwei now exposes explicit UT1 chart-clock APIs.
 
 ## 1.0.0-beta.8
 
