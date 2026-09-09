@@ -6,9 +6,12 @@
 - The updated native build includes historical Jie boundary, later-nine year,
   JSON validation, and complete-date carry fixes for reverse search and flow
   navigation, available through the existing C ABI after rebuilding.
-- The new C++ explicit apparent-solar chart-clock interfaces do not yet have
-  C ABI / Dart bindings. Existing dual-time methods retain their fixed-offset
-  semantics; no apparent-solar clock is inferred from a supplied time pair.
+- Add `ZiweiClock`, clock conversion, `createChartAtUt1`, `setFlowAtUt1`,
+  `stepFlowHourAtUt1`, `stepFlowDayAtUt1`, and `reverseLookupTier1AtUt1`.
+  UT1 navigation/reverse results use an explicitly typed `instantUt1` field.
+- Existing dual-time methods retain their fixed-offset semantics. New APIs
+  require the corresponding core C ABI and newly built native artifacts;
+  no apparent-solar clock is inferred from a supplied time pair.
 
 ## 1.0.0-beta.8
 

@@ -424,6 +424,13 @@ const Set<String> taiyinZiweiPlacementSymbols = {
 };
 
 const Set<String> taiyinZiweiSymbols = {
+  'taiyin_ziwei_chart_create_at_ut1',
+  'taiyin_ziwei_chart_set_flow_at_ut1',
+  'taiyin_ziwei_reverse_lookup_tier1_at_ut1',
+  'taiyin_ziwei_chart_time_from_ut1',
+  'taiyin_ziwei_chart_time_to_ut1',
+  'taiyin_ziwei_step_flow_hour_at_ut1',
+  'taiyin_ziwei_step_flow_day_at_ut1',
   'taiyin_ziwei_option_override_init',
   'taiyin_ziwei_json_rule_module_init',
   'taiyin_ziwei_birth_options_init',

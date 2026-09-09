@@ -8,6 +8,7 @@ import 'package:ephemeris/ephemeris.dart';
 import 'ziwei_models.dart';
 
 part 'ziwei_placement.dart';
+part 'ziwei_clock.dart';
 
 /// The native invalid-star-id sentinel (`TAIYIN_ZIWEI_INVALID_STAR_ID`).
 const int _taiyinZiweiInvalidStarId = 0xffff;
@@ -539,7 +540,7 @@ final class ZiweiContext implements Finalizable {
     );
   }
 
-  /// Moves to the canonical center of an adjacent logical flow hour.
+  /// Moves to an adjacent logical flow hour, preserving minutes and seconds.
   ///
   /// In split-Rat modes this walks Early Zi → Chou → … → Late Zi → Early Zi
   /// as thirteen slots. [direction] must be 1 (next) or -1 (previous). The
@@ -577,7 +578,7 @@ final class ZiweiContext implements Finalizable {
     });
   }
 
-  /// The canonical center of the next logical flow hour.
+  /// The next logical flow hour, preserving minutes and seconds.
   ZiweiFlowHourTarget nextFlowHourTarget({
     required JulianDate<UtcScale> instantUtc,
     required AstroDateTime virtualTime,
@@ -590,7 +591,7 @@ final class ZiweiContext implements Finalizable {
     );
   }
 
-  /// The canonical center of the previous logical flow hour.
+  /// The previous logical flow hour, preserving minutes and seconds.
   ZiweiFlowHourTarget previousFlowHourTarget({
     required JulianDate<UtcScale> instantUtc,
     required AstroDateTime virtualTime,

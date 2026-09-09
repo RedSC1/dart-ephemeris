@@ -1,5 +1,8 @@
 # Ziwei Doushu guide
 
+See [explicit chart clocks](chart-clocks.md) for the new UT1 conversion,
+natal/flow, navigation and reverse-search APIs (unreleased).
+
 `ephemeris_ziwei` is an optional native extension. It ships a Ziwei native
 module and the bundled default TOML rule profile.
 

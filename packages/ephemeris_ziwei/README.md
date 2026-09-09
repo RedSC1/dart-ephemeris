@@ -1,5 +1,9 @@
 # ephemeris_ziwei
 
+Unreleased: [explicit chart clocks](doc/chart-clocks.md) for fixed-offset,
+mean/apparent solar time, including flows and reverse lookup. These methods
+require the new core C ABI and rebuilt native libraries, not old artifacts.
+
 New in beta.7: immutable natal edits and independent manual, number
 and random casting charts. See the [guide](doc/guide.md#manual-placement-and-casting-charts).
 These APIs require Taiyin `v1.0.0-beta.9` native modules. Release assembly uses

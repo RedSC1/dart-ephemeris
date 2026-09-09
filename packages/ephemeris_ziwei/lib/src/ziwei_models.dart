@@ -3,6 +3,54 @@ library;
 
 import 'package:ephemeris/ephemeris.dart';
 
+/// Chart clock policy, independent of the lunar calendar's day boundary.
+enum ZiweiClockMode { fixedOffset, meanSolar, apparentSolar }
+
+/// Solar clocks use east-positive radians. Fixed offset uses the calendar's
+/// offset applied to UT1; it is not a UTC conversion or DST service.
+final class ZiweiClock {
+  const ZiweiClock({
+    this.mode = ZiweiClockMode.fixedOffset,
+    this.longitudeRadians = 0,
+  });
+  final ZiweiClockMode mode;
+  final double longitudeRadians;
+}
+
+/// A navigation target from the explicit UT1 clock API.
+final class ZiweiClockTarget {
+  const ZiweiClockTarget({
+    required this.instantUt1,
+    required this.virtualTime,
+    this.ratHourSegment = ZiweiRatHourSegment.none,
+  });
+  final JulianDate<Ut1Scale> instantUt1;
+  final AstroDateTime virtualTime;
+  final ZiweiRatHourSegment ratHourSegment;
+}
+
+/// A matching birth slot with an explicitly UT1 physical instant.
+final class ZiweiReverseLookupUt1Candidate {
+  const ZiweiReverseLookupUt1Candidate({
+    required this.instantUt1,
+    required this.virtualTime,
+    required this.lunarYear,
+    required this.lunarMonth,
+    required this.lunarDay,
+    required this.lunarIsLeap,
+    required this.hourBranch,
+    required this.ratHourSegment,
+  });
+  final JulianDate<Ut1Scale> instantUt1;
+  final AstroDateTime virtualTime;
+  final int lunarYear;
+  final int lunarMonth;
+  final int lunarDay;
+  final bool lunarIsLeap;
+  final int hourBranch;
+  final ZiweiRatHourSegment ratHourSegment;
+}
+
 /// The birth gender used by Ziwei direction and transformation rules.
 enum ZiweiGender {
   male(0),
@@ -505,7 +553,7 @@ final class ZiweiReverseLookupCandidate {
   final ZiweiRatHourSegment ratHourSegment;
 }
 
-/// The canonical center of an adjacent logical flow hour.
+/// An adjacent logical flow hour, preserving the clock's minutes and seconds.
 final class ZiweiFlowHourTarget {
   const ZiweiFlowHourTarget({
     required this.instantUtc,
