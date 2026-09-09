@@ -455,12 +455,17 @@ void main() {
         expect(
           candidates.any(
             (candidate) =>
-                candidate.virtualTime.hour == local.hour &&
-                (candidate.instantUtc.toDouble() - instant.toDouble()).abs() <
-                    1 / 24,
+                candidate.virtualTime.year == local.year &&
+                candidate.virtualTime.month == local.month &&
+                candidate.virtualTime.day == local.day &&
+                candidate.virtualTime.hour == 13 &&
+                candidate.virtualTime.minute == 0 &&
+                instant.toDouble() >= candidate.instantUtc.toDouble() &&
+                instant.toDouble() <
+                    candidate.instantUtc.addSeconds(7200).toDouble(),
           ),
           isTrue,
-          reason: 'the 14:15 birth slot matches the ziweiBranch filter',
+          reason: '14:15 belongs to the canonical 13:00-15:00 birth slot',
         );
 
         expect(

@@ -1,3 +1,10 @@
+## Unreleased
+
+- Pin native integration builds to Taiyin public commit
+  `39a479a6911f30984e88878a9ecb09bd8f92ec1d` pending the next core release tag.
+- Existing published native artifacts are unchanged; rebuild before testing
+  the new core fixes. Dart public signatures and the C ABI remain unchanged.
+
 ## 1.0.0-beta.8
 
 - Build native modules from Taiyin `v1.0.0-beta.10`.

@@ -1,3 +1,15 @@
+## Unreleased
+
+- Reverse candidates now identify actual slot starts (for example 13:00 for
+  a 14:15 birth), rather than an even-hour sampling point from the search start.
+
+- The updated native build includes historical Jie boundary, later-nine year,
+  JSON validation, and complete-date carry fixes for reverse search and flow
+  navigation, available through the existing C ABI after rebuilding.
+- The new C++ explicit apparent-solar chart-clock interfaces do not yet have
+  C ABI / Dart bindings. Existing dual-time methods retain their fixed-offset
+  semantics; no apparent-solar clock is inferred from a supplied time pair.
+
 ## 1.0.0-beta.8
 
 - Keep in lockstep with ephemeris beta.8 and Taiyin `v1.0.0-beta.10`.
