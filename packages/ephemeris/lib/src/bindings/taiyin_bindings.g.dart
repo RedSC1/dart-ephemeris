@@ -14284,6 +14284,350 @@ class TaiyinBindings {
               ffi.Pointer<taiyin_calendar_datetime>,
             )
           >();
+
+  int taiyin_ziwei_chart_create_at_ut1(
+    ffi.Pointer<taiyin_ziwei_context> context,
+    ffi.Pointer<taiyin_chinese_calendar_context> calendar,
+    ffi.Pointer<taiyin_split_julian_date> instant_ut1,
+    ffi.Pointer<taiyin_ziwei_chart_clock> clock,
+    int gender,
+    ffi.Pointer<taiyin_ziwei_birth_options> options,
+    ffi.Pointer<ffi.Pointer<taiyin_ziwei_chart>> out_chart,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_ziwei_chart_create_at_ut1(
+      context,
+      calendar,
+      instant_ut1,
+      clock,
+      gender,
+      options,
+      out_chart,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_ziwei_chart_create_at_ut1Ptr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_call_result Function(
+            ffi.Pointer<taiyin_ziwei_context>,
+            ffi.Pointer<taiyin_chinese_calendar_context>,
+            ffi.Pointer<taiyin_split_julian_date>,
+            ffi.Pointer<taiyin_ziwei_chart_clock>,
+            ffi.Int32,
+            ffi.Pointer<taiyin_ziwei_birth_options>,
+            ffi.Pointer<ffi.Pointer<taiyin_ziwei_chart>>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_ziwei_chart_create_at_ut1');
+  late final _taiyin_ziwei_chart_create_at_ut1 =
+      _taiyin_ziwei_chart_create_at_ut1Ptr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_ziwei_context>,
+              ffi.Pointer<taiyin_chinese_calendar_context>,
+              ffi.Pointer<taiyin_split_julian_date>,
+              ffi.Pointer<taiyin_ziwei_chart_clock>,
+              int,
+              ffi.Pointer<taiyin_ziwei_birth_options>,
+              ffi.Pointer<ffi.Pointer<taiyin_ziwei_chart>>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_ziwei_chart_set_flow_at_ut1(
+    ffi.Pointer<taiyin_ziwei_context> context,
+    ffi.Pointer<taiyin_chinese_calendar_context> calendar,
+    ffi.Pointer<taiyin_split_julian_date> instant_ut1,
+    ffi.Pointer<taiyin_ziwei_chart_clock> clock,
+    ffi.Pointer<taiyin_ziwei_flow_options> options,
+    int deepest_level,
+    ffi.Pointer<taiyin_ziwei_chart> chart,
+    ffi.Pointer<taiyin_ziwei_flow_summary> out_summary,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_ziwei_chart_set_flow_at_ut1(
+      context,
+      calendar,
+      instant_ut1,
+      clock,
+      options,
+      deepest_level,
+      chart,
+      out_summary,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_ziwei_chart_set_flow_at_ut1Ptr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_call_result Function(
+            ffi.Pointer<taiyin_ziwei_context>,
+            ffi.Pointer<taiyin_chinese_calendar_context>,
+            ffi.Pointer<taiyin_split_julian_date>,
+            ffi.Pointer<taiyin_ziwei_chart_clock>,
+            ffi.Pointer<taiyin_ziwei_flow_options>,
+            ffi.Int32,
+            ffi.Pointer<taiyin_ziwei_chart>,
+            ffi.Pointer<taiyin_ziwei_flow_summary>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_ziwei_chart_set_flow_at_ut1');
+  late final _taiyin_ziwei_chart_set_flow_at_ut1 =
+      _taiyin_ziwei_chart_set_flow_at_ut1Ptr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_ziwei_context>,
+              ffi.Pointer<taiyin_chinese_calendar_context>,
+              ffi.Pointer<taiyin_split_julian_date>,
+              ffi.Pointer<taiyin_ziwei_chart_clock>,
+              ffi.Pointer<taiyin_ziwei_flow_options>,
+              int,
+              ffi.Pointer<taiyin_ziwei_chart>,
+              ffi.Pointer<taiyin_ziwei_flow_summary>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_ziwei_reverse_lookup_tier1_at_ut1(
+    ffi.Pointer<taiyin_ziwei_context> context,
+    ffi.Pointer<taiyin_chinese_calendar_context> calendar,
+    ffi.Pointer<taiyin_ziwei_reverse_request> request,
+    ffi.Pointer<taiyin_ziwei_chart_clock> clock,
+    ffi.Pointer<taiyin_ziwei_reverse_candidate> candidates,
+    int capacity,
+    ffi.Pointer<ffi.Size> out_count,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_ziwei_reverse_lookup_tier1_at_ut1(
+      context,
+      calendar,
+      request,
+      clock,
+      candidates,
+      capacity,
+      out_count,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_ziwei_reverse_lookup_tier1_at_ut1Ptr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_call_result Function(
+            ffi.Pointer<taiyin_ziwei_context>,
+            ffi.Pointer<taiyin_chinese_calendar_context>,
+            ffi.Pointer<taiyin_ziwei_reverse_request>,
+            ffi.Pointer<taiyin_ziwei_chart_clock>,
+            ffi.Pointer<taiyin_ziwei_reverse_candidate>,
+            ffi.Size,
+            ffi.Pointer<ffi.Size>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_ziwei_reverse_lookup_tier1_at_ut1');
+  late final _taiyin_ziwei_reverse_lookup_tier1_at_ut1 =
+      _taiyin_ziwei_reverse_lookup_tier1_at_ut1Ptr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_ziwei_context>,
+              ffi.Pointer<taiyin_chinese_calendar_context>,
+              ffi.Pointer<taiyin_ziwei_reverse_request>,
+              ffi.Pointer<taiyin_ziwei_chart_clock>,
+              ffi.Pointer<taiyin_ziwei_reverse_candidate>,
+              int,
+              ffi.Pointer<ffi.Size>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_ziwei_chart_time_from_ut1(
+    ffi.Pointer<taiyin_chinese_calendar_context> calendar,
+    ffi.Pointer<taiyin_ziwei_chart_clock> clock,
+    ffi.Pointer<taiyin_split_julian_date> instant_ut1,
+    ffi.Pointer<taiyin_calendar_datetime> out_time,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_ziwei_chart_time_from_ut1(
+      calendar,
+      clock,
+      instant_ut1,
+      out_time,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_ziwei_chart_time_from_ut1Ptr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_call_result Function(
+            ffi.Pointer<taiyin_chinese_calendar_context>,
+            ffi.Pointer<taiyin_ziwei_chart_clock>,
+            ffi.Pointer<taiyin_split_julian_date>,
+            ffi.Pointer<taiyin_calendar_datetime>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_ziwei_chart_time_from_ut1');
+  late final _taiyin_ziwei_chart_time_from_ut1 =
+      _taiyin_ziwei_chart_time_from_ut1Ptr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_chinese_calendar_context>,
+              ffi.Pointer<taiyin_ziwei_chart_clock>,
+              ffi.Pointer<taiyin_split_julian_date>,
+              ffi.Pointer<taiyin_calendar_datetime>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_ziwei_chart_time_to_ut1(
+    ffi.Pointer<taiyin_chinese_calendar_context> calendar,
+    ffi.Pointer<taiyin_ziwei_chart_clock> clock,
+    ffi.Pointer<taiyin_calendar_datetime> virtual_time,
+    ffi.Pointer<taiyin_split_julian_date> out_instant_ut1,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_ziwei_chart_time_to_ut1(
+      calendar,
+      clock,
+      virtual_time,
+      out_instant_ut1,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_ziwei_chart_time_to_ut1Ptr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_call_result Function(
+            ffi.Pointer<taiyin_chinese_calendar_context>,
+            ffi.Pointer<taiyin_ziwei_chart_clock>,
+            ffi.Pointer<taiyin_calendar_datetime>,
+            ffi.Pointer<taiyin_split_julian_date>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_ziwei_chart_time_to_ut1');
+  late final _taiyin_ziwei_chart_time_to_ut1 =
+      _taiyin_ziwei_chart_time_to_ut1Ptr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_chinese_calendar_context>,
+              ffi.Pointer<taiyin_ziwei_chart_clock>,
+              ffi.Pointer<taiyin_calendar_datetime>,
+              ffi.Pointer<taiyin_split_julian_date>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_ziwei_step_flow_hour_at_ut1(
+    ffi.Pointer<taiyin_chinese_calendar_context> calendar,
+    ffi.Pointer<taiyin_ziwei_chart_clock> clock,
+    ffi.Pointer<taiyin_split_julian_date> instant_ut1,
+    int rat_hour_mode,
+    int direction,
+    ffi.Pointer<taiyin_split_julian_date> out_instant_ut1,
+    ffi.Pointer<taiyin_calendar_datetime> out_time,
+    ffi.Pointer<ffi.Uint8> out_rat_hour_segment,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_ziwei_step_flow_hour_at_ut1(
+      calendar,
+      clock,
+      instant_ut1,
+      rat_hour_mode,
+      direction,
+      out_instant_ut1,
+      out_time,
+      out_rat_hour_segment,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_ziwei_step_flow_hour_at_ut1Ptr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_call_result Function(
+            ffi.Pointer<taiyin_chinese_calendar_context>,
+            ffi.Pointer<taiyin_ziwei_chart_clock>,
+            ffi.Pointer<taiyin_split_julian_date>,
+            ffi.Int32,
+            ffi.Int32,
+            ffi.Pointer<taiyin_split_julian_date>,
+            ffi.Pointer<taiyin_calendar_datetime>,
+            ffi.Pointer<ffi.Uint8>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_ziwei_step_flow_hour_at_ut1');
+  late final _taiyin_ziwei_step_flow_hour_at_ut1 =
+      _taiyin_ziwei_step_flow_hour_at_ut1Ptr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_chinese_calendar_context>,
+              ffi.Pointer<taiyin_ziwei_chart_clock>,
+              ffi.Pointer<taiyin_split_julian_date>,
+              int,
+              int,
+              ffi.Pointer<taiyin_split_julian_date>,
+              ffi.Pointer<taiyin_calendar_datetime>,
+              ffi.Pointer<ffi.Uint8>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
+
+  int taiyin_ziwei_step_flow_day_at_ut1(
+    ffi.Pointer<taiyin_chinese_calendar_context> calendar,
+    ffi.Pointer<taiyin_ziwei_chart_clock> clock,
+    ffi.Pointer<taiyin_split_julian_date> instant_ut1,
+    int direction,
+    ffi.Pointer<taiyin_split_julian_date> out_instant_ut1,
+    ffi.Pointer<taiyin_calendar_datetime> out_time,
+    ffi.Pointer<taiyin_ephemeris_diagnostic> diagnostic,
+  ) {
+    return _taiyin_ziwei_step_flow_day_at_ut1(
+      calendar,
+      clock,
+      instant_ut1,
+      direction,
+      out_instant_ut1,
+      out_time,
+      diagnostic,
+    );
+  }
+
+  late final _taiyin_ziwei_step_flow_day_at_ut1Ptr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_call_result Function(
+            ffi.Pointer<taiyin_chinese_calendar_context>,
+            ffi.Pointer<taiyin_ziwei_chart_clock>,
+            ffi.Pointer<taiyin_split_julian_date>,
+            ffi.Int32,
+            ffi.Pointer<taiyin_split_julian_date>,
+            ffi.Pointer<taiyin_calendar_datetime>,
+            ffi.Pointer<taiyin_ephemeris_diagnostic>,
+          )
+        >
+      >('taiyin_ziwei_step_flow_day_at_ut1');
+  late final _taiyin_ziwei_step_flow_day_at_ut1 =
+      _taiyin_ziwei_step_flow_day_at_ut1Ptr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_chinese_calendar_context>,
+              ffi.Pointer<taiyin_ziwei_chart_clock>,
+              ffi.Pointer<taiyin_split_julian_date>,
+              int,
+              ffi.Pointer<taiyin_split_julian_date>,
+              ffi.Pointer<taiyin_calendar_datetime>,
+              ffi.Pointer<taiyin_ephemeris_diagnostic>,
+            )
+          >();
 }
 
 typedef __int8_t = ffi.SignedChar;
@@ -17929,6 +18273,17 @@ final class taiyin_ziwei_ruleset extends ffi.Opaque {}
 
 final class taiyin_ziwei_casting_chart extends ffi.Opaque {}
 
+final class taiyin_ziwei_chart_clock extends ffi.Struct {
+  @ffi.Uint32()
+  external int struct_size;
+
+  @ffi.Int32()
+  external int mode;
+
+  @ffi.Double()
+  external double longitude_rad;
+}
+
 final class taiyin_ziwei_placement_input extends ffi.Struct {
   @ffi.Uint32()
   external int struct_size;
@@ -18393,3 +18748,9 @@ const int TAIYIN_C_SOLAR_ECLIPSE_CONTACT_COUNT = 5;
 const int TAIYIN_C_LOCAL_SOLAR_CONTACT_COUNT = 5;
 
 const int TAIYIN_C_SOLAR_BESSELIAN_COEFF_COUNT = 8;
+
+const int TAIYIN_ZIWEI_CLOCK_FIXED_OFFSET = 0;
+
+const int TAIYIN_ZIWEI_CLOCK_MEAN_SOLAR = 1;
+
+const int TAIYIN_ZIWEI_CLOCK_APPARENT_SOLAR = 2;

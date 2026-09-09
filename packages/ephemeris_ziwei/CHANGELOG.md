@@ -1,3 +1,20 @@
+## 1.0.0-beta.9
+
+- Build against Taiyin `v1.0.0-beta.11`, C ABI 11, and ephemeris beta.9.
+
+- Reverse candidates now identify actual slot starts (for example 13:00 for
+  a 14:15 birth), rather than an even-hour sampling point from the search start.
+
+- The updated native build includes historical Jie boundary, later-nine year,
+  JSON validation, and complete-date carry fixes for reverse search and flow
+  navigation, available through the existing C ABI after rebuilding.
+- Add `ZiweiClock`, clock conversion, `createChartAtUt1`, `setFlowAtUt1`,
+  `stepFlowHourAtUt1`, `stepFlowDayAtUt1`, and `reverseLookupTier1AtUt1`.
+  UT1 navigation/reverse results use an explicitly typed `instantUt1` field.
+- Existing dual-time methods retain their fixed-offset semantics. New APIs
+  require the corresponding core C ABI and newly built native artifacts;
+  no apparent-solar clock is inferred from a supplied time pair.
+
 ## 1.0.0-beta.8
 
 - Keep in lockstep with ephemeris beta.8 and Taiyin `v1.0.0-beta.10`.

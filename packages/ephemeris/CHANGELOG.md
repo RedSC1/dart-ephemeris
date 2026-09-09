@@ -1,3 +1,9 @@
+## 1.0.0-beta.9
+
+- Build all native modules from Taiyin `v1.0.0-beta.11`, C ABI 11.
+- Require ABI 11; rebuild all native modules together, without mixing older
+  bundled libraries. Optional Ziwei now exposes explicit UT1 chart-clock APIs.
+
 ## 1.0.0-beta.8
 
 - Build native modules from Taiyin `v1.0.0-beta.10`.
