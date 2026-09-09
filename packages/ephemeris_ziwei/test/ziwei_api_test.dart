@@ -460,6 +460,11 @@ void main() {
                 candidate.virtualTime.day == local.day &&
                 candidate.virtualTime.hour == 13 &&
                 candidate.virtualTime.minute == 0 &&
+                candidate.virtualTime.second == 0 &&
+                (candidate.instantUtc.toDouble() -
+                            startInstant.addSeconds(13 * 3600).toDouble())
+                        .abs() <
+                    1e-9 &&
                 instant.toDouble() >= candidate.instantUtc.toDouble() &&
                 instant.toDouble() <
                     candidate.instantUtc.addSeconds(7200).toDouble(),
