@@ -56,7 +56,7 @@ Pointer<Char> _shenString(String value, Arena arena) {
 }
 
 final class _ShenCallback {
-  _ShenCallback(BaziShenShaRule rule) {
+  _ShenCallback(this.moduleLabel, BaziShenShaRule rule) {
     callable =
         NativeCallable<taiyin_bazi_shen_sha_predicateFunction>.isolateLocal((
           Pointer<taiyin_ganzhi_four_pillars> pillars,
@@ -86,6 +86,7 @@ final class _ShenCallback {
     callable.keepIsolateAlive = false;
   }
   late final NativeCallable<taiyin_bazi_shen_sha_predicateFunction> callable;
+  final String moduleLabel;
   int refs = 0;
   bool busy = false;
   Object? error;
@@ -98,7 +99,12 @@ final class _ShenCallback {
 
 // Finalizer state must not retain the Dart facade itself.
 final class _ShenHandle {
-  _ShenHandle(this.module, this.pointer, this.isContext, this.callbacks) {
+  _ShenHandle(
+    this.module,
+    this.pointer,
+    this.isContext,
+    List<_ShenCallback> callbacks,
+  ) : callbacks = List.of(callbacks) {
     for (final callback in callbacks) {
       callback.retain();
     }
@@ -126,6 +132,7 @@ final class _ShenHandle {
     for (final callback in callbacks) {
       callback.release();
     }
+    callbacks.clear();
   }
 }
 
@@ -137,8 +144,8 @@ final _shenFinalizer = Finalizer<_ShenHandle>((handle) => handle.dispose());
 /// and contexts when finished; derived snapshots keep callbacks alive. Handles
 /// and callbacks must not be shared across isolates.
 final class BaziShenShaCatalog implements Finalizable {
-  factory BaziShenShaCatalog({String? libraryPath}) {
-    final host = TaiyinExtensionHost.open();
+  factory BaziShenShaCatalog({String? libraryPath, String? coreLibraryPath}) {
+    final host = TaiyinExtensionHost.open(libraryPath: coreLibraryPath);
     final module = _openBaziModule(libraryPath);
     // Validate even if the module was previously cached by a regular BaZi call.
     validateTaiyinRequiredSymbols(
@@ -170,7 +177,7 @@ final class BaziShenShaCatalog implements Finalizable {
         final rules = arena<taiyin_bazi_shen_sha_rule>(module.rules.length);
         for (var i = 0; i < module.rules.length; i++) {
           final rule = module.rules[i];
-          final callback = _ShenCallback(rule);
+          final callback = _ShenCallback(module.label, rule);
           callbacks.add(callback);
           rules[i]
             ..struct_size = sizeOf<taiyin_bazi_shen_sha_rule>()
@@ -218,7 +225,12 @@ final class BaziShenShaCatalog implements Finalizable {
       );
       return BaziShenShaCatalog._(
         _host,
-        _ShenHandle(_handle.module, out.value.cast(), false, _handle.callbacks),
+        _ShenHandle(
+          _handle.module,
+          out.value.cast(),
+          false,
+          _handle.callbacks.where((c) => c.moduleLabel != label).toList(),
+        ),
       );
     });
   }

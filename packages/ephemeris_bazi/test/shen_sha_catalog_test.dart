@@ -1,11 +1,14 @@
 import 'dart:isolate';
+import 'dart:io';
 
 import 'package:ephemeris/ephemeris.dart';
 import 'package:ephemeris_bazi/ephemeris_bazi.dart';
 import 'package:test/test.dart';
+import 'support/native_library.dart';
 
 int evaluateInIsolate() {
-  final astro = Ephemeris.open().createContext();
+  // setUp initializes the process-wide runtime before spawning workers.
+  final astro = Ephemeris.attach().createContext();
   final gz = Ganzhi(stemId: 0, branchId: 0);
   final chart = astro.bazi.calcChart(
     GanzhiFourPillars(year: gz, month: gz, day: gz, hour: gz),
@@ -37,6 +40,21 @@ int evaluateInIsolate() {
 }
 
 void main() {
+  test(
+    'standalone catalog honors custom core despite invalid default',
+    () async {
+      final root = File('test/support/shen_sha_custom_path.dart').existsSync()
+          ? '.'
+          : 'packages/ephemeris_bazi';
+      final result = await Process.run(
+        Platform.resolvedExecutable,
+        ['run', '$root/test/support/shen_sha_custom_path.dart', libraryPath],
+        environment: {'TAIYIN_LIBRARY_PATH': '/missing/default/taiyin-library'},
+      );
+      expect(result.exitCode, 0, reason: '${result.stderr}');
+      expect(result.stdout, contains('custom-core-ok'));
+    },
+  );
   test('independent isolates own their own callbacks', () async {
     expect(
       await Future.wait(
@@ -135,6 +153,38 @@ void main() {
       context.close();
       added.close();
       base.close();
+    }
+  });
+
+  test('removed callbacks do not block independent nested evaluation', () {
+    final base = BaziShenShaCatalog();
+    late BaziShenShaContext without;
+    final added = base.addModule(
+      BaziShenShaModule(
+        label: 'school',
+        rules: [
+          BaziShenShaRule(
+            id: 'x',
+            name: 'x',
+            test: (_) {
+              expect(evaluate(without).any((m) => m.id == 'school:x'), isFalse);
+              return true;
+            },
+          ),
+        ],
+      ),
+    );
+    final removed = added.removeModule('school');
+    final original = added.createContext();
+    without = removed.createContext();
+    base.close();
+    added.close();
+    removed.close();
+    try {
+      expect(evaluate(original).any((m) => m.id == 'school:x'), isTrue);
+    } finally {
+      original.close();
+      without.close();
     }
   });
 
