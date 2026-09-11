@@ -11502,6 +11502,285 @@ class TaiyinBindings {
             )
           >();
 
+  int taiyin_bazi_shen_sha_catalog_create(
+    ffi.Pointer<ffi.Pointer<taiyin_bazi_shen_sha_catalog>> out,
+  ) {
+    return _taiyin_bazi_shen_sha_catalog_create(out);
+  }
+
+  late final _taiyin_bazi_shen_sha_catalog_createPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_call_result Function(
+            ffi.Pointer<ffi.Pointer<taiyin_bazi_shen_sha_catalog>>,
+          )
+        >
+      >('taiyin_bazi_shen_sha_catalog_create');
+  late final _taiyin_bazi_shen_sha_catalog_create =
+      _taiyin_bazi_shen_sha_catalog_createPtr
+          .asFunction<
+            int Function(ffi.Pointer<ffi.Pointer<taiyin_bazi_shen_sha_catalog>>)
+          >();
+
+  void taiyin_bazi_shen_sha_catalog_destroy(
+    ffi.Pointer<taiyin_bazi_shen_sha_catalog> catalog,
+  ) {
+    return _taiyin_bazi_shen_sha_catalog_destroy(catalog);
+  }
+
+  late final _taiyin_bazi_shen_sha_catalog_destroyPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<taiyin_bazi_shen_sha_catalog>)
+        >
+      >('taiyin_bazi_shen_sha_catalog_destroy');
+  late final _taiyin_bazi_shen_sha_catalog_destroy =
+      _taiyin_bazi_shen_sha_catalog_destroyPtr
+          .asFunction<
+            void Function(ffi.Pointer<taiyin_bazi_shen_sha_catalog>)
+          >();
+
+  int taiyin_bazi_shen_sha_catalog_add_module(
+    ffi.Pointer<taiyin_bazi_shen_sha_catalog> catalog,
+    ffi.Pointer<ffi.Char> label,
+    ffi.Pointer<taiyin_bazi_shen_sha_rule> rules,
+    int count,
+    ffi.Pointer<ffi.Pointer<taiyin_bazi_shen_sha_catalog>> out,
+  ) {
+    return _taiyin_bazi_shen_sha_catalog_add_module(
+      catalog,
+      label,
+      rules,
+      count,
+      out,
+    );
+  }
+
+  late final _taiyin_bazi_shen_sha_catalog_add_modulePtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_call_result Function(
+            ffi.Pointer<taiyin_bazi_shen_sha_catalog>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<taiyin_bazi_shen_sha_rule>,
+            ffi.Size,
+            ffi.Pointer<ffi.Pointer<taiyin_bazi_shen_sha_catalog>>,
+          )
+        >
+      >('taiyin_bazi_shen_sha_catalog_add_module');
+  late final _taiyin_bazi_shen_sha_catalog_add_module =
+      _taiyin_bazi_shen_sha_catalog_add_modulePtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_bazi_shen_sha_catalog>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<taiyin_bazi_shen_sha_rule>,
+              int,
+              ffi.Pointer<ffi.Pointer<taiyin_bazi_shen_sha_catalog>>,
+            )
+          >();
+
+  int taiyin_bazi_shen_sha_catalog_remove_module(
+    ffi.Pointer<taiyin_bazi_shen_sha_catalog> catalog,
+    ffi.Pointer<ffi.Char> label,
+    ffi.Pointer<ffi.Pointer<taiyin_bazi_shen_sha_catalog>> out,
+  ) {
+    return _taiyin_bazi_shen_sha_catalog_remove_module(catalog, label, out);
+  }
+
+  late final _taiyin_bazi_shen_sha_catalog_remove_modulePtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_call_result Function(
+            ffi.Pointer<taiyin_bazi_shen_sha_catalog>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Pointer<taiyin_bazi_shen_sha_catalog>>,
+          )
+        >
+      >('taiyin_bazi_shen_sha_catalog_remove_module');
+  late final _taiyin_bazi_shen_sha_catalog_remove_module =
+      _taiyin_bazi_shen_sha_catalog_remove_modulePtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_bazi_shen_sha_catalog>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Pointer<taiyin_bazi_shen_sha_catalog>>,
+            )
+          >();
+
+  int taiyin_bazi_shen_sha_context_create(
+    ffi.Pointer<taiyin_bazi_shen_sha_catalog> catalog,
+    ffi.Pointer<ffi.Pointer<ffi.Char>> disabled_ids,
+    int count,
+    ffi.Pointer<ffi.Pointer<taiyin_bazi_shen_sha_context>> out,
+  ) {
+    return _taiyin_bazi_shen_sha_context_create(
+      catalog,
+      disabled_ids,
+      count,
+      out,
+    );
+  }
+
+  late final _taiyin_bazi_shen_sha_context_createPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_call_result Function(
+            ffi.Pointer<taiyin_bazi_shen_sha_catalog>,
+            ffi.Pointer<ffi.Pointer<ffi.Char>>,
+            ffi.Size,
+            ffi.Pointer<ffi.Pointer<taiyin_bazi_shen_sha_context>>,
+          )
+        >
+      >('taiyin_bazi_shen_sha_context_create');
+  late final _taiyin_bazi_shen_sha_context_create =
+      _taiyin_bazi_shen_sha_context_createPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_bazi_shen_sha_catalog>,
+              ffi.Pointer<ffi.Pointer<ffi.Char>>,
+              int,
+              ffi.Pointer<ffi.Pointer<taiyin_bazi_shen_sha_context>>,
+            )
+          >();
+
+  void taiyin_bazi_shen_sha_context_destroy(
+    ffi.Pointer<taiyin_bazi_shen_sha_context> context,
+  ) {
+    return _taiyin_bazi_shen_sha_context_destroy(context);
+  }
+
+  late final _taiyin_bazi_shen_sha_context_destroyPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<taiyin_bazi_shen_sha_context>)
+        >
+      >('taiyin_bazi_shen_sha_context_destroy');
+  late final _taiyin_bazi_shen_sha_context_destroy =
+      _taiyin_bazi_shen_sha_context_destroyPtr
+          .asFunction<
+            void Function(ffi.Pointer<taiyin_bazi_shen_sha_context>)
+          >();
+
+  int taiyin_bazi_shen_sha_evaluate(
+    ffi.Pointer<taiyin_bazi_shen_sha_context> context,
+    ffi.Pointer<taiyin_bazi_chart> chart,
+    int target,
+    int target_kind,
+    int gender,
+    ffi.Pointer<ffi.Pointer<taiyin_bazi_shen_sha_matches>> out,
+  ) {
+    return _taiyin_bazi_shen_sha_evaluate(
+      context,
+      chart,
+      target,
+      target_kind,
+      gender,
+      out,
+    );
+  }
+
+  late final _taiyin_bazi_shen_sha_evaluatePtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_call_result Function(
+            ffi.Pointer<taiyin_bazi_shen_sha_context>,
+            ffi.Pointer<taiyin_bazi_chart>,
+            taiyin_ganzhi,
+            ffi.Int32,
+            ffi.Int32,
+            ffi.Pointer<ffi.Pointer<taiyin_bazi_shen_sha_matches>>,
+          )
+        >
+      >('taiyin_bazi_shen_sha_evaluate');
+  late final _taiyin_bazi_shen_sha_evaluate = _taiyin_bazi_shen_sha_evaluatePtr
+      .asFunction<
+        int Function(
+          ffi.Pointer<taiyin_bazi_shen_sha_context>,
+          ffi.Pointer<taiyin_bazi_chart>,
+          int,
+          int,
+          int,
+          ffi.Pointer<ffi.Pointer<taiyin_bazi_shen_sha_matches>>,
+        )
+      >();
+
+  void taiyin_bazi_shen_sha_matches_destroy(
+    ffi.Pointer<taiyin_bazi_shen_sha_matches> matches,
+  ) {
+    return _taiyin_bazi_shen_sha_matches_destroy(matches);
+  }
+
+  late final _taiyin_bazi_shen_sha_matches_destroyPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<taiyin_bazi_shen_sha_matches>)
+        >
+      >('taiyin_bazi_shen_sha_matches_destroy');
+  late final _taiyin_bazi_shen_sha_matches_destroy =
+      _taiyin_bazi_shen_sha_matches_destroyPtr
+          .asFunction<
+            void Function(ffi.Pointer<taiyin_bazi_shen_sha_matches>)
+          >();
+
+  int taiyin_bazi_shen_sha_matches_count(
+    ffi.Pointer<taiyin_bazi_shen_sha_matches> matches,
+  ) {
+    return _taiyin_bazi_shen_sha_matches_count(matches);
+  }
+
+  late final _taiyin_bazi_shen_sha_matches_countPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Size Function(ffi.Pointer<taiyin_bazi_shen_sha_matches>)
+        >
+      >('taiyin_bazi_shen_sha_matches_count');
+  late final _taiyin_bazi_shen_sha_matches_count =
+      _taiyin_bazi_shen_sha_matches_countPtr
+          .asFunction<
+            int Function(ffi.Pointer<taiyin_bazi_shen_sha_matches>)
+          >();
+
+  int taiyin_bazi_shen_sha_matches_get(
+    ffi.Pointer<taiyin_bazi_shen_sha_matches> matches,
+    int index,
+    ffi.Pointer<ffi.Pointer<ffi.Char>> id,
+    ffi.Pointer<ffi.Pointer<ffi.Char>> name,
+    ffi.Pointer<ffi.Int32> builtin_id,
+  ) {
+    return _taiyin_bazi_shen_sha_matches_get(
+      matches,
+      index,
+      id,
+      name,
+      builtin_id,
+    );
+  }
+
+  late final _taiyin_bazi_shen_sha_matches_getPtr =
+      _lookup<
+        ffi.NativeFunction<
+          taiyin_call_result Function(
+            ffi.Pointer<taiyin_bazi_shen_sha_matches>,
+            ffi.Size,
+            ffi.Pointer<ffi.Pointer<ffi.Char>>,
+            ffi.Pointer<ffi.Pointer<ffi.Char>>,
+            ffi.Pointer<ffi.Int32>,
+          )
+        >
+      >('taiyin_bazi_shen_sha_matches_get');
+  late final _taiyin_bazi_shen_sha_matches_get =
+      _taiyin_bazi_shen_sha_matches_getPtr
+          .asFunction<
+            int Function(
+              ffi.Pointer<taiyin_bazi_shen_sha_matches>,
+              int,
+              ffi.Pointer<ffi.Pointer<ffi.Char>>,
+              ffi.Pointer<ffi.Pointer<ffi.Char>>,
+              ffi.Pointer<ffi.Int32>,
+            )
+          >();
+
   void taiyin_bazi_context_config_init(
     ffi.Pointer<taiyin_bazi_context_config> value,
   ) {
@@ -17839,6 +18118,91 @@ final class taiyin_ganzhi_four_pillars extends ffi.Struct {
 
 final class taiyin_bazi_context extends ffi.Opaque {}
 
+final class taiyin_bazi_shen_sha_catalog extends ffi.Opaque {}
+
+final class taiyin_bazi_shen_sha_context extends ffi.Opaque {}
+
+final class taiyin_bazi_shen_sha_matches extends ffi.Opaque {}
+
+final class taiyin_bazi_chart extends ffi.Struct {
+  @ffi.Uint32()
+  external int struct_size;
+
+  @taiyin_ganzhi()
+  external int year_pillar;
+
+  @taiyin_ganzhi()
+  external int month_pillar;
+
+  @taiyin_ganzhi()
+  external int day_pillar;
+
+  @taiyin_ganzhi()
+  external int hour_pillar;
+
+  @taiyin_ganzhi()
+  external int ming_gong;
+
+  @taiyin_ganzhi()
+  external int shen_gong;
+
+  @taiyin_ganzhi()
+  external int tai_yuan;
+
+  @taiyin_ganzhi()
+  external int tai_xi;
+
+  @ffi.Array.multi([4])
+  external ffi.Array<ffi.Uint8> hidden_stem_count;
+
+  @ffi.Array.multi([4, 3])
+  external ffi.Array<ffi.Array<ffi.Uint8>> hidden_stems;
+
+  @ffi.Array.multi([4])
+  external ffi.Array<ffi.Uint8> visible_ten_gods;
+
+  @ffi.Array.multi([4, 3])
+  external ffi.Array<ffi.Array<ffi.Uint8>> hidden_ten_gods;
+
+  @ffi.Array.multi([4])
+  external ffi.Array<ffi.Uint8> life_stages;
+
+  @ffi.Array.multi([4])
+  external ffi.Array<ffi.Uint8> nayin_ids;
+}
+
+typedef taiyin_bazi_shen_sha_predicateFunction =
+    ffi.Int32 Function(
+      ffi.Pointer<taiyin_ganzhi_four_pillars> pillars,
+      taiyin_ganzhi target,
+      ffi.Int32 target_kind,
+      ffi.Int32 gender,
+      ffi.Pointer<ffi.Void> user_data,
+    );
+typedef Darttaiyin_bazi_shen_sha_predicateFunction =
+    int Function(
+      ffi.Pointer<taiyin_ganzhi_four_pillars> pillars,
+      Darttaiyin_ganzhi target,
+      int target_kind,
+      int gender,
+      ffi.Pointer<ffi.Void> user_data,
+    );
+typedef taiyin_bazi_shen_sha_predicate =
+    ffi.Pointer<ffi.NativeFunction<taiyin_bazi_shen_sha_predicateFunction>>;
+
+final class taiyin_bazi_shen_sha_rule extends ffi.Struct {
+  @ffi.Uint32()
+  external int struct_size;
+
+  external ffi.Pointer<ffi.Char> id;
+
+  external ffi.Pointer<ffi.Char> name;
+
+  external taiyin_bazi_shen_sha_predicate predicate;
+
+  external ffi.Pointer<ffi.Void> user_data;
+}
+
 sealed class taiyin_bazi_earth_palace_mode {
   static const TAIYIN_BAZI_EARTH_PALACE_FIRE_EARTH = 0;
   static const TAIYIN_BAZI_EARTH_PALACE_WATER_EARTH = 1;
@@ -18045,53 +18409,6 @@ final class taiyin_bazi_context_config extends ffi.Struct {
 
   @ffi.Int32()
   external int dayun_boundary_model;
-}
-
-final class taiyin_bazi_chart extends ffi.Struct {
-  @ffi.Uint32()
-  external int struct_size;
-
-  @taiyin_ganzhi()
-  external int year_pillar;
-
-  @taiyin_ganzhi()
-  external int month_pillar;
-
-  @taiyin_ganzhi()
-  external int day_pillar;
-
-  @taiyin_ganzhi()
-  external int hour_pillar;
-
-  @taiyin_ganzhi()
-  external int ming_gong;
-
-  @taiyin_ganzhi()
-  external int shen_gong;
-
-  @taiyin_ganzhi()
-  external int tai_yuan;
-
-  @taiyin_ganzhi()
-  external int tai_xi;
-
-  @ffi.Array.multi([4])
-  external ffi.Array<ffi.Uint8> hidden_stem_count;
-
-  @ffi.Array.multi([4, 3])
-  external ffi.Array<ffi.Array<ffi.Uint8>> hidden_stems;
-
-  @ffi.Array.multi([4])
-  external ffi.Array<ffi.Uint8> visible_ten_gods;
-
-  @ffi.Array.multi([4, 3])
-  external ffi.Array<ffi.Array<ffi.Uint8>> hidden_ten_gods;
-
-  @ffi.Array.multi([4])
-  external ffi.Array<ffi.Uint8> life_stages;
-
-  @ffi.Array.multi([4])
-  external ffi.Array<ffi.Uint8> nayin_ids;
 }
 
 final class taiyin_bazi_relation extends ffi.Struct {

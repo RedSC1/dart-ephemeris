@@ -355,10 +355,21 @@ const Set<String> taiyinRequiredAbi9Symbols = {
   'taiyin_chinese_calendar_calc_four_pillars_ut',
 };
 
-/// BaZi symbols, verified by `package:ephemeris_bazi` only when the loaded
-/// library advertises the BaZi capability. The symbols do not exist in a build
-/// without `TAIYIN_BUILD_BAZI_EXTENSION=ON`, so they must never be looked up
-/// otherwise.
+/// Additive beta12 catalog symbols, required only when opening a catalog.
+const Set<String> taiyinBaziShenShaSymbols = {
+  'taiyin_bazi_shen_sha_catalog_create',
+  'taiyin_bazi_shen_sha_catalog_destroy',
+  'taiyin_bazi_shen_sha_catalog_add_module',
+  'taiyin_bazi_shen_sha_catalog_remove_module',
+  'taiyin_bazi_shen_sha_context_create',
+  'taiyin_bazi_shen_sha_context_destroy',
+  'taiyin_bazi_shen_sha_evaluate',
+  'taiyin_bazi_shen_sha_matches_destroy',
+  'taiyin_bazi_shen_sha_matches_count',
+  'taiyin_bazi_shen_sha_matches_get',
+};
+
+/// Regular BaZi symbols, looked up only when loading the optional BaZi module.
 const Set<String> taiyinBaziSymbols = {
   'taiyin_bazi_context_config_init',
   'taiyin_bazi_chart_init',

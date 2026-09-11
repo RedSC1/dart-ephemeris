@@ -28,6 +28,22 @@ void main() {
     expect(missing, isEmpty);
   });
 
+  test('Shen Sha symbol contract covers its separate facade', () {
+    final root = File('lib/src/shen_sha_catalog.dart').existsSync()
+        ? '.'
+        : 'packages/ephemeris_bazi';
+    final source = File(
+      '$root/lib/src/shen_sha_catalog.dart',
+    ).readAsStringSync();
+    final symbols = RegExp(
+      r'\b(taiyin_bazi_[a-z0-9_]+)\s*\(',
+    ).allMatches(source).map((match) => match.group(1)!).toSet();
+    expect(
+      symbols.difference({...taiyinBaziSymbols, ...taiyinBaziShenShaSymbols}),
+      isEmpty,
+    );
+  });
+
   test(
     'BaZi reports a missing extension module',
     () {
