@@ -1,3 +1,8 @@
+## 1.0.0-beta.10
+
+- Rebuild native libraries against Taiyin beta.12 (compatible C ABI 11).
+- Release alongside the optional BaZi Shen Sha catalog API.
+
 ## 1.0.0-beta.9
 
 - Build all native modules from Taiyin `v1.0.0-beta.11`, C ABI 11.

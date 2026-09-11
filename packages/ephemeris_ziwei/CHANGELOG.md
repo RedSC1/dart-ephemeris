@@ -1,3 +1,8 @@
+## 1.0.0-beta.10
+
+- Rebuild against Taiyin beta.12 and require ephemeris beta.10.
+- No Ziwei API changes.
+
 ## 1.0.0-beta.9
 
 - Build against Taiyin `v1.0.0-beta.11`, C ABI 11, and ephemeris beta.9.

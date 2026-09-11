@@ -6,6 +6,8 @@ import 'package:ephemeris/ephemeris.dart';
 
 import 'bazi_models.dart';
 
+part 'shen_sha_catalog.dart';
+
 /// The native "invalid five-element" sentinel (`TAIYIN_BAZI_INVALID_WUXING`).
 const int _taiyinBaziInvalidWuxing = 0xff;
 
