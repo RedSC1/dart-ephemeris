@@ -1,3 +1,11 @@
+## 1.0.0-beta.10
+
+- Add immutable Shen Sha catalogs, custom callback modules, selections, and
+  standalone evaluation contexts. Built-in rules cannot be overwritten.
+- Add explicit disposal, callback lifetime/reentry safeguards, and separate
+  core-library and BaZi-library overrides.
+- Require ephemeris beta.10 and bundle Taiyin beta.12 with the new C functions.
+
 ## 1.0.0-beta.9
 
 - Build against Taiyin `v1.0.0-beta.11`, C ABI 11, and ephemeris beta.9.
