@@ -3,6 +3,22 @@ library;
 
 import 'package:ephemeris/ephemeris.dart';
 
+/// Clock fields used to construct a BaZi chart.
+///
+/// This is independent of the Chinese calendar's new-moon/solar-term day
+/// boundary policy. Solar modes use east-positive geographic longitude.
+enum BaziClockMode { fixedOffset, meanSolar, apparentSolar }
+
+final class BaziClock {
+  const BaziClock({
+    this.mode = BaziClockMode.fixedOffset,
+    this.longitudeRadians = 0,
+  });
+
+  final BaziClockMode mode;
+  final double longitudeRadians;
+}
+
 /// How the 安命宫 (life-palace) / 安身宫 (body-palace) earth position is derived.
 enum BaziEarthPalaceMode {
   /// 火土 (fire-earth) palace rules.
@@ -551,14 +567,25 @@ final class BaziChart {
 final class BaziResult {
   const BaziResult({
     required this.instantUtc,
-    required this.localTime,
+    required this.chartTime,
     required this.pillars,
     required this.chart,
     required this.qiyun,
+    this.clockTime,
   });
 
   final JulianDate<UtcScale> instantUtc;
-  final AstroDateTime localTime;
+
+  /// The civil, mean-solar, or apparent-solar clock used by the chart.
+  final AstroDateTime chartTime;
+
+  /// The original fixed-offset civil clock, when one was supplied or derived.
+  final AstroDateTime? clockTime;
+
+  /// Backward-compatible name for [chartTime].
+  @Deprecated('Use chartTime instead.')
+  AstroDateTime get localTime => chartTime;
+
   final GanzhiFourPillars pillars;
   final BaziChart chart;
   final BaziQiyunResult qiyun;

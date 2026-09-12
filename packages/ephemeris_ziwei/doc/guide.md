@@ -1,7 +1,7 @@
 # Ziwei Doushu guide
 
-See [explicit chart clocks](chart-clocks.md) for the new UT1 conversion,
-natal/flow, navigation and reverse-search APIs (unreleased).
+See [explicit chart clocks](chart-clocks.md) for UT1 conversion, natal/flow,
+navigation and reverse-search APIs.
 
 `ephemeris_ziwei` is an optional native extension. It ships a Ziwei native
 module and the bundled default TOML rule profile.
@@ -37,12 +37,26 @@ try {
 }
 ```
 
-`calculateInstant` accepts a physical UTC instant and resolves its local clock
-through the bound Chinese-calendar context. `calculateLocal` accepts a wall
-clock under that context's calendar policy. The lower-level `createChart`
-accepts both a physical instant and a deliberately adjusted virtual wall clock,
-which is the appropriate entry point for an application-computed apparent
-solar time.
+`calculateInstant` accepts a physical UTC instant and resolves its chart clock
+through the bound Chinese-calendar context. `calculateLocal` accepts the
+original civil clock. Both accept `ZiweiClock`, so callers do not have to
+manually construct a second corrected timestamp.
+
+```dart
+final chart = ziwei.calculateSolarDay(
+  const eph.SolarDate(year: 2003, month: 3, day: 13),
+  hour: 14,
+  minute: 15,
+  gender: ZiweiGender.male,
+  clock: const ZiweiClock(
+    mode: ZiweiClockMode.apparentSolar,
+    longitudeRadians: 118.582 * 3.141592653589793 / 180,
+  ),
+).value;
+```
+
+`calculateLunarDay` provides the matching lunar-calendar factory and converts
+through the bound `ChineseCalendarContext`.
 
 ## Manual placement and casting charts
 

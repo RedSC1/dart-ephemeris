@@ -1,4 +1,4 @@
-# Explicit chart clocks (unreleased)
+# Explicit chart clocks
 
 `ZiweiClock` selects `fixedOffset`, `meanSolar`, or `apparentSolar` independently
 of the calendar's month/day-boundary policy. Solar longitude is east-positive

@@ -1,8 +1,8 @@
 # ephemeris_ziwei
 
-Unreleased: [explicit chart clocks](doc/chart-clocks.md) for fixed-offset,
-mean/apparent solar time, including flows and reverse lookup. These methods
-require the new core C ABI and rebuilt native libraries, not old artifacts.
+[Explicit chart clocks](doc/chart-clocks.md) support fixed-offset and
+mean/apparent solar time across natal charts, flows, and reverse lookup. These
+methods require matching core and Ziwei native libraries.
 
 New in beta.7: immutable natal edits and independent manual, number
 and random casting charts. See the [guide](doc/guide.md#manual-placement-and-casting-charts).
@@ -42,6 +42,12 @@ void main() {
       AstroDateTime(2003, 3, 13, 14, 15),
       gender: ZiweiGender.male,
     );
+    final fromDay = context.ziwei.calculateSolarDay(
+      const SolarDate(year: 2003, month: 3, day: 13),
+      hour: 14,
+      minute: 15,
+      gender: ZiweiGender.male,
+    );
     print(result.value.summary.bureauId);
     print(result.flags.values);
   } finally {
@@ -49,6 +55,11 @@ void main() {
   }
 }
 ```
+
+`calculateSolarDay()` and `calculateLunarDay()` combine a calendar day with
+explicit clock fields. `calculateLocal()`, `calculateInstant()`, and both day
+factories accept `ZiweiClock` for fixed-offset, mean-solar, or apparent-solar
+chart time.
 
 The default TOML rule profile ships bundled under `lib/data/ziwei/rules/` and
 loads automatically. `ZiweiDataCatalog(profilePath: ...)` loads a custom

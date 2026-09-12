@@ -1,3 +1,10 @@
+## Unreleased
+
+- Add `calculateSolarDay` and `calculateLunarDay` convenience factories.
+- Add fixed-offset, mean-solar, and apparent-solar `BaziClock` policies.
+- Distinguish physical `instantUtc`, original civil `clockTime`, and effective
+  `chartTime`; retain `localTime` as a deprecated compatibility getter.
+
 ## 1.0.0-beta.10
 
 - Add immutable Shen Sha catalogs, custom callback modules, selections, and

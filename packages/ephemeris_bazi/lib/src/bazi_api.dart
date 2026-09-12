@@ -442,9 +442,10 @@ final class BaziContext implements Finalizable {
 
   OperationResult<BaziResult> _calculateResolved({
     required JulianDate<UtcScale> instantUtc,
-    required AstroDateTime localTime,
+    required AstroDateTime chartTime,
     required BaziGender gender,
     required GanzhiRatHourMode ratHourMode,
+    AstroDateTime? clockTime,
   }) {
     final utcCalendarResult = _calendar.owner.time.reverseJulianDay(instantUtc);
     final timeScalesResult = _calendar.owner.time.scalesFromUtc(
@@ -452,20 +453,21 @@ final class BaziContext implements Finalizable {
     );
     final pillarsResult = _calendar.fourPillars(
       instantUtc: instantUtc,
-      virtualTime: localTime,
+      virtualTime: chartTime,
       ratHourMode: ratHourMode,
     );
     final chart = calcChart(pillarsResult.value);
     final qiyunResult = calcQiyun(
       birthJdUt: timeScalesResult.value.value.ut1,
-      birthCivilTime: localTime,
+      birthCivilTime: chartTime,
       chart: chart,
       gender: gender,
     );
     return operationResult(
       BaziResult(
         instantUtc: instantUtc,
-        localTime: localTime,
+        chartTime: chartTime,
+        clockTime: clockTime,
         pillars: pillarsResult.value,
         chart: chart,
         qiyun: qiyunResult.value,
@@ -477,21 +479,68 @@ final class BaziContext implements Finalizable {
     );
   }
 
+  void _validateClock(BaziClock clock) {
+    if (clock.mode != BaziClockMode.fixedOffset &&
+        (!clock.longitudeRadians.isFinite ||
+            clock.longitudeRadians.abs() > 3.141592653589793)) {
+      throw ArgumentError.value(
+        clock.longitudeRadians,
+        'longitudeRadians',
+        'must be finite and within [-pi, pi]',
+      );
+    }
+  }
+
+  OperationResult<AstroDateTime> _chartTimeFromInstant(
+    JulianDate<UtcScale> instantUtc,
+    BaziClock clock,
+  ) {
+    _validateClock(clock);
+    if (clock.mode == BaziClockMode.fixedOffset) {
+      return _calendar.localTimeFromInstant(instantUtc);
+    }
+
+    final ut1 = _calendar.owner.time.utcToUt1(instantUtc);
+    final mean = LocalMeanSolarTime.fromUt1(
+      ut1.value,
+      longitudeRadians: clock.longitudeRadians,
+    );
+    if (clock.mode == BaziClockMode.meanSolar) {
+      final chartTime = _calendar.owner.time.reverseJulianDay(mean.coordinate);
+      return operationResult(chartTime.value, ut1.flags | chartTime.flags);
+    }
+
+    final apparent = _calendar.owner.solarTime.meanToApparent(mean);
+    final chartTime = _calendar.owner.time.reverseJulianDay(
+      apparent.value.coordinate,
+    );
+    return operationResult(
+      chartTime.value,
+      ut1.flags | apparent.flags | chartTime.flags,
+    );
+  }
+
   /// Calculates a complete BaZi result from a fixed-offset local civil clock.
   OperationResult<BaziResult> calculateLocal(
     AstroDateTime localTime, {
     required BaziGender gender,
     GanzhiRatHourMode ratHourMode = GanzhiRatHourMode.noSplit,
+    BaziClock clock = const BaziClock(),
   }) {
     _ensureOpen();
     final instant = _calendar.instantFromLocal(localTime);
+    final chartTime = _chartTimeFromInstant(instant.value, clock);
     final result = _calculateResolved(
       instantUtc: instant.value,
-      localTime: localTime,
+      chartTime: chartTime.value,
+      clockTime: localTime,
       gender: gender,
       ratHourMode: ratHourMode,
     );
-    return operationResult(result.value, instant.flags | result.flags);
+    return operationResult(
+      result.value,
+      instant.flags | chartTime.flags | result.flags,
+    );
   }
 
   /// Calculates a complete BaZi result from one UTC instant and the configured
@@ -500,16 +549,75 @@ final class BaziContext implements Finalizable {
     JulianDate<UtcScale> instantUtc, {
     required BaziGender gender,
     GanzhiRatHourMode ratHourMode = GanzhiRatHourMode.noSplit,
+    BaziClock clock = const BaziClock(),
   }) {
     _ensureOpen();
-    final localTimeResult = _calendar.localTimeFromInstant(instantUtc);
+    final clockTime = _calendar.localTimeFromInstant(instantUtc);
+    final chartTime = _chartTimeFromInstant(instantUtc, clock);
     final result = _calculateResolved(
       instantUtc: instantUtc,
-      localTime: localTimeResult.value,
+      chartTime: chartTime.value,
+      clockTime: clockTime.value,
       gender: gender,
       ratHourMode: ratHourMode,
     );
-    return operationResult(result.value, result.flags | localTimeResult.flags);
+    return operationResult(
+      result.value,
+      result.flags | clockTime.flags | chartTime.flags,
+    );
+  }
+
+  /// Calculates from a Gregorian day and explicit local clock fields.
+  OperationResult<BaziResult> calculateSolarDay(
+    SolarDate solarDay, {
+    required int hour,
+    int minute = 0,
+    int second = 0,
+    int nanosecond = 0,
+    required BaziGender gender,
+    GanzhiRatHourMode ratHourMode = GanzhiRatHourMode.noSplit,
+    BaziClock clock = const BaziClock(),
+  }) {
+    final localTime = AstroDateTime(
+      solarDay.year,
+      solarDay.month,
+      solarDay.day,
+      hour,
+      minute,
+      second,
+      nanosecond,
+    );
+    return calculateLocal(
+      localTime,
+      gender: gender,
+      ratHourMode: ratHourMode,
+      clock: clock,
+    );
+  }
+
+  /// Converts a lunar day with the bound calendar, then calculates its chart.
+  OperationResult<BaziResult> calculateLunarDay(
+    LunarDate lunarDay, {
+    required int hour,
+    int minute = 0,
+    int second = 0,
+    int nanosecond = 0,
+    required BaziGender gender,
+    GanzhiRatHourMode ratHourMode = GanzhiRatHourMode.noSplit,
+    BaziClock clock = const BaziClock(),
+  }) {
+    final solarDay = _calendar.fromLunar(lunarDay);
+    final result = calculateSolarDay(
+      solarDay.value,
+      hour: hour,
+      minute: minute,
+      second: second,
+      nanosecond: nanosecond,
+      gender: gender,
+      ratHourMode: ratHourMode,
+      clock: clock,
+    );
+    return operationResult(result.value, solarDay.flags | result.flags);
   }
 
   /// Computes the 起运 (qi-yun) start of the first 大运 for a birth instant.

@@ -437,6 +437,47 @@ void main() {
         );
       });
 
+      test(
+        'day factories and explicit chart clocks keep one birth instant',
+        () {
+          const solarDay = SolarDate(year: 2003, month: 3, day: 13);
+          final lunarDay = context.chineseCalendar.fromSolar(solarDay);
+
+          final solar = context.bazi.calculateSolarDay(
+            solarDay,
+            hour: 14,
+            minute: 15,
+            gender: BaziGender.male,
+          );
+          final lunar = context.bazi.calculateLunarDay(
+            lunarDay.value,
+            hour: 14,
+            minute: 15,
+            gender: BaziGender.male,
+          );
+          expect(lunar.value.pillars.year.raw, solar.value.pillars.year.raw);
+          expect(lunar.value.pillars.month.raw, solar.value.pillars.month.raw);
+          expect(lunar.value.pillars.day.raw, solar.value.pillars.day.raw);
+          expect(lunar.value.pillars.hour.raw, solar.value.pillars.hour.raw);
+          expect(solar.value.chartTime, solar.value.localTime);
+          expect(solar.value.clockTime, AstroDateTime(2003, 3, 13, 14, 15));
+
+          context.time.setAllowUtcOutOfRangeEstimate(true);
+          final apparent = context.bazi.calculateSolarDay(
+            solarDay,
+            hour: 14,
+            minute: 15,
+            gender: BaziGender.male,
+            clock: const BaziClock(
+              mode: BaziClockMode.apparentSolar,
+              longitudeRadians: 118.582 * 3.141592653589793 / 180,
+            ),
+          );
+          expect(apparent.value.clockTime, AstroDateTime(2003, 3, 13, 14, 15));
+          expect(apparent.value.chartTime, isNot(apparent.value.clockTime));
+        },
+      );
+
       test('propagates the configured UTC-to-UT1 fallback into results', () {
         context.close();
         runtime = Ephemeris.open(

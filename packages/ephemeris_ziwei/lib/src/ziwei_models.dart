@@ -26,6 +26,7 @@ final class ZiweiClockTarget {
   });
   final JulianDate<Ut1Scale> instantUt1;
   final AstroDateTime virtualTime;
+  AstroDateTime get chartTime => virtualTime;
   final ZiweiRatHourSegment ratHourSegment;
 }
 
@@ -43,6 +44,7 @@ final class ZiweiReverseLookupUt1Candidate {
   });
   final JulianDate<Ut1Scale> instantUt1;
   final AstroDateTime virtualTime;
+  AstroDateTime get chartTime => virtualTime;
   final int lunarYear;
   final int lunarMonth;
   final int lunarDay;
@@ -542,6 +544,7 @@ final class ZiweiReverseLookupCandidate {
 
   final JulianDate<UtcScale> instantUtc;
   final AstroDateTime virtualTime;
+  AstroDateTime get chartTime => virtualTime;
 
   final int lunarYear;
   final int lunarMonth;
@@ -563,6 +566,7 @@ final class ZiweiFlowHourTarget {
 
   final JulianDate<UtcScale> instantUtc;
   final AstroDateTime virtualTime;
+  AstroDateTime get chartTime => virtualTime;
   final ZiweiRatHourSegment ratHourSegment;
 }
 
@@ -575,6 +579,7 @@ final class ZiweiFlowDayTarget {
 
   final JulianDate<UtcScale> instantUtc;
   final AstroDateTime virtualTime;
+  AstroDateTime get chartTime => virtualTime;
 }
 
 /// A star registered in a Ziwei rule catalog.

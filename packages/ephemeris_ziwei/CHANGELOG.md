@@ -1,3 +1,9 @@
+## Unreleased
+
+- Add `calculateSolarDay` and `calculateLunarDay` convenience factories.
+- Accept `ZiweiClock` in the high-level local/instant/day chart factories and
+  expose `chartTime` aliases on clock/navigation/reverse results.
+
 ## 1.0.0-beta.10
 
 - Rebuild against Taiyin beta.12 and require ephemeris beta.10.
