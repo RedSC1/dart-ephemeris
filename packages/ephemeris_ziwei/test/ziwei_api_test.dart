@@ -312,6 +312,58 @@ void main() {
         expect(instantResult.flags, isA<ResultFlags>());
       });
 
+      test('day factories accept civil and apparent-solar chart clocks', () {
+        final ziwei = context.ziwei;
+        const solarDay = SolarDate(year: 2003, month: 3, day: 13);
+        final lunarDay = context.chineseCalendar.fromSolar(solarDay);
+
+        final solar = ziwei.calculateSolarDay(
+          solarDay,
+          hour: 14,
+          minute: 15,
+          gender: ZiweiGender.male,
+        );
+        addTearDown(solar.value.close);
+        final lunar = ziwei.calculateLunarDay(
+          lunarDay.value,
+          hour: 14,
+          minute: 15,
+          gender: ZiweiGender.male,
+        );
+        addTearDown(lunar.value.close);
+        expect(lunar.value.anchors.values, solar.value.anchors.values);
+
+        context.time.setAllowUtcOutOfRangeEstimate(true);
+        const clock = ZiweiClock(
+          mode: ZiweiClockMode.apparentSolar,
+          longitudeRadians: 118.582 * 3.141592653589793 / 180,
+        );
+        final apparent = ziwei.calculateSolarDay(
+          solarDay,
+          hour: 14,
+          minute: 15,
+          gender: ZiweiGender.male,
+          clock: clock,
+        );
+        addTearDown(apparent.value.close);
+
+        final instantUtc = AstroDateTime(
+          2003,
+          3,
+          13,
+          14,
+          15,
+        ).toUtcJulianDate().addSeconds(-8 * 3600);
+        final instantUt1 = context.time.utcToUt1(instantUtc);
+        final direct = ziwei.createChartAtUt1(
+          instantUt1: instantUt1.value,
+          gender: ZiweiGender.male,
+          clock: clock,
+        );
+        addTearDown(direct.value.close);
+        expect(apparent.value.anchors.values, direct.value.anchors.values);
+      });
+
       test('sets and truncates the flow stack', () {
         final ziwei = context.ziwei;
         final chart = createReferenceChart(ziwei);

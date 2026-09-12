@@ -505,9 +505,23 @@ final class ZiweiContext implements Finalizable {
     AstroDateTime localTime, {
     required ZiweiGender gender,
     ZiweiBirthOptions options = const ZiweiBirthOptions(),
+    ZiweiClock clock = const ZiweiClock(),
   }) {
     _ensureOpen();
     final instant = _calendar.instantFromLocal(localTime);
+    if (clock.mode != ZiweiClockMode.fixedOffset) {
+      final ut1 = _calendar.owner.time.utcToUt1(instant.value);
+      final chart = createChartAtUt1(
+        instantUt1: ut1.value,
+        gender: gender,
+        options: options,
+        clock: clock,
+      );
+      return operationResult(
+        chart.value,
+        instant.flags | ut1.flags | chart.flags,
+      );
+    }
     final chart = createChart(
       instantUtc: instant.value,
       virtualTime: localTime,
@@ -525,8 +539,19 @@ final class ZiweiContext implements Finalizable {
     JulianDate<UtcScale> instantUtc, {
     required ZiweiGender gender,
     ZiweiBirthOptions options = const ZiweiBirthOptions(),
+    ZiweiClock clock = const ZiweiClock(),
   }) {
     _ensureOpen();
+    if (clock.mode != ZiweiClockMode.fixedOffset) {
+      final ut1 = _calendar.owner.time.utcToUt1(instantUtc);
+      final chart = createChartAtUt1(
+        instantUt1: ut1.value,
+        gender: gender,
+        options: options,
+        clock: clock,
+      );
+      return operationResult(chart.value, ut1.flags | chart.flags);
+    }
     final localTimeResult = _calendar.localTimeFromInstant(instantUtc);
     final chartResult = createChart(
       instantUtc: instantUtc,
@@ -538,6 +563,59 @@ final class ZiweiContext implements Finalizable {
       chartResult.value,
       chartResult.flags | localTimeResult.flags,
     );
+  }
+
+  /// Creates a chart from a Gregorian day and explicit local clock fields.
+  OperationResult<ZiweiChart> calculateSolarDay(
+    SolarDate solarDay, {
+    required int hour,
+    int minute = 0,
+    int second = 0,
+    int nanosecond = 0,
+    required ZiweiGender gender,
+    ZiweiBirthOptions options = const ZiweiBirthOptions(),
+    ZiweiClock clock = const ZiweiClock(),
+  }) {
+    final localTime = AstroDateTime(
+      solarDay.year,
+      solarDay.month,
+      solarDay.day,
+      hour,
+      minute,
+      second,
+      nanosecond,
+    );
+    return calculateLocal(
+      localTime,
+      gender: gender,
+      options: options,
+      clock: clock,
+    );
+  }
+
+  /// Converts a lunar day with the bound calendar, then creates its chart.
+  OperationResult<ZiweiChart> calculateLunarDay(
+    LunarDate lunarDay, {
+    required int hour,
+    int minute = 0,
+    int second = 0,
+    int nanosecond = 0,
+    required ZiweiGender gender,
+    ZiweiBirthOptions options = const ZiweiBirthOptions(),
+    ZiweiClock clock = const ZiweiClock(),
+  }) {
+    final solarDay = _calendar.fromLunar(lunarDay);
+    final result = calculateSolarDay(
+      solarDay.value,
+      hour: hour,
+      minute: minute,
+      second: second,
+      nanosecond: nanosecond,
+      gender: gender,
+      options: options,
+      clock: clock,
+    );
+    return operationResult(result.value, solarDay.flags | result.flags);
   }
 
   /// Moves to an adjacent logical flow hour, preserving minutes and seconds.

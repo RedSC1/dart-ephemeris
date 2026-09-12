@@ -33,6 +33,12 @@ void main() {
       AstroDateTime(2003, 3, 13, 14, 15),
       gender: BaziGender.male,
     );
+    final fromDay = context.bazi.calculateSolarDay(
+      const SolarDate(year: 2003, month: 3, day: 13),
+      hour: 14,
+      minute: 15,
+      gender: BaziGender.male,
+    );
     print(result.value.chart.dayPillar);
     print(result.value.qiyun.startCivilTime);
     print(result.flags.values);
@@ -46,6 +52,11 @@ A BaZi context binds one `ChineseCalendarContext` at creation (the cached
 default calendar unless `createBazi(calendar: ...)` says otherwise) and
 resolves solar terms through it; the calendar must belong to the same
 `EphemerisContext`.
+
+`calculateSolarDay()` and `calculateLunarDay()` combine a calendar day with
+explicit clock fields. Pass `BaziClock(mode: BaziClockMode.apparentSolar,
+longitudeRadians: ...)` for true-solar-time charts. `BaziResult` separates
+`instantUtc`, original civil `clockTime`, and effective `chartTime`.
 
 This package ships and lazily loads its own `libtaiyin_bazi` native module; the
 root `ephemeris` package does not contain BaZi symbols. Override the bundled module

@@ -148,6 +148,12 @@ final result = bazi.calculateLocal(
   eph.AstroDateTime(2003, 3, 13, 14, 15),
   gender: BaziGender.male,
 );
+final fromDay = bazi.calculateSolarDay(
+  const eph.SolarDate(year: 2003, month: 3, day: 13),
+  hour: 14,
+  minute: 15,
+  gender: BaziGender.male,
+);
 
 print('Four pillars: ${result.value.pillars}');
 print('Qi-Yun start: ${result.value.qiyun.startCivilTime}');
@@ -157,6 +163,10 @@ print('Visible Ten Gods: ${result.value.chart.visibleTenGods}');
 The cached BaZi context uses the calculation context's default Chinese-calendar
 policy. `createBazi(calendar: ...)` can bind another calendar created by the
 same `EphemerisContext`.
+Use `BaziClock(mode: BaziClockMode.meanSolar/apparentSolar, ...)` when the
+chart should use local mean or apparent ("true") solar time. Results keep the
+physical `instantUtc`, original civil `clockTime`, and effective `chartTime`
+separate.
 
 ## Ziwei Doushu extension
 
@@ -185,6 +195,9 @@ try {
 The extension includes natal charts, independent TOML rule selections,
 brightness and transformation overlays, decade-through-hour flow layers,
 early/late Rat-hour navigation, and finite birth-time reverse lookup.
+`calculateSolarDay()` and `calculateLunarDay()` accept a day plus explicit
+clock fields; all high-level factories accept `ZiweiClock` for fixed-offset,
+mean-solar, or apparent-solar chart time.
 
 ## Accuracy and ephemeris data
 

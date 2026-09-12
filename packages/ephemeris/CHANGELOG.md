@@ -1,3 +1,8 @@
+## Unreleased
+
+- Document the new date-oriented BaZi/Ziwei chart factories and explicit
+  chart-clock policies exposed by the optional packages.
+
 ## 1.0.0-beta.10
 
 - Rebuild native libraries against Taiyin beta.12 (compatible C ABI 11).

@@ -43,6 +43,17 @@ final result = bazi.calculateInstant(
 The bound calendar derives the local civil time. Do not also construct and
 maintain a second wall-clock representation for the same event.
 
+For calendar-oriented input, use `calculateSolarDay` or `calculateLunarDay`:
+
+```dart
+final result = bazi.calculateSolarDay(
+  const eph.SolarDate(year: 2003, month: 3, day: 13),
+  hour: 14,
+  minute: 15,
+  gender: BaziGender.male,
+);
+```
+
 ## Use another calendar policy
 
 ```dart
@@ -61,16 +72,29 @@ final customBazi = context.createBazi(
 ```
 
 The fixed UTC offset controls local/instant conversion; the independently
-selected meridian controls lunar structure and civil-day assignment. For an explicit
-apparent (“true”) solar-time wall clock, use the core solar-time API and the
-low-level `fourPillars`, `calcChart`, and `calcQiyun` methods so the original
-physical instant remains authoritative for solar-term boundaries.
+selected meridian controls lunar structure and civil-day assignment. It is
+independent of the chart clock:
+
+```dart
+final result = bazi.calculateLocal(
+  eph.AstroDateTime(2003, 3, 13, 14, 15),
+  gender: BaziGender.male,
+  clock: const BaziClock(
+    mode: BaziClockMode.apparentSolar,
+    longitudeRadians: 118.582 * 3.141592653589793 / 180,
+  ),
+);
+print(result.value.clockTime); // original civil clock
+print(result.value.chartTime); // true-solar chart clock
+```
+
+The physical instant remains authoritative for solar-term boundaries.
 
 ## Luck cycles and chart analysis
 
 ```dart
 final dayun = bazi.fillDayun(
-  birthCivilTime: result.value.localTime,
+  birthCivilTime: result.value.chartTime,
   chart: result.value.chart,
   qiyun: result.value.qiyun,
   requestedCount: 8,

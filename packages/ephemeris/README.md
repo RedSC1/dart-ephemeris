@@ -1149,10 +1149,16 @@ final result = bazi.calculateLocal(
   AstroDateTime(2003, 3, 13, 14, 15),
   gender: BaziGender.male,
 );
+final fromDay = bazi.calculateSolarDay(
+  const SolarDate(year: 2003, month: 3, day: 13),
+  hour: 14,
+  minute: 15,
+  gender: BaziGender.male,
+);
 final chart = result.value.chart;
 final qiyun = result.value.qiyun;
 final dayun = bazi.fillDayun(
-  birthCivilTime: result.value.localTime,
+  birthCivilTime: result.value.chartTime,
   chart: chart,
   qiyun: qiyun,
   requestedCount: 5,
@@ -1180,6 +1186,12 @@ import 'package:ephemeris_ziwei/ephemeris_ziwei.dart';
 final ziwei = context.ziwei;
 final chartResult = ziwei.calculateLocal(
   AstroDateTime(2003, 3, 13, 14, 15),
+  gender: ZiweiGender.male,
+);
+final chartFromDay = ziwei.calculateSolarDay(
+  const SolarDate(year: 2003, month: 3, day: 13),
+  hour: 14,
+  minute: 15,
   gender: ZiweiGender.male,
 );
 final chart = chartResult.value;
