@@ -1,7 +1,8 @@
-## Unreleased
+## 1.0.0-rc.1
 
 - Document the new date-oriented BaZi/Ziwei chart factories and explicit
   chart-clock policies exposed by the optional packages.
+- Rebuild native libraries against Taiyin `v1.0.0-rc.1` (compatible C ABI 11).
 
 ## 1.0.0-beta.10
 

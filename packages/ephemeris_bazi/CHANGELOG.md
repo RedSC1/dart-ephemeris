@@ -1,9 +1,10 @@
-## Unreleased
+## 1.0.0-rc.1
 
 - Add `calculateSolarDay` and `calculateLunarDay` convenience factories.
 - Add fixed-offset, mean-solar, and apparent-solar `BaziClock` policies.
 - Distinguish physical `instantUtc`, original civil `clockTime`, and effective
   `chartTime`; retain `localTime` as a deprecated compatibility getter.
+- Require `ephemeris` RC 1 and build against Taiyin `v1.0.0-rc.1`.
 
 ## 1.0.0-beta.10
 
