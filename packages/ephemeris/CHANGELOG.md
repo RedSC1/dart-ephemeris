@@ -1,3 +1,10 @@
+## 1.0.0-rc.2
+
+- Rebuild native libraries against Taiyin `v1.0.0-rc.2` (compatible C ABI 11).
+- Include precision-correct SPK record selection near fractional segment
+  boundaries and refreshed 1962–2025 Delta-T control points from IERS C04.
+- No Dart API changes.
+
 ## 1.0.0-rc.1
 
 - Document the new date-oriented BaZi/Ziwei chart factories and explicit

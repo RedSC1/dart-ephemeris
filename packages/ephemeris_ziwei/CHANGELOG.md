@@ -1,3 +1,8 @@
+## 1.0.0-rc.2
+
+- Require `ephemeris` RC 2 and rebuild against Taiyin `v1.0.0-rc.2`.
+- No Ziwei API changes.
+
 ## 1.0.0-rc.1
 
 - Add `calculateSolarDay` and `calculateLunarDay` convenience factories.

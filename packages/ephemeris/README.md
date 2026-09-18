@@ -1,6 +1,6 @@
 # Ephemeris for Dart ("Taiyin")
 
-> **Pre-release:** the current package line is `1.0.0-rc.1`. Public APIs
+> **Pre-release:** the current package line is `1.0.0-rc.2`. Public APIs
 > and native packaging may still change before `1.0.0`.
 
 An idiomatic Dart wrapper around the versioned C ABI in
@@ -144,7 +144,7 @@ code that coexists with other packages, prefer the prefixed form above.
 Ephemeris exposes its semantic version and major-release codename independently:
 
 ```dart
-print(ephemeris.libraryVersion);  // 1.0.0-rc.1 with this release's native build
+print(ephemeris.libraryVersion);  // 1.0.0-rc.2 with this release's native build
 print(ephemeris.libraryCodename); // Singularity
 ```
 
