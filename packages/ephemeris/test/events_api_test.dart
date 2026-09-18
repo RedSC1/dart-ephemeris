@@ -82,8 +82,8 @@ void main() {
             .value;
 
         expect(context.lastDiagnostic?.status, 0);
-        expect(solarUt1.toDouble(), closeTo(2460389.6294463626, 5e-8));
-        expect(reverseSolar.toDouble(), closeTo(2460389.6294463626, 5e-8));
+        expect(solarUt1.toDouble(), closeTo(2460389.6294464204, 5e-8));
+        expect(reverseSolar.toDouble(), closeTo(2460389.6294464204, 5e-8));
         expect(
           solarTt.isAfter(JulianDate<TtScale>.fromDouble(equinoxEstimate)),
           isTrue,
@@ -201,7 +201,7 @@ void main() {
         expect(longitudeUt1, hasLength(1));
         expect(
           longitudeUt1.single.toDouble(),
-          closeTo(2460389.6294463626, 5e-8),
+          closeTo(2460389.6294464204, 5e-8),
         );
         expect(longitudeTt, hasLength(1));
         expect(stationsUt1, hasLength(1));

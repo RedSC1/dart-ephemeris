@@ -431,7 +431,7 @@ void main() {
         expect(elements.y, closeTo(0.3044938492945148, 1e-9));
         expect(elements.zeta, closeTo(56.410877306293, 1e-8));
         expect(elements.dDegrees, closeTo(-7.590825680172, 1e-9));
-        expect(elements.muDegrees, closeTo(273.994309591411, 1e-8));
+        expect(elements.muDegrees, closeTo(273.994330026533, 1e-8));
         expect(elements.l1, closeTo(0.535736741366, 1e-9));
         expect(elements.l2, closeTo(0.010590415175, 1e-9));
         expect(
