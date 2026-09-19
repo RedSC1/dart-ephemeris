@@ -1,3 +1,10 @@
+## 1.0.0-rc.3
+
+- Rebuild native libraries against Taiyin `v1.0.0-rc.3` (compatible C ABI 11).
+- Use model-consistent long-term precession, obliquity, sidereal-time, and
+  topocentric observer transforms throughout the native core.
+- No Dart API changes.
+
 ## 1.0.0-rc.2
 
 - Rebuild native libraries against Taiyin `v1.0.0-rc.2` (compatible C ABI 11).

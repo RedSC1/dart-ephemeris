@@ -9,7 +9,7 @@ and random casting charts. See the [guide](doc/guide.md#manual-placement-and-cas
 These APIs require Taiyin `v1.0.0-beta.9` native modules. Release assembly uses
 the validated CI artifacts; a source checkout may still contain older binaries.
 
-> **Pre-release:** `1.0.0-rc.2`, kept in lockstep with the Dart `ephemeris`
+> **Pre-release:** `1.0.0-rc.3`, kept in lockstep with the Dart `ephemeris`
 > core package.
 
 Ziwei Doushu (紫微斗数) extension bindings for the Taiyin ephemeris, part of

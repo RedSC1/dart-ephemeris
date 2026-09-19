@@ -1,3 +1,8 @@
+## 1.0.0-rc.3
+
+- Require `ephemeris` RC 3 and rebuild against Taiyin `v1.0.0-rc.3`.
+- No Ziwei API changes.
+
 ## 1.0.0-rc.2
 
 - Require `ephemeris` RC 2 and rebuild against Taiyin `v1.0.0-rc.2`.
