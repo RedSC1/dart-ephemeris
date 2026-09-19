@@ -426,11 +426,11 @@ void main() {
         );
 
         expect(elements.tHours, 0);
-        // Updated after the native precession/nutation fix (2026-08).
+        // Updated for the native model-consistent long-term precession path.
         expect(elements.x, closeTo(0.15822277776121665, 1e-9));
         expect(elements.y, closeTo(0.3044938492945148, 1e-9));
         expect(elements.zeta, closeTo(56.410877306293, 1e-8));
-        expect(elements.dDegrees, closeTo(-7.590825680172, 1e-9));
+        expect(elements.dDegrees, closeTo(-7.590825674384668, 1e-9));
         expect(elements.muDegrees, closeTo(273.994330026533, 1e-8));
         expect(elements.l1, closeTo(0.535736741366, 1e-9));
         expect(elements.l2, closeTo(0.010590415175, 1e-9));
