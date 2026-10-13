@@ -1,3 +1,9 @@
+## 1.0.0
+
+- First stable release with `ephemeris ^1.0.0` and Taiyin C++ `v1.0.0`.
+- Preserve rc3 behavior, including custom Shen Sha catalogs and chart clocks.
+- Refresh compatibility and native-build documentation.
+
 ## 1.0.0-rc.3
 
 - Require `ephemeris` RC 3 and rebuild against Taiyin `v1.0.0-rc.3`.

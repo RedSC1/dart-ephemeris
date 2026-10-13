@@ -1,8 +1,11 @@
 # Pinned Ziwei native modules
 
 This directory contains the macOS arm64, Linux x64, and Windows x64 modular
-Ziwei targets from Taiyin 1.0.0-beta.8, native commit `dec7dd1`, C ABI 10. They
+published Ziwei targets from Taiyin `v1.0.0`, C ABI 11. They
 depend on the matching modular core shipped by `package:ephemeris`.
+
+Source-checkout copies may be older. Stage the successful release CI artifacts
+before publishing.
 
 Stage replacements from artifacts produced by the native integration workflow:
 

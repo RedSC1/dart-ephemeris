@@ -1,7 +1,7 @@
 # Pinned native release baselines
 
 This directory contains **pinned copies** of the Taiyin native library for the
-platforms distributed by this prerelease. Bundling them makes installed Dart
+platforms distributed by this release. Bundling them makes installed Dart
 packages self-contained; users do not need to locate a separate Taiyin shared
 library.
 
@@ -9,9 +9,9 @@ library.
 
 | | |
 |---|---|
-| Native commit | `dec7dd1` — public Taiyin 1.0.0-beta.8 source baseline (2026-09-01) |
-| Version | 1.0.0-beta.8 |
-| C ABI | 10 |
+| Published source ref | public Taiyin tag `v1.0.0` |
+| Version | 1.0.0 |
+| C ABI | 11 |
 | Build | modular core (astronomy + Chinese calendar + Ganzhi) |
 | Platforms | macOS arm64, Linux x64, Windows x64 |
 
@@ -20,6 +20,10 @@ This is the modular `taiyin` target built with
 own packages. The core carries no external ephemeris-data dependency. The
 Windows build additionally uses the bundled MinGW-w64 compiler runtime DLLs
 listed below.
+
+This table describes the published package. Source-checkout copies may be
+older; release assembly must stage the artifacts from the successful
+`Native integration` run for the release commit before publishing.
 
 ## Replacing the baseline
 
@@ -44,7 +48,7 @@ When the native baseline changes, download the three artifacts produced by the
 dart run tool/stage_native_artifacts.dart /path/to/downloaded-artifacts
 ```
 
-Update the "Current baseline" table above with the new native commit, version,
+Update the "Current baseline" table above with the new native source ref, version,
 ABI, and build, then update the tests to match any new behavior. Because a
 binary diff is opaque, the table is the record of what this file is — do not
 swap the file without updating it.

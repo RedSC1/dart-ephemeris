@@ -1,7 +1,7 @@
 # Ephemeris for Dart ("Taiyin")
 
-> **Pre-release:** the current package line is `1.0.0-rc.3`. Public APIs
-> and native packaging may still change before `1.0.0`.
+**Version 1.0.0** is the first stable release, built against Taiyin C++
+`v1.0.0` (C ABI 11). See the [compatibility policy](doc/index.md#compatibility-policy).
 
 An idiomatic Dart wrapper around the versioned C ABI in
 [`taiyin-ephemeris`](https://github.com/RedSC1/taiyin-ephemeris).
@@ -26,7 +26,7 @@ files and original NASA/JPL BSP/SPK kernels; without an external precision
 source it can use the built-in semi-analytical fallback. A separately
 downloadable
 [full-range DE441 OPM2 product](https://github.com/RedSC1/taiyin-ephemeris/releases/tag/opm2-de441-full-v1)
-is available and is not bundled in this prerelease. See
+is available as a separate download. See
 [accuracy and ephemeris data](doc/accuracy-and-data.md).
 
 This repository is a pub workspace with three packages, mirroring the Python
@@ -53,7 +53,7 @@ The core package deliberately has two layers:
 
 ## Platform support
 
-This package supports **Dart Native only** through `dart:ffi`. This prerelease
+This package supports **Dart Native only** through `dart:ffi`. Version 1.0
 bundles ready-to-load native modules for macOS arm64, Linux x64, and Windows
 x64. Applications on another native platform or architecture can provide a
 compatible Taiyin build through an explicit path or the platform loader. Dart
@@ -144,7 +144,7 @@ code that coexists with other packages, prefer the prefixed form above.
 Ephemeris exposes its semantic version and major-release codename independently:
 
 ```dart
-print(ephemeris.libraryVersion);  // 1.0.0-rc.3 with this release's native build
+print(ephemeris.libraryVersion);  // 1.0.0 with this release's native build
 print(ephemeris.libraryCodename); // Singularity
 ```
 

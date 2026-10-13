@@ -1,3 +1,11 @@
+## 1.0.0
+
+- First stable release, retaining the APIs and numerical algorithms validated
+  in 1.0.0-rc.3.
+- Build native libraries against Taiyin `v1.0.0` (C ABI 11).
+- Document the 1.x compatibility policy, supported platforms, and native
+  package assembly requirements.
+
 ## 1.0.0-rc.3
 
 - Rebuild native libraries against Taiyin `v1.0.0-rc.3` (compatible C ABI 11).

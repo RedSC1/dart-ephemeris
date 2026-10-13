@@ -4,13 +4,13 @@
 mean/apparent solar time across natal charts, flows, and reverse lookup. These
 methods require matching core and Ziwei native libraries.
 
-New in beta.7: immutable natal edits and independent manual, number
+The package includes immutable natal edits and independent manual, number
 and random casting charts. See the [guide](doc/guide.md#manual-placement-and-casting-charts).
-These APIs require Taiyin `v1.0.0-beta.9` native modules. Release assembly uses
+These APIs use Taiyin `v1.0.0` native modules. Release assembly uses
 the validated CI artifacts; a source checkout may still contain older binaries.
 
-> **Pre-release:** `1.0.0-rc.3`, kept in lockstep with the Dart `ephemeris`
-> core package.
+**Version 1.0.0** follows the core package's
+[compatibility policy](../ephemeris/doc/index.md#compatibility-policy).
 
 Ziwei Doushu (紫微斗数) extension bindings for the Taiyin ephemeris, part of
 the [`dart-ephemeris`](../..) monorepo. Mirrors `packages/ephemeris-ziwei` in the

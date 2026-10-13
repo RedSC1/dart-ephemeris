@@ -1,7 +1,7 @@
 # ephemeris_bazi
 
-> **Pre-release:** `1.0.0-rc.3`, kept in lockstep with the Dart `ephemeris`
-> core package.
+**Version 1.0.0** follows the core package's
+[compatibility policy](../ephemeris/doc/index.md#compatibility-policy).
 
 BaZi (八字) extension bindings for the Taiyin ephemeris, part of the
 [`dart-ephemeris`](../..) monorepo. Mirrors `packages/ephemeris-bazi` in the Python
@@ -70,7 +70,7 @@ context per worker. Do not send native-backed Dart objects between isolates.
 ```sh
 dart test
 ```
-## Custom Shen Sha modules (next release)
+## Custom Shen Sha modules
 
 ```dart
 final defaults = BaziShenShaCatalog();

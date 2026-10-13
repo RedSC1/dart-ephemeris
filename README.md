@@ -23,8 +23,10 @@ dart pub add ephemeris_bazi   # optional
 dart pub add ephemeris_ziwei  # optional
 ```
 
-This is a prerelease. Public APIs and native packaging may still change before
-the stable `1.0.0` line.
+Version **1.0.0** is the first stable release of all three packages. Compatible
+1.x releases preserve public call signatures, result records, exception types,
+and context ownership rules. See the
+[compatibility policy](packages/ephemeris/doc/index.md#compatibility-policy).
 
 The packages load their bundled Taiyin native modules automatically on macOS
 arm64, Linux x64, and Windows x64. Ordinary users do not locate DLLs or shared
