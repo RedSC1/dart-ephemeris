@@ -19,6 +19,36 @@ configuration, and the selected reference frame. Event times and eclipse
 contacts add root-solving, body-radius, shadow, lunar-limb, and refraction
 conventions.
 
+The optional full-range DE441 OPM2 package has a denser source-validation
+report: 343,522,304 geometric angular samples, a largest per-body worst-shard
+p99 of **0.001755″**, and a largest observed sample error of **0.003545″**.
+These are native data-product measurements, not a separate Dart API benchmark
+or an error bound between sampled epochs. See the
+[data validation report](https://github.com/RedSC1/taiyin-ephemeris/blob/v1.0.0/docs/ephemeris_data_packages.md).
+
+## Built-in model accuracy
+
+Without external precision data, the main-body semi-analytical routes cover
+approximately astronomical years **-6000 through +10000**. The native model's
+geometric DE441 comparisons report:
+
+| Model | 1600–2200 angular RMS | Full -6000–+10000 angular RMS |
+| --- | ---: | ---: |
+| Mercury–Neptune, including Earth (heliocentric directions) | 0.0132–0.0364″ across bodies | 0.0911–1.0124″ across bodies |
+| Moon (geocentric direction) | 0.129″ | 1.173″ |
+| Pluto (native geometric state model) | 0.025″ | 25.5″ |
+
+These are C++ model-validation figures inherited by Dart's native core,
+not a newly measured Dart comparison. Planet grids contain 401 modern /
+1,201 full-range epochs per body; the Moon and Pluto use 601 / 2,001 epochs.
+Sparse-grid RMS values are not worst-case bounds or final apparent-position
+errors. Broad Pluto coverage is deliberately a computable fallback rather
+than precision astrometry. Satellite and COB routes have narrower coverage
+and their own errors; no data-free Saturnian or Uranian satellite model is
+built in. See the
+[native semi-analytical report](https://github.com/RedSC1/taiyin-ephemeris/blob/v1.0.0/docs/semi_analytic_ephemeris.md)
+for individual bodies, frames, intervals, and satellite limits.
+
 ## Data available to Dart applications
 
 The current `ephemeris` package bundles the Taiyin native runtime for supported

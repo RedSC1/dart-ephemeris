@@ -3,6 +3,14 @@
 Dart bindings for [Taiyin Ephemeris](https://github.com/RedSC1/taiyin-ephemeris),
 the C++ astronomy, ephemeris, traditional-calendar, and astrology core.
 
+**Accuracy:** supported DE441/DE442-derived OPM2 products typically reconstruct
+their source ephemeris to about **0.001 arcsec**. Precision OPM2 or original
+NASA/JPL BSP/SPK data must be supplied separately; the package defaults to its
+built-in semi-analytical model when no precision source is loaded. Its
+body/epoch-dependent accuracy is documented separately in the
+[accuracy guide](packages/ephemeris/doc/accuracy-and-data.md). The OPM2 figure
+describes source reconstruction, not every final apparent position or event.
+
 This repository is a monorepo containing three separately published packages:
 
 - [`ephemeris`](packages/ephemeris/) — astronomy, time, positions, events,

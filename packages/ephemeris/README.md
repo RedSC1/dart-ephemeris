@@ -6,6 +6,12 @@
 An idiomatic Dart wrapper around the versioned C ABI in
 [`taiyin-ephemeris`](https://github.com/RedSC1/taiyin-ephemeris).
 
+**Accuracy:** supported DE441/DE442-derived OPM2 data typically reconstruct
+their source ephemeris to about **0.001 arcsec**. Load precision OPM2 or
+NASA/JPL BSP/SPK files separately; without them the built-in semi-analytical
+model has different, body/epoch-dependent accuracy. See
+[measured accuracy and model limits](doc/accuracy-and-data.md).
+
 Install it with:
 
 ```sh
@@ -19,15 +25,10 @@ For a task-oriented introduction, start with the
 overview; the guides explain common workflows, configuration choices, data
 routing, custom callbacks, and isolate ownership with smaller examples.
 
-For a typical major-body OPM2 product, reconstruction differs from its source
-DE441/DE442 states by roughly **0.001 arcsec**. This is a compression metric,
-not a blanket end-to-end accuracy guarantee. The Dart package can load OPM2
-files and original NASA/JPL BSP/SPK kernels; without an external precision
-source it can use the built-in semi-analytical fallback. A separately
-downloadable
+The OPM2 figure is a compression metric, not an end-to-end accuracy bound for
+apparent/topocentric positions or event times. The
 [full-range DE441 OPM2 product](https://github.com/RedSC1/taiyin-ephemeris/releases/tag/opm2-de441-full-v1)
-is available as a separate download. See
-[accuracy and ephemeris data](doc/accuracy-and-data.md).
+is available as a separate download covering approximately 30,000 years.
 
 This repository is a pub workspace with three packages, mirroring the Python
 binding's monorepo layout:
