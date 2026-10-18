@@ -1,4 +1,6 @@
-part of 'position_api.dart';
+import '../time/julian_date.dart';
+import '../time/time_models.dart';
+import '../time/time_scale.dart';
 
 /// A calculation target understood by Ephemeris.
 abstract interface class Target {
@@ -136,7 +138,8 @@ enum ApparentFrame {
 /// [PositionFlag.speed] is requested. Their coordinate system and units
 /// are described by [flags].
 final class Position {
-  Position._(List<double> values, Set<PositionFlag> flags)
+  /// Internal backend result constructor; callers normally use PositionApi.
+  Position.internal(List<double> values, Set<PositionFlag> flags)
     : values = List.unmodifiable(values),
       flags = Set.unmodifiable(flags) {
     if (values.length != 6) {

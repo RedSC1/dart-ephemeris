@@ -34,12 +34,13 @@ enum LocalSolarEclipseContact {
 }
 
 /// Options for solving one global or local solar-eclipse lunation.
+// Keep high-bit masks as exact literals: Dart2JS bitwise shifts are 32-bit.
 enum SolarEclipseSolveOption {
   /// Requests global contact values where the operation supports them.
-  includeContacts(1 << 33),
+  includeContacts(8589934592),
 
   /// Uses the loaded TLL1 lunar limb model when polishing contacts.
-  lunarLimbCorrection(1 << 38);
+  lunarLimbCorrection(274877906944);
 
   const SolarEclipseSolveOption(this.mask);
 
@@ -49,13 +50,13 @@ enum SolarEclipseSolveOption {
 /// Options for finding solar eclipses.
 enum SolarEclipseSearchOption {
   /// Requests global contact values where the operation supports them.
-  includeContacts(1 << 33),
+  includeContacts(8589934592),
 
   /// Searches backwards from the supplied start coordinate.
-  backward(1 << 35),
+  backward(34359738368),
 
   /// Uses the loaded TLL1 lunar limb model when polishing contacts.
-  lunarLimbCorrection(1 << 38);
+  lunarLimbCorrection(274877906944);
 
   const SolarEclipseSearchOption(this.mask);
 
@@ -65,7 +66,7 @@ enum SolarEclipseSearchOption {
 /// Options for global solar-eclipse route calculations.
 enum SolarEclipseRouteOption {
   /// Uses the loaded TLL1 lunar limb model for non-center path limits.
-  lunarLimbCorrection(1 << 38);
+  lunarLimbCorrection(274877906944);
 
   const SolarEclipseRouteOption(this.mask);
 
@@ -80,8 +81,8 @@ enum SolarEclipseRouteOption {
 /// requires complete explicit atmosphere data instead of the
 /// standard-atmosphere fallback.
 enum LocalSolarEclipseVisibilityOption {
-  refraction(1 << 37),
-  strictMeteorology(1 << 32);
+  refraction(137438953472),
+  strictMeteorology(4294967296);
 
   const LocalSolarEclipseVisibilityOption(this.mask);
 

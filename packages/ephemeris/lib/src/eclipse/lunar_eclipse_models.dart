@@ -41,12 +41,13 @@ enum LunarEclipseContact {
 }
 
 /// Options for solving one lunar-eclipse lunation.
+// Keep high-bit masks as exact literals: Dart2JS bitwise shifts are 32-bit.
 enum LunarEclipseSolveOption {
   /// Requests all applicable P/U contacts in addition to greatest eclipse.
-  includeContacts(1 << 33),
+  includeContacts(8589934592),
 
   /// Uses the loaded TLL1 lunar limb model when polishing contacts.
-  lunarLimbCorrection(1 << 38);
+  lunarLimbCorrection(274877906944);
 
   const LunarEclipseSolveOption(this.mask);
 
@@ -56,16 +57,16 @@ enum LunarEclipseSolveOption {
 /// Options for finding lunar eclipses.
 enum LunarEclipseSearchOption {
   /// Requests all applicable P/U contacts in each returned event.
-  includeContacts(1 << 33),
+  includeContacts(8589934592),
 
   /// Omits penumbral-only lunar eclipses from a search result.
-  excludePenumbral(1 << 34),
+  excludePenumbral(17179869184),
 
   /// Searches backwards from the supplied start coordinate.
-  backward(1 << 35),
+  backward(34359738368),
 
   /// Uses the loaded TLL1 lunar limb model when polishing contacts.
-  lunarLimbCorrection(1 << 38);
+  lunarLimbCorrection(274877906944);
 
   const LunarEclipseSearchOption(this.mask);
 
@@ -75,7 +76,7 @@ enum LunarEclipseSearchOption {
 /// Options for deriving local lunar-eclipse visibility.
 enum LocalLunarEclipseVisibilityOption {
   /// Applies the context's atmospheric refraction model to Moon altitudes.
-  refraction(1 << 37);
+  refraction(137438953472);
 
   const LocalLunarEclipseVisibilityOption(this.mask);
 

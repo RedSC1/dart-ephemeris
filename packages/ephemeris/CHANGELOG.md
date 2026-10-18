@@ -1,3 +1,28 @@
+## Unreleased
+
+- Add a unified async `Ephemeris.initialize` without changing native `open`.
+- Add owned OPM2/SPK/BSP/TKC1/TKE1 `Uint8List` registration with `addSourceBytes`
+  on native/Web, plus EOP/TLL1 byte loading and TSC1/TSF1 star-catalog bytes.
+- Introduce an opt-in, partial C++ Wasm backend for single/batch positions and
+  states, typed errors/flags, context lifecycle, and selected configuration.
+- Keep pure result/configuration models independent of FFI; add native and real
+  browser comparison tools for Dart2JS and Dart2Wasm. See the Web guide for limits.
+- Share the public position facade through a typed backend boundary. Native
+  FFI and Wasm memory handling stay internal; position calls and result shapes
+  are unchanged.
+- Share the star-catalog facade through the same typed backend pattern; native
+  filesystem methods remain available and unchanged.
+- Share time conversion and reverse-solver logic across native/Web, preserving
+  strict EOP errors, explicit estimation and leap-second representation checks.
+- Add the typed Chinese-calendar backend and shared facade: three calendar
+  modes, both day-boundary policies, conversion, year tables, term searches,
+  month lengths, four pillars and owner-driven cleanup. Native signatures and
+  extension-host behavior are unchanged.
+- Add shared eclipse and solar-time facades with Web adapters for all 39
+  eclipse operations and nonlinear apparent-solar-time conversion.
+- Expose the optional BaZi/Ziwei packages through the same initialized Wasm
+  instance; retain native public signatures and borrowed-calendar ownership.
+
 ## 1.0.0
 
 - First stable release, retaining the APIs and numerical algorithms validated

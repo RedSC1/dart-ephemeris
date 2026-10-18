@@ -6,6 +6,10 @@ import 'package:ephemeris/ffi.dart';
 import 'package:ephemeris/ephemeris.dart';
 
 import 'ziwei_models.dart';
+import 'ziwei_shared.dart';
+import 'ziwei_placement_models.dart';
+export 'ziwei_shared.dart';
+export 'ziwei_placement_models.dart';
 
 part 'ziwei_placement.dart';
 part 'ziwei_clock.dart';
@@ -93,7 +97,8 @@ extension ZiweiExtension on EphemerisContext {
     effectiveCalendar.extensionHost.ensureOpen();
     return ZiweiContext._create(
       effectiveCalendar.extensionHost,
-      catalog?._module ?? _openZiweiModule(libraryPath),
+      (catalog as _NativeZiweiCatalog?)?._module ??
+          _openZiweiModule(libraryPath),
       effectiveCalendar,
       catalog: catalog,
       selection: selection,
@@ -107,14 +112,15 @@ extension ZiweiExtension on EphemerisContext {
 /// Create one through the default constructor, optionally sharing it across
 /// several [ZiweiContext] instances. Call [close] before discarding the
 /// handle; a catalog passed to a context stays owned by the caller.
-final class ZiweiDataCatalog implements Finalizable {
-  ZiweiDataCatalog._(
+final class _NativeZiweiCatalog extends ZiweiDataCatalog
+    implements Finalizable {
+  _NativeZiweiCatalog._(
     this._host,
     this._module,
     this._catalog,
     this._finalizer,
     this.profilePath,
-  ) {
+  ) : super.internal() {
     _finalizer.attach(this, _catalog.cast(), detach: this);
   }
 
@@ -124,19 +130,19 @@ final class ZiweiDataCatalog implements Finalizable {
   /// [libraryPath] selects the Ziwei module. [coreLibraryPath] optionally
   /// selects the core module used for status metadata; catalog loading itself
   /// does not initialize the process-wide astronomy runtime.
-  factory ZiweiDataCatalog({
+  factory _NativeZiweiCatalog({
     String? profilePath,
     String? libraryPath,
     String? coreLibraryPath,
   }) {
-    return ZiweiDataCatalog._create(
+    return _NativeZiweiCatalog._create(
       TaiyinExtensionHost.open(libraryPath: coreLibraryPath),
       _openZiweiModule(libraryPath),
       profilePath,
     );
   }
 
-  factory ZiweiDataCatalog._create(
+  factory _NativeZiweiCatalog._create(
     TaiyinExtensionHost host,
     TaiyinExtensionModule module,
     String? profilePath,
@@ -156,7 +162,13 @@ final class ZiweiDataCatalog implements Finalizable {
       );
       return output.value;
     });
-    return ZiweiDataCatalog._(host, module, catalog, finalizer, resolvedPath);
+    return _NativeZiweiCatalog._(
+      host,
+      module,
+      catalog,
+      finalizer,
+      resolvedPath,
+    );
   }
 
   final TaiyinExtensionHost _host;
@@ -167,12 +179,15 @@ final class ZiweiDataCatalog implements Finalizable {
   TaiyinBindings get _bindings => _module.bindings;
 
   /// The TOML profile this catalog was loaded from.
+  @override
   final String profilePath;
   bool _closed = false;
 
+  @override
   bool get isClosed => _closed;
 
   /// Releases the native catalog. Calling this more than once is safe.
+  @override
   void close() {
     if (_closed) return;
     _closed = true;
@@ -187,12 +202,14 @@ final class ZiweiDataCatalog implements Finalizable {
   }
 
   /// Reloads the TOML profile from disk, advancing [generation].
+  @override
   void reload() {
     _ensureOpen();
     _checkStatus(_host, _bindings.taiyin_ziwei_data_catalog_reload(_catalog));
   }
 
   /// The catalog snapshot generation, incremented by [reload].
+  @override
   int get generation {
     _ensureOpen();
     return _bindings.taiyin_ziwei_data_catalog_generation(_catalog);
@@ -205,7 +222,7 @@ final class ZiweiDataCatalog implements Finalizable {
 /// [EphemerisContext]) invalidates this context. A catalog created implicitly
 /// is owned by the context and released by [close]; a catalog passed to
 /// [ZiweiExtension.createZiwei] stays owned by the caller.
-final class ZiweiContext implements Finalizable {
+final class ZiweiContext extends ZiweiContextFacade implements Finalizable {
   ZiweiContext._(
     this._host,
     this._module,
@@ -213,7 +230,7 @@ final class ZiweiContext implements Finalizable {
     this._finalizer,
     this._calendar,
     this._ownedCatalog,
-  ) {
+  ) : super.internal() {
     _finalizer.attach(this, _context.cast(), detach: this);
   }
 
@@ -231,9 +248,9 @@ final class ZiweiContext implements Finalizable {
     final finalizer = module.finalizerFor('taiyin_ziwei_context_destroy');
     final bindings = module.bindings;
     final ownedCatalog = catalog == null
-        ? ZiweiDataCatalog._create(host, module, null)
+        ? _NativeZiweiCatalog._create(host, module, null)
         : null;
-    final effectiveCatalog = catalog ?? ownedCatalog!;
+    final effectiveCatalog = (catalog as _NativeZiweiCatalog?) ?? ownedCatalog!;
     try {
       effectiveCatalog._ensureOpen();
       final context = using((arena) {
@@ -303,18 +320,21 @@ final class ZiweiContext implements Finalizable {
   final Pointer<taiyin_ziwei_context> _context;
   final NativeFinalizer _finalizer;
   final ChineseCalendarContext _calendar;
-  final ZiweiDataCatalog? _ownedCatalog;
+  final _NativeZiweiCatalog? _ownedCatalog;
   bool _closed = false;
 
   TaiyinBindings get _bindings => _module.bindings;
   TaiyinBindings get _coreBindings => _host.bindings;
 
   /// The calendar context this Ziwei context resolves birth facts through.
+  @override
   ChineseCalendarContext get chineseCalendar => _calendar;
 
+  @override
   bool get isClosed => _closed;
 
   /// Releases the native Ziwei context. Calling this more than once is safe.
+  @override
   void close() {
     if (_closed) return;
     _closed = true;
@@ -336,18 +356,21 @@ final class ZiweiContext implements Finalizable {
       _host.nativeHandle<taiyin_chinese_calendar_context>();
 
   /// The catalog generation this context was created from.
+  @override
   int get generation {
     _ensureOpen();
     return _bindings.taiyin_ziwei_context_generation(_context);
   }
 
   /// The number of stars registered in the rule catalog.
+  @override
   int get starCount {
     _ensureOpen();
     return _bindings.taiyin_ziwei_star_count(_context);
   }
 
   /// Finds a star by catalog key, or returns null when the key is unknown.
+  @override
   ZiweiStar? findStar(String key) {
     _ensureOpen();
     if (key.isEmpty) {
@@ -375,6 +398,7 @@ final class ZiweiContext implements Finalizable {
   }
 
   /// Reads the metadata of the star with native [starId].
+  @override
   ZiweiStar star(int starId) {
     _ensureOpen();
     _requireStarId(starId);
@@ -434,6 +458,7 @@ final class ZiweiContext implements Finalizable {
   ///
   /// [virtualTime] must describe the same event as [instantUtc] in the
   /// calendar context's civil time zone.
+  @override
   OperationResult<ZiweiChart> createChart({
     required JulianDate<UtcScale> instantUtc,
     required AstroDateTime virtualTime,
@@ -460,7 +485,7 @@ final class ZiweiContext implements Finalizable {
       _host.recordDiagnostic(mappedDiagnostic);
       final flags = _checkStatus(_host, status, diagnostic: mappedDiagnostic);
       return operationResult(
-        ZiweiChart._(this, output.value, _chartFinalizer),
+        _NativeZiweiChart._(this, output.value, _chartFinalizer),
         flags,
       );
     });
@@ -471,6 +496,7 @@ final class ZiweiContext implements Finalizable {
   }
 
   /// Arrange a finite-input chart without inventing a birth date.
+  @override
   ZiweiCastingChart createCastingChart(
     ZiweiPlacementInput input, {
     required ZiweiGender gender,
@@ -479,6 +505,7 @@ final class ZiweiContext implements Finalizable {
   }) => _createCasting(this, 0, input, gender, chartMode, fixedBureau);
 
   /// Reproduce an index-v1 chart (0 <= index < 259200).
+  @override
   ZiweiCastingChart castingFromIndex(
     int index, {
     required ZiweiGender gender,
@@ -486,6 +513,7 @@ final class ZiweiContext implements Finalizable {
   }) => _createCasting(this, 1, index, gender, chartMode, null);
 
   /// Reproducible number-v1 mapping of ASCII decimal text; collisions are allowed.
+  @override
   ZiweiCastingChart castingFromNumber(
     String number, {
     required ZiweiGender gender,
@@ -493,136 +521,18 @@ final class ZiweiContext implements Finalizable {
   }) => _createCasting(this, 2, number, gender, chartMode, null);
 
   /// Draw uniformly using the operating system random source.
+  @override
   ZiweiCastingChart randomCastingChart({
     required ZiweiGender gender,
     ZiweiChartMode chartMode = ZiweiChartMode.tianPan,
   }) => _createCasting(this, 3, null, gender, chartMode, null);
-
-  /// Creates a natal chart from a local wall-clock birth time.
-  ///
-  /// The UTC instant is derived from the calendar context's fixed clock offset.
-  OperationResult<ZiweiChart> calculateLocal(
-    AstroDateTime localTime, {
-    required ZiweiGender gender,
-    ZiweiBirthOptions options = const ZiweiBirthOptions(),
-    ZiweiClock clock = const ZiweiClock(),
-  }) {
-    _ensureOpen();
-    final instant = _calendar.instantFromLocal(localTime);
-    if (clock.mode != ZiweiClockMode.fixedOffset) {
-      final ut1 = _calendar.owner.time.utcToUt1(instant.value);
-      final chart = createChartAtUt1(
-        instantUt1: ut1.value,
-        gender: gender,
-        options: options,
-        clock: clock,
-      );
-      return operationResult(
-        chart.value,
-        instant.flags | ut1.flags | chart.flags,
-      );
-    }
-    final chart = createChart(
-      instantUtc: instant.value,
-      virtualTime: localTime,
-      gender: gender,
-      options: options,
-    );
-    return operationResult(chart.value, instant.flags | chart.flags);
-  }
-
-  /// Creates a natal chart from a UTC birth instant.
-  ///
-  /// The local wall clock is derived from the calendar context's fixed clock
-  /// offset.
-  OperationResult<ZiweiChart> calculateInstant(
-    JulianDate<UtcScale> instantUtc, {
-    required ZiweiGender gender,
-    ZiweiBirthOptions options = const ZiweiBirthOptions(),
-    ZiweiClock clock = const ZiweiClock(),
-  }) {
-    _ensureOpen();
-    if (clock.mode != ZiweiClockMode.fixedOffset) {
-      final ut1 = _calendar.owner.time.utcToUt1(instantUtc);
-      final chart = createChartAtUt1(
-        instantUt1: ut1.value,
-        gender: gender,
-        options: options,
-        clock: clock,
-      );
-      return operationResult(chart.value, ut1.flags | chart.flags);
-    }
-    final localTimeResult = _calendar.localTimeFromInstant(instantUtc);
-    final chartResult = createChart(
-      instantUtc: instantUtc,
-      virtualTime: localTimeResult.value,
-      gender: gender,
-      options: options,
-    );
-    return operationResult(
-      chartResult.value,
-      chartResult.flags | localTimeResult.flags,
-    );
-  }
-
-  /// Creates a chart from a Gregorian day and explicit local clock fields.
-  OperationResult<ZiweiChart> calculateSolarDay(
-    SolarDate solarDay, {
-    required int hour,
-    int minute = 0,
-    int second = 0,
-    int nanosecond = 0,
-    required ZiweiGender gender,
-    ZiweiBirthOptions options = const ZiweiBirthOptions(),
-    ZiweiClock clock = const ZiweiClock(),
-  }) {
-    final localTime = AstroDateTime(
-      solarDay.year,
-      solarDay.month,
-      solarDay.day,
-      hour,
-      minute,
-      second,
-      nanosecond,
-    );
-    return calculateLocal(
-      localTime,
-      gender: gender,
-      options: options,
-      clock: clock,
-    );
-  }
-
-  /// Converts a lunar day with the bound calendar, then creates its chart.
-  OperationResult<ZiweiChart> calculateLunarDay(
-    LunarDate lunarDay, {
-    required int hour,
-    int minute = 0,
-    int second = 0,
-    int nanosecond = 0,
-    required ZiweiGender gender,
-    ZiweiBirthOptions options = const ZiweiBirthOptions(),
-    ZiweiClock clock = const ZiweiClock(),
-  }) {
-    final solarDay = _calendar.fromLunar(lunarDay);
-    final result = calculateSolarDay(
-      solarDay.value,
-      hour: hour,
-      minute: minute,
-      second: second,
-      nanosecond: nanosecond,
-      gender: gender,
-      options: options,
-      clock: clock,
-    );
-    return operationResult(result.value, solarDay.flags | result.flags);
-  }
 
   /// Moves to an adjacent logical flow hour, preserving minutes and seconds.
   ///
   /// In split-Rat modes this walks Early Zi → Chou → … → Late Zi → Early Zi
   /// as thirteen slots. [direction] must be 1 (next) or -1 (previous). The
   /// returned UTC instant and local clock describe the same event.
+  @override
   ZiweiFlowHourTarget stepFlowHourTarget({
     required JulianDate<UtcScale> instantUtc,
     required AstroDateTime virtualTime,
@@ -656,34 +566,8 @@ final class ZiweiContext implements Finalizable {
     });
   }
 
-  /// The next logical flow hour, preserving minutes and seconds.
-  ZiweiFlowHourTarget nextFlowHourTarget({
-    required JulianDate<UtcScale> instantUtc,
-    required AstroDateTime virtualTime,
-    GanzhiRatHourMode ratHourMode = GanzhiRatHourMode.noSplit,
-  }) {
-    return stepFlowHourTarget(
-      instantUtc: instantUtc,
-      virtualTime: virtualTime,
-      ratHourMode: ratHourMode,
-    );
-  }
-
-  /// The previous logical flow hour, preserving minutes and seconds.
-  ZiweiFlowHourTarget previousFlowHourTarget({
-    required JulianDate<UtcScale> instantUtc,
-    required AstroDateTime virtualTime,
-    GanzhiRatHourMode ratHourMode = GanzhiRatHourMode.noSplit,
-  }) {
-    return stepFlowHourTarget(
-      instantUtc: instantUtc,
-      virtualTime: virtualTime,
-      ratHourMode: ratHourMode,
-      direction: -1,
-    );
-  }
-
   /// Moves one local civil flow day, retaining exact wall-clock fields.
+  @override
   ZiweiFlowDayTarget stepFlowDayTarget({
     required JulianDate<UtcScale> instantUtc,
     required AstroDateTime virtualTime,
@@ -712,31 +596,12 @@ final class ZiweiContext implements Finalizable {
     });
   }
 
-  /// The same wall clock one local civil flow day later.
-  ZiweiFlowDayTarget nextFlowDayTarget({
-    required JulianDate<UtcScale> instantUtc,
-    required AstroDateTime virtualTime,
-  }) {
-    return stepFlowDayTarget(instantUtc: instantUtc, virtualTime: virtualTime);
-  }
-
-  /// The same wall clock one local civil flow day earlier.
-  ZiweiFlowDayTarget previousFlowDayTarget({
-    required JulianDate<UtcScale> instantUtc,
-    required AstroDateTime virtualTime,
-  }) {
-    return stepFlowDayTarget(
-      instantUtc: instantUtc,
-      virtualTime: virtualTime,
-      direction: -1,
-    );
-  }
-
   /// Finds logical birth-time slots whose selected Tier-1 stars match.
   ///
   /// The search uses this context's Chinese-calendar policy and data routes.
   /// [startVirtualTime] must describe the same event as [startInstantUtc]; it
   /// is then advanced as canonical logical hours.
+  @override
   OperationResult<List<ZiweiReverseLookupCandidate>> reverseLookupTier1({
     required JulianDate<UtcScale> startInstantUtc,
     required JulianDate<UtcScale> endInstantUtc,
@@ -829,14 +694,226 @@ final class ZiweiContext implements Finalizable {
       );
     });
   }
+
+  @override
+  Time get timeService => _calendar.owner.time;
+
+  /// Maps UT1 to the selected chart clock (without changing calendar policy).
+  @override
+  OperationResult<AstroDateTime> chartTimeFromUt1(
+    JulianDate<Ut1Scale> instantUt1, {
+    ZiweiClock clock = const ZiweiClock(),
+  }) => _clockOperation(this, (arena, diagnostic, check) {
+    final out = arena<taiyin_calendar_datetime>();
+    out.ref.struct_size = sizeOf<taiyin_calendar_datetime>();
+    check(
+      _bindings.taiyin_ziwei_chart_time_from_ut1(
+        _calendarHandle,
+        _writeClock(arena, clock),
+        writeJulianDate(arena, instantUt1),
+        out,
+        diagnostic,
+      ),
+    );
+    return readCalendarDateTime(out.ref);
+  });
+
+  /// Nonlinear inverse for apparent solar time; failures throw, not fall back.
+  @override
+  OperationResult<JulianDate<Ut1Scale>> chartTimeToUt1(
+    AstroDateTime virtualTime, {
+    ZiweiClock clock = const ZiweiClock(),
+  }) => _clockOperation(this, (arena, diagnostic, check) {
+    final out = arena<taiyin_split_julian_date>();
+    check(
+      _bindings.taiyin_ziwei_chart_time_to_ut1(
+        _calendarHandle,
+        _writeClock(arena, clock),
+        writeNativeCalendar(_coreBindings, arena, virtualTime),
+        out,
+        diagnostic,
+      ),
+    );
+    return readJulianDate<Ut1Scale>(out.ref);
+  });
+
+  /// Creates a chart from one physical instant and an explicit clock policy.
+  @override
+  OperationResult<ZiweiChart> createChartAtUt1({
+    required JulianDate<Ut1Scale> instantUt1,
+    required ZiweiGender gender,
+    ZiweiClock clock = const ZiweiClock(),
+    ZiweiBirthOptions options = const ZiweiBirthOptions(),
+  }) => _clockOperation(this, (arena, diagnostic, check) {
+    final out = arena<Pointer<taiyin_ziwei_chart>>();
+    check(
+      _bindings.taiyin_ziwei_chart_create_at_ut1(
+        _context,
+        _calendarHandle,
+        writeJulianDate(arena, instantUt1),
+        _writeClock(arena, clock),
+        gender.id,
+        _writeZiweiBirthOptions(_bindings, arena, options),
+        out,
+        diagnostic,
+      ),
+    );
+    return _NativeZiweiChart._(this, out.value, _chartFinalizer);
+  });
+
+  /// Preserves chart-clock minutes/seconds; split Zi advances one hour near
+  /// midnight. The destination is inverted through the same solar clock.
+  @override
+  OperationResult<ZiweiClockTarget> stepFlowHourAtUt1({
+    required JulianDate<Ut1Scale> instantUt1,
+    ZiweiClock clock = const ZiweiClock(),
+    GanzhiRatHourMode ratHourMode = GanzhiRatHourMode.noSplit,
+    int direction = 1,
+  }) {
+    _requireStepDirection(direction);
+    return _clockOperation(this, (arena, diagnostic, check) {
+      final out = arena<taiyin_split_julian_date>();
+      final time = arena<taiyin_calendar_datetime>();
+      time.ref.struct_size = sizeOf<taiyin_calendar_datetime>();
+      final segment = arena<Uint8>();
+      check(
+        _bindings.taiyin_ziwei_step_flow_hour_at_ut1(
+          _calendarHandle,
+          _writeClock(arena, clock),
+          writeJulianDate(arena, instantUt1),
+          ratHourMode.id,
+          direction,
+          out,
+          time,
+          segment,
+          diagnostic,
+        ),
+      );
+      return ZiweiClockTarget(
+        instantUt1: readJulianDate<Ut1Scale>(out.ref),
+        virtualTime: readCalendarDateTime(time.ref),
+        ratHourSegment: ZiweiRatHourSegment.fromId(segment.value),
+      );
+    });
+  }
+
+  /// Moves one chart-clock day, not necessarily 86400 physical seconds.
+  @override
+  OperationResult<ZiweiClockTarget> stepFlowDayAtUt1({
+    required JulianDate<Ut1Scale> instantUt1,
+    ZiweiClock clock = const ZiweiClock(),
+    int direction = 1,
+  }) {
+    _requireStepDirection(direction);
+    return _clockOperation(this, (arena, diagnostic, check) {
+      final out = arena<taiyin_split_julian_date>();
+      final time = arena<taiyin_calendar_datetime>();
+      time.ref.struct_size = sizeOf<taiyin_calendar_datetime>();
+      check(
+        _bindings.taiyin_ziwei_step_flow_day_at_ut1(
+          _calendarHandle,
+          _writeClock(arena, clock),
+          writeJulianDate(arena, instantUt1),
+          direction,
+          out,
+          time,
+          diagnostic,
+        ),
+      );
+      return ZiweiClockTarget(
+        instantUt1: readJulianDate<Ut1Scale>(out.ref),
+        virtualTime: readCalendarDateTime(time.ref),
+      );
+    });
+  }
+
+  /// Searches actual slot/Jie boundaries using the selected clock throughout.
+  @override
+  OperationResult<List<ZiweiReverseLookupUt1Candidate>>
+  reverseLookupTier1AtUt1({
+    required JulianDate<Ut1Scale> startInstantUt1,
+    required JulianDate<Ut1Scale> endInstantUt1,
+    required ZiweiGender gender,
+    required ZiweiTier1ReverseQuery query,
+    ZiweiClock clock = const ZiweiClock(),
+    ZiweiBirthOptions options = const ZiweiBirthOptions(),
+  }) {
+    query.validate();
+    validateNativeJulianDate(startInstantUt1);
+    validateNativeJulianDate(endInstantUt1);
+    if (endInstantUt1.compareTo(startInstantUt1) <= 0) {
+      throw ArgumentError('endInstantUt1 must be after startInstantUt1');
+    }
+    return _clockOperation(this, (arena, diagnostic, check) {
+      final request = arena<taiyin_ziwei_reverse_request>();
+      _bindings.taiyin_ziwei_reverse_request_init(request);
+      request.ref
+        ..start_instant_utc = writeJulianDate(arena, startInstantUt1).ref
+        ..end_instant_utc = writeJulianDate(arena, endInstantUt1).ref
+        ..gender = gender.id
+        ..birth_options = _writeZiweiBirthOptions(
+          _bindings,
+          arena,
+          options,
+        ).ref;
+      _writeZiweiReverseQueryFields(request.ref.query, query);
+      final nativeClock = _writeClock(arena, clock);
+      final count = arena<Size>();
+      check(
+        _bindings.taiyin_ziwei_reverse_lookup_tier1_at_ut1(
+          _context,
+          _calendarHandle,
+          request,
+          nativeClock,
+          nullptr,
+          0,
+          count,
+          diagnostic,
+        ),
+      );
+      final capacity = validatedNativeArrayCount(count.value, 'Ziwei reverse');
+      if (capacity == 0) return <ZiweiReverseLookupUt1Candidate>[];
+      final out = arena<taiyin_ziwei_reverse_candidate>(capacity);
+      for (var i = 0; i < capacity; ++i) {
+        _bindings.taiyin_ziwei_reverse_candidate_init(out + i);
+      }
+      check(
+        _bindings.taiyin_ziwei_reverse_lookup_tier1_at_ut1(
+          _context,
+          _calendarHandle,
+          request,
+          nativeClock,
+          out,
+          capacity,
+          count,
+          diagnostic,
+        ),
+      );
+      final length = validatedNativeResultCount(count.value, capacity);
+      return List.generate(length, (i) {
+        final value = out[i];
+        return ZiweiReverseLookupUt1Candidate(
+          instantUt1: readJulianDate<Ut1Scale>(value.instant_utc),
+          virtualTime: readCalendarDateTime(value.virtual_time),
+          lunarYear: value.lunar_year,
+          lunarMonth: value.lunar_month,
+          lunarDay: value.lunar_day,
+          lunarIsLeap: value.lunar_is_leap != 0,
+          hourBranch: value.hour_branch,
+          ratHourSegment: ZiweiRatHourSegment.fromId(value.rat_hour_segment),
+        );
+      }, growable: false);
+    });
+  }
 }
 
 /// A natal Ziwei chart with branch-indexed palaces and an optional flow stack.
 ///
 /// Created through [ZiweiContext.createChart]. Call [close] before discarding
 /// the handle.
-final class ZiweiChart implements Finalizable {
-  ZiweiChart._(this._context, this._chart, this._finalizer) {
+final class _NativeZiweiChart extends ZiweiChart implements Finalizable {
+  _NativeZiweiChart._(this._context, this._chart, this._finalizer)
+    : super.internal() {
     _finalizer.attach(this, _chart.cast(), detach: this);
   }
 
@@ -848,9 +925,11 @@ final class ZiweiChart implements Finalizable {
   TaiyinBindings get _bindings => _context._bindings;
   TaiyinBindings get _coreBindings => _context._coreBindings;
 
+  @override
   bool get isClosed => _closed;
 
   /// Return an edited natal chart, preserving original birth facts; flows clear.
+  @override
   ZiweiChart modify(ZiweiPlacementPatch patch) {
     _ensureOpen();
     _requirePlacement(_context);
@@ -865,11 +944,12 @@ final class ZiweiChart implements Finalizable {
           out,
         ),
       );
-      return ZiweiChart._(_context, out.value, _finalizer);
+      return _NativeZiweiChart._(_context, out.value, _finalizer);
     });
   }
 
   /// Shift palace roles without moving physical stars. Source remains unchanged.
+  @override
   ZiweiChart shiftLifePalace(int steps) {
     _ensureOpen();
     _requirePlacement(_context);
@@ -880,11 +960,12 @@ final class ZiweiChart implements Finalizable {
         _context._host,
         _bindings.taiyin_ziwei_chart_shift_life_palace(_chart, steps, out),
       );
-      return ZiweiChart._(_context, out.value, _finalizer);
+      return _NativeZiweiChart._(_context, out.value, _finalizer);
     });
   }
 
   /// Restore the original chart into a new handle, with an empty flow stack.
+  @override
   ZiweiChart reset() {
     _ensureOpen();
     _requirePlacement(_context);
@@ -894,11 +975,12 @@ final class ZiweiChart implements Finalizable {
         _context._host,
         _bindings.taiyin_ziwei_chart_reset(_chart, out),
       );
-      return ZiweiChart._(_context, out.value, _finalizer);
+      return _NativeZiweiChart._(_context, out.value, _finalizer);
     });
   }
 
   /// Current finite inputs and cumulative edits; this is not a new birth date.
+  @override
   ZiweiPlacementState get placement {
     _ensureOpen();
     _requirePlacement(_context);
@@ -921,6 +1003,7 @@ final class ZiweiChart implements Finalizable {
   }
 
   /// Missing-input records for stars not placed by the current rule set.
+  @override
   List<ZiweiOmittedPlacement> get omittedPlacements {
     _ensureOpen();
     _requirePlacement(_context);
@@ -937,6 +1020,7 @@ final class ZiweiChart implements Finalizable {
   }
 
   /// Releases the native chart. Calling this more than once is safe.
+  @override
   void close() {
     if (_closed) return;
     _closed = true;
@@ -952,6 +1036,7 @@ final class ZiweiChart implements Finalizable {
   }
 
   /// The 31 stable natal anchors, addressable by [ZiweiAnchorSlot].
+  @override
   ZiweiAnchors get anchors {
     _ensureOpen();
     return using((arena) {
@@ -968,6 +1053,7 @@ final class ZiweiChart implements Finalizable {
   }
 
   /// The natal summary: gender, bureau, masters, and transforms.
+  @override
   ZiweiChartSummary get summary {
     _ensureOpen();
     return using((arena) {
@@ -1015,6 +1101,7 @@ final class ZiweiChart implements Finalizable {
   }
 
   /// The twelve natal palaces in semantic (Life through Parents) order.
+  @override
   List<ZiweiPalaceState> get palaces {
     _ensureOpen();
     final chartAnchors = anchors;
@@ -1031,10 +1118,12 @@ final class ZiweiChart implements Finalizable {
   }
 
   /// Returns one named natal palace with its physical branch and stars.
+  @override
   ZiweiPalaceState palace(ZiweiPalace palace) => palaces[palace.id];
 
   /// The physical branch (0 = Zi … 11 = Hai) a natal star occupies, or null
   /// when the star is absent from the natal chart.
+  @override
   int? starPosition(int starId) {
     _ensureOpen();
     _context._requireStarId(starId);
@@ -1050,6 +1139,7 @@ final class ZiweiChart implements Finalizable {
 
   /// The twelve-palace role a natal star resolves to, or null for flow-only
   /// or absent stars.
+  @override
   int? starPalace(int starId) {
     _ensureOpen();
     _context._requireStarId(starId);
@@ -1064,6 +1154,7 @@ final class ZiweiChart implements Finalizable {
   }
 
   /// The brightness of a star at its natal position.
+  @override
   ZiweiBrightness brightness(int starId) {
     _ensureOpen();
     _context._requireStarId(starId);
@@ -1083,6 +1174,7 @@ final class ZiweiChart implements Finalizable {
   }
 
   /// The stars residing in the palace at physical [branchId].
+  @override
   List<ZiweiStar> palaceStars(int branchId) {
     _ensureOpen();
     _requireZiweiBranch(branchId, 'branchId');
@@ -1106,6 +1198,7 @@ final class ZiweiChart implements Finalizable {
 
   /// The raw transformation mask of a natal star; bits follow
   /// [ZiweiTransformMark.mask].
+  @override
   int transformMask(int starId) {
     _ensureOpen();
     _context._requireStarId(starId);
@@ -1124,6 +1217,7 @@ final class ZiweiChart implements Finalizable {
   }
 
   /// Whether a natal star carries the transformation overlay [mark].
+  @override
   bool hasTransform(int starId, ZiweiTransformMark mark) {
     _ensureOpen();
     _context._requireStarId(starId);
@@ -1143,12 +1237,14 @@ final class ZiweiChart implements Finalizable {
   }
 
   /// The number of layers currently on the flow stack.
+  @override
   int get flowLayerCount {
     _ensureOpen();
     return _bindings.taiyin_ziwei_chart_flow_layer_count(_chart);
   }
 
   /// Replaces the chart's contiguous flow stack through [deepestLevel].
+  @override
   OperationResult<ZiweiFlowResolution> setFlow({
     required JulianDate<UtcScale> targetInstantUtc,
     required AstroDateTime targetVirtualTime,
@@ -1185,6 +1281,7 @@ final class ZiweiChart implements Finalizable {
   }
 
   /// Drops the flow layers from [firstRemovedLevel] onward.
+  @override
   void truncateFlow(ZiweiFlowLevel firstRemovedLevel) {
     _ensureOpen();
     _checkStatus(
@@ -1194,6 +1291,7 @@ final class ZiweiChart implements Finalizable {
   }
 
   /// The summary of one flow layer.
+  @override
   ZiweiFlowLayerSummary flowLayerSummary(ZiweiFlowLevel level) {
     _ensureOpen();
     return using((arena) {
@@ -1231,6 +1329,7 @@ final class ZiweiChart implements Finalizable {
 
   /// The physical branch a star occupies in flow [level], or null when the
   /// star is absent from that layer.
+  @override
   int? flowStarPosition(ZiweiFlowLevel level, int starId) {
     _ensureOpen();
     _context._requireStarId(starId);
@@ -1250,6 +1349,7 @@ final class ZiweiChart implements Finalizable {
   }
 
   /// The stars residing in the palace at physical [branchId] of flow [level].
+  @override
   List<ZiweiStar> flowPalaceStars(ZiweiFlowLevel level, int branchId) {
     _ensureOpen();
     _requireZiweiBranch(branchId, 'branchId');
@@ -1269,6 +1369,36 @@ final class ZiweiChart implements Finalizable {
             ),
       );
       return List.unmodifiable([for (final id in ids) _context.star(id)]);
+    });
+  }
+
+  /// Replaces flow layers through [deepestLevel] using physical Jie boundaries
+  /// and virtual-clock day/hour labels.
+  @override
+  OperationResult<ZiweiFlowResolution> setFlowAtUt1({
+    required JulianDate<Ut1Scale> targetInstantUt1,
+    ZiweiClock clock = const ZiweiClock(),
+    ZiweiFlowOptions options = const ZiweiFlowOptions(),
+    ZiweiFlowLevel deepestLevel = ZiweiFlowLevel.hour,
+  }) {
+    _ensureOpen();
+    return _clockOperation(_context, (arena, diagnostic, check) {
+      final summary = arena<taiyin_ziwei_flow_summary>();
+      _bindings.taiyin_ziwei_flow_summary_init(summary);
+      check(
+        _bindings.taiyin_ziwei_chart_set_flow_at_ut1(
+          _context._context,
+          _context._calendarHandle,
+          writeJulianDate(arena, targetInstantUt1),
+          _writeClock(arena, clock),
+          _writeZiweiFlowOptions(_bindings, arena, options),
+          deepestLevel.id,
+          _chart,
+          summary,
+          diagnostic,
+        ),
+      );
+      return _readZiweiFlowResolution(summary.ref);
     });
   }
 }
@@ -1606,8 +1736,18 @@ String _defaultZiweiProfilePath() {
   if (resolved == null || resolved.scheme != 'file') {
     throw StateError(
       'Could not resolve the bundled Ziwei rule profile. '
-      'Pass profilePath to ZiweiDataCatalog explicitly.',
+      'Pass profilePath to _NativeZiweiCatalog explicitly.',
     );
   }
   return resolved.toFilePath();
 }
+
+ZiweiDataCatalog createNativeZiweiCatalog({
+  String? profilePath,
+  String? libraryPath,
+  String? coreLibraryPath,
+}) => _NativeZiweiCatalog(
+  profilePath: profilePath,
+  libraryPath: libraryPath,
+  coreLibraryPath: coreLibraryPath,
+);

@@ -9,9 +9,14 @@ import 'package:ffi/ffi.dart';
 import 'bindings/taiyin_bindings.g.dart';
 import 'astrology/astrology_models.dart';
 import 'chinese_calendar/chinese_calendar_models.dart';
+import 'chinese_calendar/calendar_shared.dart';
+import 'backend/calendar_backend.dart';
 import 'context/context_models.dart';
 import 'ganzhi/ganzhi_models.dart';
 import 'eclipse/lunar_eclipse_models.dart';
+import 'eclipse/eclipse_shared.dart';
+import 'backend/eclipse_backend.dart';
+export 'eclipse/eclipse_shared.dart';
 import 'eclipse/solar_eclipse_models.dart';
 import 'events/event_models.dart';
 import 'heliacal/heliacal_models.dart';
@@ -25,16 +30,31 @@ import 'occultation/occultation_models.dart';
 import 'orbital/orbital_models.dart';
 import 'phenomena/phenomena_models.dart';
 import 'position/position_api.dart';
+import 'position/position_native.dart';
+import 'backend/backend_call.dart';
 import 'runtime/runtime_models.dart';
+import 'runtime/runtime_options.dart';
+import 'runtime/runtime_errors.dart';
+import 'runtime/source_bytes.dart';
 import 'result_flags.dart';
 import 'solar_time/solar_time_models.dart';
+import 'solar_time/solar_time_shared.dart';
+import 'backend/solar_time_backend.dart';
+export 'solar_time/solar_time_shared.dart';
 import 'star/star_models.dart';
+import 'star/star_catalog_api.dart';
+import 'backend/star_catalog_backend.dart';
 import 'time/astro_date_time.dart';
 import 'time/julian_date.dart';
 import 'time/time_api.dart';
+import 'time/time_backend_native.dart';
 import 'time/time_models.dart';
 import 'time/time_scale.dart';
 import 'visibility/visibility_models.dart';
+
+export 'runtime/runtime_errors.dart';
+export 'runtime/runtime_options.dart';
+export 'star/star_catalog_api.dart';
 
 part 'chinese_calendar/chinese_calendar_api.dart';
 part 'context/context_api.dart';
@@ -51,302 +71,11 @@ part 'orbital/orbital_api.dart';
 part 'phenomena/phenomena_api.dart';
 part 'position/custom_target_api.dart';
 part 'runtime/runtime_api.dart';
+part 'runtime/runtime_bytes_native.dart';
 part 'solar_time/solar_time_api.dart';
 part 'star/star_api.dart';
+part 'star/star_catalog_native.dart';
 part 'visibility/visibility_api.dart';
-
-/// A feature module reported by the loaded Taiyin native library.
-enum Capability {
-  /// Process-wide runtime and data-source management.
-  runtime(1 << 0),
-
-  /// Time-scale conversion and Delta-T/EOP services.
-  time(1 << 1),
-
-  /// Solar-system position and state-vector calculations.
-  position(1 << 2),
-
-  /// Fixed-star catalog and position calculations.
-  star(1 << 3),
-
-  /// Rise, set, transit, and twilight calculations.
-  visibility(1 << 4),
-
-  /// Angular phenomena and phase calculations.
-  phenomena(1 << 5),
-
-  /// General event-search calculations.
-  events(1 << 6),
-
-  /// Solar- and lunar-eclipse calculations.
-  eclipse(1 << 7),
-
-  /// Occultation calculations.
-  occultation(1 << 8),
-
-  /// Heliacal-event calculations.
-  heliacal(1 << 9),
-
-  /// Houses, sidereal coordinates, and other astrology calculations.
-  astrology(1 << 10),
-
-  /// Registration of caller-defined ephemeris targets.
-  customTargets(1 << 11),
-
-  /// Registration of caller-defined ayanamsha models.
-  customAyanamsha(1 << 12),
-
-  /// Registration of caller-defined house systems.
-  customHouses(1 << 13),
-
-  /// Split-Julian-date ABI support.
-  splitTime(taiyinSplitTimeCapability),
-
-  /// Chinese lunisolar-calendar calculations.
-  chineseCalendar(taiyinChineseCalendarCapability),
-
-  /// Ganzhi calendar and four-pillar calculations.
-  ganzhiCalendar(taiyinGanzhiCalendarCapability);
-
-  const Capability(this.mask);
-
-  /// The bit used by the native capability mask.
-  final int mask;
-}
-
-/// Broad category assigned to an Ephemeris status code.
-enum StatusCategory {
-  /// Successful completion.
-  ok(0),
-
-  /// Invalid arguments, allocation failures, or internal calculation errors.
-  generic(1),
-
-  /// Ephemeris routing, coverage, or evaluation errors.
-  ephemeris(10),
-
-  /// Data-file parsing and I/O errors.
-  file(20),
-
-  /// Time-scale, EOP, or Delta-T errors.
-  time(30),
-
-  /// Invalid or unsupported observer configuration.
-  observer(40),
-
-  /// Event-search convergence or range errors.
-  event(50),
-
-  /// Process-wide runtime service errors.
-  runtime(60),
-
-  /// A status category unknown to this Dart package version.
-  unknown(999);
-
-  const StatusCategory(this.id);
-
-  /// The numeric category identifier used by the native ABI.
-  final int id;
-
-  /// Returns the category for [id], or [unknown] for a newer native value.
-  static StatusCategory fromId(int id) {
-    return values.firstWhere((value) => value.id == id, orElse: () => unknown);
-  }
-}
-
-/// A non-success status returned by the Taiyin C ABI.
-class EphemerisError implements Exception {
-  EphemerisError(
-    this.status,
-    this.name,
-    this.message, {
-    this.resultFlags = ResultFlags.none,
-    this.diagnostic,
-    Iterable<EphemerisDiagnostic> diagnostics = const [],
-  }) : diagnostics = List.unmodifiable(
-         diagnostics.isEmpty && diagnostic != null ? [diagnostic] : diagnostics,
-       );
-
-  /// The negative status code returned by the native operation.
-  final int status;
-
-  /// The stable native status name, when known by the loaded library.
-  final String name;
-
-  /// A human-readable description of the failure.
-  final String message;
-
-  /// Execution facts reported before this operation failed.
-  final ResultFlags resultFlags;
-
-  /// Native route and coverage details for a failed ephemeris calculation.
-  final EphemerisDiagnostic? diagnostic;
-
-  /// Every native diagnostic available for the failed operation.
-  ///
-  /// Single-target failures contain [diagnostic]. Batch failures may contain
-  /// several entries while [diagnostic] remains the primary first failure.
-  final List<EphemerisDiagnostic> diagnostics;
-
-  @override
-  String toString() => 'EphemerisError($status, $name): $message';
-}
-
-/// An argument failed native validation.
-final class InvalidArgumentError extends EphemerisError {
-  InvalidArgumentError(
-    super.status,
-    super.name,
-    super.message, {
-    super.resultFlags,
-    super.diagnostic,
-    super.diagnostics,
-  });
-}
-
-/// The native operation could not allocate required memory.
-final class EphemerisOutOfMemoryError extends EphemerisError {
-  EphemerisOutOfMemoryError(
-    super.status,
-    super.name,
-    super.message, {
-    super.resultFlags,
-    super.diagnostic,
-    super.diagnostics,
-  });
-}
-
-/// The native calculation reached an invalid internal state.
-final class InternalCalculationError extends EphemerisError {
-  InternalCalculationError(
-    super.status,
-    super.name,
-    super.message, {
-    super.resultFlags,
-    super.diagnostic,
-    super.diagnostics,
-  });
-}
-
-/// The requested operation or configuration is not currently supported.
-final class UnsupportedOperationError extends EphemerisError {
-  UnsupportedOperationError(
-    super.status,
-    super.name,
-    super.message, {
-    super.resultFlags,
-    super.diagnostic,
-    super.diagnostics,
-  });
-}
-
-/// No usable ephemeris route or coverage could satisfy the request.
-final class EphemerisRouteError extends EphemerisError {
-  EphemerisRouteError(
-    super.status,
-    super.name,
-    super.message, {
-    super.resultFlags,
-    super.diagnostic,
-    super.diagnostics,
-  });
-}
-
-/// A native data file could not be opened, parsed, or validated.
-final class DataFileError extends EphemerisError {
-  DataFileError(
-    super.status,
-    super.name,
-    super.message, {
-    super.resultFlags,
-    super.diagnostic,
-    super.diagnostics,
-  });
-}
-
-/// A time-scale conversion lacked required data or received an invalid value.
-class TimeScaleError extends EphemerisError {
-  TimeScaleError(
-    super.status,
-    super.name,
-    super.message, {
-    super.resultFlags,
-    super.diagnostic,
-    super.diagnostics,
-  });
-}
-
-/// Earth-orientation data is missing or does not cover the requested UTC.
-final class EarthOrientationDataError extends TimeScaleError {
-  EarthOrientationDataError(
-    super.status,
-    super.name,
-    super.message, {
-    super.resultFlags,
-    super.diagnostic,
-    super.diagnostics,
-  });
-}
-
-/// Leap-second data is unavailable for the requested UTC.
-final class LeapSecondDataError extends TimeScaleError {
-  LeapSecondDataError(
-    super.status,
-    super.name,
-    super.message, {
-    super.resultFlags,
-    super.diagnostic,
-    super.diagnostics,
-  });
-}
-
-/// The observer configuration is incomplete, invalid, or unsupported.
-final class ObserverError extends EphemerisError {
-  ObserverError(
-    super.status,
-    super.name,
-    super.message, {
-    super.resultFlags,
-    super.diagnostic,
-    super.diagnostics,
-  });
-}
-
-/// An event search failed to converge or find an event in the requested range.
-final class EventSearchError extends EphemerisError {
-  EventSearchError(
-    super.status,
-    super.name,
-    super.message, {
-    super.resultFlags,
-    super.diagnostic,
-    super.diagnostics,
-  });
-}
-
-/// A process-wide native runtime service failed.
-final class RuntimeServiceError extends EphemerisError {
-  RuntimeServiceError(
-    super.status,
-    super.name,
-    super.message, {
-    super.resultFlags,
-    super.diagnostic,
-    super.diagnostics,
-  });
-}
-
-/// A newer native library returned a status unknown to this Dart package.
-final class UnknownNativeError extends EphemerisError {
-  UnknownNativeError(
-    super.status,
-    super.name,
-    super.message, {
-    super.resultFlags,
-    super.diagnostic,
-    super.diagnostics,
-  });
-}
 
 /// One user-owned Ephemeris calculation context.
 ///
@@ -371,10 +100,11 @@ final class EphemerisContext implements Finalizable {
       _contextFinalizer.attach(this, _context.cast(), detach: this);
       finalizerAttached = true;
       time = Time.internal(
-        _bindings,
-        _context,
+        NativeTimeBackend(_bindings, _context),
         _ensureOpen,
-        (status) => _completeOperation(status),
+        (call) {
+          _completeBackendCall(call);
+        },
         (error) => error is LeapSecondDataError,
         () => _configuredTdbModel,
         (model) => _configuredTdbModel = model,
@@ -392,17 +122,13 @@ final class EphemerisContext implements Finalizable {
       ) {
         return _completeOperation(status, diagnostic: diagnostic);
       });
-      position = PositionApi.internal(_bindings, _context, _ensureOpen, (
-        status,
-        diagnostic,
-        diagnostics,
-      ) {
-        return _completeOperation(
-          status,
-          diagnostic: diagnostic,
-          diagnostics: diagnostics,
-        );
-      });
+      position = PositionApi.internal(
+        NativePositionBackend(_bindings, _context),
+        _ensureOpen,
+        (call) {
+          _completeBackendCall(call);
+        },
+      );
       observed = ObservedApi._(_bindings, _context, _ensureOpen, (
         status,
         diagnostic,
@@ -426,12 +152,15 @@ final class EphemerisContext implements Finalizable {
       ) {
         return _completeOperation(status, diagnostic: diagnostic);
       });
-      solarTime = SolarTimeApi._(_bindings, _context, _ensureOpen, (
-        status,
-        diagnostic,
-      ) {
-        return _completeOperation(status, diagnostic: diagnostic);
-      });
+      solarTime = SolarTimeApi.internal(
+        _NativeSolarTimeBackend(_bindings, _context, _ensureOpen, (
+          status,
+          diagnostic,
+        ) {
+          return _completeOperation(status, diagnostic: diagnostic);
+        }),
+        _ensureOpen,
+      );
       visibility = VisibilityApi._(_bindings, _context, _ensureOpen, (
         status,
         diagnostic,
@@ -450,12 +179,15 @@ final class EphemerisContext implements Finalizable {
       ) {
         return _completeOperation(status, diagnostic: diagnostic);
       });
-      eclipses = EclipseApi._(_bindings, _context, _ensureOpen, (
-        status,
-        diagnostic,
-      ) {
-        return _completeOperation(status, diagnostic: diagnostic);
-      });
+      eclipses = EclipseApi.internal(
+        _NativeEclipseBackend(_bindings, _context, _ensureOpen, (
+          status,
+          diagnostic,
+        ) {
+          return _completeOperation(status, diagnostic: diagnostic);
+        }),
+        _ensureOpen,
+      );
       occultation = OccultationApi._(_bindings, _context, _ensureOpen, (
         status,
         diagnostic,
@@ -552,19 +284,41 @@ final class EphemerisContext implements Finalizable {
     EphemerisDiagnostic? diagnostic,
     Iterable<EphemerisDiagnostic> diagnostics = const [],
   }) {
-    if (diagnostic != null) _recordDiagnostic(diagnostic);
     final decoded = decodeNativeCallResult(rawResult);
-    _lastResultFlags = decoded.flags;
-    if (decoded.status != 0) {
+    return _completeDecoded(
+      decoded.status,
+      decoded.flags,
+      diagnostic: diagnostic,
+      diagnostics: diagnostics,
+    );
+  }
+
+  ResultFlags _completeBackendCall(BackendCall<Object?> call) =>
+      _completeDecoded(
+        call.status,
+        call.flags,
+        diagnostic: call.diagnostic,
+        diagnostics: call.diagnostics,
+      );
+
+  ResultFlags _completeDecoded(
+    int status,
+    ResultFlags flags, {
+    EphemerisDiagnostic? diagnostic,
+    Iterable<EphemerisDiagnostic> diagnostics = const [],
+  }) {
+    if (diagnostic != null) _recordDiagnostic(diagnostic);
+    _lastResultFlags = flags;
+    if (status != 0) {
       _throwStatus(
         _bindings,
-        decoded.status,
-        resultFlags: decoded.flags,
+        status,
+        resultFlags: flags,
         diagnostic: diagnostic,
         diagnostics: diagnostics,
       );
     }
-    return decoded.flags;
+    return flags;
   }
 
   /// Every calendar context created from this context, tracked so closing the
@@ -611,13 +365,14 @@ final class EphemerisContext implements Finalizable {
     ChineseCalendarConfig config = const ChineseCalendarConfig(),
   }) {
     _ensureOpen();
-    final child = ChineseCalendarContext._create(
+    final backend = _NativeChineseCalendarBackend._create(
       _nativeState,
       _bindings,
       _context,
       config,
       this,
     );
+    final child = ChineseCalendarContext._(backend, this, config);
     _calendarChildren.add(child);
     return child;
   }
@@ -681,6 +436,68 @@ final class _NativeLibraryState {
   final NativeFinalizer contextFinalizer;
   final NativeFinalizer chineseCalendarFinalizer;
   final int capabilities;
+  Directory? byteSourceDirectory;
+  final Set<String> byteSources = {};
+  int byteSourceSequence = 0;
+
+  void clearByteSourcesAfterRuntimeReset() {
+    final directory = byteSourceDirectory;
+    // A caller can re-register a reported source path in RuntimeOptions. Do
+    // not remove files that the new catalog still references after its reset.
+    if (directory != null && _catalogReferences(directory.path)) return;
+    byteSourceDirectory = null;
+    byteSources.clear();
+    // Only remove the unique directory created by addSourceBytes, after the
+    // native runtime has dropped the catalog/cache that referred to its files.
+    if (directory != null) {
+      try {
+        directory.deleteSync(recursive: true);
+      } on FileSystemException {
+        // Best-effort cleanup must not mask the runtime initialization result.
+      }
+    }
+  }
+
+  bool _catalogReferences(String directory) {
+    String normalized(String value) {
+      final path = value.replaceAll('\\', '/');
+      return Platform.isWindows ? path.toLowerCase() : path;
+    }
+
+    final prefix = '${normalized(directory)}/';
+    return using((arena) {
+      final count = bindings.taiyin_runtime_registered_data_source_count();
+      for (var i = 0; i < count; ++i) {
+        final info = arena<taiyin_runtime_registered_data_source>();
+        final size = arena<Size>();
+        bindings.taiyin_runtime_registered_data_source_init(info);
+        var result = bindings.taiyin_runtime_get_registered_data_source(
+          i,
+          info,
+          nullptr,
+          0,
+          size,
+        );
+        if (result < 0 || size.value == 0) {
+          return true; // Conservatively retain on query failure.
+        }
+        final path = arena<Char>(size.value);
+        result = bindings.taiyin_runtime_get_registered_data_source(
+          i,
+          info,
+          path,
+          size.value,
+          size,
+        );
+        if (result < 0) return true;
+        if (normalized(_readNativeString(path)).startsWith(prefix)) {
+          return true;
+        }
+      }
+      return false;
+    });
+  }
+
   final Map<int, CustomTargetRegistration> customTargetRegistrations = {};
   final Map<int, CustomAyanamshaRegistration> customAyanamshaRegistrations = {};
   final Map<int, CustomHouseSystemRegistration> customHouseSystemRegistrations =

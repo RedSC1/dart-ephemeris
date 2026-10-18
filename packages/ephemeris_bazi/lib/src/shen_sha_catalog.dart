@@ -1,53 +1,5 @@
 part of 'bazi_api.dart';
 
-/// Immutable input to a synchronous custom Shen Sha predicate.
-final class BaziShenShaInput {
-  BaziShenShaInput._(
-    List<int> pillars,
-    this.target,
-    this.targetKind,
-    this.gender,
-  ) : pillars = List.unmodifiable(pillars);
-
-  /// Packed Ganzhi bytes in year/month/day/hour order; 255 means unknown.
-  final List<int> pillars;
-  final int target;
-  final BaziShenShaTargetKind targetKind;
-  final BaziGender? gender;
-}
-
-/// A user-defined rule. The predicate runs synchronously in its own isolate.
-final class BaziShenShaRule {
-  const BaziShenShaRule({
-    required this.id,
-    required this.name,
-    required this.test,
-  });
-  final String id;
-  final String name;
-  final bool Function(BaziShenShaInput) test;
-}
-
-/// A named collection of user rules. Full IDs are `label:ruleId`.
-final class BaziShenShaModule {
-  BaziShenShaModule({
-    required this.label,
-    required Iterable<BaziShenShaRule> rules,
-  }) : rules = List.unmodifiable(rules);
-  final String label;
-  final List<BaziShenShaRule> rules;
-}
-
-/// One match, copied out of native storage.
-final class BaziShenShaMatch {
-  const BaziShenShaMatch(this.id, this.name, this.builtinId);
-  final String id;
-  final String name;
-
-  /// Null for custom rules; built-ins use the existing native enum ID.
-  final int? builtinId;
-}
-
 Pointer<Char> _shenString(String value, Arena arena) {
   if (value.contains('\u0000')) {
     throw ArgumentError('Embedded NUL in Shen Sha text');
@@ -68,7 +20,7 @@ final class _ShenCallback {
           try {
             final p = pillars.ref;
             return rule.test(
-                  BaziShenShaInput._(
+                  BaziShenShaInput.internal(
                     [p.year, p.month, p.day, p.hour],
                     target,
                     BaziShenShaTargetKind.fromId(kind),
@@ -143,8 +95,12 @@ final _shenFinalizer = Finalizer<_ShenHandle>((handle) => handle.dispose());
 /// Add/remove return NEW catalogs. Built-ins cannot be changed. Close catalogs
 /// and contexts when finished; derived snapshots keep callbacks alive. Handles
 /// and callbacks must not be shared across isolates.
-final class BaziShenShaCatalog implements Finalizable {
-  factory BaziShenShaCatalog({String? libraryPath, String? coreLibraryPath}) {
+final class _NativeShenCatalogBackend
+    implements BaziShenShaCatalogBackend, Finalizable {
+  factory _NativeShenCatalogBackend({
+    String? libraryPath,
+    String? coreLibraryPath,
+  }) {
     final host = TaiyinExtensionHost.open(libraryPath: coreLibraryPath);
     final module = _openBaziModule(libraryPath);
     // Validate even if the module was previously cached by a regular BaZi call.
@@ -157,19 +113,20 @@ final class BaziShenShaCatalog implements Finalizable {
       host.checkStatus(
         module.bindings.taiyin_bazi_shen_sha_catalog_create(out),
       );
-      return BaziShenShaCatalog._(
+      return _NativeShenCatalogBackend._(
         host,
         _ShenHandle(module, out.value.cast(), false, []),
       );
     });
   }
-  BaziShenShaCatalog._(this._host, this._handle) {
+  _NativeShenCatalogBackend._(this._host, this._handle) {
     _shenFinalizer.attach(this, _handle, detach: this);
   }
   final TaiyinExtensionHost _host;
   final _ShenHandle _handle;
 
-  BaziShenShaCatalog addModule(BaziShenShaModule module) {
+  @override
+  _NativeShenCatalogBackend addModule(BaziShenShaModule module) {
     _handle.ensureOpen();
     final callbacks = <_ShenCallback>[];
     try {
@@ -196,7 +153,7 @@ final class BaziShenShaCatalog implements Finalizable {
             out,
           ),
         );
-        return BaziShenShaCatalog._(
+        return _NativeShenCatalogBackend._(
           _host,
           _ShenHandle(_handle.module, out.value.cast(), false, [
             ..._handle.callbacks,
@@ -212,7 +169,8 @@ final class BaziShenShaCatalog implements Finalizable {
   }
 
   /// Removes ALL rules in [label], leaving existing snapshots unchanged.
-  BaziShenShaCatalog removeModule(String label) {
+  @override
+  _NativeShenCatalogBackend removeModule(String label) {
     _handle.ensureOpen();
     return using((arena) {
       final out = arena<Pointer<taiyin_bazi_shen_sha_catalog>>();
@@ -223,7 +181,7 @@ final class BaziShenShaCatalog implements Finalizable {
           out,
         ),
       );
-      return BaziShenShaCatalog._(
+      return _NativeShenCatalogBackend._(
         _host,
         _ShenHandle(
           _handle.module,
@@ -235,7 +193,10 @@ final class BaziShenShaCatalog implements Finalizable {
     });
   }
 
-  BaziShenShaContext createContext({List<String> disabledIds = const []}) {
+  @override
+  _NativeShenContextBackend createContext({
+    List<String> disabledIds = const [],
+  }) {
     _handle.ensureOpen();
     return using((arena) {
       final ids = arena<Pointer<Char>>(disabledIds.length);
@@ -251,13 +212,14 @@ final class BaziShenShaCatalog implements Finalizable {
           out,
         ),
       );
-      return BaziShenShaContext._(
+      return _NativeShenContextBackend._(
         _host,
         _ShenHandle(_handle.module, out.value.cast(), true, _handle.callbacks),
       );
     });
   }
 
+  @override
   void close() {
     _handle.dispose();
     _shenFinalizer.detach(this);
@@ -266,12 +228,14 @@ final class BaziShenShaCatalog implements Finalizable {
 
 /// Frozen rule selection. Callback exceptions are rethrown after native unwind.
 /// Reentry into contexts sharing callback storage is rejected.
-final class BaziShenShaContext implements Finalizable {
-  BaziShenShaContext._(this._host, this._handle) {
+final class _NativeShenContextBackend
+    implements BaziShenShaContextBackend, Finalizable {
+  _NativeShenContextBackend._(this._host, this._handle) {
     _shenFinalizer.attach(this, _handle, detach: this);
   }
   final TaiyinExtensionHost _host;
   final _ShenHandle _handle;
+  @override
   List<BaziShenShaMatch> evaluate({
     required BaziChart chart,
     required Ganzhi target,
@@ -342,6 +306,7 @@ final class BaziShenShaContext implements Finalizable {
     }
   }
 
+  @override
   void close() {
     _handle.dispose();
     _shenFinalizer.detach(this);

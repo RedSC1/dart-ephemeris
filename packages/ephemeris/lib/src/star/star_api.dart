@@ -24,85 +24,6 @@ typedef _StarStatusChecker =
       List<EphemerisDiagnostic> diagnostics,
     );
 
-/// Process-wide fixed-star catalog management.
-///
-/// Catalog mutation is a setup-time operation. Finish adding or clearing
-/// catalogs before calculations begin in any isolate.
-final class StarCatalog {
-  StarCatalog._(this._bindings);
-
-  final TaiyinBindings _bindings;
-
-  /// Adds a compiled TSC1 catalog from [path].
-  void addTsc1(String path) {
-    _requireStarPath(path, 'path');
-    using((arena) {
-      final nativePath = path.toNativeUtf8(allocator: arena).cast<Char>();
-      _checkStatus(
-        _bindings,
-        _bindings.taiyin_star_catalog_add_tsc1(nativePath),
-      );
-    });
-  }
-
-  /// Adds a compiled TSC1 catalog from memory.
-  ///
-  /// The native runtime copies the bytes before this method returns.
-  void addTsc1Bytes(Uint8List bytes) {
-    if (bytes.isEmpty) {
-      throw ArgumentError.value(bytes, 'bytes', 'must not be empty');
-    }
-    using((arena) {
-      final nativeBytes = arena<Uint8>(bytes.length);
-      nativeBytes.asTypedList(bytes.length).setAll(0, bytes);
-      _checkStatus(
-        _bindings,
-        _bindings.taiyin_star_catalog_add_tsc1_memory(
-          nativeBytes,
-          bytes.length,
-        ),
-      );
-    });
-  }
-
-  /// Adds an editable TSF1 catalog from [path].
-  void addTsf1(String path) {
-    _requireStarPath(path, 'path');
-    using((arena) {
-      final nativePath = path.toNativeUtf8(allocator: arena).cast<Char>();
-      _checkStatus(
-        _bindings,
-        _bindings.taiyin_star_catalog_add_tsf1(nativePath),
-      );
-    });
-  }
-
-  /// Removes all process-wide fixed-star catalogs.
-  void clear() {
-    _bindings.taiyin_star_catalog_clear();
-  }
-
-  /// Number of loaded TSC1 and TSF1 catalogs.
-  int get count => _bindings.taiyin_star_catalog_count();
-
-  /// Looks up a star's visual magnitude using its ID, name, or alias.
-  ///
-  /// Throws [EphemerisError] when no loaded catalog contains a finite
-  /// magnitude for [starKey].
-  double magnitudeOf(String starKey) {
-    _requireStarKey(starKey);
-    return using((arena) {
-      final nativeKey = starKey.toNativeUtf8(allocator: arena).cast<Char>();
-      final output = arena<Double>();
-      _checkStatus(
-        _bindings,
-        _bindings.taiyin_star_find_magnitude(nativeKey, output),
-      );
-      return output.value;
-    });
-  }
-}
-
 /// Fixed-star calculations owned by one [EphemerisContext].
 ///
 /// Star keys may be canonical IDs, names, or aliases from any loaded global
@@ -605,15 +526,6 @@ void _requireStarKey(String starKey) {
       'starKey',
       'must not contain a NUL character',
     );
-  }
-}
-
-void _requireStarPath(String path, String name) {
-  if (path.isEmpty) {
-    throw ArgumentError.value(path, name, 'must not be empty');
-  }
-  if (path.contains('\u0000')) {
-    throw ArgumentError.value(path, name, 'must not contain a NUL character');
   }
 }
 

@@ -1,3 +1,12 @@
+## Unreleased
+
+- Add shared public contracts and date/clock orchestration above native/Web
+  adapters; preserve existing native call signatures and ownership.
+- Add Web natal charts, five flow levels, chart edits, manual/index/number/
+  random casting, physical-clock navigation and reverse lookup.
+- Embed the default flat TOML tables in the opt-in C++ Wasm build; support
+  catalog snapshots/reload, independent options and JSON rule modules.
+
 ## 1.0.0
 
 - First stable release with `ephemeris ^1.0.0` and Taiyin C++ `v1.0.0`.

@@ -14,6 +14,8 @@ packages.
   coordinates, events, eclipses, stars, orbits, and astrology.
 - [Time and calendar](time-and-calendar.md): UTC, UT1, TT/TDB, EOP data,
   `DateTime`, wall clocks, Chinese-calendar modes, and true solar time.
+- [Experimental Web backend](web-backend.md): unified async initialization,
+  OPM2 `Uint8List` sources, deployment, tests, and the initial support matrix.
 
 ## Configure the runtime
 
@@ -52,5 +54,6 @@ modules must be built together against the matching core; this release uses
 Taiyin `v1.0.0`, C ABI 11.
 
 The supported bundled platforms remain macOS arm64, Linux x64, and Windows
-x64. Dart Web/Flutter Web is unsupported. See the data, time, and accuracy
+x64. The published 1.0.0 package is native-only; this development branch adds a
+partial experimental Web backend described above. See the data, time, and accuracy
 guides for the declared calendar, observer, and model limits.

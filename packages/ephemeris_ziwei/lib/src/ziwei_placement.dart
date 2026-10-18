@@ -13,96 +13,6 @@ void _requirePlacement(ZiweiContext context) {
   }
 }
 
-/// Finite rule inputs, not a solar/lunar birth date. Month is 1..12, day 1..30.
-final class ZiweiPlacementInput {
-  const ZiweiPlacementInput({
-    this.yearStem = 0,
-    this.yearBranch = 0,
-    this.month = 1,
-    this.day = 1,
-    this.hourBranch = 0,
-  });
-  final int yearStem, yearBranch, month, day, hourBranch;
-}
-
-/// Null preserves a field. False restores the original bureau, true recomputes.
-final class ZiweiPlacementPatch {
-  const ZiweiPlacementPatch({
-    this.yearStem,
-    this.yearBranch,
-    this.month,
-    this.day,
-    this.hourBranch,
-    this.updateBureau,
-  });
-  final int? yearStem, yearBranch, month, day, hourBranch;
-  final bool? updateBureau;
-}
-
-/// Current finite inputs plus cumulative overrides and role rotation.
-final class ZiweiPlacementState {
-  const ZiweiPlacementState(this.input, this.overrides, this.lifePalaceShift);
-  final ZiweiPlacementInput input;
-  final ZiweiPlacementPatch overrides;
-  final int lifePalaceShift;
-}
-
-/// An unplaced star and a bit mask of missing native RuleInputSource IDs.
-final class ZiweiOmittedPlacement {
-  const ZiweiOmittedPlacement(this.starId, this.missingInputs);
-  final int starId, missingInputs;
-}
-
-/// How the original finite-input chart was selected.
-enum ZiweiCastingMethod { manual, indexed, number, random }
-
-/// Immutable snapshot of a casting chart (there is deliberately no birth time).
-final class ZiweiCastingSummary {
-  ZiweiCastingSummary._(taiyin_ziwei_casting_summary s, this.number)
-    : input = _readPlacementInput(s.input),
-      originalInput = _readPlacementInput(s.original_input),
-      overrides = _readPlacementPatch(s.overrides),
-      index = s.index == 0xffffffff ? null : s.index,
-      method = ZiweiCastingMethod.values[s.method],
-      gender = ZiweiGender.fromId(s.gender),
-      chartMode = ZiweiChartMode.values[s.chart_mode],
-      bureau = ZiweiBureau.fromId(s.bureau),
-      originalBureau = ZiweiBureau.fromId(s.original_bureau),
-      bodyPalace = s.body_palace,
-      lifeMaster = s.life_master,
-      bodyMaster = s.body_master,
-      yearTransformStem = s.year_transform_stem,
-      transformations = List.unmodifiable([
-        s.year_lu,
-        s.year_quan,
-        s.year_ke,
-        s.year_ji,
-      ]),
-      updateBureau = s.update_bureau != 0,
-      lifePalaceShift = s.life_palace_shift,
-      palaceBranches = List.unmodifiable([
-        for (var i = 0; i < 12; i++) s.palace_branches[i],
-      ]),
-      palaceStems = List.unmodifiable([
-        for (var i = 0; i < 12; i++) s.palace_stems[i],
-      ]);
-  final ZiweiPlacementInput input, originalInput;
-  final ZiweiPlacementPatch overrides;
-  final int? index;
-  final String number;
-  final ZiweiCastingMethod method;
-  final ZiweiGender gender;
-  final ZiweiChartMode chartMode;
-  final ZiweiBureau bureau, originalBureau;
-  final int bodyPalace,
-      lifeMaster,
-      bodyMaster,
-      yearTransformStem,
-      lifePalaceShift;
-  final bool updateBureau;
-  final List<int> palaceBranches, palaceStems, transformations;
-}
-
 void _placementInt(int value, int min, int max, String name) {
   if (value < min || value > max) throw RangeError.range(value, min, max, name);
 }
@@ -230,7 +140,7 @@ ZiweiCastingChart _createCasting(
       );
     }
     _checkStatus(c._host, status);
-    return ZiweiCastingChart._(c, out.value, finalizer);
+    return _NativeZiweiCastingChart._(c, out.value, finalizer);
   });
 }
 
@@ -252,8 +162,10 @@ List<ZiweiOmittedPlacement> _readOmitted(
 
 /// Owns a separate casting handle: no invented birthday and no real-date flow API.
 /// Edits return new handles; reset restores the original draw, never resamples.
-final class ZiweiCastingChart implements Finalizable {
-  ZiweiCastingChart._(this._context, this._chart, this._finalizer) {
+final class _NativeZiweiCastingChart extends ZiweiCastingChart
+    implements Finalizable {
+  _NativeZiweiCastingChart._(this._context, this._chart, this._finalizer)
+    : super.internal() {
     _finalizer.attach(this, _chart.cast(), detach: this);
   }
   final ZiweiContext _context;
@@ -261,6 +173,7 @@ final class ZiweiCastingChart implements Finalizable {
   final NativeFinalizer _finalizer;
   bool _closed = false;
   TaiyinBindings get _bindings => _context._bindings;
+  @override
   bool get isClosed => _closed;
   void _ensureOpen() {
     if (_closed) throw StateError('Casting chart is closed');
@@ -268,6 +181,7 @@ final class ZiweiCastingChart implements Finalizable {
   }
 
   /// Release the handle. Idempotent; also safe after the context is closed.
+  @override
   void close() {
     if (_closed) return;
     _closed = true;
@@ -275,6 +189,7 @@ final class ZiweiCastingChart implements Finalizable {
     _bindings.taiyin_ziwei_casting_chart_destroy(_chart);
   }
 
+  @override
   ZiweiCastingSummary get summary {
     _ensureOpen();
     return using((a) {
@@ -299,10 +214,11 @@ final class ZiweiCastingChart implements Finalizable {
           n,
         ),
       );
-      return ZiweiCastingSummary._(s.ref, text.cast<Utf8>().toDartString());
+      return _readCastingSummary(s.ref, text.cast<Utf8>().toDartString());
     });
   }
 
+  @override
   List<ZiweiOmittedPlacement> get omittedPlacements {
     _ensureOpen();
     return _readOmitted(
@@ -349,6 +265,7 @@ final class ZiweiCastingChart implements Finalizable {
     });
   }
 
+  @override
   int? starPosition(int starId) {
     _placementInt(starId, 0, 65535, 'starId');
     final stars = _stars().positions;
@@ -357,6 +274,7 @@ final class ZiweiCastingChart implements Finalizable {
         : stars[starId];
   }
 
+  @override
   int? starPalace(int starId) {
     final branch = starPosition(starId);
     if (branch == null) return null;
@@ -364,14 +282,17 @@ final class ZiweiCastingChart implements Finalizable {
     return index < 0 ? null : index;
   }
 
+  @override
   int transformMask(int starId) {
     _placementInt(starId, 0, 65535, 'starId');
     final masks = _stars().masks;
     return starId < masks.length ? masks[starId] : 0;
   }
 
+  @override
   bool hasTransform(int starId, ZiweiTransformMark mark) =>
       (transformMask(starId) & (1 << mark.id)) != 0;
+  @override
   List<ZiweiStar> palaceStars(int branch) {
     _placementInt(branch, 0, 11, 'branch');
     final positions = _stars().positions;
@@ -381,6 +302,7 @@ final class ZiweiCastingChart implements Finalizable {
     ]);
   }
 
+  @override
   ZiweiBrightness brightness(int starId) {
     _ensureOpen();
     _placementInt(starId, 0, 65535, 'starId');
@@ -399,6 +321,7 @@ final class ZiweiCastingChart implements Finalizable {
     });
   }
 
+  @override
   ZiweiCastingChart modify(ZiweiPlacementPatch patch) {
     _ensureOpen();
     return using((a) {
@@ -412,10 +335,11 @@ final class ZiweiCastingChart implements Finalizable {
           out,
         ),
       );
-      return ZiweiCastingChart._(_context, out.value, _finalizer);
+      return _NativeZiweiCastingChart._(_context, out.value, _finalizer);
     });
   }
 
+  @override
   ZiweiCastingChart shiftLifePalace(int steps) {
     _ensureOpen();
     _placementInt(steps, -2147483648, 2147483647, 'steps');
@@ -429,10 +353,11 @@ final class ZiweiCastingChart implements Finalizable {
           out,
         ),
       );
-      return ZiweiCastingChart._(_context, out.value, _finalizer);
+      return _NativeZiweiCastingChart._(_context, out.value, _finalizer);
     });
   }
 
+  @override
   ZiweiCastingChart reset() {
     _ensureOpen();
     return using((a) {
@@ -441,7 +366,41 @@ final class ZiweiCastingChart implements Finalizable {
         _context._host,
         _bindings.taiyin_ziwei_casting_chart_reset(_chart, out),
       );
-      return ZiweiCastingChart._(_context, out.value, _finalizer);
+      return _NativeZiweiCastingChart._(_context, out.value, _finalizer);
     });
   }
 }
+
+ZiweiCastingSummary _readCastingSummary(
+  taiyin_ziwei_casting_summary s,
+  String number,
+) => ZiweiCastingSummary.internal(
+  number: number,
+  input: _readPlacementInput(s.input),
+  originalInput: _readPlacementInput(s.original_input),
+  overrides: _readPlacementPatch(s.overrides),
+  index: s.index == 0xffffffff ? null : s.index,
+  method: ZiweiCastingMethod.values[s.method],
+  gender: ZiweiGender.fromId(s.gender),
+  chartMode: ZiweiChartMode.values[s.chart_mode],
+  bureau: ZiweiBureau.fromId(s.bureau),
+  originalBureau: ZiweiBureau.fromId(s.original_bureau),
+  bodyPalace: s.body_palace,
+  lifeMaster: s.life_master,
+  bodyMaster: s.body_master,
+  yearTransformStem: s.year_transform_stem,
+  transformations: List.unmodifiable([
+    s.year_lu,
+    s.year_quan,
+    s.year_ke,
+    s.year_ji,
+  ]),
+  updateBureau: s.update_bureau != 0,
+  lifePalaceShift: s.life_palace_shift,
+  palaceBranches: List.unmodifiable([
+    for (var i = 0; i < 12; i++) s.palace_branches[i],
+  ]),
+  palaceStems: List.unmodifiable([
+    for (var i = 0; i < 12; i++) s.palace_stems[i],
+  ]),
+);

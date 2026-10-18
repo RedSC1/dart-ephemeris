@@ -41,8 +41,13 @@ arm64, Linux x64, and Windows x64. Ordinary users do not locate DLLs or shared
 libraries manually. The core package also bundles and automatically loads a
 2,057-star lite catalog covering all HIP members of the supported Chinese and
 western-zodiac line figures. Other Dart Native targets can supply compatible
-Taiyin modules explicitly. Dart Web and Flutter Web are not currently
-supported.
+Taiyin modules explicitly. This development branch also has an **experimental,
+partial Web backend** for async initialization, byte-loaded data, single/batch
+positions, time conversion, Chinese-calendar/four-pillar calculations,
+the eclipse API, and the BaZi/Ziwei extensions (including custom rule options).
+It does not yet expose the full native API on Web. See the
+[Web backend guide](packages/ephemeris/doc/web-backend.md); published 1.0.0
+packages do not contain this new backend.
 
 ## Quick start
 
@@ -287,5 +292,6 @@ TAIYIN_ZIWEI_STRESS_CASES=10000 \
   dart test packages/ephemeris_ziwei/test/ziwei_oracle_test.dart
 ```
 
-Dart Web and Flutter Web are not currently supported because these bindings
-use `dart:ffi` and native shared libraries.
+Published 1.0.0 packages remain native-only. This development branch's partial
+Web backend is documented in the [support matrix](packages/ephemeris/doc/web-backend.md);
+it is not a claim that every native service or callback already works on Web.

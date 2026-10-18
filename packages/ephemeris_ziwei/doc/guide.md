@@ -6,6 +6,12 @@ navigation and reverse-search APIs.
 `ephemeris_ziwei` is an optional native extension. It ships a Ziwei native
 module and the bundled default TOML rule profile.
 
+The development branch has a [Web adapter](../../ephemeris/doc/web-backend.md#eclipses-bazi-and-ziwei)
+for natal/flow, navigation/reverse lookup, rule options and casting. Initialize
+the C++ Wasm backend first; all examples below then use the same call shapes.
+Web cannot read host OS paths. Its default tables are embedded in the Wasm
+asset; custom JSON modules use the same `ZiweiRuleset` API as native.
+
 ```sh
 dart pub add ephemeris
 dart pub add ephemeris_ziwei
