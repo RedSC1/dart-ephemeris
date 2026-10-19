@@ -9,8 +9,8 @@ library.
 
 | | |
 |---|---|
-| Published source ref | public Taiyin tag `v1.0.0` |
-| Version | 1.0.0 |
+| Published source ref | public Taiyin tag `v1.1.0` |
+| Version | 1.1.0 |
 | C ABI | 11 |
 | Build | modular core (astronomy + Chinese calendar + Ganzhi) |
 | Platforms | macOS arm64, Linux x64, Windows x64 |

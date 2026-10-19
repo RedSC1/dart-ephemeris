@@ -1,9 +1,10 @@
 # Cross-platform initialization and byte-loaded data (experimental)
 
-This checkout adds a **partial Web backend**, not Web support for the entire
-1.0.0 API. Existing native `Ephemeris.open()`, path-based loading, FFI handles,
-callbacks, and optional-extension call signatures remain unchanged. No package version or
-published native binary is changed by this experiment.
+Version 1.1.0 adds a **partial experimental Web backend**, not Web support for
+the entire native API. Existing native `Ephemeris.open()`, path-based loading,
+FFI handles, callbacks, and optional-extension call signatures remain unchanged.
+Build and deploy the matching C++ JS/Wasm assets explicitly; they are not
+included in the Dart package or downloaded automatically.
 
 ## One initialization call on both platforms
 
@@ -323,11 +324,9 @@ native callback categories remain outside this Web surface.
 ## Reproduce the end-to-end test
 
 Build modular native core, BaZi and Ziwei C ABI 11 libraries and the Web target
-from the same core checkout. The reviewed public snapshot for this branch is
-`e233c8fadc4754f8a234757841f5a1ad5334bc32` in
+from the same core checkout. Use the public tag `v1.1.0` in
 [`RedSC1/taiyin-ephemeris`](https://github.com/RedSC1/taiyin-ephemeris).
-No new release tag or bundled native binary is required for this development
-comparison. Set `TAIYIN_BAZI_LIBRARY_PATH` and
+Keep the native and Web source versions aligned. Set `TAIYIN_BAZI_LIBRARY_PATH` and
 `TAIYIN_ZIWEI_LIBRARY_PATH` to those newly built modules, not stale bundled
 binaries. Use `-ffp-contract=off` for this numerical comparison.
 Generate the reference, then compile the **same Dart API scenario** for both
@@ -364,7 +363,7 @@ UTC routes, all three calendar modes, terms/moons/months in the computed
 year, all six neighboring-term searches, three rat-hour rules, reform-era month
 metadata, UTC+7 versus 105°E, cached calendars and owner-driven cleanup. These
 are backend-equivalence tests, not an independent historical-calendar oracle.
-Rechecked on 2026-10-19 against the reviewed public snapshot above: both browser
+Rechecked on 2026-10-19 against the reviewed implementation: both browser
 compilers passed the same 1,255 rows (maximum mixed-component difference
 `6.4823e-9`), and the three-package native suite passed 337 tests with four
 conditional tests skipped. The browser reference used the monolithic C ABI

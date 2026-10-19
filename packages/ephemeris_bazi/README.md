@@ -1,11 +1,12 @@
 # ephemeris_bazi
 
-The development branch also supports the experimental
+Version 1.1.0 also supports the experimental
 [Web backend](../ephemeris/doc/web-backend.md#eclipses-bazi-and-ziwei).
 After `await Ephemeris.initialize(...)`, the same `context.bazi` calls work in
-the browser, including custom Shen Sha rules. Published 1.0.0 is native-only.
+the browser, including custom Shen Sha rules. Deploy the matching C++ JS/Wasm
+assets explicitly; the package does not bundle or download them automatically.
 
-**Version 1.0.0** follows the core package's
+**Version 1.1.0** follows the core package's
 [compatibility policy](../ephemeris/doc/index.md#compatibility-policy).
 
 BaZi (八字) extension bindings for the Taiyin ephemeris, part of the

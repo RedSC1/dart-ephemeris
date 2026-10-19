@@ -1,7 +1,7 @@
 # Ephemeris for Dart ("Taiyin")
 
-**Version 1.0.0** is the first stable release, built against Taiyin C++
-`v1.0.0` (C ABI 11). See the [compatibility policy](doc/index.md#compatibility-policy).
+**Version 1.1.0** adds an experimental Web backend and uses Taiyin C++
+`v1.1.0` (compatible C ABI 11). See the [compatibility policy](doc/index.md#compatibility-policy).
 
 An idiomatic Dart wrapper around the versioned C ABI in
 [`taiyin-ephemeris`](https://github.com/RedSC1/taiyin-ephemeris).
@@ -54,16 +54,18 @@ The core package deliberately has two layers:
 
 ## Platform support
 
-The published 1.0.0 package supports **Dart Native** through `dart:ffi`. It
+The package supports **Dart Native** through `dart:ffi`. It
 bundles ready-to-load native modules for macOS arm64, Linux x64, and Windows
 x64. Applications on another native platform or architecture can provide a
 compatible Taiyin build through an explicit path or the platform loader. Dart
-Web/Flutter Web is being added on this development branch through a **partial,
+Web/Flutter Web is available from 1.1.0 through a **partial,
 experimental Wasm backend**. The initial adapter supports a unified async
 `Ephemeris.initialize()`, `addSourceBytes(name, Uint8List)`, single/batch
 positions, time conversions, Chinese-calendar/four-pillar and solar-time
 calculations, all eclipse operations, and the optional BaZi/Ziwei extensions.
 The rest of the native API is not yet exposed on Web; consult the support matrix.
+Deploy the matching Emscripten JS/Wasm assets yourself; they are not bundled
+or downloaded automatically by the Dart package.
 Existing synchronous native `open()` and path-based APIs are unchanged. See
 the [build/deploy guide and support matrix](doc/web-backend.md).
 
@@ -150,7 +152,7 @@ code that coexists with other packages, prefer the prefixed form above.
 Ephemeris exposes its semantic version and major-release codename independently:
 
 ```dart
-print(ephemeris.libraryVersion);  // 1.0.0 with this release's native build
+print(ephemeris.libraryVersion);  // 1.1.0 with this release's native build
 print(ephemeris.libraryCodename); // Singularity
 ```
 

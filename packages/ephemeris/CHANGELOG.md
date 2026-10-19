@@ -1,4 +1,8 @@
-## Unreleased
+## 1.1.0
+
+- Rebuild native modules against Taiyin `v1.1.0` (compatible C ABI 11).
+- Keep Web support experimental and partial; applications deploy the matching
+  Emscripten JS/Wasm assets explicitly. Native `open()` remains unchanged.
 
 - Add a unified async `Ephemeris.initialize` without changing native `open`.
 - Add owned OPM2/SPK/BSP/TKC1/TKE1 `Uint8List` registration with `addSourceBytes`

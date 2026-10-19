@@ -1,4 +1,6 @@
-## Unreleased
+## 1.1.0
+
+- Require `ephemeris ^1.1.0` and rebuild the native module from Taiyin `v1.1.0`.
 
 - Share the public calculation pipelines between native and Web, preserving
   chart clocks, calendar binding, result flags and errors.

@@ -37,7 +37,7 @@ jobs:
         uses: actions/checkout@v6
         with:
           repository: RedSC1/taiyin-ephemeris
-          ref: e233c8fadc4754f8a234757841f5a1ad5334bc32 # Reviewed public snapshot; C ABI 11, no new tag
+          ref: v1.1.0 # Matching source release; compatible C ABI 11
           path: native-core
 
       - name: Set up Dart
@@ -71,8 +71,8 @@ jobs:
           cmake --install native-build --prefix native-stage
           strip -S -x \
             native-stage/lib/libtaiyin.11.0.0.dylib \
-            native-stage/lib/libtaiyin_bazi.1.0.0.dylib \
-            native-stage/lib/libtaiyin_ziwei.1.0.0.dylib
+            native-stage/lib/libtaiyin_bazi.1.1.0.dylib \
+            native-stage/lib/libtaiyin_ziwei.1.1.0.dylib
 
       - name: Build and install native modules (manylinux2014)
         if: runner.os == 'Linux'
@@ -98,8 +98,8 @@ jobs:
               stage_lib="$(dirname "$library")"
               strip --strip-unneeded \
                 "$stage_lib/libtaiyin.so.11.0.0" \
-                "$stage_lib/libtaiyin_bazi.so.1.0.0" \
-                "$stage_lib/libtaiyin_ziwei.so.1.0.0"
+                "$stage_lib/libtaiyin_bazi.so.1.1.0" \
+                "$stage_lib/libtaiyin_ziwei.so.1.1.0"
 
               max_glibc="$(
                 objdump -T "$stage_lib/libtaiyin.so.11.0.0" |

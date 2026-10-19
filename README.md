@@ -31,7 +31,8 @@ dart pub add ephemeris_bazi   # optional
 dart pub add ephemeris_ziwei  # optional
 ```
 
-Version **1.0.0** is the first stable release of all three packages. Compatible
+Version **1.1.0** adds the experimental Web backend while retaining the
+stability policy established in 1.0.0. Compatible
 1.x releases preserve public call signatures, result records, exception types,
 and context ownership rules. See the
 [compatibility policy](packages/ephemeris/doc/index.md#compatibility-policy).
@@ -41,13 +42,14 @@ arm64, Linux x64, and Windows x64. Ordinary users do not locate DLLs or shared
 libraries manually. The core package also bundles and automatically loads a
 2,057-star lite catalog covering all HIP members of the supported Chinese and
 western-zodiac line figures. Other Dart Native targets can supply compatible
-Taiyin modules explicitly. This development branch also has an **experimental,
+Taiyin modules explicitly. Version 1.1.0 also has an **experimental,
 partial Web backend** for async initialization, byte-loaded data, single/batch
 positions, time conversion, Chinese-calendar/four-pillar calculations,
 the eclipse API, and the BaZi/Ziwei extensions (including custom rule options).
 It does not yet expose the full native API on Web. See the
-[Web backend guide](packages/ephemeris/doc/web-backend.md); published 1.0.0
-packages do not contain this new backend.
+[Web backend guide](packages/ephemeris/doc/web-backend.md). Web applications
+must deploy the matching Emscripten JS/Wasm assets explicitly; these large
+assets are not automatically bundled or downloaded by the package.
 
 ## Quick start
 
@@ -292,6 +294,6 @@ TAIYIN_ZIWEI_STRESS_CASES=10000 \
   dart test packages/ephemeris_ziwei/test/ziwei_oracle_test.dart
 ```
 
-Published 1.0.0 packages remain native-only. This development branch's partial
-Web backend is documented in the [support matrix](packages/ephemeris/doc/web-backend.md);
+Version 1.1.0's partial experimental Web backend is documented in the
+[support matrix](packages/ephemeris/doc/web-backend.md);
 it is not a claim that every native service or callback already works on Web.

@@ -41,7 +41,8 @@ packages.
 
 ## Compatibility policy
 
-All three packages are stable at 1.0.0. Compatible 1.x releases preserve
+All three packages are at 1.1.0; the optional Web backend remains experimental.
+Compatible 1.x releases preserve
 public call signatures, documented result records and exception types, and
 context/isolate ownership rules. Native computations retain the documented
 `OperationResult<T>` record with `value` and `flags`; fatal statuses throw
@@ -51,9 +52,9 @@ Numerical fixes and model/data updates can change calculated values. Pin
 packages, data, route policy, and model IDs for reproducible work. Internal
 FFI bindings and implementation files are not public APIs. External native
 modules must be built together against the matching core; this release uses
-Taiyin `v1.0.0`, C ABI 11.
+Taiyin `v1.1.0`, C ABI 11.
 
 The supported bundled platforms remain macOS arm64, Linux x64, and Windows
-x64. The published 1.0.0 package is native-only; this development branch adds a
+x64. Version 1.1.0 adds a
 partial experimental Web backend described above. See the data, time, and accuracy
 guides for the declared calendar, observer, and model limits.

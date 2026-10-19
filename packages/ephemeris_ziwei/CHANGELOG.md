@@ -1,4 +1,7 @@
-## Unreleased
+## 1.1.0
+
+- Require `ephemeris ^1.1.0` and rebuild the native module from Taiyin `v1.1.0`.
+- Include shared apparent-solar inverse and historical-pillar boundary fixes.
 
 - Add shared public contracts and date/clock orchestration above native/Web
   adapters; preserve existing native call signatures and ownership.

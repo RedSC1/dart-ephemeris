@@ -1,11 +1,12 @@
 # ephemeris_ziwei
 
-The development branch also supports the experimental
+Version 1.1.0 also supports the experimental
 [Web backend](../ephemeris/doc/web-backend.md#eclipses-bazi-and-ziwei).
 After `await Ephemeris.initialize(...)`, the same `context.ziwei` calls work in
 the browser. The default rule tables are embedded in the C++ Wasm asset;
 independent options, JSON modules, flow clocks and casting are supported.
-Published 1.0.0 is native-only.
+Deploy the matching C++ JS/Wasm assets explicitly; they are not bundled or
+downloaded automatically by the package.
 
 [Explicit chart clocks](doc/chart-clocks.md) support fixed-offset and
 mean/apparent solar time across natal charts, flows, and reverse lookup. These
@@ -13,10 +14,10 @@ methods require matching core and Ziwei native libraries.
 
 The package includes immutable natal edits and independent manual, number
 and random casting charts. See the [guide](doc/guide.md#manual-placement-and-casting-charts).
-These APIs use Taiyin `v1.0.0` native modules. Release assembly uses
+These APIs use Taiyin `v1.1.0` native modules. Release assembly uses
 the validated CI artifacts; a source checkout may still contain older binaries.
 
-**Version 1.0.0** follows the core package's
+**Version 1.1.0** follows the core package's
 [compatibility policy](../ephemeris/doc/index.md#compatibility-policy).
 
 Ziwei Doushu (紫微斗数) extension bindings for the Taiyin ephemeris, part of
