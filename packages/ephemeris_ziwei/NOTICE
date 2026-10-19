@@ -68,6 +68,19 @@ applicable copyright and license text are retained in
 
     https://github.com/cosinekitty/astronomy
 
+IERS Earth-orientation data
+---------------------------
+
+The compact built-in Delta-T table uses January 1 control points for
+1962-2025 derived from the IERS 20 C04 daily UT1-UTC series and the published
+TAI-UTC history. The daily C04 source is used during maintenance and is not
+distributed in this repository. Taiyin gratefully acknowledges the
+International Earth Rotation and Reference Systems Service and the
+Observatoire de Paris Earth Orientation Center. Upstream:
+
+    https://hpiers.obspm.fr/eop-pc/products/combined/C04.html
+    https://hpiers.obspm.fr/iers/bul/bulc/UTC-TAI.history
+
 Shouxing Astronomical Calendar
 ------------------------------
 
