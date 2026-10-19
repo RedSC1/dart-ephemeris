@@ -323,7 +323,11 @@ native callback categories remain outside this Web surface.
 ## Reproduce the end-to-end test
 
 Build modular native core, BaZi and Ziwei C ABI 11 libraries and the Web target
-from the same core checkout. Set `TAIYIN_BAZI_LIBRARY_PATH` and
+from the same core checkout. The reviewed public snapshot for this branch is
+`e233c8fadc4754f8a234757841f5a1ad5334bc32` in
+[`RedSC1/taiyin-ephemeris`](https://github.com/RedSC1/taiyin-ephemeris).
+No new release tag or bundled native binary is required for this development
+comparison. Set `TAIYIN_BAZI_LIBRARY_PATH` and
 `TAIYIN_ZIWEI_LIBRARY_PATH` to those newly built modules, not stale bundled
 binaries. Use `-ffp-contract=off` for this numerical comparison.
 Generate the reference, then compile the **same Dart API scenario** for both
@@ -360,6 +364,12 @@ UTC routes, all three calendar modes, terms/moons/months in the computed
 year, all six neighboring-term searches, three rat-hour rules, reform-era month
 metadata, UTC+7 versus 105°E, cached calendars and owner-driven cleanup. These
 are backend-equivalence tests, not an independent historical-calendar oracle.
+Rechecked on 2026-10-19 against the reviewed public snapshot above: both browser
+compilers passed the same 1,255 rows (maximum mixed-component difference
+`6.4823e-9`), and the three-package native suite passed 337 tests with four
+conditional tests skipped. The browser reference used the monolithic C ABI
+library with all three modules and `-ffp-contract=off`; a modular native build
+must use that same floating-point setting for this strict comparison.
 The eclipse scenario calls all 39 public operations, including high-bit option
 masks, optional contacts, both search directions, routes and map products.
 The bridge is compiled with C++ exception catching enabled. Separate truncated
