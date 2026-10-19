@@ -4,5 +4,5 @@
 /// `context.bazi` and `context.createBazi()` to `EphemerisContext`.
 library;
 
-export 'src/bazi_api.dart';
+export 'src/bazi_api.dart' if (dart.library.js_interop) 'src/bazi_api_web.dart';
 export 'src/bazi_models.dart';

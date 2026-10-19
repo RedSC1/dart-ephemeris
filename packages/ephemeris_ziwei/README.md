@@ -1,5 +1,12 @@
 # ephemeris_ziwei
 
+The development branch also supports the experimental
+[Web backend](../ephemeris/doc/web-backend.md#eclipses-bazi-and-ziwei).
+After `await Ephemeris.initialize(...)`, the same `context.ziwei` calls work in
+the browser. The default rule tables are embedded in the C++ Wasm asset;
+independent options, JSON modules, flow clocks and casting are supported.
+Published 1.0.0 is native-only.
+
 [Explicit chart clocks](doc/chart-clocks.md) support fixed-offset and
 mean/apparent solar time across natal charts, flows, and reverse lookup. These
 methods require matching core and Ziwei native libraries.

@@ -5,6 +5,12 @@ import 'package:ephemeris/ffi.dart';
 import 'package:ephemeris/ephemeris.dart';
 
 import 'bazi_models.dart';
+import 'bazi_backend.dart';
+import 'bazi_shared.dart';
+import 'shen_sha_models.dart';
+import 'shen_sha_backend.dart';
+export 'shen_sha_models.dart';
+export 'shen_sha_shared.dart';
 
 part 'shen_sha_catalog.dart';
 
@@ -87,8 +93,29 @@ extension BaziExtension on EphemerisContext {
 /// [BaziExtension.bazi] for the cached default configuration. Call [close]
 /// before discarding the handle; a native finalizer is attached as a safety
 /// net for contexts that are not closed explicitly.
-final class BaziContext implements Finalizable {
-  BaziContext._(
+final class BaziContext extends BaziFacade implements Finalizable {
+  BaziContext._(_NativeBaziBackend backend, this.chineseCalendar)
+    : super.internal(
+        backend,
+        chineseCalendar,
+        chineseCalendar.owner.time,
+        chineseCalendar.owner.solarTime,
+      );
+  factory BaziContext._create(
+    TaiyinExtensionHost host,
+    TaiyinExtensionModule module,
+    BaziContextConfig config,
+    ChineseCalendarContext calendar,
+  ) => BaziContext._(
+    _NativeBaziBackend._create(host, module, config, calendar),
+    calendar,
+  );
+  @override
+  final ChineseCalendarContext chineseCalendar;
+}
+
+final class _NativeBaziBackend implements BaziBackend, Finalizable {
+  _NativeBaziBackend._(
     this._host,
     this._module,
     this._context,
@@ -98,7 +125,7 @@ final class BaziContext implements Finalizable {
     _finalizer.attach(this, _context.cast(), detach: this);
   }
 
-  factory BaziContext._create(
+  factory _NativeBaziBackend._create(
     TaiyinExtensionHost host,
     TaiyinExtensionModule module,
     BaziContextConfig config,
@@ -115,7 +142,7 @@ final class BaziContext implements Finalizable {
       );
       return output.value;
     });
-    return BaziContext._(host, module, context, finalizer, calendar);
+    return _NativeBaziBackend._(host, module, context, finalizer, calendar);
   }
 
   final TaiyinExtensionHost _host;
@@ -128,12 +155,14 @@ final class BaziContext implements Finalizable {
   TaiyinBindings get _coreBindings => _host.bindings;
   bool _closed = false;
 
+  @override
   bool get isClosed => _closed;
 
   /// The calendar context shared by four-pillar and BaZi calculations.
   ChineseCalendarContext get chineseCalendar => _calendar;
 
   /// Releases the native BaZi context. Calling this more than once is safe.
+  @override
   void close() {
     if (_closed) return;
     _closed = true;
@@ -148,6 +177,7 @@ final class BaziContext implements Finalizable {
   }
 
   /// Returns the 空亡 (kong-wang) branches for a Ganzhi value.
+  @override
   ({EarthlyBranch a, EarthlyBranch b}) getKongWang(Ganzhi value) {
     _ensureOpen();
     return using((arena) {
@@ -164,6 +194,7 @@ final class BaziContext implements Finalizable {
   }
 
   /// Returns the 十神 (ten god) of a stem relative to the day stem.
+  @override
   BaziTenGod getTenGod({required int dayStemId, required int targetStemId}) {
     _ensureOpen();
     _requireStemId(dayStemId, 'dayStemId');
@@ -179,6 +210,7 @@ final class BaziContext implements Finalizable {
   }
 
   /// Returns the 藏干 (hidden stems) of an earthly branch.
+  @override
   ({List<int> stems, int count}) getHiddenStems(int branchId) {
     _ensureOpen();
     _requireBranchId(branchId, 'branchId');
@@ -200,6 +232,7 @@ final class BaziContext implements Finalizable {
   }
 
   /// Calculates the relation between two heavenly stems.
+  @override
   BaziStemRelationResult calcStemRelation(int stemA, int stemB) {
     _ensureOpen();
     _requireStemId(stemA, 'stemA');
@@ -221,6 +254,7 @@ final class BaziContext implements Finalizable {
   }
 
   /// Calculates the relation between two earthly branches.
+  @override
   BaziBranchRelationResult calcBranchRelation(int branchA, int branchB) {
     _ensureOpen();
     _requireBranchId(branchA, 'branchA');
@@ -242,6 +276,7 @@ final class BaziContext implements Finalizable {
   }
 
   /// Calculates the triple relation among three earthly branches.
+  @override
   BaziBranchTripleRelationResult calcBranchTripleRelation(
     int branchA,
     int branchB,
@@ -269,6 +304,7 @@ final class BaziContext implements Finalizable {
   }
 
   /// Returns the 长生十二宫 (life stage) of a stem in an earthly branch.
+  @override
   int getLifeStage({
     required int stemId,
     required int branchId,
@@ -288,6 +324,7 @@ final class BaziContext implements Finalizable {
   }
 
   /// Calculates the 流年 (liu-nian / flow-year) Ganzhi for an effective year.
+  @override
   Ganzhi calcLiunian(int effectiveYear) {
     _ensureOpen();
     _requireSignedInt32(effectiveYear, 'effectiveYear');
@@ -304,6 +341,7 @@ final class BaziContext implements Finalizable {
   /// Calculates the 流月 (liu-yue / flow-month) Ganzhi.
   ///
   /// [monthBranch] follows the C ABI: 2 = 寅, …, 0 = 子, 1 = 丑.
+  @override
   Ganzhi calcLiuyue(Ganzhi yearPillar, int monthBranch) {
     _ensureOpen();
     _requireBranchId(monthBranch, 'monthBranch');
@@ -318,6 +356,7 @@ final class BaziContext implements Finalizable {
   }
 
   /// Calculates the 流日 (liu-ri / flow-day) Ganzhi for a civil date.
+  @override
   Ganzhi calcLiuri(AstroDateTime civilDate) {
     _ensureOpen();
     return using((arena) {
@@ -331,6 +370,7 @@ final class BaziContext implements Finalizable {
   /// Calculates the 流时 (liu-shi / flow-hour) Ganzhi.
   ///
   /// [hourIndex] follows the C ABI branch sequence: 0 = 子, …, 11 = 亥.
+  @override
   Ganzhi calcLiushi(Ganzhi dayPillar, int hourIndex) {
     _ensureOpen();
     _requireBranchId(hourIndex, 'hourIndex');
@@ -345,6 +385,7 @@ final class BaziContext implements Finalizable {
   }
 
   /// Calculates the 小运 (xiao-yun) Ganzhi for an age within a chart.
+  @override
   Ganzhi calcXiaoyun(BaziChart chart, int direction, int age) {
     _ensureOpen();
     _requireDirection(direction);
@@ -362,6 +403,7 @@ final class BaziContext implements Finalizable {
 
   /// Fills a contiguous range of 小运 (xiao-yun) entries starting at
   /// [startAge] (one-based virtual ages).
+  @override
   List<BaziXiaoyun> fillXiaoyun({
     required BaziChart chart,
     required int direction,
@@ -426,6 +468,7 @@ final class BaziContext implements Finalizable {
 
   /// Derives the full 八字 chart (命宫/身宫/胎元/胎息/藏干/十神/大运十二宫) from
   /// the four pillars.
+  @override
   BaziChart calcChart(GanzhiFourPillars pillars) {
     _ensureOpen();
     return using((arena) {
@@ -440,189 +483,10 @@ final class BaziContext implements Finalizable {
     });
   }
 
-  OperationResult<BaziResult> _calculateResolved({
-    required JulianDate<UtcScale> instantUtc,
-    required AstroDateTime chartTime,
-    required BaziGender gender,
-    required GanzhiRatHourMode ratHourMode,
-    AstroDateTime? clockTime,
-  }) {
-    final utcCalendarResult = _calendar.owner.time.reverseJulianDay(instantUtc);
-    final timeScalesResult = _calendar.owner.time.scalesFromUtc(
-      utcCalendarResult.value,
-    );
-    final pillarsResult = _calendar.fourPillars(
-      instantUtc: instantUtc,
-      virtualTime: chartTime,
-      ratHourMode: ratHourMode,
-    );
-    final chart = calcChart(pillarsResult.value);
-    final qiyunResult = calcQiyun(
-      birthJdUt: timeScalesResult.value.value.ut1,
-      birthCivilTime: chartTime,
-      chart: chart,
-      gender: gender,
-    );
-    return operationResult(
-      BaziResult(
-        instantUtc: instantUtc,
-        chartTime: chartTime,
-        clockTime: clockTime,
-        pillars: pillarsResult.value,
-        chart: chart,
-        qiyun: qiyunResult.value,
-      ),
-      utcCalendarResult.flags |
-          timeScalesResult.flags |
-          pillarsResult.flags |
-          qiyunResult.flags,
-    );
-  }
-
-  void _validateClock(BaziClock clock) {
-    if (clock.mode != BaziClockMode.fixedOffset &&
-        (!clock.longitudeRadians.isFinite ||
-            clock.longitudeRadians.abs() > 3.141592653589793)) {
-      throw ArgumentError.value(
-        clock.longitudeRadians,
-        'longitudeRadians',
-        'must be finite and within [-pi, pi]',
-      );
-    }
-  }
-
-  OperationResult<AstroDateTime> _chartTimeFromInstant(
-    JulianDate<UtcScale> instantUtc,
-    BaziClock clock,
-  ) {
-    _validateClock(clock);
-    if (clock.mode == BaziClockMode.fixedOffset) {
-      return _calendar.localTimeFromInstant(instantUtc);
-    }
-
-    final ut1 = _calendar.owner.time.utcToUt1(instantUtc);
-    final mean = LocalMeanSolarTime.fromUt1(
-      ut1.value,
-      longitudeRadians: clock.longitudeRadians,
-    );
-    if (clock.mode == BaziClockMode.meanSolar) {
-      final chartTime = _calendar.owner.time.reverseJulianDay(mean.coordinate);
-      return operationResult(chartTime.value, ut1.flags | chartTime.flags);
-    }
-
-    final apparent = _calendar.owner.solarTime.meanToApparent(mean);
-    final chartTime = _calendar.owner.time.reverseJulianDay(
-      apparent.value.coordinate,
-    );
-    return operationResult(
-      chartTime.value,
-      ut1.flags | apparent.flags | chartTime.flags,
-    );
-  }
-
-  /// Calculates a complete BaZi result from a fixed-offset local civil clock.
-  OperationResult<BaziResult> calculateLocal(
-    AstroDateTime localTime, {
-    required BaziGender gender,
-    GanzhiRatHourMode ratHourMode = GanzhiRatHourMode.noSplit,
-    BaziClock clock = const BaziClock(),
-  }) {
-    _ensureOpen();
-    final instant = _calendar.instantFromLocal(localTime);
-    final chartTime = _chartTimeFromInstant(instant.value, clock);
-    final result = _calculateResolved(
-      instantUtc: instant.value,
-      chartTime: chartTime.value,
-      clockTime: localTime,
-      gender: gender,
-      ratHourMode: ratHourMode,
-    );
-    return operationResult(
-      result.value,
-      instant.flags | chartTime.flags | result.flags,
-    );
-  }
-
-  /// Calculates a complete BaZi result from one UTC instant and the configured
-  /// fixed civil clock.
-  OperationResult<BaziResult> calculateInstant(
-    JulianDate<UtcScale> instantUtc, {
-    required BaziGender gender,
-    GanzhiRatHourMode ratHourMode = GanzhiRatHourMode.noSplit,
-    BaziClock clock = const BaziClock(),
-  }) {
-    _ensureOpen();
-    final clockTime = _calendar.localTimeFromInstant(instantUtc);
-    final chartTime = _chartTimeFromInstant(instantUtc, clock);
-    final result = _calculateResolved(
-      instantUtc: instantUtc,
-      chartTime: chartTime.value,
-      clockTime: clockTime.value,
-      gender: gender,
-      ratHourMode: ratHourMode,
-    );
-    return operationResult(
-      result.value,
-      result.flags | clockTime.flags | chartTime.flags,
-    );
-  }
-
-  /// Calculates from a Gregorian day and explicit local clock fields.
-  OperationResult<BaziResult> calculateSolarDay(
-    SolarDate solarDay, {
-    required int hour,
-    int minute = 0,
-    int second = 0,
-    int nanosecond = 0,
-    required BaziGender gender,
-    GanzhiRatHourMode ratHourMode = GanzhiRatHourMode.noSplit,
-    BaziClock clock = const BaziClock(),
-  }) {
-    final localTime = AstroDateTime(
-      solarDay.year,
-      solarDay.month,
-      solarDay.day,
-      hour,
-      minute,
-      second,
-      nanosecond,
-    );
-    return calculateLocal(
-      localTime,
-      gender: gender,
-      ratHourMode: ratHourMode,
-      clock: clock,
-    );
-  }
-
-  /// Converts a lunar day with the bound calendar, then calculates its chart.
-  OperationResult<BaziResult> calculateLunarDay(
-    LunarDate lunarDay, {
-    required int hour,
-    int minute = 0,
-    int second = 0,
-    int nanosecond = 0,
-    required BaziGender gender,
-    GanzhiRatHourMode ratHourMode = GanzhiRatHourMode.noSplit,
-    BaziClock clock = const BaziClock(),
-  }) {
-    final solarDay = _calendar.fromLunar(lunarDay);
-    final result = calculateSolarDay(
-      solarDay.value,
-      hour: hour,
-      minute: minute,
-      second: second,
-      nanosecond: nanosecond,
-      gender: gender,
-      ratHourMode: ratHourMode,
-      clock: clock,
-    );
-    return operationResult(result.value, solarDay.flags | result.flags);
-  }
-
   /// Computes the 起运 (qi-yun) start of the first 大运 for a birth instant.
   ///
   /// Uses the bound [chineseCalendar] as the astronomical solar-term context.
+  @override
   OperationResult<BaziQiyunResult> calcQiyun({
     required JulianDate<Ut1Scale> birthJdUt,
     required AstroDateTime birthCivilTime,
@@ -656,6 +520,7 @@ final class BaziContext implements Finalizable {
   /// Fills the 大运 (da-yun) decades following a 起运 result.
   ///
   /// [requestedCount] is the number of one-based da-yun entries to generate.
+  @override
   List<BaziDayun> fillDayun({
     required AstroDateTime birthCivilTime,
     required BaziChart chart,
@@ -723,6 +588,7 @@ final class BaziContext implements Finalizable {
   /// Determines the 人元司令 (ren-yuan si-ling) in effect at an instant.
   ///
   /// Uses the bound [chineseCalendar] as the astronomical solar-term context.
+  @override
   OperationResult<BaziRenyuanSilingResult> calcRenyuanSiling({
     required JulianDate<Ut1Scale> instantJdUt,
     required BaziChart chart,
@@ -753,6 +619,7 @@ final class BaziContext implements Finalizable {
   }
 
   /// Returns the 人元司令 (ren-yuan si-ling) command segments of a month branch.
+  @override
   List<BaziRenyuanSilingSegment> getRenyuanSilingSegments(
     int monthBranchId,
     BaziRenyuanSilingTableModel tableModel,
@@ -804,6 +671,7 @@ final class BaziContext implements Finalizable {
   ///
   /// [relationMask] uses `1 << relationKind.id` bits; the default covers every
   /// relation kind.
+  @override
   List<BaziRelation> collectChartRelations({
     required BaziChart chart,
     int pillarMask = 0xff,
@@ -860,6 +728,7 @@ final class BaziContext implements Finalizable {
   ///
   /// When [gender] is provided the gender-dependent legacy shen-sha rules are
   /// applied; otherwise the gender-neutral rules are used.
+  @override
   Set<BaziShenShaId> collectTargetShenSha({
     required BaziChart chart,
     required Ganzhi target,
@@ -1252,3 +1121,12 @@ BaziRenyuanSilingResult _readRenyuanSilingResult(
     previousJieJdUt: readJulianDate<Ut1Scale>(value.previous_jie_jd_ut),
   );
 }
+
+/// Internal factory for the shared catalog facade.
+BaziShenShaCatalogBackend createNativeBaziShenShaBackend({
+  String? libraryPath,
+  String? coreLibraryPath,
+}) => _NativeShenCatalogBackend(
+  libraryPath: libraryPath,
+  coreLibraryPath: coreLibraryPath,
+);

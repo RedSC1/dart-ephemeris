@@ -1,13 +1,36 @@
 part of '../taiyin.dart';
 
+/// Owns a calendar policy borrowing the owning astronomy context.
+final class ChineseCalendarContext extends CalendarContextBase
+    implements Finalizable {
+  ChineseCalendarContext._(
+    this._nativeBackend,
+    this.owner,
+    ChineseCalendarConfig config,
+  ) : super.internal(_nativeBackend, owner.time, config, owner._ensureOpen, (
+        call,
+      ) {
+        owner._completeBackendCall(call);
+      });
+  final _NativeChineseCalendarBackend _nativeBackend;
+  final EphemerisContext owner;
+  TaiyinExtensionHost get extensionHost => _nativeBackend.extensionHost;
+  @override
+  void close() {
+    owner._calendarChildren.remove(this);
+    super.close();
+  }
+}
+
 /// Owns one native Chinese-calendar context.
 ///
 /// Create one through [EphemerisContext.createChineseCalendar], or use
 /// [EphemerisContext.chineseCalendar] for the cached default configuration.
 /// Call [close] before discarding the handle; closing the owning
 /// [EphemerisContext] closes its cached calendar context first.
-final class ChineseCalendarContext implements Finalizable {
-  ChineseCalendarContext._(
+final class _NativeChineseCalendarBackend
+    implements ChineseCalendarBackend, Finalizable {
+  _NativeChineseCalendarBackend._(
     this._bindings,
     this._context,
     this._finalizer,
@@ -18,7 +41,7 @@ final class ChineseCalendarContext implements Finalizable {
     _finalizer.attach(this, _context.cast(), detach: this);
   }
 
-  factory ChineseCalendarContext._create(
+  factory _NativeChineseCalendarBackend._create(
     _NativeLibraryState nativeState,
     TaiyinBindings bindings,
     Pointer<taiyin_context> astronomyContext,
@@ -37,7 +60,7 @@ final class ChineseCalendarContext implements Finalizable {
       );
       return output.value;
     });
-    return ChineseCalendarContext._(
+    return _NativeChineseCalendarBackend._(
       bindings,
       context,
       nativeState.chineseCalendarFinalizer,
@@ -74,10 +97,11 @@ final class ChineseCalendarContext implements Finalizable {
   );
 
   /// Releases the native calendar context. Calling this more than once is safe.
+  @override
   void close() {
     if (_closed) return;
     _closed = true;
-    _owner._calendarChildren.remove(this);
+
     _finalizer.detach(this);
     _bindings.taiyin_chinese_calendar_context_destroy(_context);
   }
@@ -93,7 +117,8 @@ final class ChineseCalendarContext implements Finalizable {
 
   /// Computes the full winter-solstice-based Chinese calendar year containing
   /// [jdUt].
-  OperationResult<ChineseCalendarYear> calcYearUt(JulianDate<Ut1Scale> jdUt) {
+  @override
+  BackendCall<ChineseCalendarYear> calcYearUt(JulianDate<Ut1Scale> jdUt) {
     _ensureOpen();
     return using((arena) {
       final output = arena<taiyin_chinese_calendar_year>();
@@ -107,18 +132,21 @@ final class ChineseCalendarContext implements Finalizable {
         diagnostic,
       );
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
-      final flags = _owner._completeOperation(
-        status,
+      final result = decodeNativeCallResult(status);
+      return BackendCall(
+        status: result.status,
+        flags: result.flags,
+        value: result.status == 0 ? (_readCalendarYear(output.ref)) : null,
         diagnostic: mappedDiagnostic,
       );
-      return operationResult(_readCalendarYear(output.ref), flags);
     });
   }
 
   /// Returns one solar term by its spring-equinox-based index (sxwnl
   /// convention): 0 = spring equinox, 18 = the winter solstice of [civilYear],
   /// 19–23 = 小寒…惊蛰 earlier in the same civil year.
-  OperationResult<ChineseSolarTermEvent> getSpecificJieQiUt({
+  @override
+  BackendCall<ChineseSolarTermEvent> getSpecificJieQiUt({
     required int civilYear,
     required int termIndexFromVernalEquinox,
   }) {
@@ -141,18 +169,19 @@ final class ChineseCalendarContext implements Finalizable {
         diagnostic,
       );
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
-      final flags = _owner._completeOperation(
-        status,
+      final result = decodeNativeCallResult(status);
+      return BackendCall(
+        status: result.status,
+        flags: result.flags,
+        value: result.status == 0 ? (_readSolarTermEvent(output.ref)) : null,
         diagnostic: mappedDiagnostic,
       );
-      return operationResult(_readSolarTermEvent(output.ref), flags);
     });
   }
 
   /// Returns the previous solar term at or before [jdUt].
-  OperationResult<ChineseSolarTermEvent> getPrevJieQiUt(
-    JulianDate<Ut1Scale> jdUt,
-  ) {
+  @override
+  BackendCall<ChineseSolarTermEvent> getPrevJieQiUt(JulianDate<Ut1Scale> jdUt) {
     return _solarTermSearch(
       (jd, output, diagnostic) =>
           _bindings.taiyin_chinese_calendar_get_prev_jie_qi_ut(
@@ -166,9 +195,8 @@ final class ChineseCalendarContext implements Finalizable {
   }
 
   /// Returns the next solar term strictly after [jdUt].
-  OperationResult<ChineseSolarTermEvent> getNextJieQiUt(
-    JulianDate<Ut1Scale> jdUt,
-  ) {
+  @override
+  BackendCall<ChineseSolarTermEvent> getNextJieQiUt(JulianDate<Ut1Scale> jdUt) {
     return _solarTermSearch(
       (jd, output, diagnostic) =>
           _bindings.taiyin_chinese_calendar_get_next_jie_qi_ut(
@@ -182,9 +210,8 @@ final class ChineseCalendarContext implements Finalizable {
   }
 
   /// Returns the previous 节 (the twelve major terms) at or before [jdUt].
-  OperationResult<ChineseSolarTermEvent> getPrevJieUt(
-    JulianDate<Ut1Scale> jdUt,
-  ) {
+  @override
+  BackendCall<ChineseSolarTermEvent> getPrevJieUt(JulianDate<Ut1Scale> jdUt) {
     return _solarTermSearch(
       (jd, output, diagnostic) =>
           _bindings.taiyin_chinese_calendar_get_prev_jie_ut(
@@ -198,9 +225,8 @@ final class ChineseCalendarContext implements Finalizable {
   }
 
   /// Returns the next 节 (the twelve major terms) strictly after [jdUt].
-  OperationResult<ChineseSolarTermEvent> getNextJieUt(
-    JulianDate<Ut1Scale> jdUt,
-  ) {
+  @override
+  BackendCall<ChineseSolarTermEvent> getNextJieUt(JulianDate<Ut1Scale> jdUt) {
     return _solarTermSearch(
       (jd, output, diagnostic) =>
           _bindings.taiyin_chinese_calendar_get_next_jie_ut(
@@ -214,9 +240,8 @@ final class ChineseCalendarContext implements Finalizable {
   }
 
   /// Returns the previous 气 (the twelve minor terms) at or before [jdUt].
-  OperationResult<ChineseSolarTermEvent> getPrevQiUt(
-    JulianDate<Ut1Scale> jdUt,
-  ) {
+  @override
+  BackendCall<ChineseSolarTermEvent> getPrevQiUt(JulianDate<Ut1Scale> jdUt) {
     return _solarTermSearch(
       (jd, output, diagnostic) =>
           _bindings.taiyin_chinese_calendar_get_prev_qi_ut(
@@ -230,9 +255,8 @@ final class ChineseCalendarContext implements Finalizable {
   }
 
   /// Returns the next 气 (the twelve minor terms) strictly after [jdUt].
-  OperationResult<ChineseSolarTermEvent> getNextQiUt(
-    JulianDate<Ut1Scale> jdUt,
-  ) {
+  @override
+  BackendCall<ChineseSolarTermEvent> getNextQiUt(JulianDate<Ut1Scale> jdUt) {
     return _solarTermSearch(
       (jd, output, diagnostic) =>
           _bindings.taiyin_chinese_calendar_get_next_qi_ut(
@@ -246,7 +270,8 @@ final class ChineseCalendarContext implements Finalizable {
   }
 
   /// Converts a solar (Gregorian) date to a Chinese lunar date.
-  OperationResult<LunarDate> fromSolar(SolarDate solar) {
+  @override
+  BackendCall<LunarDate> fromSolar(SolarDate solar) {
     _ensureOpen();
     return using((arena) {
       final nativeSolar = _writeSolarDate(_bindings, arena, solar);
@@ -261,56 +286,19 @@ final class ChineseCalendarContext implements Finalizable {
         diagnostic,
       );
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
-      final flags = _owner._completeOperation(
-        status,
+      final result = decodeNativeCallResult(status);
+      return BackendCall(
+        status: result.status,
+        flags: result.flags,
+        value: result.status == 0 ? (_readLunarDate(output.ref)) : null,
         diagnostic: mappedDiagnostic,
       );
-      return operationResult(_readLunarDate(output.ref), flags);
     });
   }
 
-  /// Converts a local civil clock to UTC using its configured fixed offset.
-  ///
-  /// The calendar's mean-solar meridian, when selected, controls only new-moon
-  /// and solar-term day assignment. It does not replace the caller's legal
-  /// clock. No daylight-saving or IANA timezone rules are applied.
-  OperationResult<JulianDate<UtcScale>> instantFromLocal(
-    AstroDateTime localTime,
-  ) {
-    _ensureOpen();
-    if (localTime.second == 60) {
-      throw const UtcLeapSecondRepresentationError();
-    }
-    return operationResult(
-      localTime.toUtcJulianDate().addSeconds(-_clockOffsetSeconds),
-      ResultFlags.none,
-    );
-  }
-
-  /// Converts a UTC instant to the configured fixed-offset civil clock.
-  OperationResult<AstroDateTime> localTimeFromInstant(
-    JulianDate<UtcScale> instantUtc,
-  ) {
-    _ensureOpen();
-    return _owner.time.reverseJulianDay(
-      instantUtc.addSeconds(_clockOffsetSeconds),
-    );
-  }
-
-  /// Converts the Gregorian date portion of a local civil clock to a Chinese
-  /// lunar date.
-  OperationResult<LunarDate> fromLocal(AstroDateTime localTime) {
-    return fromSolar(
-      SolarDate(
-        year: localTime.year,
-        month: localTime.month,
-        day: localTime.day,
-      ),
-    );
-  }
-
   /// Resolves the Chinese lunar date containing a UT1 instant.
-  OperationResult<LunarDate> fromInstantUt1(JulianDate<Ut1Scale> instant) {
+  @override
+  BackendCall<LunarDate> fromInstantUt1(JulianDate<Ut1Scale> instant) {
     _ensureOpen();
     return using((arena) {
       final nativeInstant = writeJulianDate(arena, instant);
@@ -325,16 +313,19 @@ final class ChineseCalendarContext implements Finalizable {
         diagnostic,
       );
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
-      final flags = _owner._completeOperation(
-        status,
+      final result = decodeNativeCallResult(status);
+      return BackendCall(
+        status: result.status,
+        flags: result.flags,
+        value: result.status == 0 ? (_readLunarDate(output.ref)) : null,
         diagnostic: mappedDiagnostic,
       );
-      return operationResult(_readLunarDate(output.ref), flags);
     });
   }
 
   /// Converts a Chinese lunar date to a solar (Gregorian) date.
-  OperationResult<SolarDate> fromLunar(LunarDate lunar) {
+  @override
+  BackendCall<SolarDate> fromLunar(LunarDate lunar) {
     _ensureOpen();
     return using((arena) {
       final nativeLunar = _writeLunarDate(_bindings, arena, lunar);
@@ -349,16 +340,19 @@ final class ChineseCalendarContext implements Finalizable {
         diagnostic,
       );
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
-      final flags = _owner._completeOperation(
-        status,
+      final result = decodeNativeCallResult(status);
+      return BackendCall(
+        status: result.status,
+        flags: result.flags,
+        value: result.status == 0 ? (_readSolarDate(output.ref)) : null,
         diagnostic: mappedDiagnostic,
       );
-      return operationResult(_readSolarDate(output.ref), flags);
     });
   }
 
   /// Returns the number of days in a lunar month.
-  OperationResult<int> getMonthDays({
+  @override
+  BackendCall<int> getMonthDays({
     required int lunarYear,
     required int month,
     required bool isLeap,
@@ -379,11 +373,13 @@ final class ChineseCalendarContext implements Finalizable {
         diagnostic,
       );
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
-      final flags = _owner._completeOperation(
-        status,
+      final result = decodeNativeCallResult(status);
+      return BackendCall(
+        status: result.status,
+        flags: result.flags,
+        value: result.status == 0 ? (output.value) : null,
         diagnostic: mappedDiagnostic,
       );
-      return operationResult(output.value, flags);
     });
   }
 
@@ -393,7 +389,8 @@ final class ChineseCalendarContext implements Finalizable {
   /// absolute astronomical boundaries (立春 and the twelve 节).
   /// [virtualTime] is the caller-resolved civil clock used for the nominal
   /// year, day, and hour pillars.
-  OperationResult<GanzhiFourPillars> fourPillars({
+  @override
+  BackendCall<GanzhiFourPillars> fourPillars({
     required JulianDate<UtcScale> instantUtc,
     required AstroDateTime virtualTime,
     GanzhiRatHourMode ratHourMode = GanzhiRatHourMode.noSplit,
@@ -428,62 +425,24 @@ final class ChineseCalendarContext implements Finalizable {
         diagnostic,
       );
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
-      final flags = _owner._completeOperation(
-        status,
+      final result = decodeNativeCallResult(status);
+      return BackendCall(
+        status: result.status,
+        flags: result.flags,
+        value: result.status == 0
+            ? (GanzhiFourPillars(
+                year: Ganzhi.fromNative(output.ref.year),
+                month: Ganzhi.fromNative(output.ref.month),
+                day: Ganzhi.fromNative(output.ref.day),
+                hour: Ganzhi.fromNative(output.ref.hour),
+              ))
+            : null,
         diagnostic: mappedDiagnostic,
-      );
-      return operationResult(
-        GanzhiFourPillars(
-          year: Ganzhi.fromNative(output.ref.year),
-          month: Ganzhi.fromNative(output.ref.month),
-          day: Ganzhi.fromNative(output.ref.day),
-          hour: Ganzhi.fromNative(output.ref.hour),
-        ),
-        flags,
       );
     });
   }
 
-  /// Computes four pillars from one local civil clock.
-  ///
-  /// The corresponding UTC instant is derived from this calendar context, so
-  /// callers do not need to repeat or manually subtract its UTC offset.
-  OperationResult<GanzhiFourPillars> fourPillarsLocal(
-    AstroDateTime localTime, {
-    GanzhiRatHourMode ratHourMode = GanzhiRatHourMode.noSplit,
-  }) {
-    final instant = instantFromLocal(localTime);
-    final pillars = fourPillars(
-      instantUtc: instant.value,
-      virtualTime: localTime,
-      ratHourMode: ratHourMode,
-    );
-    return operationResult(pillars.value, instant.flags | pillars.flags);
-  }
-
-  /// Computes four pillars from one UTC instant.
-  ///
-  /// The civil clock used for the nominal year, day, and hour pillars is
-  /// derived from this calendar context's day-boundary configuration.
-  OperationResult<GanzhiFourPillars> fourPillarsInstant(
-    JulianDate<UtcScale> instantUtc, {
-    GanzhiRatHourMode ratHourMode = GanzhiRatHourMode.noSplit,
-  }) {
-    final localTimeResult = localTimeFromInstant(instantUtc);
-    final pillarsResult = fourPillars(
-      instantUtc: instantUtc,
-      virtualTime: localTimeResult.value,
-      ratHourMode: ratHourMode,
-    );
-    return operationResult(
-      pillarsResult.value,
-      localTimeResult.flags | pillarsResult.flags,
-    );
-  }
-
-  double get _clockOffsetSeconds => config.utcOffsetMinutes * 60.0;
-
-  OperationResult<ChineseSolarTermEvent> _solarTermSearch(
+  BackendCall<ChineseSolarTermEvent> _solarTermSearch(
     int Function(
       Pointer<taiyin_split_julian_date>,
       Pointer<taiyin_chinese_solar_term_event>,
@@ -504,11 +463,13 @@ final class ChineseCalendarContext implements Finalizable {
         diagnostic,
       );
       final mappedDiagnostic = _readEphemerisDiagnostic(diagnostic.ref);
-      final flags = _owner._completeOperation(
-        status,
+      final result = decodeNativeCallResult(status);
+      return BackendCall(
+        status: result.status,
+        flags: result.flags,
+        value: result.status == 0 ? (_readSolarTermEvent(output.ref)) : null,
         diagnostic: mappedDiagnostic,
       );
-      return operationResult(_readSolarTermEvent(output.ref), flags);
     });
   }
 }

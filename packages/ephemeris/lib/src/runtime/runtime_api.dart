@@ -1,31 +1,5 @@
 part of '../taiyin.dart';
 
-/// Configuration for Taiyin's process-wide native runtime.
-final class RuntimeOptions {
-  const RuntimeOptions({
-    this.dataRoot,
-    this.sourcePaths = const [],
-    this.eopPath,
-    this.lunarLimbPath,
-    this.segmentCacheMaxEntries,
-    this.loadPackagedData = true,
-    this.loadBuiltinEop = true,
-    this.strictDiscovery = false,
-  });
-
-  final String? dataRoot;
-  final List<String> sourcePaths;
-  final String? eopPath;
-  final String? lunarLimbPath;
-  final int? segmentCacheMaxEntries;
-
-  /// Loads native packaged data and the Dart package's bundled lite star
-  /// catalog. Set this to false for a completely caller-managed data setup.
-  final bool loadPackagedData;
-  final bool loadBuiltinEop;
-  final bool strictDiscovery;
-}
-
 /// The process-wide Taiyin library facade and its global resources.
 ///
 /// [open] loads the native library and performs its internal default runtime
@@ -40,13 +14,41 @@ final class RuntimeOptions {
 /// isolate. Worker isolates must use [Ephemeris.attach] instead.
 final class Ephemeris {
   Ephemeris._(this._library, this._bindings, this._nativeState) {
-    starCatalog = StarCatalog._(_bindings);
+    starCatalog = StarCatalog.internal(
+      _NativeStarCatalogBackend(_nativeState),
+      (call) {
+        if (call.status != 0) {
+          _throwStatus(_bindings, call.status, resultFlags: call.flags);
+        }
+      },
+    );
+    _byteLoader = RuntimeBytesLoader.internal(
+      _NativeRuntimeBytesBackend(_nativeState),
+      (call) {
+        if (call.status != 0) {
+          _throwStatus(_bindings, call.status, resultFlags: call.flags);
+        }
+      },
+    );
   }
 
   final DynamicLibrary _library;
   final TaiyinBindings _bindings;
   final _NativeLibraryState _nativeState;
   late final StarCatalog starCatalog;
+  late final RuntimeBytesLoader _byteLoader;
+
+  /// Initializes the platform backend asynchronously.
+  ///
+  /// Native builds delegate to the existing synchronous [open]. Web builds
+  /// load the script at [wasmModuleUri] and its adjacent Wasm binary. Native
+  /// builds ignore that Web-only URI, allowing one initialization call in
+  /// shared application code. Initialize once before creating contexts.
+  static Future<Ephemeris> initialize({
+    String? libraryPath,
+    Uri? wasmModuleUri,
+    RuntimeOptions options = const RuntimeOptions(),
+  }) async => Ephemeris.open(libraryPath: libraryPath, options: options);
 
   /// Opens Ephemeris and performs process-wide native runtime setup.
   factory Ephemeris.open({
@@ -82,6 +84,7 @@ final class Ephemeris {
         _closeCustomTargetRegistrationsAfterNativeClear(state);
         _closeCustomAyanamshaRegistrationsAfterNativeClear(state);
         _closeCustomHouseSystemRegistrationsAfterNativeClear(state);
+        state.clearByteSourcesAfterRuntimeReset();
       },
     );
     final ephemeris = Ephemeris._(library, state.bindings, state);
@@ -357,6 +360,30 @@ final class Ephemeris {
       );
     });
   }
+
+  /// Registers an owned copy of a file-backed ephemeris source.
+  ///
+  /// [name] must end in `.opm2`, `.bsp`, `.spk`, `.tkc1` or `.tke1`. Its
+  /// original basename is retained for routing. Duplicate byte-source names
+  /// are rejected, never overwritten. The native backend retains a temporary
+  /// file because the existing parser uses paths. It is released on the next
+  /// runtime initialization, not when a calculation context closes. The Web
+  /// backend retains a virtual file for the Wasm runtime's lifetime.
+  ///
+  /// Register in the main isolate during setup, before concurrent calculations.
+  /// OPC is a path-dependent cache, not an accepted source here.
+  void addSourceBytes(String name, Uint8List bytes) =>
+      _byteLoader.addSourceBytes(name, bytes);
+
+  /// Replaces the global EOP table with an owned finals2000A byte source.
+  /// Finish setup before concurrent calculations begin.
+  void loadEopTableBytes(Uint8List bytes) =>
+      _byteLoader.loadEopTableBytes(bytes);
+
+  /// Replaces the global TLL1 lunar-limb model with an owned byte source.
+  /// Finish setup before concurrent calculations begin.
+  void loadLunarLimbModelBytes(Uint8List bytes) =>
+      _byteLoader.loadLunarLimbModelBytes(bytes);
 
   /// Loads an Earth-orientation table from [path], replacing the current one.
   ///

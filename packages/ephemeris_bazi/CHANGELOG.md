@@ -1,3 +1,10 @@
+## Unreleased
+
+- Share the public calculation pipelines between native and Web, preserving
+  chart clocks, calendar binding, result flags and errors.
+- Add Web adapters for chart/flow/Qi-Yun/Si-Ling calculations and custom
+  Shen Sha catalogs, including callback lifetime and reentry guards.
+
 ## 1.0.0
 
 - First stable release with `ephemeris ^1.0.0` and Taiyin C++ `v1.0.0`.

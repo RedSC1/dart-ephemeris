@@ -37,7 +37,7 @@ jobs:
         uses: actions/checkout@v6
         with:
           repository: RedSC1/taiyin-ephemeris
-          ref: v1.0.0 # Stable source release, C ABI 11
+          ref: e233c8fadc4754f8a234757841f5a1ad5334bc32 # Reviewed public snapshot; C ABI 11, no new tag
           path: native-core
 
       - name: Set up Dart

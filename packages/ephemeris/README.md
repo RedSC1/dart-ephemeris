@@ -54,13 +54,18 @@ The core package deliberately has two layers:
 
 ## Platform support
 
-This package supports **Dart Native only** through `dart:ffi`. Version 1.0
+The published 1.0.0 package supports **Dart Native** through `dart:ffi`. It
 bundles ready-to-load native modules for macOS arm64, Linux x64, and Windows
 x64. Applications on another native platform or architecture can provide a
 compatible Taiyin build through an explicit path or the platform loader. Dart
-Web and Flutter Web are **not currently supported**: browsers cannot load the
-native C ABI shared library. A future Web target would require a separate
-WebAssembly/JavaScript binding and packaging path.
+Web/Flutter Web is being added on this development branch through a **partial,
+experimental Wasm backend**. The initial adapter supports a unified async
+`Ephemeris.initialize()`, `addSourceBytes(name, Uint8List)`, single/batch
+positions, time conversions, Chinese-calendar/four-pillar and solar-time
+calculations, all eclipse operations, and the optional BaZi/Ziwei extensions.
+The rest of the native API is not yet exposed on Web; consult the support matrix.
+Existing synchronous native `open()` and path-based APIs are unchanged. See
+the [build/deploy guide and support matrix](doc/web-backend.md).
 
 ## Build the native library
 

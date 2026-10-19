@@ -125,8 +125,8 @@ const _solarRouteMaximumSampleCount = 4096;
 /// A local method samples the observer location already configured on the
 /// owning [EphemerisContext]. Native calculation coordinates and contact times
 /// cross the ABI-11 boundary as split Julian dates.
-final class EclipseApi {
-  EclipseApi._(
+final class _NativeEclipseBackend implements EclipseBackend {
+  _NativeEclipseBackend(
     this._bindings,
     this._context,
     this._ensureOpen,
@@ -139,6 +139,7 @@ final class EclipseApi {
   final _EclipseStatusChecker _checkStatus;
 
   /// Solves the lunar-eclipse lunation nearest [estimate].
+  @override
   OperationResult<LunarEclipseResult<TtScale>> solveLunarAtTt(
     JulianDate<TtScale> estimate, {
     Set<PositionFlag> positionFlags = const {},
@@ -161,6 +162,7 @@ final class EclipseApi {
   }
 
   /// Solves the lunar-eclipse lunation nearest [estimate].
+  @override
   OperationResult<LunarEclipseResult<Ut1Scale>> solveLunarAtUt1(
     JulianDate<Ut1Scale> estimate, {
     Set<PositionFlag> positionFlags = const {},
@@ -183,6 +185,7 @@ final class EclipseApi {
   }
 
   /// Finds the next matching lunar eclipse from [start].
+  @override
   OperationResult<LunarEclipseResult<TtScale>> nextLunarAtTt(
     JulianDate<TtScale> start, {
     Set<EclipseKind> kinds = const {},
@@ -210,6 +213,7 @@ final class EclipseApi {
   /// Finds the next matching lunar eclipse from [start].
   ///
   /// Pass [LunarEclipseSearchOption.backward] to search backwards.
+  @override
   OperationResult<LunarEclipseResult<Ut1Scale>> nextLunarAtUt1(
     JulianDate<Ut1Scale> start, {
     Set<EclipseKind> kinds = const {},
@@ -239,6 +243,7 @@ final class EclipseApi {
   ///
   /// Native code reports insufficient [maxResults] capacity as an error rather
   /// than silently dropping later eclipses.
+  @override
   OperationResult<List<LunarEclipseResult<TtScale>>> lunarEclipsesAtTt(
     JulianDate<TtScale> start,
     JulianDate<TtScale> end, {
@@ -273,6 +278,7 @@ final class EclipseApi {
 
   /// Finds all matching lunar eclipses in the positive-length,
   /// endpoint-inclusive [start], [end] range.
+  @override
   OperationResult<List<LunarEclipseResult<Ut1Scale>>> lunarEclipsesAtUt1(
     JulianDate<Ut1Scale> start,
     JulianDate<Ut1Scale> end, {
@@ -309,6 +315,7 @@ final class EclipseApi {
   ///
   /// The context must have a geographic observer. A non-empty eclipse must
   /// include contact data, so search with `includeContacts` before calling.
+  @override
   OperationResult<LocalLunarEclipseResult<TtScale>> localLunarVisibilityAtTt(
     LunarEclipseResult<TtScale> eclipse, {
     Set<LocalLunarEclipseVisibilityOption> options = const {},
@@ -331,6 +338,7 @@ final class EclipseApi {
   }
 
   /// Derives local visibility for a UT1 global [eclipse].
+  @override
   OperationResult<LocalLunarEclipseResult<Ut1Scale>> localLunarVisibilityAtUt1(
     LunarEclipseResult<Ut1Scale> eclipse, {
     Set<LocalLunarEclipseVisibilityOption> options = const {},
@@ -354,6 +362,7 @@ final class EclipseApi {
 
   /// Finds the next matching lunar eclipse and its visibility at the context
   /// observer.
+  @override
   OperationResult<LocalLunarEclipseResult<TtScale>> nextLocalLunarAtTt(
     JulianDate<TtScale> start, {
     Set<EclipseKind> kinds = const {},
@@ -384,6 +393,7 @@ final class EclipseApi {
 
   /// Finds the next matching lunar eclipse and its visibility at the context
   /// observer.
+  @override
   OperationResult<LocalLunarEclipseResult<Ut1Scale>> nextLocalLunarAtUt1(
     JulianDate<Ut1Scale> start, {
     Set<EclipseKind> kinds = const {},
@@ -891,6 +901,7 @@ final class EclipseApi {
   double? _finiteOrNull(double value) => value.isFinite ? value : null;
 
   /// Solves the solar-eclipse lunation nearest [estimate].
+  @override
   OperationResult<SolarEclipseResult<TtScale>> solveSolarAtTt(
     JulianDate<TtScale> estimate, {
     Set<PositionFlag> positionFlags = const {},
@@ -913,6 +924,7 @@ final class EclipseApi {
   }
 
   /// Solves the solar-eclipse lunation nearest [estimate].
+  @override
   OperationResult<SolarEclipseResult<Ut1Scale>> solveSolarAtUt1(
     JulianDate<Ut1Scale> estimate, {
     Set<PositionFlag> positionFlags = const {},
@@ -935,6 +947,7 @@ final class EclipseApi {
   }
 
   /// Finds the next matching global solar eclipse from [start].
+  @override
   OperationResult<SolarEclipseResult<TtScale>> nextSolarAtTt(
     JulianDate<TtScale> start, {
     Set<EclipseKind> kinds = const {},
@@ -961,6 +974,7 @@ final class EclipseApi {
   /// Finds the next matching global solar eclipse from [start].
   ///
   /// Pass [SolarEclipseSearchOption.backward] to search backwards.
+  @override
   OperationResult<SolarEclipseResult<Ut1Scale>> nextSolarAtUt1(
     JulianDate<Ut1Scale> start, {
     Set<EclipseKind> kinds = const {},
@@ -986,6 +1000,7 @@ final class EclipseApi {
 
   /// Finds all matching solar eclipses in the positive-length,
   /// endpoint-inclusive [start], [end] range.
+  @override
   OperationResult<List<SolarEclipseResult<TtScale>>> solarEclipsesAtTt(
     JulianDate<TtScale> start,
     JulianDate<TtScale> end, {
@@ -1019,6 +1034,7 @@ final class EclipseApi {
 
   /// Finds all matching solar eclipses in the positive-length,
   /// endpoint-inclusive [start], [end] range.
+  @override
   OperationResult<List<SolarEclipseResult<Ut1Scale>>> solarEclipsesAtUt1(
     JulianDate<Ut1Scale> start,
     JulianDate<Ut1Scale> end, {
@@ -1055,6 +1071,7 @@ final class EclipseApi {
   /// A geographic observer location must be configured on the context.
   ///
   /// Contacts are always requested for this local result.
+  @override
   OperationResult<LocalSolarEclipseResult<TtScale>> solveLocalSolarAtTt(
     JulianDate<TtScale> estimate, {
     Set<PositionFlag> positionFlags = const {},
@@ -1087,6 +1104,7 @@ final class EclipseApi {
   /// A geographic observer location must be configured on the context.
   ///
   /// Contacts are always requested for this local result.
+  @override
   OperationResult<LocalSolarEclipseResult<Ut1Scale>> solveLocalSolarAtUt1(
     JulianDate<Ut1Scale> estimate, {
     Set<PositionFlag> positionFlags = const {},
@@ -1120,6 +1138,7 @@ final class EclipseApi {
   ///
   /// Contacts are always requested. Pass
   /// [SolarEclipseSearchOption.backward] to search backwards.
+  @override
   OperationResult<LocalSolarEclipseResult<TtScale>> nextLocalSolarAtTt(
     JulianDate<TtScale> start, {
     Set<EclipseKind> kinds = const {},
@@ -1155,6 +1174,7 @@ final class EclipseApi {
   ///
   /// Contacts are always requested. Pass
   /// [SolarEclipseSearchOption.backward] to search backwards.
+  @override
   OperationResult<LocalSolarEclipseResult<Ut1Scale>> nextLocalSolarAtUt1(
     JulianDate<Ut1Scale> start, {
     Set<EclipseKind> kinds = const {},
@@ -1187,6 +1207,7 @@ final class EclipseApi {
   /// Calculates instantaneous local solar-eclipse geometry at [coordinate].
   ///
   /// A geographic observer location must be configured on the context.
+  @override
   OperationResult<LocalSolarEclipseCircumstances<TtScale>>
   localSolarCircumstancesAtTt(JulianDate<TtScale> coordinate) {
     _ensureOpen();
@@ -1206,6 +1227,7 @@ final class EclipseApi {
   /// Calculates instantaneous local solar-eclipse geometry at [coordinate].
   ///
   /// A geographic observer location must be configured on the context.
+  @override
   OperationResult<LocalSolarEclipseCircumstances<Ut1Scale>>
   localSolarCircumstancesAtUt1(JulianDate<Ut1Scale> coordinate) {
     _ensureOpen();
@@ -1227,6 +1249,7 @@ final class EclipseApi {
   /// [timeOffsetHours] is retained as the conventional Besselian time offset
   /// in the returned value. The physical calculation crosses the current
   /// scalar-Julian-date C ABI boundary.
+  @override
   OperationResult<SolarBesselianElements> solarBesselianElementsAtTt(
     JulianDate<TtScale> coordinate, {
     double timeOffsetHours = 0,
@@ -1256,6 +1279,7 @@ final class EclipseApi {
   ///
   /// [spanHours] and [sampleStepHours] must be positive. The native model
   /// permits polynomial [degree] values from 1 through 7.
+  @override
   OperationResult<SolarBesselianPolynomial> solarBesselianPolynomialAtTt(
     JulianDate<TtScale> coordinate, {
     required double spanHours,
@@ -1290,6 +1314,7 @@ final class EclipseApi {
   /// Evaluates a fitted solar Besselian [polynomial] at [timeOffsetHours].
   ///
   /// [timeOffsetHours] is relative to [SolarBesselianPolynomial.referenceEpoch].
+  @override
   OperationResult<SolarBesselianElements> evaluateSolarBesselianPolynomial(
     SolarBesselianPolynomial polynomial,
     double timeOffsetHours,
@@ -1319,6 +1344,7 @@ final class EclipseApi {
   ///
   /// Only [PositionFlag.truePosition] and
   /// [SolarEclipseRouteOption.lunarLimbCorrection] are supported.
+  @override
   OperationResult<SolarEclipseRouteRow> solarEclipseRouteRowAtTt(
     JulianDate<TtScale> coordinate, {
     Set<PositionFlag> positionFlags = const {},
@@ -1344,6 +1370,7 @@ final class EclipseApi {
   ///
   /// Only [PositionFlag.truePosition] and
   /// [SolarEclipseRouteOption.lunarLimbCorrection] are supported.
+  @override
   OperationResult<SolarEclipseRouteRow> solarEclipseRouteRowAtUt1(
     JulianDate<Ut1Scale> coordinate, {
     Set<PositionFlag> positionFlags = const {},
@@ -1370,6 +1397,7 @@ final class EclipseApi {
   ///
   /// Only [PositionFlag.truePosition] and
   /// [SolarEclipseRouteOption.lunarLimbCorrection] are supported.
+  @override
   OperationResult<SolarEclipseWhere> solarEclipseWhereAtTt(
     JulianDate<TtScale> coordinate, {
     Set<PositionFlag> positionFlags = const {},
@@ -1401,6 +1429,7 @@ final class EclipseApi {
   ///
   /// Only [PositionFlag.truePosition] and
   /// [SolarEclipseRouteOption.lunarLimbCorrection] are supported.
+  @override
   OperationResult<SolarEclipseWhere> solarEclipseWhereAtUt1(
     JulianDate<Ut1Scale> coordinate, {
     Set<PositionFlag> positionFlags = const {},
@@ -1432,6 +1461,7 @@ final class EclipseApi {
   /// Both endpoints are included when they land on [stepMinutes]. The range
   /// may contain one coordinate. Rows with no Earth-intersecting route branch
   /// are omitted by native code.
+  @override
   OperationResult<List<SolarEclipseRouteRow>> solarEclipseRouteAtTt(
     JulianDate<TtScale> start,
     JulianDate<TtScale> end, {
@@ -1469,6 +1499,7 @@ final class EclipseApi {
   /// Both endpoints are included when they land on [stepMinutes]. The range
   /// may contain one coordinate. Rows with no Earth-intersecting route branch
   /// are omitted by native code.
+  @override
   OperationResult<List<SolarEclipseRouteRow>> solarEclipseRouteAtUt1(
     JulianDate<Ut1Scale> start,
     JulianDate<Ut1Scale> end, {
@@ -1506,6 +1537,7 @@ final class EclipseApi {
   ///
   /// [routeSampleCount] controls the sampling density for every curve and
   /// must be between 32 and 4096. Points are grouped by curve kind.
+  @override
   OperationResult<List<SolarEclipseRouteCurvePoint>>
   solarEclipseRouteCurvesAtTt(
     JulianDate<TtScale> coordinate, {
@@ -1535,6 +1567,7 @@ final class EclipseApi {
 
   /// Computes the complete time-tagged solar-eclipse map curves near UT1
   /// [coordinate].
+  @override
   OperationResult<List<SolarEclipseRouteCurvePoint>>
   solarEclipseRouteCurvesAtUt1(
     JulianDate<Ut1Scale> coordinate, {
@@ -1566,6 +1599,7 @@ final class EclipseApi {
   ///
   /// Use [solarEclipseRouteMapProductAtTt] when penumbral and half-magnitude
   /// polygons are also required.
+  @override
   OperationResult<SolarEclipseRouteProduct> solarEclipseRouteProductAtTt(
     JulianDate<TtScale> coordinate, {
     int routeSampleCount = _solarRouteDefaultSampleCount,
@@ -1597,6 +1631,7 @@ final class EclipseApi {
   ///
   /// Use [solarEclipseRouteMapProductAtUt1] when penumbral and half-magnitude
   /// polygons are also required.
+  @override
   OperationResult<SolarEclipseRouteProduct> solarEclipseRouteProductAtUt1(
     JulianDate<Ut1Scale> coordinate, {
     int routeSampleCount = _solarRouteDefaultSampleCount,
@@ -1628,6 +1663,7 @@ final class EclipseApi {
   ///
   /// The returned point sequence contains the core, penumbral, and
   /// half-magnitude polygons in that order when those layers exist.
+  @override
   OperationResult<SolarEclipseRouteProduct> solarEclipseRouteMapProductAtTt(
     JulianDate<TtScale> coordinate, {
     int routeSampleCount = _solarRouteDefaultSampleCount,
@@ -1656,6 +1692,7 @@ final class EclipseApi {
   }
 
   /// Builds all available solar-eclipse map polygons near UT1 [coordinate].
+  @override
   OperationResult<SolarEclipseRouteProduct> solarEclipseRouteMapProductAtUt1(
     JulianDate<Ut1Scale> coordinate, {
     int routeSampleCount = _solarRouteDefaultSampleCount,
@@ -1689,6 +1726,7 @@ final class EclipseApi {
   /// [longitudeDegrees] and [latitudeDegrees] select the reference location
   /// used to resolve the central-path kind; they do not need to match the
   /// context observer.
+  @override
   OperationResult<LocalSolarEclipseBoundary> localSolarEclipseBoundaryAtTt(
     JulianDate<TtScale> coordinate, {
     required double longitudeDegrees,
@@ -1714,6 +1752,7 @@ final class EclipseApi {
 
   /// Computes the local Earth intersections of the solar shadow at UT1
   /// [coordinate].
+  @override
   OperationResult<LocalSolarEclipseBoundary> localSolarEclipseBoundaryAtUt1(
     JulianDate<Ut1Scale> coordinate, {
     required double longitudeDegrees,

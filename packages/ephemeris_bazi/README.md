@@ -1,5 +1,10 @@
 # ephemeris_bazi
 
+The development branch also supports the experimental
+[Web backend](../ephemeris/doc/web-backend.md#eclipses-bazi-and-ziwei).
+After `await Ephemeris.initialize(...)`, the same `context.bazi` calls work in
+the browser, including custom Shen Sha rules. Published 1.0.0 is native-only.
+
 **Version 1.0.0** follows the core package's
 [compatibility policy](../ephemeris/doc/index.md#compatibility-policy).
 

@@ -11,4 +11,10 @@ workspace:
   - packages/ephemeris_ziwei
 
 dev_dependencies:
+  ephemeris:
+    path: packages/ephemeris
+  ephemeris_bazi:
+    path: packages/ephemeris_bazi
+  ephemeris_ziwei:
+    path: packages/ephemeris_ziwei
   ffigen: ^20.1.1

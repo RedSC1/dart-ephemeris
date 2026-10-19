@@ -26,7 +26,10 @@
 /// Doushu live in the separate `taiyin_bazi` and `taiyin_ziwei` packages.
 library;
 
-export 'src/taiyin.dart';
+export 'src/taiyin.dart'
+    if (dart.library.js_interop) 'src/web/ephemeris_web.dart';
+export 'src/runtime/runtime_errors.dart';
+export 'src/runtime/runtime_options.dart';
 export 'src/astrology/astrology_models.dart';
 export 'src/chinese_calendar/chinese_calendar_models.dart';
 export 'src/context/context_models.dart';
@@ -44,6 +47,7 @@ export 'src/runtime/runtime_models.dart';
 export 'src/result_flags.dart';
 export 'src/solar_time/solar_time_models.dart';
 export 'src/star/star_models.dart';
+export 'src/star/star_catalog_api.dart';
 export 'src/time/astro_date_time.dart';
 export 'src/time/julian_date.dart';
 export 'src/time/time_api.dart';

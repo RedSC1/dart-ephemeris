@@ -7,8 +7,8 @@ typedef _SolarTimeStatusChecker =
 ///
 /// These physical calculations consume and produce split [JulianDate] values
 /// end to end, preserving the full low-order fraction across the FFI boundary.
-final class SolarTimeApi {
-  SolarTimeApi._(
+final class _NativeSolarTimeBackend implements SolarTimeBackend {
+  _NativeSolarTimeBackend(
     this._bindings,
     this._context,
     this._ensureOpen,
@@ -21,6 +21,7 @@ final class SolarTimeApi {
   final _SolarTimeStatusChecker _checkStatus;
 
   /// Calculates the equation of time from a UT1 coordinate.
+  @override
   OperationResult<EquationOfTime> equationOfTimeAtUt1(
     JulianDate<Ut1Scale> ut1,
   ) {
@@ -36,6 +37,7 @@ final class SolarTimeApi {
   }
 
   /// Calculates the equation of time from a TT coordinate.
+  @override
   OperationResult<EquationOfTime> equationOfTimeAtTt(JulianDate<TtScale> tt) {
     _ensureOpen();
     return _equationOfTime(
@@ -49,6 +51,7 @@ final class SolarTimeApi {
   }
 
   /// Converts local mean solar time to local apparent solar time.
+  @override
   OperationResult<LocalApparentSolarTime> meanToApparent(
     LocalMeanSolarTime localMean,
   ) {
@@ -70,6 +73,7 @@ final class SolarTimeApi {
   }
 
   /// Converts local apparent solar time to local mean solar time.
+  @override
   OperationResult<LocalMeanSolarTime> apparentToMean(
     LocalApparentSolarTime localApparent,
   ) {

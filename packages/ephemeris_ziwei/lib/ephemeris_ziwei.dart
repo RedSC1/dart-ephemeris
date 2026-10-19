@@ -5,5 +5,6 @@
 /// default rule profile ships bundled in this package.
 library;
 
-export 'src/ziwei_api.dart';
+export 'src/ziwei_api.dart'
+    if (dart.library.js_interop) 'src/ziwei_api_web.dart';
 export 'src/ziwei_models.dart';

@@ -3,6 +3,10 @@
 `ephemeris_bazi` is an optional native extension. It depends on `ephemeris` but
 ships its own BaZi native module.
 
+The development branch has a [Web adapter](../../ephemeris/doc/web-backend.md#eclipses-bazi-and-ziwei)
+for these calls. Replace `Ephemeris.open()` with the documented asynchronous
+initialization; no new chart-time or gender parameters are required.
+
 ```sh
 dart pub add ephemeris
 dart pub add ephemeris_bazi
